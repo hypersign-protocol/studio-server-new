@@ -3,16 +3,7 @@ import { IApp } from '../../types/App.types';
 import { CreateAppDto } from '../../dtos/CreateApp.dto';
 @Injectable()
 export class AppAuthService {
-    private apps = [
-        {
-            userId: "user123",
-            appName: "app1",
-            appId: "app-1",
-            appSecret: "app-secret-1",
-            edvId: "edv-1",
-            kmsId: "kms-1",
-        }
-    ]
+    private apps: IApp[] = []
 
     createAnApp(createAppDto: CreateAppDto){
         const newApp = {
