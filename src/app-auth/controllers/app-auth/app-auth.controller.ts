@@ -11,16 +11,10 @@ export class AppAuthController {
         return this.appAuthService.getAllApps();
     }
 
-
     @Post('/register')
-    register(@Req() req: Request,@Res() res: Response): any {
-
-        console.log(req.body)
-        const b  = new CreateAppDto()
-        b.userId = req.body['userId'];
-        b.appName = req.body['appName'];
-        const napp = this.appAuthService.createAnApp(b)
-        return res.status(HttpStatus.CREATED).send(napp)
+    @UsePipes(ValidationPipe)
+    register(@Body() createAppDto: CreateAppDto) {
+        return this.appAuthService.createAnApp(createAppDto)
     }
 
 }
