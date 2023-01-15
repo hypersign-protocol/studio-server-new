@@ -21,6 +21,13 @@ export class AppAuthController {
     }
 
     @Get(':appId')
+    @ApiResponse({
+        description: 'Fetch App by Id',
+        type: AppSchema
+    })
+    @ApiBadRequestResponse({
+        description: "Application not found"
+    })
     getAppById(@Param('appId') appId: string): IApp {
         const app = this.appAuthService.getAppById(appId);
         if(app) return app;
