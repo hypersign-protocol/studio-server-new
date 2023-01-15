@@ -1,9 +1,10 @@
-import { Controller, Get, ValidationPipe, Post, UsePipes, Body, Req, Res, HttpStatus } from '@nestjs/common';
+import { Controller, Get, ValidationPipe, Post, UsePipes, Body, Req, Res, HttpStatus, Param} from '@nestjs/common';
 import { CreateAppDto } from 'src/app-auth/dtos/CreateApp.dto';
 import { AppAuthService } from 'src/app-auth/services/app-auth/app-auth.service';
 import { ApiBadRequestResponse, ApiCreatedResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { IApp } from '../../types/App.types';
 import { AppSchema } from '../../schemas/App.schema';  
+import { AppNotFoundException  } from 'src/app-auth/exceptions/AppNotFound.exception';
 
 @ApiTags('App')
 @Controller('app')
@@ -15,8 +16,15 @@ export class AppAuthController {
         description: 'List of apps',
         type: [AppSchema]
     })
-    getAppAuth() {
+    getApps() {
         return this.appAuthService.getAllApps();
+    }
+
+    @Get(':appId')
+    getAppById(@Param('appId') appId: string): IApp {
+        const app = this.appAuthService.getAppById(appId);
+        if(app) return app;
+        else throw new AppNotFoundException(); // Custom Exception handling
     }
 
     @Post('/register')

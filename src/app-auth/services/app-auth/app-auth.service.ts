@@ -22,4 +22,8 @@ export class AppAuthService {
     getAllApps () {
         return this.apps
     }
+
+    getAppById (appId: string) {
+        return this.apps.find(app => app.appId === appId)
+    }
 }
