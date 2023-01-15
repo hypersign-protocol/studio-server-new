@@ -1,20 +1,22 @@
 import { Injectable } from '@nestjs/common';
 import { IApp } from '../../types/App.types';
 import { CreateAppDto } from '../../dtos/CreateApp.dto';
+import { AppSchema  } from 'src/app-auth/schemas/App.schema'; 
+
 @Injectable()
 export class AppAuthService {
     private apps: IApp[] = []
 
-    createAnApp(createAppDto: CreateAppDto){
-        const newApp = {
+    createAnApp(createAppDto: CreateAppDto): IApp{
+        const appSchema = new AppSchema({
             ...createAppDto,
-            appId: 'app-1',
-            appSecret: "app-secret-1",
-            edvId: "edv-1",
-            kmsId: "kms-1",
-        }
-        this.apps.push(newApp);
-        return newApp
+            appId: 'demo-app1', // generate app id
+            appSecret: 'demo-secret-1', // generate app secret
+            edvId: 'hs-edv-1', // generate edvId  by called hypersign edv service
+            kmsId: 'demo-kms-1' 
+        })
+        this.apps.push(appSchema);
+        return appSchema
     }
 
     getAllApps () {
