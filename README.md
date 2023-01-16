@@ -20,11 +20,6 @@ Added basic project st. with following features
 - [environment var](https://github.com/hypersign-protocol/studio-api/commit/2d119e6898a772dcf6ff54e477eb5d354e9b4e18)
 
 
-## Docs
-
-https://hypermine.atlassian.net/browse/HSSTUD-64?focusedCommentId=10015
-
-
 ## Pre-requisites
 
 Node version `v14.20.0`
