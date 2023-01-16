@@ -10,16 +10,16 @@ import {
   Param,
 } from '@nestjs/common';
 import { CreateAppDto } from 'src/app-auth/dtos/create-app.dto';
-import { AppAuthService } from 'src/app-auth/services/app-auth/app-auth.service';
+import { AppAuthService } from 'src/app-auth/services/app-auth.service';
 import {
   ApiBadRequestResponse,
   ApiCreatedResponse,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
-import { App } from '../../schemas/app.schema';
+import { App } from '../schemas/app.schema';
 import { AppNotFoundException } from 'src/app-auth/exceptions/app-not-found.exception';
-import { UpdateAppDto } from '../../dtos/update-app.dto';
+import { UpdateAppDto } from '../dtos/update-app.dto';
 @ApiTags('App')
 @Controller('app')
 export class AppAuthController {
