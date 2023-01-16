@@ -2,8 +2,12 @@ import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/c
 import { AppAuthService } from './services/app-auth/app-auth.service';
 import { AppAuthController } from './controllers/app-auth/app-auth.controller';
 import { ValidateHeadersMiddleware  } from './middlewares/validate-headers/validate-headers.middleware';
+import { MongooseModule } from '@nestjs/mongoose';
+import { App, AppSchema } from '../app-auth/schemas/App.schema';
+import { AppRepository  } from './repositories/App.repository';
 @Module({
-  providers: [AppAuthService],
+  imports: [MongooseModule.forFeature([{ name: App.name,  schema: AppSchema }])],
+  providers: [AppAuthService, AppRepository],
   controllers: [AppAuthController]
 })
 export class AppAuthModule implements NestModule {

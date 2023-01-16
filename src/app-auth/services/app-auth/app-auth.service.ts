@@ -1,29 +1,28 @@
 import { Injectable } from '@nestjs/common';
-import { IApp } from '../../types/App.types';
 import { CreateAppDto } from '../../dtos/CreateApp.dto';
-import { AppSchema  } from 'src/app-auth/schemas/App.schema'; 
+import { App  } from 'src/app-auth/schemas/App.schema'; 
+import { AppRepository  } from 'src/app-auth/repositories/App.repository';
+import { uuid } from 'uuidv4';
 
 @Injectable()
 export class AppAuthService {
-    private apps: IApp[] = []
+    constructor(private readonly appRepository: AppRepository) {}
 
-    createAnApp(createAppDto: CreateAppDto): IApp{
-        const appSchema = new AppSchema({
+    createAnApp(createAppDto: CreateAppDto): Promise<App>{
+        return this.appRepository.create({
             ...createAppDto,
-            appId: 'demo-app1', // generate app id
-            appSecret: 'demo-secret-1', // generate app secret
+            appId: uuid(), // generate app id
+            appSecret: uuid(), // TODO: generate app secret and should be handled like password by hashing and all...
             edvId: 'hs-edv-1', // generate edvId  by called hypersign edv service
             kmsId: 'demo-kms-1' 
         })
-        this.apps.push(appSchema);
-        return appSchema
     }
 
-    getAllApps () {
-        return this.apps
+    getAllApps (): Promise<App[]>{
+        return this.appRepository.find({})
     }
 
-    getAppById (appId: string) {
-        return this.apps.find(app => app.appId === appId)
+    getAppById (appId: string): Promise<App> {
+        return this.appRepository.findOne({ appId })
     }
 }

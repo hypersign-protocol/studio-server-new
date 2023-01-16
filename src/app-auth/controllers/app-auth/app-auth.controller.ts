@@ -2,8 +2,7 @@ import { Controller, Get, ValidationPipe, Post, UsePipes, Body, Req, Res, HttpSt
 import { CreateAppDto } from 'src/app-auth/dtos/CreateApp.dto';
 import { AppAuthService } from 'src/app-auth/services/app-auth/app-auth.service';
 import { ApiBadRequestResponse, ApiCreatedResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { IApp } from '../../types/App.types';
-import { AppSchema } from '../../schemas/App.schema';  
+import { App } from '../../schemas/App.schema';  
 import { AppNotFoundException  } from 'src/app-auth/exceptions/AppNotFound.exception';
 
 @ApiTags('App')
@@ -14,21 +13,21 @@ export class AppAuthController {
     @Get()
     @ApiResponse({
         description: 'List of apps',
-        type: [AppSchema]
+        type: [App]
     })
-    getApps() {
+    getApps(): Promise<App[]>{
         return this.appAuthService.getAllApps();
     }
 
     @Get(':appId')
     @ApiResponse({
         description: 'Fetch App by Id',
-        type: AppSchema
+        type: App
     })
     @ApiBadRequestResponse({
         description: "Application not found"
     })
-    getAppById(@Param('appId') appId: string): IApp {
+    getAppById(@Param('appId') appId: string): Promise<App> {
         const app = this.appAuthService.getAppById(appId);
         if(app) return app;
         else throw new AppNotFoundException(); // Custom Exception handling
@@ -37,13 +36,13 @@ export class AppAuthController {
     @Post('/register')
     @ApiCreatedResponse({
         description: 'Newly created app',
-        type: AppSchema
+        type: App
     })
     @ApiBadRequestResponse({
         description: "Application could not be registered"
     })
     @UsePipes(ValidationPipe)
-    register(@Body() createAppDto: CreateAppDto): IApp{
+    register(@Body() createAppDto: CreateAppDto): Promise<App>{
         return this.appAuthService.createAnApp(createAppDto)
     }
 
