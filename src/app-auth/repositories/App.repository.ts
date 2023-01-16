@@ -1,4 +1,4 @@
-import { App, AppDocument } from '../schemas/App.schema'
+import { App, AppDocument } from '../schemas/app.schema'
 import { FilterQuery, Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose'
 import { Injectable } from '@nestjs/common';

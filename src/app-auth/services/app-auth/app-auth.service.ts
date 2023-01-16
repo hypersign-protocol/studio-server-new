@@ -1,9 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { CreateAppDto } from '../../dtos/CreateApp.dto';
-import { App  } from 'src/app-auth/schemas/App.schema'; 
-import { AppRepository  } from 'src/app-auth/repositories/App.repository';
+import { CreateAppDto } from '../../dtos/create-app.dto';
+import { App  } from 'src/app-auth/schemas/app.schema'; 
+import { AppRepository  } from 'src/app-auth/repositories/app.repository';
 import { uuid } from 'uuidv4';
-import { UpdateAppDto } from '../../dtos/UpdateApp.dto';
+import { UpdateAppDto } from '../../dtos/update-app.dto';
 
 @Injectable()
 export class AppAuthService {

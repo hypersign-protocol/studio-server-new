@@ -1,10 +1,10 @@
 import { Controller, Get, ValidationPipe, Post, UsePipes, Body, Put, HttpStatus, Param} from '@nestjs/common';
-import { CreateAppDto } from 'src/app-auth/dtos/CreateApp.dto';
+import { CreateAppDto } from 'src/app-auth/dtos/create-app.dto';
 import { AppAuthService } from 'src/app-auth/services/app-auth/app-auth.service';
 import { ApiBadRequestResponse, ApiCreatedResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { App } from '../../schemas/App.schema';  
-import { AppNotFoundException  } from 'src/app-auth/exceptions/AppNotFound.exception';
-import { UpdateAppDto } from '../../dtos/UpdateApp.dto'
+import { App } from '../../schemas/app.schema';  
+import { AppNotFoundException  } from 'src/app-auth/exceptions/app-not-found.exception';
+import { UpdateAppDto } from '../../dtos/update-app.dto'
 @ApiTags('App')
 @Controller('app')
 export class AppAuthController {
