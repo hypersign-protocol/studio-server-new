@@ -24,6 +24,16 @@ Added basic project st. with following features
 
 https://hypermine.atlassian.net/browse/HSSTUD-64?focusedCommentId=10015
 
+
+## Pre-requisites
+
+Node version `v14.20.0`
+
+```bash
+npm i -g @nestjs/cli
+```
+
+
 ## Use full commands
 
 ```bash
@@ -40,14 +50,6 @@ nest g service <module-name/services/service-name>
 nest g middleware <module-name/middlewares/middleware-name>
 ```
 
-
-## Pre-requisites
-
-Node version `v14.20.0`
-
-```bash
-npm i -g @nestjs/cli
-```
 
 ## Installation
 
