@@ -4,6 +4,10 @@
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
+## Docs
+
+https://hypermine.atlassian.net/browse/HSSTUD-64?focusedCommentId=10015
+
 ## Pre-requisites
 
 Node version `v14.20.0`
