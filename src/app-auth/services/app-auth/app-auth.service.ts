@@ -3,6 +3,7 @@ import { CreateAppDto } from '../../dtos/CreateApp.dto';
 import { App  } from 'src/app-auth/schemas/App.schema'; 
 import { AppRepository  } from 'src/app-auth/repositories/App.repository';
 import { uuid } from 'uuidv4';
+import { UpdateAppDto } from '../../dtos/UpdateApp.dto';
 
 @Injectable()
 export class AppAuthService {
@@ -24,5 +25,9 @@ export class AppAuthService {
 
     getAppById (appId: string): Promise<App> {
         return this.appRepository.findOne({ appId })
+    }
+
+    updateAnApp (appId:string, updataAppDto:  UpdateAppDto): Promise<App>{
+        return this.appRepository.findOneAndUpdate({ appId }, updataAppDto);
     }
 }

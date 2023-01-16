@@ -1,10 +1,10 @@
-import { Controller, Get, ValidationPipe, Post, UsePipes, Body, Req, Res, HttpStatus, Param} from '@nestjs/common';
+import { Controller, Get, ValidationPipe, Post, UsePipes, Body, Put, HttpStatus, Param} from '@nestjs/common';
 import { CreateAppDto } from 'src/app-auth/dtos/CreateApp.dto';
 import { AppAuthService } from 'src/app-auth/services/app-auth/app-auth.service';
 import { ApiBadRequestResponse, ApiCreatedResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { App } from '../../schemas/App.schema';  
 import { AppNotFoundException  } from 'src/app-auth/exceptions/AppNotFound.exception';
-
+import { UpdateAppDto } from '../../dtos/UpdateApp.dto'
 @ApiTags('App')
 @Controller('app')
 export class AppAuthController {
@@ -27,13 +27,13 @@ export class AppAuthController {
     @ApiBadRequestResponse({
         description: "Application not found"
     })
-    getAppById(@Param('appId') appId: string): Promise<App> {
-        const app = this.appAuthService.getAppById(appId);
+    async getAppById(@Param('appId') appId: string): Promise<App> {
+        const app = await this.appAuthService.getAppById(appId);
         if(app) return app;
         else throw new AppNotFoundException(); // Custom Exception handling
     }
 
-    @Post('/register')
+    @Post()
     @ApiCreatedResponse({
         description: 'Newly created app',
         type: App
@@ -44,6 +44,23 @@ export class AppAuthController {
     @UsePipes(ValidationPipe)
     register(@Body() createAppDto: CreateAppDto): Promise<App>{
         return this.appAuthService.createAnApp(createAppDto)
+    }
+
+    @Put(':appId')
+    @ApiCreatedResponse({
+        description: 'Updated app',
+        type: App
+    })
+    @ApiBadRequestResponse({
+        description: "Application not found"
+    })
+    @UsePipes(ValidationPipe)
+    async update(@Param('appId') appId: string, @Body() updateAppDto: UpdateAppDto): Promise<App>{
+        const app = await this.appAuthService.getAppById(appId);
+        if(app) {
+            return this.appAuthService.updateAnApp(appId, updateAppDto)
+        }
+        else throw new AppNotFoundException(); 
     }
 
 }

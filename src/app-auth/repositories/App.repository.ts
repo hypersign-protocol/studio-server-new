@@ -21,7 +21,7 @@ export class AppRepository {
     }
 
     async findOneAndUpdate(appFilterQuery:  FilterQuery<App>, app: Partial<App>): Promise<App>{
-        return this.appModel.findOneAndUpdate(appFilterQuery, app);
+        return this.appModel.findOneAndUpdate(appFilterQuery, app, { new: true});
     }
 
     
