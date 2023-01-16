@@ -6,9 +6,9 @@ import { ConfigModule } from '@nestjs/config';
   imports: [
     AppAuthModule,
     ConfigModule.forRoot({
-      envFilePath: '.dev.env'
+      envFilePath: '.dev.env',
     }),
-    MongooseModule.forRoot(process.env.DATABASE_CONNECTION_PATH)
+    MongooseModule.forRoot(process.env.DATABASE_CONNECTION_PATH),
   ],
   controllers: [],
   providers: [],
