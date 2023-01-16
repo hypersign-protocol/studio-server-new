@@ -1,0 +1,36 @@
+{
+    "@context": [
+        "https://www.w3.org/ns/did/v1"
+    ],
+    "id": "did:hid:testnet:z28ScfSszr2zi2Bd7qmNE4mfHX5j8nCwx4DBF6nAUHu4p",
+    "controller": [
+        "did:hid:testnet:z28ScfSszr2zi2Bd7qmNE4mfHX5j8nCwx4DBF6nAUHu4p"
+    ],
+    "alsoKnownAs": [
+        "did:hid:testnet:z28ScfSszr2zi2Bd7qmNE4mfHX5j8nCwx4DBF6nAUHu4p"
+    ],
+    "verificationMethod": [
+        {
+            "id": "did:hid:testnet:z28ScfSszr2zi2Bd7qmNE4mfHX5j8nCwx4DBF6nAUHu4p#key-1",
+            "type": "Ed25519VerificationKey2020",
+            "controller": "did:hid:testnet:z28ScfSszr2zi2Bd7qmNE4mfHX5j8nCwx4DBF6nAUHu4p",
+            "publicKeyMultibase": "z28ScfSszr2zi2Bd7qmNE4mfHX5j8nCwx4DBF6nAUHu4p"
+        }
+    ],
+    "authentication": [
+        "did:hid:testnet:z28ScfSszr2zi2Bd7qmNE4mfHX5j8nCwx4DBF6nAUHu4p#key-1"
+    ],
+    "assertionMethod": [
+        "did:hid:testnet:z28ScfSszr2zi2Bd7qmNE4mfHX5j8nCwx4DBF6nAUHu4p#key-1"
+    ],
+    "keyAgreement": [
+        "did:hid:testnet:z28ScfSszr2zi2Bd7qmNE4mfHX5j8nCwx4DBF6nAUHu4p#key-1"
+    ],
+    "capabilityInvocation": [
+        "did:hid:testnet:z28ScfSszr2zi2Bd7qmNE4mfHX5j8nCwx4DBF6nAUHu4p#key-1"
+    ],
+    "capabilityDelegation": [
+        "did:hid:testnet:z28ScfSszr2zi2Bd7qmNE4mfHX5j8nCwx4DBF6nAUHu4p#key-1"
+    ],
+    "service": []
+}

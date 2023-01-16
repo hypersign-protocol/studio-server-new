@@ -39,7 +39,15 @@ export class App {
     example: 'hs-edv-id-1',
   })
   @Prop()
-  edvId: string;
+  edvId: string;  
+
+  @ApiProperty({
+    description: 'Data Vault Document id',
+    example:'hs-edv-doc-id-1'
+  })
+  @Prop()
+  edvDocId:string
+
 
   @ApiProperty({
     description: 'Keymanagement Service Id',
