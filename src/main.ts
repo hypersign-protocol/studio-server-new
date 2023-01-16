@@ -6,7 +6,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   // Adding prefix to our api
   app.setGlobalPrefix('api/v1');
-  
+
   const config = new DocumentBuilder()
     .setTitle('Entity Studio API Documentation')
     .setDescription('Open API Documentation of the Entity Studio')
