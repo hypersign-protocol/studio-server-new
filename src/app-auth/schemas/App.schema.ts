@@ -1,5 +1,4 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IApp } from '../types/App.types';
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
