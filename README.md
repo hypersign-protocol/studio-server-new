@@ -24,6 +24,23 @@ Added basic project st. with following features
 
 https://hypermine.atlassian.net/browse/HSSTUD-64?focusedCommentId=10015
 
+## Use full commands
+
+```bash
+## Generate a new module 
+nest g module <module-name>
+
+## Generate a controller
+nest g controller <module-name/controllers/controller-name>
+
+## Generate a service
+nest g service <module-name/services/service-name>
+
+## Generate a  middleware
+nest g middleware <module-name/middlewares/middleware-name>
+```
+
+
 ## Pre-requisites
 
 Node version `v14.20.0`
