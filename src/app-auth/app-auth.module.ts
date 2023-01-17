@@ -16,9 +16,23 @@ import { HidWalletModule } from 'src/hid-wallet/hid-wallet.module';
 import { EdvModule } from 'src/edv/edv.module';
 import { EdvService } from 'src/edv/services/edv.service';
 import { AppAuthSecretService } from './services/app-auth-passord.service';
+import { JwtModule } from '@nestjs/jwt';
+import { JwtStrategy } from './strategy/jwt.strategy';
 @Module({
-  imports: [MongooseModule.forFeature([{ name: App.name, schema: AppSchema }]),HidWalletModule,EdvModule],
-  providers: [AppAuthService, AppRepository,HidWalletService,EdvService,AppAuthSecretService],
+  imports: [
+    MongooseModule.forFeature([{ name: App.name, schema: AppSchema }]),
+    HidWalletModule,
+    EdvModule,
+    JwtModule.register({}),
+  ],
+  providers: [
+    AppAuthService,
+    AppRepository,
+    HidWalletService,
+    EdvService,
+    AppAuthSecretService,
+    JwtStrategy,
+  ],
   controllers: [AppAuthController],
 })
 export class AppAuthModule implements NestModule {

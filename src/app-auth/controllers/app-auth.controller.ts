@@ -10,9 +10,11 @@ import {
   Param,
 } from '@nestjs/common';
 import { CreateAppDto } from 'src/app-auth/dtos/create-app.dto';
+import { GenerateTokenDto } from '../dtos/generate-token.dto';
 import { AppAuthService } from 'src/app-auth/services/app-auth.service';
 import {
   ApiBadRequestResponse,
+  ApiForbiddenResponse,
   ApiCreatedResponse,
   ApiResponse,
   ApiTags,
@@ -78,5 +80,16 @@ export class AppAuthController {
     if (app) {
       return this.appAuthService.updateAnApp(appId, updateAppDto);
     } else throw new AppNotFoundException();
+  }
+
+  @Post('token')
+  @ApiResponse({
+    description: 'Generate access token',
+    type: App,
+  })
+  @ApiForbiddenResponse({ description: 'Unauthorized' })
+  @UsePipes(ValidationPipe)
+  generateAccessToken(@Body() generateAccessToken: GenerateTokenDto) {
+    return this.appAuthService.generateAccessToken(generateAccessToken);
   }
 }
