@@ -98,6 +98,13 @@ export class AppAuthService {
     if (!appDetail) {
       throw new UnauthorizedException('access_denied');
     }
+    const compareHash = await this.appAuthSecretService.comapareSecret(
+      appSecret,
+      appDetail.appSecret,
+    );
+    if (!compareHash) {
+      throw new UnauthorizedException('access_denied');
+    }
     const secret = this.config.get('JWT_SECRET');
     const token = await this.jwt.signAsync(payload, {
       expiresIn: '4h',
