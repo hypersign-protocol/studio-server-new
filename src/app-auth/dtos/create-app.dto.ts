@@ -1,4 +1,4 @@
-import { IsNotEmpty } from 'class-validator';
+import { IsNotEmpty, IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateAppDto {
@@ -17,9 +17,7 @@ export class CreateAppDto {
   appName: string;
 }
 
-
-export class CreateAppResponseDto{
-
+export class CreateAppResponseDto {
   @ApiProperty({
     description: 'App ID',
     example: 'demoappid-1',
@@ -37,16 +35,13 @@ export class CreateAppResponseDto{
     description: 'Application Secret',
     example: 'lgaljghlkajg',
   })
-  @IsNotEmpty()
-  appSecret: string;
-
+  @IsOptional()
+  appSecret?: string;
 
   @ApiProperty({
     description: 'Application Wallet Address',
     example: 'hid123...........',
   })
   @IsNotEmpty()
-  walletAddress:string;
-
-
+  walletAddress: string;
 }

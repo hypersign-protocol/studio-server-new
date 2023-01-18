@@ -50,7 +50,9 @@ export class AppAuthController {
   @ApiBadRequestResponse({
     description: 'Application not found',
   })
-  async getAppById(@Param('appId') appId: string): Promise<App> {
+  async getAppById(
+    @Param('appId') appId: string,
+  ): Promise<CreateAppResponseDto> {
     const app = await this.appAuthService.getAppById(appId);
     if (app) return app;
     else throw new AppNotFoundException(); // Custom Exception handling
