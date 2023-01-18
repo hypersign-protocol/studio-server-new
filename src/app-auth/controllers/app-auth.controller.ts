@@ -9,8 +9,14 @@ import {
   HttpStatus,
   Param,
 } from '@nestjs/common';
-import { CreateAppDto, CreateAppResponseDto } from 'src/app-auth/dtos/create-app.dto';
-import { GenerateTokenDto } from '../dtos/generate-token.dto';
+import {
+  CreateAppDto,
+  CreateAppResponseDto,
+} from 'src/app-auth/dtos/create-app.dto';
+import {
+  GenerateTokenDto,
+  GenerateTokenResponseDto,
+} from '../dtos/generate-token.dto';
 import { AppAuthService } from 'src/app-auth/services/app-auth.service';
 import {
   ApiBadRequestResponse,
@@ -89,7 +95,9 @@ export class AppAuthController {
   })
   @ApiForbiddenResponse({ description: 'Unauthorized' })
   @UsePipes(ValidationPipe)
-  generateAccessToken(@Body() generateAccessToken: GenerateTokenDto) {
+  generateAccessToken(
+    @Body() generateAccessToken: GenerateTokenDto,
+  ): Promise<GenerateTokenResponseDto> {
     return this.appAuthService.generateAccessToken(generateAccessToken);
   }
 }

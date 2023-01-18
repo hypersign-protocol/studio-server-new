@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsString, IsNumber } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class GenerateTokenDto {
@@ -26,8 +26,29 @@ export class GenerateTokenDto {
   grantType: string;
 }
 
-export class GetTokenFormat {
+export class GenerateTokenResponseDto {
+  @ApiProperty({
+    description: 'accessToken',
+    example:
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHBJZCI6IjRkNjhmMjNmLTcwZjQtNDFhZC1hMGViLTU3MjA4YTZlOTcxMSIsImFwcFNlY3JldCI6IjNjN2NiNTY1LTZmNWQtNGY2MC1hMjQ2LTZhOGFjYWVhMmY0MyIsImdyYW50VHlwZSI6ImNsaWVudF9jcmVkZW50aWFscyIsImlhdCI6MTY3NDAyMDY3NCwiZXhwIjoxNjc0MDM1MDc0fQ.P-AbheTJMxQNGLTkGWOsnct4M0nKCd-7oUFGqMCpIDM',
+  })
+  @IsNotEmpty()
+  @IsString()
   access_token: string;
+
+  @ApiProperty({
+    description: 'Type of token',
+    example: 'Bearer',
+  })
+  @IsNotEmpty()
+  @IsString()
   tokenType: string;
+
+  @ApiProperty({
+    description: 'Token expiry time',
+    example: 14400,
+  })
+  @IsNotEmpty()
+  @IsNumber()
   expiresIn: number;
 }

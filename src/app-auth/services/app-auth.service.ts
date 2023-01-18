@@ -11,7 +11,10 @@ import * as fs from 'fs';
 import { ConfigService } from '@nestjs/config';
 import { EdvDocsDto } from 'src/edv/dtos/create-edv.dto';
 import { AppAuthSecretService } from './app-auth-passord.service';
-import { GenerateTokenDto, GetTokenFormat } from '../dtos/generate-token.dto';
+import {
+  GenerateTokenDto,
+  GenerateTokenResponseDto,
+} from '../dtos/generate-token.dto';
 import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
@@ -59,13 +62,12 @@ export class AppAuthService {
       edvDocId,
     });
 
-    
     return {
-      appId:appData.appId,
-      appName:appData.appName,
+      appId: appData.appId,
+      appName: appData.appName,
       appSecret,
-      walletAddress:address
-    }
+      walletAddress: address,
+    };
   }
 
   getAllApps(): Promise<App[]> {
@@ -82,7 +84,7 @@ export class AppAuthService {
 
   async generateAccessToken(
     generateTokenDto: GenerateTokenDto,
-  ): Promise<GetTokenFormat> {
+  ): Promise<GenerateTokenResponseDto> {
     const { appId, appSecret, grantType } = generateTokenDto;
     const payload = {
       appId,
