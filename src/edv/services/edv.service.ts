@@ -92,6 +92,20 @@ export class EdvService {
 
 
     async init(edvId?:string) {
+
+        const apiServerKeys = JSON.parse(
+            fs.readFileSync(this.configService.get('EDV_KEY_FILE_PATH')).toString(),
+          );
+          const edvServiceDidDoc = JSON.parse(
+            fs.readFileSync(this.configService.get('EDV_DID_FILE_PATH')).toString(),
+          );
+          await this.setAuthenticationKey(
+            apiServerKeys,
+            edvServiceDidDoc.authentication[0],
+            edvServiceDidDoc.controller[0],
+          );
+
+        
         const config = {
             controller: this.edvCapabilityInvocationKeyController,
             keyAgreementKey: {

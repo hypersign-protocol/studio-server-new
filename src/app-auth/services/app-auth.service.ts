@@ -30,17 +30,7 @@ export class AppAuthService {
 
   async createAnApp(createAppDto: CreateAppDto): Promise<CreateAppResponseDto> {
     const { mnemonic, address } = await this.hidWalletService.generateWallet();
-    const apiServerKeys = JSON.parse(
-      fs.readFileSync(this.config.get('EDV_KEY_FILE_PATH')).toString(),
-    );
-    const edvServiceDidDoc = JSON.parse(
-      fs.readFileSync(this.config.get('EDV_DID_FILE_PATH')).toString(),
-    );
-    await this.edvService.setAuthenticationKey(
-      apiServerKeys,
-      edvServiceDidDoc.authentication[0],
-      edvServiceDidDoc.controller[0],
-    );
+   
     const edvId = 'hs:apiservice:edv:' + uuid();
     await this.edvService.init(edvId);
     const document: EdvDocsDto = {
