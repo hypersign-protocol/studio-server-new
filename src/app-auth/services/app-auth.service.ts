@@ -1,5 +1,5 @@
 import { UnauthorizedException, Injectable } from '@nestjs/common';
-import { CreateAppDto } from '../dtos/create-app.dto';
+import { CreateAppDto, CreateAppResponseDto } from '../dtos/create-app.dto';
 
 import { App } from 'src/app-auth/schemas/app.schema';
 import { AppRepository } from 'src/app-auth/repositories/app.repository';
@@ -25,7 +25,7 @@ export class AppAuthService {
     private readonly jwt: JwtService,
   ) {}
 
-  async createAnApp(createAppDto: CreateAppDto): Promise<App> {
+  async createAnApp(createAppDto: CreateAppDto): Promise<CreateAppResponseDto> {
     const { mnemonic, address } = await this.hidWalletService.generateWallet();
     const apiServerKeys = JSON.parse(
       fs.readFileSync(this.config.get('EDV_KEY_FILE_PATH')).toString(),
@@ -58,8 +58,14 @@ export class AppAuthService {
       kmsId: 'demo-kms-1',
       edvDocId,
     });
-    appData.appSecret = appSecret;
-    return appData;
+
+    
+    return {
+      appId:appData.appId,
+      appName:appData.appName,
+      appSecret,
+      walletAddress:address
+    }
   }
 
   getAllApps(): Promise<App[]> {

@@ -16,3 +16,37 @@ export class CreateAppDto {
   @IsNotEmpty()
   appName: string;
 }
+
+
+export class CreateAppResponseDto{
+
+  @ApiProperty({
+    description: 'App ID',
+    example: 'demoappid-1',
+  })
+  @IsNotEmpty()
+  appId: string;
+
+  @ApiProperty({
+    description: 'Application Name',
+    example: 'demo app',
+  })
+  @IsNotEmpty()
+  appName: string;
+  @ApiProperty({
+    description: 'Application Secret',
+    example: 'lgaljghlkajg',
+  })
+  @IsNotEmpty()
+  appSecret: string;
+
+
+  @ApiProperty({
+    description: 'Application Wallet Address',
+    example: 'hid123...........',
+  })
+  @IsNotEmpty()
+  walletAddress:string;
+
+
+}

@@ -9,7 +9,7 @@ import {
   HttpStatus,
   Param,
 } from '@nestjs/common';
-import { CreateAppDto } from 'src/app-auth/dtos/create-app.dto';
+import { CreateAppDto, CreateAppResponseDto } from 'src/app-auth/dtos/create-app.dto';
 import { GenerateTokenDto } from '../dtos/generate-token.dto';
 import { AppAuthService } from 'src/app-auth/services/app-auth.service';
 import {
@@ -53,13 +53,13 @@ export class AppAuthController {
   @Post()
   @ApiCreatedResponse({
     description: 'Newly created app',
-    type: App,
+    type: CreateAppResponseDto,
   })
   @ApiBadRequestResponse({
     description: 'Application could not be registered',
   })
   @UsePipes(ValidationPipe)
-  register(@Body() createAppDto: CreateAppDto): Promise<App> {
+  register(@Body() createAppDto: CreateAppDto): Promise<CreateAppResponseDto> {
     return this.appAuthService.createAnApp(createAppDto);
   }
 
