@@ -2,11 +2,11 @@ import { UnauthorizedException, Injectable } from '@nestjs/common';
 import { CreateAppDto, CreateAppResponseDto } from '../dtos/create-app.dto';
 
 import { App } from 'src/app-auth/schemas/app.schema';
-import { AppRepository } from 'src/app-auth/repositories/app.repository';
+import { AppRepository } from '../repositories/app.repository';
 import { uuid } from 'uuidv4';
 import { UpdateAppDto } from '../dtos/update-app.dto';
-import { HidWalletService } from 'src/hid-wallet/services/hid-wallet.service';
-import { EdvService } from 'src/edv/services/edv.service';
+import { HidWalletService } from '../../hid-wallet/services/hid-wallet.service';
+import { EdvService } from '../../edv/services/edv.service';
 import * as fs from 'fs';
 import { ConfigService } from '@nestjs/config';
 import { EdvDocsDto } from 'src/edv/dtos/create-edv.dto';
