@@ -43,7 +43,7 @@ export class AppAuthService {
 
     const { id: edvDocId } = await this.edvService.createDocument(document);
 
-    const appData = await this.appRepository.create({
+    const data= await this.appRepository.create({
       ...createAppDto,
       appId: uuid(), // generate app id
       appSecret: hash, // TODO: generate app secret and should be handled like password by hashing and all...
@@ -52,7 +52,9 @@ export class AppAuthService {
       edvDocId,
       walletAddress: address,
     });
-    return appData;
+
+     data.appSecret=appSecret
+     return data
   }
 
   getAllApps(): Promise<App[]> {
@@ -81,7 +83,7 @@ export class AppAuthService {
     // need to find a way to validate appSecret and query db using appId and appSecret
     const appDetail = await this.appRepository.findOne({
       appId,
-    });
+    });    
 
     if (!appDetail) {
       throw new UnauthorizedException('access_denied');

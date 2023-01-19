@@ -14,6 +14,7 @@ import {
 import { CreateAppDto } from 'src/app-auth/dtos/create-app.dto';
 import {
   GenerateTokenDto,
+  GenerateTokenErrorDto,
   GenerateTokenResponseDto,
 } from '../dtos/generate-token.dto';
 import { AppAuthService } from 'src/app-auth/services/app-auth.service';
@@ -23,16 +24,21 @@ import {
   ApiCreatedResponse,
   ApiResponse,
   ApiTags,
+  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { App } from '../schemas/app.schema';
 import { AppNotFoundException } from 'src/app-auth/exceptions/app-not-found.exception';
 import { UpdateAppDto } from '../dtos/update-app.dto';
 import { MongooseClassSerializerInterceptor } from '../../utils';
+
+
+
+
 @ApiTags('App')
 @Controller('app')
 export class AppAuthController {
   constructor(private readonly appAuthService: AppAuthService) {}
-  @UseInterceptors(MongooseClassSerializerInterceptor(App))
+  @UseInterceptors(MongooseClassSerializerInterceptor(App,{}))
   @Get()
   @ApiResponse({
     description: 'List of apps',
@@ -41,7 +47,7 @@ export class AppAuthController {
   getApps(): Promise<App[]> {
     return this.appAuthService.getAllApps();
   }
-  @UseInterceptors(MongooseClassSerializerInterceptor(App))
+  @UseInterceptors(MongooseClassSerializerInterceptor(App,{excludePrefixes:['appSecret',"_","__"]}))
   @Get(':appId')
   @ApiResponse({
     description: 'Fetch App by Id',
@@ -56,7 +62,7 @@ export class AppAuthController {
     else throw new AppNotFoundException(); // Custom Exception handling
   }
   @Post()
-  @UseInterceptors(MongooseClassSerializerInterceptor(App))
+  @UseInterceptors(MongooseClassSerializerInterceptor(App,{excludePrefixes:["_","__"]}))
   @ApiCreatedResponse({
     description: 'Newly created app',
     type: App,
@@ -69,7 +75,7 @@ export class AppAuthController {
     return this.appAuthService.createAnApp(createAppDto);
   }
 
-  @UseInterceptors(MongooseClassSerializerInterceptor(App))
+  @UseInterceptors(MongooseClassSerializerInterceptor(App,{excludePrefixes:["appSecret","_","__"]}))
   @Put(':appId')
   @ApiCreatedResponse({
     description: 'Updated app',
@@ -92,9 +98,10 @@ export class AppAuthController {
   @Post('auth')
   @ApiResponse({
     description: 'Generate access token',
-    type: App,
+    type:GenerateTokenResponseDto
+     
   })
-  @ApiForbiddenResponse({ description: 'Unauthorized' })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' ,type:GenerateTokenErrorDto })
   @UsePipes(ValidationPipe)
   generateAccessToken(
     @Body() generateAccessToken: GenerateTokenDto,

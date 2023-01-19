@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, IsNumber } from 'class-validator';
+import { IsNotEmpty, IsString, IsNumber, isNumber } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
 export class GenerateTokenDto {
@@ -26,6 +26,33 @@ export class GenerateTokenDto {
   grantType: string;
 }
 
+
+
+
+export class GenerateTokenErrorDto{
+  @ApiProperty({
+    description:"statusCode",
+    example:401
+  })
+  @IsNumber()
+  statusCode:number
+
+  @ApiProperty({
+    description:"message",
+    example:"access_denied"
+  })
+  @IsString()
+  message:string
+
+  @ApiProperty({
+    description:"Unauthorized",
+    example:"Unauthorized"
+  })
+  @IsString()
+  error:"Unauthorized"
+
+
+}
 export class GenerateTokenResponseDto {
   @ApiProperty({
     description: 'accessToken',
