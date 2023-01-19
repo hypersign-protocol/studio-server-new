@@ -10,7 +10,7 @@ import { AppAuthSecretService } from './app-auth/services/app-auth-passord.servi
   imports: [
     AppAuthModule,
     ConfigModule.forRoot({
-      envFilePath: '.dev.env',
+      envFilePath: '',
       isGlobal:true
     }),
     MongooseModule.forRoot(process.env.DATABASE_CONNECTION_PATH),
