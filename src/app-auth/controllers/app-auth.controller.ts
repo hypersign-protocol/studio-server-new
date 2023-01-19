@@ -19,7 +19,6 @@ import {
 import { AppAuthService } from 'src/app-auth/services/app-auth.service';
 import {
   ApiBadRequestResponse,
-  ApiUnauthorizedResponse,
   ApiCreatedResponse,
   ApiResponse,
   ApiTags,
