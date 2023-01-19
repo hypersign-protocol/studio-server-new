@@ -24,19 +24,20 @@ import {
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-import { App } from '../schemas/app.schema';
+import { App, createAppResponse } from '../schemas/app.schema';
 import { AppNotFoundException } from 'src/app-auth/exceptions/app-not-found.exception';
 import { UpdateAppDto } from '../dtos/update-app.dto';
 import { MongooseClassSerializerInterceptor } from '../../utils';
-
-
-
 
 @ApiTags('App')
 @Controller('app')
 export class AppAuthController {
   constructor(private readonly appAuthService: AppAuthService) {}
-  @UseInterceptors(MongooseClassSerializerInterceptor(App, {excludePrefixes:['appSecret',"_","__"]}))
+  @UseInterceptors(
+    MongooseClassSerializerInterceptor(App, {
+      excludePrefixes: ['appSecret', '_', '__'],
+    }),
+  )
   @Get('user/:userId')
   @ApiResponse({
     description: 'List of apps',
@@ -46,7 +47,11 @@ export class AppAuthController {
     const appList = this.appAuthService.getAllApps(userId);
     if (appList) return appList;
   }
-  @UseInterceptors(MongooseClassSerializerInterceptor(App,{excludePrefixes:['appSecret',"_","__"]}))
+  @UseInterceptors(
+    MongooseClassSerializerInterceptor(App, {
+      excludePrefixes: ['appSecret', '_', '__'],
+    }),
+  )
   @Get(':appId')
   @ApiResponse({
     description: 'Fetch App by Id',
@@ -61,20 +66,28 @@ export class AppAuthController {
     else throw new AppNotFoundException(); // Custom Exception handling
   }
   @Post()
-  @UseInterceptors(MongooseClassSerializerInterceptor(App,{excludePrefixes:["_","__"]}))
+  @UseInterceptors(
+    MongooseClassSerializerInterceptor(createAppResponse, {
+      excludePrefixes: ['_', '__'],
+    }),
+  )
   @ApiCreatedResponse({
     description: 'Newly created app',
-    type: App,
+    type: createAppResponse,
   })
   @ApiBadRequestResponse({
     description: 'Application could not be registered',
   })
   @UsePipes(ValidationPipe)
-  register(@Body() createAppDto: CreateAppDto): Promise<App> {
+  register(@Body() createAppDto: CreateAppDto): Promise<createAppResponse> {
     return this.appAuthService.createAnApp(createAppDto);
   }
 
-  @UseInterceptors(MongooseClassSerializerInterceptor(App,{excludePrefixes:["appSecret","_","__"]}))
+  @UseInterceptors(
+    MongooseClassSerializerInterceptor(App, {
+      excludePrefixes: ['appSecret', '_', '__'],
+    }),
+  )
   @Put(':appId')
   @ApiResponse({
     description: 'Updated app',
@@ -98,10 +111,12 @@ export class AppAuthController {
   @HttpCode(200)
   @ApiResponse({
     description: 'Generate access token',
-    type:GenerateTokenResponse
-     
+    type: GenerateTokenResponse,
   })
-  @ApiUnauthorizedResponse({ description: 'Unauthorized' ,type:GenerateTokenError })
+  @ApiUnauthorizedResponse({
+    description: 'Unauthorized',
+    type: GenerateTokenError,
+  })
   @UsePipes(ValidationPipe)
   generateAccessToken(
     @Body() generateAccessToken: GenerateTokenDto,

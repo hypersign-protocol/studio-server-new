@@ -1,17 +1,13 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, ApiHideProperty } from '@nestjs/swagger';
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { Document } from 'mongoose';
+import { Document } from 'mongoose';
 import { Exclude } from 'class-transformer';
-import { IsOptional } from 'class-validator';
 
 export type AppDocument = App & Document;
 
 @Schema()
 export class App {
-  @ApiProperty({
-    description: 'User DID',
-    example: 'did:hid:testnet:123123',
-  })
+  @ApiHideProperty()
   @Prop()
   @Exclude()
   userId: string;
@@ -30,10 +26,7 @@ export class App {
   @Prop()
   appId: string;
 
-  @ApiProperty({
-    description: 'Application Secret',
-    example: 'app-secret-1',
-  })
+  @ApiHideProperty()
   @Prop()
   appSecret: string;
 
@@ -43,28 +36,30 @@ export class App {
   })
   @Prop()
   edvId: string;
-
-  @ApiProperty({
-    description: 'Data Vault Document id',
-    example: 'hs-edv-doc-id-1',
-  })
+  @ApiHideProperty()
   @Prop()
   @Exclude()
   edvDocId: string;
-
-  @ApiProperty({
-    description: 'Keymanagement Service Id',
-    example: 'hs-kms-id-1',
-  })
+  @ApiHideProperty()
   @Prop()
   @Exclude()
   kmsId: string;
+
   @ApiProperty({
     description: 'hid wallet address',
     example: 'hid17wgv5xqdlldvjp3ly4rsl4s48xls0ut4rtvupt',
   })
   @Prop()
   walletAddress: string;
+}
+
+export class createAppResponse extends App {
+  @ApiProperty({
+    description: 'Application Secret',
+    example: 'app-secret-1',
+  })
+  @Prop()
+  appSecret: string;
 }
 
 export const AppSchema = SchemaFactory.createForClass(App);

@@ -1,7 +1,7 @@
 import { UnauthorizedException, Injectable } from '@nestjs/common';
 import { CreateAppDto } from '../dtos/create-app.dto';
 
-import { App } from 'src/app-auth/schemas/app.schema';
+import { App, createAppResponse } from 'src/app-auth/schemas/app.schema';
 import { AppRepository } from '../repositories/app.repository';
 import { uuid } from 'uuidv4';
 import { UpdateAppDto } from '../dtos/update-app.dto';
@@ -25,7 +25,7 @@ export class AppAuthService {
     private readonly jwt: JwtService,
   ) {}
 
-  async createAnApp(createAppDto: CreateAppDto): Promise<App> {
+  async createAnApp(createAppDto: CreateAppDto): Promise<createAppResponse> {
     const { mnemonic, address } = await this.hidWalletService.generateWallet();
 
     const edvId = 'hs:apiservice:edv:' + uuid();
