@@ -1,5 +1,5 @@
 import { UnauthorizedException, Injectable } from '@nestjs/common';
-import { CreateAppDto, CreateAppResponseDto } from '../dtos/create-app.dto';
+import { CreateAppDto } from '../dtos/create-app.dto';
 
 import { App } from 'src/app-auth/schemas/app.schema';
 import { AppRepository } from '../repositories/app.repository';
@@ -28,7 +28,7 @@ export class AppAuthService {
     private readonly jwt: JwtService,
   ) {}
 
-  async createAnApp(createAppDto: CreateAppDto): Promise<CreateAppResponseDto> {
+  async createAnApp(createAppDto: CreateAppDto): Promise<App> {
     const { mnemonic, address } = await this.hidWalletService.generateWallet();
 
     const edvId = 'hs:apiservice:edv:' + uuid();
@@ -50,32 +50,18 @@ export class AppAuthService {
       edvId, // generate edvId  by called hypersign edv service
       kmsId: 'demo-kms-1',
       edvDocId,
-    });
-
-    return {
-      appId: appData.appId,
-      appName: appData.appName,
-      appSecret,
       walletAddress: address,
-    };
+    });
+    return appData;
   }
 
   getAllApps(): Promise<App[]> {
     return this.appRepository.find({});
   }
 
-  async getAppById(appId: string): Promise<CreateAppResponseDto> {
+  async getAppById(appId: string): Promise<App> {
     const appDetail = await this.appRepository.findOne({ appId });
-    
-    await this.edvService.init(appDetail.edvId);
-
-    const docId = appDetail['edvDocId'];
-    const edvDetail = await this.edvService.getDecryptedDocument(docId);
-    return {
-      appId: appDetail.appId,
-      appName: appDetail.appName,
-      walletAddress: edvDetail.address,
-    };
+    return appDetail;
   }
 
   updateAnApp(appId: string, updataAppDto: UpdateAppDto): Promise<App> {
@@ -84,7 +70,7 @@ export class AppAuthService {
 
   async generateAccessToken(
     generateTokenDto: GenerateTokenDto,
-  ): Promise<GenerateTokenResponseDto> {
+  ): Promise<{ access_token; expiresIn; tokenType }> {
     const { appId, appSecret, grantType } = generateTokenDto;
     const payload = {
       appId,
