@@ -4,7 +4,7 @@ import {
   PlainLiteralObject,
   Type,
 } from '@nestjs/common';
-import { ClassTransformOptions, plainToClass } from 'class-transformer';
+import { ClassTransformOptions, Exclude, plainToClass } from 'class-transformer';
 import { Document } from 'mongoose';
 
 export const existDir = (dirPath) => {
@@ -35,13 +35,14 @@ export const deleteFile = (filePath) => {
 };
 export function MongooseClassSerializerInterceptor(
   classToIntercept: Type,
+  options:ClassTransformOptions
 ): typeof ClassSerializerInterceptor {
   return class Interceptor extends ClassSerializerInterceptor {
     private changePlainObjectToClass(document: PlainLiteralObject) {
       if (!(document instanceof Document)) {
         return document;
       }
-      return plainToClass(classToIntercept, document.toJSON());
+      return plainToClass(classToIntercept, document.toJSON(),options);
     }
     private prepareResponse(
       response: PlainLiteralObject | PlainLiteralObject[],
@@ -53,8 +54,9 @@ export function MongooseClassSerializerInterceptor(
     }
     serialize(
       response: PlainLiteralObject | PlainLiteralObject[],
-      options: ClassTransformOptions,
+      options: ClassTransformOptions
     ) {
+           
       return super.serialize(this.prepareResponse(response), options);
     }
   };

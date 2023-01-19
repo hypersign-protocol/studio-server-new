@@ -1,7 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import mongoose, { Document } from 'mongoose';
 import { Exclude } from 'class-transformer';
+import { IsOptional } from 'class-validator';
 
 export type AppDocument = App & Document;
 
@@ -33,10 +34,11 @@ export class App {
     description: 'Application Secret',
     example: 'app-secret-1',
   })
+
   @Prop()
-  @Exclude()
   appSecret: string;
 
+ 
   @ApiProperty({
     description: 'Data Vault Id',
     example: 'hs-edv-id-1',
@@ -44,17 +46,18 @@ export class App {
   @Prop()
   edvId: string;
 
+
   @ApiProperty({
     description: 'Data Vault Document id',
     example: 'hs-edv-doc-id-1',
   })
   @Prop()
-  @Exclude()
   edvDocId: string;
 
   @ApiProperty({
     description: 'Keymanagement Service Id',
     example: 'hs-kms-id-1',
+
   })
   @Prop()
   @Exclude()

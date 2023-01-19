@@ -1,5 +1,6 @@
 import { IsNotEmpty, IsOptional } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
+import mongoose from 'mongoose';
 
 export class CreateAppDto {
   @ApiProperty({
