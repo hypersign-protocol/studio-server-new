@@ -8,6 +8,7 @@ import {
   Put,
   Param,
   UseInterceptors,
+  HttpCode,
 } from '@nestjs/common';
 import { CreateAppDto } from 'src/app-auth/dtos/create-app.dto';
 import {
@@ -18,7 +19,7 @@ import {
 import { AppAuthService } from 'src/app-auth/services/app-auth.service';
 import {
   ApiBadRequestResponse,
-  ApiForbiddenResponse,
+  ApiUnauthorizedResponse,
   ApiCreatedResponse,
   ApiResponse,
   ApiTags,
@@ -37,13 +38,15 @@ import { MongooseClassSerializerInterceptor } from '../../utils';
 export class AppAuthController {
   constructor(private readonly appAuthService: AppAuthService) {}
   @UseInterceptors(MongooseClassSerializerInterceptor(App,{}))
-  @Get()
+  @Get(':userId')
+
   @ApiResponse({
     description: 'List of apps',
     type: [App],
   })
-  getApps(): Promise<App[]> {
-    return this.appAuthService.getAllApps();
+  getApps(@Param('userId') userId: string): Promise<App[]> {
+    const appList = this.appAuthService.getAllApps(userId);
+    if (appList) return appList;
   }
   @UseInterceptors(MongooseClassSerializerInterceptor(App,{excludePrefixes:['appSecret',"_","__"]}))
   @Get(':appId')
@@ -75,7 +78,7 @@ export class AppAuthController {
 
   @UseInterceptors(MongooseClassSerializerInterceptor(App,{excludePrefixes:["appSecret","_","__"]}))
   @Put(':appId')
-  @ApiCreatedResponse({
+  @ApiResponse({
     description: 'Updated app',
     type: App,
   })
@@ -94,6 +97,7 @@ export class AppAuthController {
   }
 
   @Post('auth')
+  @HttpCode(200)
   @ApiResponse({
     description: 'Generate access token',
     type:GenerateTokenResponseDto
