@@ -29,7 +29,7 @@ export class GenerateTokenDto {
 
 
 
-export class GenerateTokenErrorDto{
+export class GenerateTokenError{
   @ApiProperty({
     description:"statusCode",
     example:401
@@ -53,7 +53,7 @@ export class GenerateTokenErrorDto{
 
 
 }
-export class GenerateTokenResponseDto {
+export class GenerateTokenResponse {
   @ApiProperty({
     description: 'accessToken',
     example:

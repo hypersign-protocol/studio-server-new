@@ -13,8 +13,8 @@ import {
 import { CreateAppDto } from 'src/app-auth/dtos/create-app.dto';
 import {
   GenerateTokenDto,
-  GenerateTokenErrorDto,
-  GenerateTokenResponseDto,
+  GenerateTokenError,
+  GenerateTokenResponse,
 } from '../dtos/generate-token.dto';
 import { AppAuthService } from 'src/app-auth/services/app-auth.service';
 import {
@@ -98,10 +98,10 @@ export class AppAuthController {
   @HttpCode(200)
   @ApiResponse({
     description: 'Generate access token',
-    type:GenerateTokenResponseDto
+    type:GenerateTokenResponse
      
   })
-  @ApiUnauthorizedResponse({ description: 'Unauthorized' ,type:GenerateTokenErrorDto })
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' ,type:GenerateTokenError })
   @UsePipes(ValidationPipe)
   generateAccessToken(
     @Body() generateAccessToken: GenerateTokenDto,
