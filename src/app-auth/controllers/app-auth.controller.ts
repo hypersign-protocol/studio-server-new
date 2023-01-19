@@ -37,9 +37,8 @@ import { MongooseClassSerializerInterceptor } from '../../utils';
 @Controller('app')
 export class AppAuthController {
   constructor(private readonly appAuthService: AppAuthService) {}
-  @UseInterceptors(MongooseClassSerializerInterceptor(App,{}))
-  @Get(':userId')
-
+  @UseInterceptors(MongooseClassSerializerInterceptor(App, {}))
+  @Get('user/:userId')
   @ApiResponse({
     description: 'List of apps',
     type: [App],

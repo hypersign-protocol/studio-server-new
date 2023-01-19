@@ -34,11 +34,9 @@ export class App {
     description: 'Application Secret',
     example: 'app-secret-1',
   })
-
   @Prop()
   appSecret: string;
 
- 
   @ApiProperty({
     description: 'Data Vault Id',
     example: 'hs-edv-id-1',
@@ -46,18 +44,17 @@ export class App {
   @Prop()
   edvId: string;
 
-
   @ApiProperty({
     description: 'Data Vault Document id',
     example: 'hs-edv-doc-id-1',
   })
   @Prop()
+  @Exclude()
   edvDocId: string;
 
   @ApiProperty({
     description: 'Keymanagement Service Id',
     example: 'hs-kms-id-1',
-
   })
   @Prop()
   @Exclude()
