@@ -6,16 +6,11 @@ import {
   UsePipes,
   Body,
   Put,
-  HttpStatus,
   Param,
-  ClassSerializerInterceptor,
   UseInterceptors,
 } from '@nestjs/common';
 import { CreateAppDto } from 'src/app-auth/dtos/create-app.dto';
-import {
-  GenerateTokenDto,
-  GenerateTokenResponseDto,
-} from '../dtos/generate-token.dto';
+import { GenerateTokenDto } from '../dtos/generate-token.dto';
 import { AppAuthService } from 'src/app-auth/services/app-auth.service';
 import {
   ApiBadRequestResponse,
@@ -98,7 +93,7 @@ export class AppAuthController {
   @UsePipes(ValidationPipe)
   generateAccessToken(
     @Body() generateAccessToken: GenerateTokenDto,
-  ): Promise<GenerateTokenResponseDto> {
+  ): Promise<{ access_token; expiresIn; tokenType }> {
     return this.appAuthService.generateAccessToken(generateAccessToken);
   }
 }
