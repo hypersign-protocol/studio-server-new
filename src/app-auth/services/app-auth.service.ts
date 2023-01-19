@@ -39,7 +39,6 @@ export class AppAuthService {
     const hash = await this.appAuthSecretService.hashSecrets(appSecret);
 
     const { id: edvDocId } = await this.edvService.createDocument(document);
-
     const appData = await this.appRepository.create({
       ...createAppDto,
       appId: uuid(), // generate app id
@@ -52,8 +51,8 @@ export class AppAuthService {
     return appData;
   }
 
-  getAllApps(): Promise<App[]> {
-    return this.appRepository.find({});
+  getAllApps(userId: string): Promise<App[]> {
+    return this.appRepository.find({ userId });
   }
 
   async getAppById(appId: string): Promise<App> {
@@ -74,15 +73,13 @@ export class AppAuthService {
       appSecret,
       grantType,
     };
-
-    // need to find a way to validate appSecret and query db using appId and appSecret
     const appDetail = await this.appRepository.findOne({
       appId,
     });
-
     if (!appDetail) {
       throw new UnauthorizedException('access_denied');
     }
+    // compare appSecret sent by user and appSecret hash stored in db
     const compareHash = await this.appAuthSecretService.comapareSecret(
       appSecret,
       appDetail.appSecret,
