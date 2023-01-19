@@ -11,10 +11,7 @@ import * as fs from 'fs';
 import { ConfigService } from '@nestjs/config';
 import { EdvDocsDto } from 'src/edv/dtos/create-edv.dto';
 import { AppAuthSecretService } from './app-auth-passord.service';
-import {
-  GenerateTokenDto,
-  GenerateTokenResponseDto,
-} from '../dtos/generate-token.dto';
+import { GenerateTokenDto } from '../dtos/generate-token.dto';
 import { JwtService } from '@nestjs/jwt';
 
 @Injectable()

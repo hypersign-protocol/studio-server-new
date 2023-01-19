@@ -6,9 +6,7 @@ import {
   UsePipes,
   Body,
   Put,
-  HttpStatus,
   Param,
-  ClassSerializerInterceptor,
   UseInterceptors,
 } from '@nestjs/common';
 import { CreateAppDto } from 'src/app-auth/dtos/create-app.dto';
@@ -105,7 +103,7 @@ export class AppAuthController {
   @UsePipes(ValidationPipe)
   generateAccessToken(
     @Body() generateAccessToken: GenerateTokenDto,
-  ): Promise<GenerateTokenResponseDto> {
+  ): Promise<{ access_token; expiresIn; tokenType }> {
     return this.appAuthService.generateAccessToken(generateAccessToken);
   }
 }
