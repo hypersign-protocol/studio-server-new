@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { CreateDidDto } from '../dto/create-did.dto';
 import { UpdateDidDto } from '../dto/update-did.dto';
-// const { HypersignDid } = require('hs-ssi-sdk');
 import { HypersignDID } from 'hs-ssi-sdk';
 import { DidRepository } from '../repository/did.repository';
 import { EdvService } from 'src/edv/services/edv.service';
@@ -14,20 +13,22 @@ export class DidService {
   ) {}
 
   async create(createDidDto: CreateDidDto, appDetail) {
+    //: Promise<{}> { // write response format
     const nameSpace = createDidDto.method;
     const { edvId, edvDocId } = appDetail;
     await this.edvService.init(edvId);
     const docs = await this.edvService.getDecryptedDocument(edvDocId);
-    console.log(docs.mnemonic);
-    
-    const seed=Bip39.decode(docs.mnemonic)
-    const hypersignDid = new HypersignDID({namespace:'testnet'});
-    const {publicKeyMultibase}=await hypersignDid.generateKeys({seed});
-    const did=await hypersignDid.generate({publicKeyMultibase})
-    
-console.log(did);
+    const seed = Bip39.decode(docs.mnemonic);
+    const hypersignDid = new HypersignDID({ namespace: nameSpace });
+    const { publicKeyMultibase } = await hypersignDid.generateKeys({ seed });
+    const didDoc = await hypersignDid.generate({ publicKeyMultibase });
+    this.didRepositiory.create({
+      did: didDoc.id,
+      appId: appDetail.appId,
+      status: 'initiated',
+    });
 
-    return 'This action adds a new did';
+    return didDoc;
   }
 
   findAll() {
