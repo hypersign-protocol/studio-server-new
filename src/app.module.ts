@@ -9,6 +9,7 @@ import { AllExceptionsFilter } from './utils';
 import { APP_FILTER } from '@nestjs/core';
 
 import { AppAuthSecretService } from './app-auth/services/app-auth-passord.service';
+import { DidModule } from './did/did.module';
 @Module({
   imports: [
     AppAuthModule,
@@ -19,6 +20,7 @@ import { AppAuthSecretService } from './app-auth/services/app-auth-passord.servi
     MongooseModule.forRoot(process.env.DATABASE_CONNECTION_PATH),
     HidWalletModule,
     EdvModule,
+    DidModule,
   ],
   controllers: [],
   providers: [ AppAuthSecretService,{ provide: APP_FILTER, useClass: AllExceptionsFilter }],
