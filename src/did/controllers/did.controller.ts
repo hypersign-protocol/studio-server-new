@@ -8,13 +8,18 @@ import {
   Delete,
   UseGuards,
   Req,
+  UseFilters,
 } from '@nestjs/common';
 import { DidService } from '../services/did.service';
 import { CreateDidDto } from '../dto/create-did.dto';
 import { UpdateDidDto } from '../dto/update-did.dto';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiHeader, ApiCreatedResponse } from '@nestjs/swagger';
+import { ApiHeader, ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
 import { Did } from '../schemas/did.schema';
+import { AllExceptionsFilter } from '../../utils';
+import { SignDidDto } from '../dto/sign-did.dto';
+@UseFilters(AllExceptionsFilter)
+@ApiTags('Did')
 @Controller('did')
 export class DidController {
   constructor(private readonly didService: DidService) {}
@@ -25,7 +30,7 @@ export class DidController {
   @UseGuards(AuthGuard('jwt'))
   @Post()
   @ApiCreatedResponse({
-    description: 'Newly created app',
+    description: 'Newly created did',
     type: Did,
   })
   create(@Body() createDidDto: CreateDidDto, @Req() req: any) {
@@ -33,14 +38,30 @@ export class DidController {
     return this.didService.create(createDidDto, appDetail);
   }
 
+  @ApiHeader({
+    description: `Please enter token in following format: Bearer <JWT>`,
+    name: 'Authorization',
+  })
+  @UseGuards(AuthGuard('jwt'))
   @Get()
-  findAll() {
-    return this.didService.findAll();
+  @ApiCreatedResponse({
+    description: 'Newly created did',
+    type: Did,
+  })
+  getDidList(@Req() req: any): Promise<Did[]> {
+    const appDetail = req.user;
+    return this.didService.getDidList(appDetail);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.didService.findOne(+id);
+  @ApiHeader({
+    description: `Please enter token in following format: Bearer <JWT>`,
+    name: 'Authorization',
+  })
+  @UseGuards(AuthGuard('jwt'))
+  @Get('/sign')
+  signDid(@Req() req: any, @Body() signDidDto: SignDidDto) {
+    const appDetail = req.user;
+    return this.didService.signDid(appDetail, signDidDto);
   }
 
   @Patch(':id')
