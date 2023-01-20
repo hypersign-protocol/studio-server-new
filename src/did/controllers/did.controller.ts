@@ -14,20 +14,24 @@ import { DidService } from '../services/did.service';
 import { CreateDidDto } from '../dto/create-did.dto';
 import { UpdateDidDto } from '../dto/update-did.dto';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiHeader, ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
+
+import { ApiHeader, ApiCreatedResponse, ApiTags, ApiOperation, ApiBearerAuth, ApiSecurity } from '@nestjs/swagger';
+
 import { Did } from '../schemas/did.schema';
 import { AllExceptionsFilter } from '../../utils';
 import { SignDidDto } from '../dto/sign-did.dto';
 @UseFilters(AllExceptionsFilter)
 @ApiTags('Did')
 @Controller('did')
+@ApiTags('Did')
+
 export class DidController {
   constructor(private readonly didService: DidService) {}
-  @ApiHeader({
-    description: `Please enter token in following format: Bearer <JWT>`,
-    name: 'Authorization',
-  })
+ 
+
+  @ApiBearerAuth("Authorization")
   @UseGuards(AuthGuard('jwt'))
+
   @Post()
   @ApiCreatedResponse({
     description: 'Newly created did',
@@ -35,6 +39,7 @@ export class DidController {
   })
   create(@Body() createDidDto: CreateDidDto, @Req() req: any) {
     const appDetail = req.user;
+    
     return this.didService.create(createDidDto, appDetail);
   }
 

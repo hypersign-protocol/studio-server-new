@@ -54,8 +54,11 @@ export class AppAuthController {
     description: 'List of apps',
     type: [App],
   })
-  getApps(@User() userId): Promise<App[]> {
-    const appList = this.appAuthService.getAllApps(userId);
+  async getApps(@User() userId): Promise<App[]> {
+    const appList =await this.appAuthService.getAllApps(userId);
+    if(appList.length===0){
+      throw new AppNotFoundException()
+    }
     if (appList) return appList;
   }
   @UseInterceptors(
