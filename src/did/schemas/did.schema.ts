@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
+import { IsOptional } from 'class-validator';
 
 export type DidDocument = Did & Document;
 
@@ -10,8 +11,9 @@ export class Did {
     description: 'Status of did',
     example: 'Registered',
   })
+  @IsOptional()
   @Prop()
-  status: string;
+  status?: string;
 
   @ApiProperty({
     description: 'Id of to which particular did is issued',

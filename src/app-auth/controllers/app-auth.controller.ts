@@ -28,13 +28,13 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { App, createAppResponse } from '../schemas/app.schema';
-import {  AppNotFoundException } from 'src/app-auth/exceptions/app-not-found.exception';
+import { AppNotFoundException } from 'src/app-auth/exceptions/app-not-found.exception';
 import { UpdateAppDto } from '../dtos/update-app.dto';
 import { MongooseClassSerializerInterceptor } from '../../utils';
 import { AllExceptionsFilter } from '../../utils';
 import { AppError } from '../dtos/fetch-app.dto';
 
-@UseFilters( AllExceptionsFilter )
+@UseFilters(AllExceptionsFilter)
 @ApiTags('App')
 @Controller('app')
 export class AppAuthController {
@@ -45,8 +45,9 @@ export class AppAuthController {
     }),
   )
   @ApiHeader({
-    name:'userId',
-    description: 'Provide userId to get list of all the apps created by the userId'
+    name: 'userId',
+    description:
+      'Provide userId to get list of all the apps created by the userId',
   })
   @Get()
   @ApiResponse({
@@ -65,12 +66,9 @@ export class AppAuthController {
       excludePrefixes: ['appSecret', '_', '__'],
     }),
   )
-
-
-
   @ApiHeader({
-    name:'userId',
-    description: 'Provide userId to get app details'
+    name: 'userId',
+    description: 'Provide userId to get app details',
   })
   @Get(':appId')
   @ApiResponse({
@@ -78,10 +76,9 @@ export class AppAuthController {
     type: App,
   })
   @ApiBadRequestResponse({
-    status:400,
-    description:"App not found",
-    type:AppError
-    
+    status: 400,
+    description: 'App not found',
+    type: AppError,
   })
   async getAppById(
     @User() userId,
@@ -92,10 +89,9 @@ export class AppAuthController {
     else throw new AppNotFoundException(); // Custom Exception handling
   }
 
-
   @ApiHeader({
-    name:'userId',
-    description: 'Provide UserId to create App'
+    name: 'userId',
+    description: 'Provide UserId to create App',
   })
   @Post()
   @UseInterceptors(
@@ -109,7 +105,7 @@ export class AppAuthController {
   })
   @ApiBadRequestResponse({
     description: 'Application could not be registered',
-    type:AppError
+    type: AppError,
   })
   @UsePipes(ValidationPipe)
   register(
@@ -124,14 +120,9 @@ export class AppAuthController {
       excludePrefixes: ['appSecret', '_', '__'],
     }),
   )
-
-
-
-
-
   @ApiHeader({
-    name:'userId',
-    description: 'Provide userId to get app details'
+    name: 'userId',
+    description: 'Provide userId to get app details',
   })
   @Put(':appId')
   @ApiResponse({
@@ -140,8 +131,7 @@ export class AppAuthController {
   })
   @ApiBadRequestResponse({
     description: 'Application not found',
-    type:AppError
-    
+    type: AppError,
   })
   @UsePipes(ValidationPipe)
   async update(
@@ -156,8 +146,8 @@ export class AppAuthController {
   }
 
   @ApiHeader({
-    name:'userId',
-    description: 'Provide userId to get app details'
+    name: 'userId',
+    description: 'Provide userId to get app details',
   })
   @Post('oauth')
   @HttpCode(200)
