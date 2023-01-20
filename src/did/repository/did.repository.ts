@@ -1,8 +1,8 @@
-import { Did, DidDocument } from '../schemas/did.schema';
+import { Did, DidDocument ,DidDocumentMetaData,DidMetaData} from '../schemas/did.schema';
 import { FilterQuery, Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { Injectable } from '@nestjs/common';
-
+ 
 @Injectable()
 export class DidRepository {
   constructor(
@@ -26,5 +26,38 @@ export class DidRepository {
     did: Partial<Did>,
   ): Promise<Did> {
     return this.didModel.findOneAndUpdate(didFilterQuery, did, { new: true });
+  }
+}
+
+
+
+@Injectable()
+export class DidMetaDataRepo {
+  constructor(
+    @InjectModel(DidMetaData.name) private readonly didModel: Model<DidDocumentMetaData>,
+  ) {}
+
+  async findOne(didFilterQuery: FilterQuery<DidMetaData>): Promise<DidMetaData> {
+    return this.didModel.findOne(didFilterQuery);
+  }
+  async find(didFilterQuery: FilterQuery<DidMetaData>): Promise<DidMetaData[]> {
+    return this.didModel.find(didFilterQuery);
+  }
+
+  async create(did: DidMetaData): Promise<DidMetaData> {
+    const newDid = new this.didModel(did);
+    return newDid.save();
+  }
+
+  async findAndReplace(didFilterQuery: FilterQuery<DidMetaData>,
+    did: DidMetaData): Promise<DidMetaData> {     
+    return  this.didModel.findOneAndReplace(didFilterQuery,did,{upsert:true})
+  }
+
+  async findOneAndUpdate(
+    didFilterQuery: FilterQuery<DidMetaData>,
+    did: Partial<DidMetaData>,
+  ): Promise<Did> {
+    return this.didModel.findOneAndUpdate(didFilterQuery, did, { upsert: true })
   }
 }
