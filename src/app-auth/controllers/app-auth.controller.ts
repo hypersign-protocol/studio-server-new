@@ -10,6 +10,7 @@ import {
   UseInterceptors,
   HttpCode,
 } from '@nestjs/common';
+import { User } from '../decorator/user.decorator';
 import { CreateAppDto } from 'src/app-auth/dtos/create-app.dto';
 import {
   GenerateTokenDto,
@@ -38,12 +39,12 @@ export class AppAuthController {
       excludePrefixes: ['appSecret', '_', '__'],
     }),
   )
-  @Get('user/:userId')
+  @Get()
   @ApiResponse({
     description: 'List of apps',
     type: [App],
   })
-  getApps(@Param('userId') userId: string): Promise<App[]> {
+  getApps(@User() userId): Promise<App[]> {
     const appList = this.appAuthService.getAllApps(userId);
     if (appList) return appList;
   }
@@ -60,8 +61,11 @@ export class AppAuthController {
   @ApiBadRequestResponse({
     description: 'Application not found',
   })
-  async getAppById(@Param('appId') appId: string): Promise<App> {
-    const app = await this.appAuthService.getAppById(appId);
+  async getAppById(
+    @User() userId,
+    @Param('appId') appId: string,
+  ): Promise<App> {
+    const app = await this.appAuthService.getAppById(appId, userId);
     if (app) return app;
     else throw new AppNotFoundException(); // Custom Exception handling
   }
@@ -79,8 +83,11 @@ export class AppAuthController {
     description: 'Application could not be registered',
   })
   @UsePipes(ValidationPipe)
-  register(@Body() createAppDto: CreateAppDto): Promise<createAppResponse> {
-    return this.appAuthService.createAnApp(createAppDto);
+  register(
+    @User() userId,
+    @Body() createAppDto: CreateAppDto,
+  ): Promise<createAppResponse> {
+    return this.appAuthService.createAnApp(createAppDto, userId);
   }
 
   @UseInterceptors(
@@ -98,16 +105,17 @@ export class AppAuthController {
   })
   @UsePipes(ValidationPipe)
   async update(
+    @User() userId,
     @Param('appId') appId: string,
     @Body() updateAppDto: UpdateAppDto,
   ): Promise<App> {
-    const app = await this.appAuthService.getAppById(appId);
+    const app = await this.appAuthService.getAppById(appId, userId);
     if (app) {
-      return this.appAuthService.updateAnApp(appId, updateAppDto);
+      return this.appAuthService.updateAnApp(appId, updateAppDto, userId);
     } else throw new AppNotFoundException();
   }
 
-  @Post('auth')
+  @Post('oauth')
   @HttpCode(200)
   @ApiResponse({
     description: 'Generate access token',
@@ -119,8 +127,9 @@ export class AppAuthController {
   })
   @UsePipes(ValidationPipe)
   generateAccessToken(
+    @User() userId,
     @Body() generateAccessToken: GenerateTokenDto,
   ): Promise<{ access_token; expiresIn; tokenType }> {
-    return this.appAuthService.generateAccessToken(generateAccessToken);
+    return this.appAuthService.generateAccessToken(generateAccessToken, userId);
   }
 }
