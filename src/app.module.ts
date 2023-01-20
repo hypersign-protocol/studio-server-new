@@ -6,6 +6,7 @@ import { HidWalletModule } from './hid-wallet/hid-wallet.module';
 import { HidWalletService } from './hid-wallet/services/hid-wallet.service';
 import { EdvModule } from './edv/edv.module';
 import { AppAuthSecretService } from './app-auth/services/app-auth-passord.service';
+import { DidModule } from './did/did.module';
 @Module({
   imports: [
     AppAuthModule,
@@ -16,6 +17,7 @@ import { AppAuthSecretService } from './app-auth/services/app-auth-passord.servi
     MongooseModule.forRoot(process.env.DATABASE_CONNECTION_PATH),
     HidWalletModule,
     EdvModule,
+    DidModule,
   ],
   controllers: [],
   providers: [ AppAuthSecretService],
