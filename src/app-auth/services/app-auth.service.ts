@@ -1,4 +1,8 @@
-import { UnauthorizedException, Injectable } from '@nestjs/common';
+import {
+  UnauthorizedException,
+  Injectable,
+  BadRequestException,
+} from '@nestjs/common';
 import { CreateAppDto } from '../dtos/create-app.dto';
 
 import { App, createAppResponse } from 'src/app-auth/schemas/app.schema';
@@ -25,9 +29,11 @@ export class AppAuthService {
     private readonly jwt: JwtService,
   ) {}
 
-  async createAnApp(createAppDto: CreateAppDto): Promise<createAppResponse> {
+  async createAnApp(
+    createAppDto: CreateAppDto,
+    userId: string,
+  ): Promise<createAppResponse> {
     const { mnemonic, address } = await this.hidWalletService.generateWallet();
-
     const edvId = 'hs:apiservice:edv:' + uuid();
     await this.edvService.init(edvId);
     const document: EdvDocsDto = {
@@ -41,6 +47,7 @@ export class AppAuthService {
     const { id: edvDocId } = await this.edvService.createDocument(document);
     const appData = await this.appRepository.create({
       ...createAppDto,
+      userId,
       appId: uuid(), // generate app id
       appSecret: hash, // TODO: generate app secret and should be handled like password by hashing and all...
       edvId, // generate edvId  by called hypersign edv service
@@ -57,17 +64,21 @@ export class AppAuthService {
     return this.appRepository.find({ userId });
   }
 
-  async getAppById(appId: string): Promise<App> {
-    const appDetail = await this.appRepository.findOne({ appId });
-    return appDetail;
+  async getAppById(appId: string, userId: string): Promise<App> {
+    return this.appRepository.findOne({ appId, userId });
   }
 
-  updateAnApp(appId: string, updataAppDto: UpdateAppDto): Promise<App> {
-    return this.appRepository.findOneAndUpdate({ appId }, updataAppDto);
+  updateAnApp(
+    appId: string,
+    updataAppDto: UpdateAppDto,
+    userId: string,
+  ): Promise<App> {
+    return this.appRepository.findOneAndUpdate({ appId, userId }, updataAppDto);
   }
 
   async generateAccessToken(
     generateTokenDto: GenerateTokenDto,
+    userId: string,
   ): Promise<{ access_token; expiresIn; tokenType }> {
     const { appId, appSecret, grantType } = generateTokenDto;
     const payload = {
@@ -88,6 +99,9 @@ export class AppAuthService {
       appDetail.appSecret,
     );
     if (!compareHash) {
+      throw new UnauthorizedException('access_denied');
+    }
+    if (userId !== appDetail.userId) {
       throw new UnauthorizedException('access_denied');
     }
     const secret = this.config.get('JWT_SECRET');
