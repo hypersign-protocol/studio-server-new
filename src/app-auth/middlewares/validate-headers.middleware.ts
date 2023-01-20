@@ -14,8 +14,7 @@ export class ValidateHeadersMiddleware implements NestMiddleware {
     if (!userId) {
       throw new BadRequestException(['userId can not be null or empty','userId is not passed'])
     }
-    console.log('Dummy ValidateHeadersMiddleware');
-    req.userId = userId;
+        req.userId = userId;
     next();
   }
 }

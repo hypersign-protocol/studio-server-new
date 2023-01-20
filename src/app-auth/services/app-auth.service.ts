@@ -91,7 +91,7 @@ export class AppAuthService {
     });
 
     if (!appDetail) {
-      throw new UnauthorizedException('access_denied');
+      throw new UnauthorizedException(['access_denied']);
     }
     // compare appSecret sent by user and appSecret hash stored in db
     const compareHash = await this.appAuthSecretService.comapareSecret(
@@ -99,10 +99,10 @@ export class AppAuthService {
       appDetail.appSecret,
     );
     if (!compareHash) {
-      throw new UnauthorizedException('access_denied');
+      throw new UnauthorizedException(['access_denied']);
     }
     if (userId !== appDetail.userId) {
-      throw new UnauthorizedException('access_denied');
+      throw new UnauthorizedException(['access_denied']);
     }
     const secret = this.config.get('JWT_SECRET');
     const token = await this.jwt.signAsync(payload, {

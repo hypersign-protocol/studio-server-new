@@ -36,7 +36,7 @@ export class GenerateTokenError {
 
   @ApiProperty({
     description: 'message',
-    example: 'access_denied',
+    example: ['access_denied'],
   })
   @IsString()
   message: string;
