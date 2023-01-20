@@ -9,6 +9,7 @@ import {
   Param,
   UseInterceptors,
   HttpCode,
+  UseFilters,
 } from '@nestjs/common';
 import { User } from '../decorator/user.decorator';
 import { CreateAppDto } from 'src/app-auth/dtos/create-app.dto';
@@ -21,15 +22,19 @@ import { AppAuthService } from 'src/app-auth/services/app-auth.service';
 import {
   ApiBadRequestResponse,
   ApiCreatedResponse,
+  ApiHeader,
   ApiResponse,
   ApiTags,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { App, createAppResponse } from '../schemas/app.schema';
-import { AppNotFoundException } from 'src/app-auth/exceptions/app-not-found.exception';
+import { AllExceptionsFilter, AppNotFoundException } from 'src/app-auth/exceptions/app-not-found.exception';
 import { UpdateAppDto } from '../dtos/update-app.dto';
 import { MongooseClassSerializerInterceptor } from '../../utils';
+import { type } from 'os';
+import { AppError } from '../dtos/fetch-app.dto';
 
+@UseFilters( AllExceptionsFilter )
 @ApiTags('App')
 @Controller('app')
 export class AppAuthController {
@@ -39,6 +44,10 @@ export class AppAuthController {
       excludePrefixes: ['appSecret', '_', '__'],
     }),
   )
+  @ApiHeader({
+    name:'userId',
+    description: 'Provide userId to get list of all the apps created by the userId'
+  })
   @Get()
   @ApiResponse({
     description: 'List of apps',
@@ -53,13 +62,23 @@ export class AppAuthController {
       excludePrefixes: ['appSecret', '_', '__'],
     }),
   )
+
+
+
+  @ApiHeader({
+    name:'userId',
+    description: 'Provide userId to get app details'
+  })
   @Get(':appId')
   @ApiResponse({
     description: 'Fetch App by Id',
     type: App,
   })
   @ApiBadRequestResponse({
-    description: 'Application not found',
+    status:400,
+    description:"App not found",
+    type:AppError
+    
   })
   async getAppById(
     @User() userId,
@@ -69,6 +88,12 @@ export class AppAuthController {
     if (app) return app;
     else throw new AppNotFoundException(); // Custom Exception handling
   }
+
+
+  @ApiHeader({
+    name:'userId',
+    description: 'Provide UserId to create App'
+  })
   @Post()
   @UseInterceptors(
     MongooseClassSerializerInterceptor(createAppResponse, {
@@ -81,6 +106,7 @@ export class AppAuthController {
   })
   @ApiBadRequestResponse({
     description: 'Application could not be registered',
+    type:AppError
   })
   @UsePipes(ValidationPipe)
   register(
@@ -95,6 +121,15 @@ export class AppAuthController {
       excludePrefixes: ['appSecret', '_', '__'],
     }),
   )
+
+
+
+
+
+  @ApiHeader({
+    name:'userId',
+    description: 'Provide userId to get app details'
+  })
   @Put(':appId')
   @ApiResponse({
     description: 'Updated app',
@@ -102,6 +137,8 @@ export class AppAuthController {
   })
   @ApiBadRequestResponse({
     description: 'Application not found',
+    type:AppError
+    
   })
   @UsePipes(ValidationPipe)
   async update(
@@ -115,6 +152,10 @@ export class AppAuthController {
     } else throw new AppNotFoundException();
   }
 
+  @ApiHeader({
+    name:'userId',
+    description: 'Provide userId to get app details'
+  })
   @Post('oauth')
   @HttpCode(200)
   @ApiResponse({

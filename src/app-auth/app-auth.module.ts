@@ -18,6 +18,8 @@ import { EdvService } from 'src/edv/services/edv.service';
 import { AppAuthSecretService } from './services/app-auth-passord.service';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './strategy/jwt.strategy';
+import { AllExceptionsFilter } from './exceptions/app-not-found.exception';
+import { APP_FILTER } from '@nestjs/core';
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: App.name, schema: AppSchema }]),
@@ -32,6 +34,7 @@ import { JwtStrategy } from './strategy/jwt.strategy';
     EdvService,
     AppAuthSecretService,
     JwtStrategy,
+    { provide: APP_FILTER, useClass: AllExceptionsFilter }
   ],
   controllers: [AppAuthController],
 })
