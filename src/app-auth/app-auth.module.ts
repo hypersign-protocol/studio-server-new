@@ -32,6 +32,7 @@ import { JwtStrategy } from './strategy/jwt.strategy';
     EdvService,
     AppAuthSecretService,
     JwtStrategy,
+    
   ],
   controllers: [AppAuthController],
 })

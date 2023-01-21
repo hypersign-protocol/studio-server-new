@@ -3,17 +3,22 @@ import {
   Injectable,
   NestMiddleware,
   HttpStatus,
+  BadRequestException,
 } from '@nestjs/common';
+
 
 @Injectable()
 export class ValidateHeadersMiddleware implements NestMiddleware {
   async use(req: any, res: any, next: () => void) {
     const userId = req.headers.userid;
     if (!userId) {
-      throw new HttpException('No userId is passed', HttpStatus.BAD_REQUEST);
+      throw new BadRequestException(['userId can not be null or empty','userId is not passed'])
     }
-    console.log('Dummy ValidateHeadersMiddleware');
-    req.userId = userId;
+        req.userId = userId;
     next();
   }
 }
+
+
+
+

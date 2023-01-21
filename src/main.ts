@@ -50,13 +50,21 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle('Entity Studio API Documentation')
     .setDescription('Open API Documentation of the Entity Studio')
-
+    .addBearerAuth({
+      type:'http',
+      name:'Authorization',
+      in:'header'
+    },"Authorization")
+    
     .setVersion('1.0')
     .build();
-  const document = SwaggerModule.createDocument(app, config);
+    
+    const document = SwaggerModule.createDocument(app, config);
+  
   SwaggerModule.setup('api', app, document, {
     swaggerOptions: { defaultModelsExpandDepth: -1 },
   });
+  
 
   await app.listen(3001);
 }

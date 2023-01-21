@@ -6,6 +6,7 @@ import {
 } from '@nestjs/common';
 import { ClassTransformOptions, Exclude, plainToClass } from 'class-transformer';
 import { Document } from 'mongoose';
+import { ExceptionFilter, Catch, HttpException, ArgumentsHost, HttpStatus, HttpExceptionOptions } from '@nestjs/common';
 
 export const existDir = (dirPath) => {
   if (!dirPath) throw new Error('Directory path undefined');
@@ -61,3 +62,39 @@ export function MongooseClassSerializerInterceptor(
     }
   };
 }
+
+
+
+
+
+
+@Catch()
+export class AllExceptionsFilter implements ExceptionFilter {
+  catch(exception: unknown, host: ArgumentsHost) {
+
+    const ctx = host.switchToHttp();
+    const response = ctx.getResponse();
+    const request = ctx.getRequest();
+
+
+
+    let status;
+    let message;
+    if (exception instanceof HttpException) {
+      status = exception.getStatus();
+      message = exception.getResponse();
+    } else {
+      status = HttpStatus.INTERNAL_SERVER_ERROR;
+      message = {
+        statusCode: status,
+        timestamp: new Date().toISOString(),
+        path: request.url,
+        message: ['Internal server error'],
+      };
+    }
+
+    response.status(status).json(message);
+  }
+}
+
+
