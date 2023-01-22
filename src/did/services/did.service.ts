@@ -1,16 +1,16 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateDidDto } from '../dto/create-did.dto';
 import { UpdateDidDto } from '../dto/update-did.dto';
 import { HypersignDID } from 'hs-ssi-sdk';
 import { DidRepository, DidMetaDataRepo } from '../repository/did.repository';
 import { EdvService } from 'src/edv/services/edv.service';
-import { Bip39, Slip10RawIndex } from '@cosmjs/crypto';
-import { AllExceptionsFilter } from 'src/utils';
-import { SignDidDto } from '../dto/sign-did.dto';
-import { uuid } from 'uuidv4';
+import { Slip10RawIndex } from '@cosmjs/crypto';
 import { ConfigService } from '@nestjs/config';
-import { doc } from 'prettier';
-import { HidWalletService } from '../../hid-wallet/services/hid-wallet.service'
+import { HidWalletService } from '../../hid-wallet/services/hid-wallet.service';
 @Injectable()
 export class DidService {
   constructor(
@@ -18,8 +18,8 @@ export class DidService {
     private readonly didMetadataRepository: DidMetaDataRepo,
     private readonly edvService: EdvService,
     private readonly config: ConfigService,
-    private readonly hidWallet: HidWalletService
-  ) { }
+    private readonly hidWallet: HidWalletService,
+  ) {}
 
   async create(createDidDto: CreateDidDto, appDetail): Promise<Object> {
     try {
@@ -28,16 +28,13 @@ export class DidService {
       await this.edvService.init(edvId);
       const docs = await this.edvService.getDecryptedDocument(edvDocId);
 
-
       const walletOptions = {
         hidNodeRestUrl: this.config.get('HID_NETWORK_API'),
         hidNodeRPCUrl: this.config.get('HID_NETWORK_RPC'),
       };
 
-      const mnemonic: string = docs.mnemonic
-      await this.hidWallet.generateWallet(
-        mnemonic
-      );
+      const mnemonic: string = docs.mnemonic;
+      await this.hidWallet.generateWallet(mnemonic);
 
       // await hidWalletInstance.generateWallet(});
 
@@ -46,113 +43,96 @@ export class DidService {
       const nodeRpcEndpoint = walletOptions.hidNodeRPCUrl;
       const nodeRestEndpoint = walletOptions.hidNodeRestUrl;
 
-
       const hypersignDid = new HypersignDID({
         offlineSigner,
         nodeRpcEndpoint,
         nodeRestEndpoint,
-        namespace: nameSpace
+        namespace: nameSpace,
       });
-      await hypersignDid.init()
+      await hypersignDid.init();
 
-      const didData = await this.didMetadataRepository.findOne({ appId: appDetail.appId })
+      const didData = await this.didMetadataRepository.findOne({
+        appId: appDetail.appId,
+      });
 
-      let hdPathIndex
-      if (didData===null) {
-        hdPathIndex = 0
+      let hdPathIndex;
+      if (didData === null) {
+        hdPathIndex = 0;
       } else {
-        hdPathIndex=didData.hdPathIndex+ 1
+        hdPathIndex = didData.hdPathIndex + 1;
       }
 
-
-      const slipPathKeys: Array<Slip10RawIndex> = this.hidWallet.makeSSIWalletPath(hdPathIndex)
-      const seed = await this.hidWallet.generateMemonicToSeedFromSlip10RawIndex(slipPathKeys)
-
+      const slipPathKeys: Array<Slip10RawIndex> =
+        this.hidWallet.makeSSIWalletPath(hdPathIndex);
+      const seed = await this.hidWallet.generateMemonicToSeedFromSlip10RawIndex(
+        slipPathKeys,
+      );
 
       const { publicKeyMultibase, privateKeyMultibase } =
         await hypersignDid.generateKeys({ seed });
 
-      let didDoc = await hypersignDid.generate({ publicKeyMultibase });
+      const didDoc = await hypersignDid.generate({ publicKeyMultibase });
 
       const params = {
         didDocument: didDoc,
         privateKeyMultibase,
-        verificationMethodId: didDoc.verificationMethod[0].id, // To Do need to figure out what index value to be passed
+        verificationMethodId: didDoc.verificationMethod[0].id,
       };
-      // const params = {
-      //   didDocument: didDoc,
-      //   privateKeyMultibase,
-      //   challenge: uuid(),
-      //   domain: 'fyre.domain', // To Do:- need to figure out what should be domain
-      //   verificationMethodId: didDoc.verificationMethod[0].id, // To Do need to figure out what index value to be passed
-      // };
-
-
       const registerDidDoc = await hypersignDid.register(params);
-
-      //  console.log(SignedDidDoc);
-      // params = {
-      //   didDocument: didDoc,
-      //   privateKeyMultibase,
-      //   challenge: uuid(),
-      //   domain: 'fyre.domain', // To Do:- need to figure out what should be domain
-      //   verificationMethodId: didDoc.verificationMethod[0].id, // To Do need to figure out what index value to be passed
-      // };
-
-      this.didMetadataRepository.findAndReplace({appId:appDetail.appId},{
-        did: didDoc.id,
-        slipPathKeys,
-        hdPathIndex,
-        appId:appDetail.appId
-      })
+      this.didMetadataRepository.findAndReplace(
+        { appId: appDetail.appId },
+        {
+          did: didDoc.id,
+          slipPathKeys,
+          hdPathIndex,
+          appId: appDetail.appId,
+        },
+      );
 
       this.didRepositiory.create({
         did: didDoc.id,
         appId: appDetail.appId,
         slipPathKeys,
-        hdPathIndex
-
+        hdPathIndex,
       });
       return didDoc;
     } catch (e) {
-      throw new BadRequestException([e.message])
-
+      throw new BadRequestException([e.message]);
     }
   }
 
   async getDidList(appDetail) {
     const didList = await this.didRepositiory.find({ appId: appDetail.appId });
     if (didList.length <= 0) {
-      throw new BadRequestException([
+      throw new NotFoundException([
         `No did has created for appId ${appDetail.appId}`,
       ]);
     }
     return didList;
   }
 
-  async signDid(appDetail, signDidDto: SignDidDto) {
-    // console.log(appDetail);
-    const { edvId, edvDocId } = appDetail;
-    await this.edvService.init(edvId);
-    const docs = await this.edvService.getDecryptedDocument(edvDocId);
-    const seed = Bip39.decode(docs.mnemonic);
-    const hypersignDid = new HypersignDID();
-
-    const { privateKeyMultibase } = await hypersignDid.generateKeys({ seed });
-    console.log(docs);
-    const params = { ...signDidDto, privateKeyMultibase };
-    console.log(params);
-    let signedDocument;
+  async resolveDid(appDetail, did: string) {
     try {
-      signedDocument = await hypersignDid.sign(params);
+      const didInfo = await this.didRepositiory.findOne({
+        appId: appDetail.appId,
+        did,
+      });
+      if (!didInfo || didInfo == null) {
+        throw new NotFoundException([`Resource not found`]);
+      }
+      const hypersignDid = new HypersignDID();
+
+      // To Do
+      // what erro message to be sent if did is not resegistered and trying to resolve it
+      //or just send this as response or throw error `{
+      //     "didDocument": {},
+      //     "didDocumentMetadata": null
+      // }`
+      const resolvedDid = await hypersignDid.resolve({ did });
+      return resolvedDid;
     } catch (e) {
-      console.log(e);
+      throw new BadRequestException([e.message]);
     }
-    console.log(signedDocument);
-    console.log(signedDocument);
-    return signedDocument;
-    //findOne(id: number) {
-    // return `This action returns a #${id} did`;
   }
 
   update(id: number, updateDidDto: UpdateDidDto) {
@@ -162,8 +142,4 @@ export class DidService {
   remove(id: number) {
     return `This action removes a #${id} did`;
   }
-
-  // async fetchEdvDocument(edvId: string, edvDocId: string) {
-
-  // }
 }
