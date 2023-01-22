@@ -67,7 +67,6 @@ export class DidService {
       const seed = await this.hidWallet.generateMemonicToSeedFromSlip10RawIndex(
         slipPathKeys,
       );
-
       const { publicKeyMultibase, privateKeyMultibase } =
         await hypersignDid.generateKeys({ seed });
 
@@ -121,7 +120,6 @@ export class DidService {
         throw new NotFoundException([`Resource not found`]);
       }
       const hypersignDid = new HypersignDID();
-
       // To Do
       // what erro message to be sent if did is not resegistered and trying to resolve it
       //or just send this as response or throw error `{
@@ -131,15 +129,75 @@ export class DidService {
       const resolvedDid = await hypersignDid.resolve({ did });
       return resolvedDid;
     } catch (e) {
-      throw new BadRequestException([e.message]);
+      throw new BadRequestException([e]);
     }
   }
 
-  update(id: number, updateDidDto: UpdateDidDto) {
-    return `This action updates a #${id} did`;
-  }
+  async updateDid(updateDidDto: UpdateDidDto, did: string, appDetail) {
+    // To Do :- how to validate didDoc is valid didDoc
+    // To Do :- should be only update those did that are generated on studio?
 
-  remove(id: number) {
-    return `This action removes a #${id} did`;
+    if (
+      updateDidDto.didDoc['id'] == undefined ||
+      updateDidDto.didDoc['id'] == ''
+    ) {
+      throw new BadRequestException(['Invalid didDoc']);
+    }
+    if (updateDidDto.didDoc['id'] !== did) {
+      throw new BadRequestException([
+        "Did sent in param didn't match with didDoc id",
+      ]);
+    }
+    const { edvId, edvDocId } = appDetail;
+    await this.edvService.init(edvId);
+    const docs = await this.edvService.getDecryptedDocument(edvDocId);
+    const mnemonic: string = docs.mnemonic;
+    await this.hidWallet.generateWallet(mnemonic);
+    const offlineSigner = this.hidWallet.getOfflineSigner();
+
+    const hypersignDid = new HypersignDID({
+      offlineSigner,
+      nodeRpcEndpoint: this.config.get('HID_NETWORK_RPC'),
+      nodeRestEndpoint: this.config.get('HID_NETWORK_API'),
+      namespace: '',
+    });
+    await hypersignDid.init();
+
+    const didInfo = await this.didRepositiory.findOne({
+      appId: appDetail.appId,
+      did,
+    });
+    if (!didInfo || didInfo == null) {
+      throw new NotFoundException([`Resource not found`]);
+    }
+
+    const resolvedDid = await hypersignDid.resolve({ did });
+    if (JSON.stringify(resolvedDid.didDocument) === '{}') {
+      throw new BadRequestException([
+        `${did} is not yet registered on blockchain`,
+      ]);
+    }
+    const slipPathKeys = this.hidWallet.makeSSIWalletPath(didInfo.hdPathIndex);
+    const seed = await this.hidWallet.generateMemonicToSeedFromSlip10RawIndex(
+      slipPathKeys,
+    );
+    const { privateKeyMultibase } = await hypersignDid.generateKeys({ seed });
+    let updatedDid;
+    if (!updateDidDto.isToDeactivateDid) {
+      updatedDid = await hypersignDid.update({
+        didDocument: updateDidDto.didDoc,
+        privateKeyMultibase,
+        verificationMethodId: updateDidDto.didDoc['verificationMethod'][0].id,
+        versionId: resolvedDid.didDocumentMetadata.versionId,
+      });
+    } else {
+      updatedDid = await hypersignDid.deactivate({
+        didDocument: updateDidDto.didDoc,
+        privateKeyMultibase,
+        verificationMethodId: updateDidDto.didDoc['verificationMethod'][0].id,
+        versionId: resolvedDid.didDocumentMetadata.versionId,
+      });
+    }
+    return updatedDid;
   }
 }

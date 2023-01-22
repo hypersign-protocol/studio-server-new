@@ -3,7 +3,7 @@ import {
   Get,
   Post,
   Body,
-  Patch,
+  Put,
   Param,
   Delete,
   UseGuards,
@@ -20,14 +20,11 @@ import {
   ApiHeader,
   ApiCreatedResponse,
   ApiTags,
-  ApiOperation,
   ApiBearerAuth,
-  ApiSecurity,
 } from '@nestjs/swagger';
 
 import { Did } from '../schemas/did.schema';
 import { AllExceptionsFilter } from '../../utils';
-import { SignDidDto } from '../dto/sign-did.dto';
 @UseFilters(AllExceptionsFilter)
 @ApiTags('Did')
 @Controller('did')
@@ -79,13 +76,18 @@ export class DidController {
     return this.didService.resolveDid(appDetail, did);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateDidDto: UpdateDidDto) {
-    return this.didService.update(+id, updateDidDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.didService.remove(+id);
+  @UseGuards(AuthGuard('jwt'))
+  @Put(':did')
+  @ApiResponse({
+    description: 'update did detail',
+    type: Object,
+  })
+  updateDid(
+    @Req() req: any,
+    @Param('did') did: string,
+    @Body() updateDidDto: UpdateDidDto,
+  ) {
+    const appDetail = req.user;
+    return this.didService.updateDid(updateDidDto, did, appDetail);
   }
 }
