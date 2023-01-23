@@ -53,9 +53,10 @@ export class DidController {
     return this.didService.resolveDid(appDetail, did);
   }
 
-  @UsePipes(ValidationPipe)
   @ApiBearerAuth('Authorization')
   @UseGuards(AuthGuard('jwt'))
+  @UsePipes(ValidationPipe)
+
   @Post()
   @ApiCreatedResponse({
     description: 'DID Created',
@@ -63,7 +64,6 @@ export class DidController {
   })
   create(@Body() createDidDto: CreateDidDto, @Req() req: any) {
     const appDetail = req.user;
-
     return this.didService.create(createDidDto, appDetail);
   }
 

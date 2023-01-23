@@ -11,13 +11,16 @@ export const Trim = (): PropertyDecorator => {
       const descriptor: PropertyDescriptor = {
         get: () => original,
         set: (val: any) => {
+          
           if (val.trim() === '') {
             throw new BadRequestException([
               `${propertyKey.toString()} cannot be empty`,
             ]);
           }
-          original = val;
+          original = val;          
+          
         },
+
       };
       Object.defineProperty(target, propertyKey, descriptor);
     },
