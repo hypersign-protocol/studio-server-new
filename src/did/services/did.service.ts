@@ -14,10 +14,6 @@ import { ConfigService } from '@nestjs/config';
 import { HidWalletService } from '../../hid-wallet/services/hid-wallet.service';
 import { DidSSIService } from './did.ssi.service';
 
-
-
-
-
 @Injectable({ scope: Scope.REQUEST })
 export class DidService {
   constructor(
@@ -25,8 +21,8 @@ export class DidService {
     private readonly didMetadataRepository: DidMetaDataRepo,
     private readonly edvService: EdvService,
     private readonly hidWallet: HidWalletService,
-    private readonly didSSIService: DidSSIService
-  ) { }
+    private readonly didSSIService: DidSSIService,
+  ) {}
 
   async create(createDidDto: CreateDidDto, appDetail): Promise<Object> {
     try {
@@ -35,8 +31,10 @@ export class DidService {
       await this.edvService.init(edvId);
       const docs = await this.edvService.getDecryptedDocument(edvDocId);
       const mnemonic: string = docs.mnemonic;
-      const hypersignDid = await this.didSSIService.initiateHypersignDid(mnemonic, createDidDto.method)
-
+      const hypersignDid = await this.didSSIService.initiateHypersignDid(
+        mnemonic,
+        createDidDto.method,
+      );
 
       const didData = await this.didMetadataRepository.findOne({
         appId: appDetail.appId,
@@ -88,7 +86,7 @@ export class DidService {
   }
 
   async getDidList(appDetail) {
-    const didList = await this.didRepositiory.find({ appId: appDetail.appId })
+    const didList = await this.didRepositiory.find({ appId: appDetail.appId });
     if (didList.length <= 0) {
       throw new NotFoundException([
         `No did has created for appId ${appDetail.appId}`,
@@ -105,6 +103,7 @@ export class DidService {
       did,
     });
     if (!didInfo || didInfo == null) {
+
       throw new NotFoundException([`${did} is not found`, `${did} does not belongs to the App id: ${appDetail.appId}`]);
     }
     const hypersignDid = new HypersignDID();
@@ -198,16 +197,5 @@ export class DidService {
     }
 
     return updatedDid;
-
   }
 }
-
-
-
-
-
-
-
-
-
-

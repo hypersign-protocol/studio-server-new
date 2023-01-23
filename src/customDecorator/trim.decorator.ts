@@ -1,0 +1,25 @@
+import {
+  applyDecorators,
+  SetMetadata,
+  BadRequestException,
+} from '@nestjs/common';
+export const Trim = (): PropertyDecorator => {
+  return applyDecorators(
+    SetMetadata('notEmpty', true),
+    (target: Object, propertyKey: string | symbol) => {
+      let original = target[propertyKey];
+      const descriptor: PropertyDescriptor = {
+        get: () => original,
+        set: (val: any) => {
+          if (val.trim() === '') {
+            throw new BadRequestException([
+              `${propertyKey.toString()} cannot be empty`,
+            ]);
+          }
+          original = val;
+        },
+      };
+      Object.defineProperty(target, propertyKey, descriptor);
+    },
+  );
+};

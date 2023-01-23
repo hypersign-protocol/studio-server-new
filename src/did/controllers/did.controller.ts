@@ -3,12 +3,10 @@ import {
   Get,
   Post,
   Body,
-  Put,
   Param,
   UseGuards,
   Req,
   UseFilters,
-  UseInterceptors,
   Patch,
   UsePipes,
   ValidationPipe,
@@ -17,26 +15,18 @@ import { DidService } from '../services/did.service';
 import { CreateDidDto } from '../dto/create-did.dto';
 import { DidDoc, UpdateDidDto } from '../dto/update-did.dto';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiProperty, ApiResponse, getSchemaPath } from '@nestjs/swagger';
+import { ApiResponse } from '@nestjs/swagger';
 
-import {
-  ApiHeader,
-  ApiCreatedResponse,
-  ApiTags,
-  ApiBearerAuth,
-} from '@nestjs/swagger';
-import { MongooseClassSerializerInterceptor } from '../../utils';
+import { ApiCreatedResponse, ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 
 import { Did } from '../schemas/did.schema';
 import { AllExceptionsFilter } from '../../utils';
-import { Type } from 'class-transformer';
 @UseFilters(AllExceptionsFilter)
 @ApiTags('Did')
 @Controller('did')
 @ApiTags('Did')
 export class DidController {
-  constructor(private readonly didService: DidService) { }
-
+  constructor(private readonly didService: DidService) {}
 
   @ApiBearerAuth('Authorization')
   @UseGuards(AuthGuard('jwt'))
@@ -45,15 +35,12 @@ export class DidController {
     description: 'DID List',
     type: String,
     isArray: true,
-
-
   })
   getDidList(@Req() req: any): Promise<Did[]> {
     const appDetail = req.user;
     return this.didService.getDidList(appDetail);
   }
 
- 
   @ApiBearerAuth('Authorization')
   @UseGuards(AuthGuard('jwt'))
   @Get(':did')
@@ -65,7 +52,6 @@ export class DidController {
     const appDetail = req.user;
     return this.didService.resolveDid(appDetail, did);
   }
-
 
   @UsePipes(ValidationPipe)
   @ApiBearerAuth('Authorization')
@@ -89,10 +75,7 @@ export class DidController {
     description: 'DID Updated',
     type: DidDoc,
   })
-  updateDid(
-    @Req() req: any,
-    @Body() updateDidDto: UpdateDidDto,
-  ) {
+  updateDid(@Req() req: any, @Body() updateDidDto: UpdateDidDto) {
     const appDetail = req.user;
     return this.didService.updateDid(updateDidDto, appDetail);
   }
