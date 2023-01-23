@@ -1,14 +1,14 @@
-import { Injectable } from '@nestjs/common';
-const hidWallet = require('hid-hd-wallet');
+import { Injectable, Scope } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Bip39, Slip10, Slip10RawIndex, Slip10Curve } from '@cosmjs/crypto';
 import {DirectSecp256k1HdWallet} from '@cosmjs/proto-signing'
 
-@Injectable()
+@Injectable({scope:Scope.REQUEST})
 export class HidWalletService {
   private mnemonic;
   private offlineSigner;
   constructor(private configService: ConfigService) {
+   
   }
 
 
@@ -18,22 +18,18 @@ export class HidWalletService {
     address: string;
   }> {
     this.mnemonic = mnemonic;
-    const hidRpc =
-      this.configService.get('HID_NETWORK_RPC') ||
-      'https://rpc.jagrat.hypersign.id';
-    const hidApi =
-      this.configService.get('HID_NETWORK_API') ||
-      'https://api.jagrat.hypersign.id';
-    const namespace =
-      this.configService.get('HID_NETWORK_NAMESPACE') || 'testnet';
-    const wallet = new hidWallet({
-      hidNodeRPCUrl: hidRpc,
-      hidNodeRestUrl: hidApi,
-    });
-    await wallet.generateWallet({ mnemonic });
-    const generatedMnemonice = wallet.offlineSigner.secret.data;
-    this.offlineSigner = wallet.offlineSigner;
-    const hidWalletAddress = await wallet.offlineSigner.getAccounts();
+  
+
+ 
+
+    const wallet:any = await  DirectSecp256k1HdWallet.fromMnemonic(this.mnemonic,{
+      prefix:'hid'
+    })
+ 
+    
+    const generatedMnemonice = wallet.secret.data;
+    this.offlineSigner = wallet;
+    const hidWalletAddress = await wallet.getAccounts();
     return {
       mnemonic: generatedMnemonice,
       address: hidWalletAddress[0].address,
