@@ -5,10 +5,10 @@ import {
   Body,
   Put,
   Param,
-  Delete,
   UseGuards,
   Req,
   UseFilters,
+  UseInterceptors,
 } from '@nestjs/common';
 import { DidService } from '../services/did.service';
 import { CreateDidDto } from '../dto/create-did.dto';
@@ -22,6 +22,7 @@ import {
   ApiTags,
   ApiBearerAuth,
 } from '@nestjs/swagger';
+import { MongooseClassSerializerInterceptor } from '../../utils';
 
 import { Did } from '../schemas/did.schema';
 import { AllExceptionsFilter } from '../../utils';
@@ -44,11 +45,12 @@ export class DidController {
 
     return this.didService.create(createDidDto, appDetail);
   }
-
-  @ApiHeader({
-    description: `Please enter token in following format: <JWT>`,
-    name: 'Authorization',
-  })
+  @UseInterceptors(
+    MongooseClassSerializerInterceptor(Did, {
+      excludePrefixes: ['_', '__'],
+    }),
+  )
+  @ApiBearerAuth('Authorization')
   @UseGuards(AuthGuard('jwt'))
   @Get()
   @ApiCreatedResponse({
@@ -60,10 +62,7 @@ export class DidController {
     return this.didService.getDidList(appDetail);
   }
 
-  @ApiHeader({
-    description: `Please enter token in following format: <JWT>`,
-    name: 'Authorization',
-  })
+  @ApiBearerAuth('Authorization')
   @UseGuards(AuthGuard('jwt'))
   @Get(':did')
   @ApiResponse({
@@ -76,6 +75,7 @@ export class DidController {
     return this.didService.resolveDid(appDetail, did);
   }
 
+  @ApiBearerAuth('Authorization')
   @UseGuards(AuthGuard('jwt'))
   @Put(':did')
   @ApiResponse({
