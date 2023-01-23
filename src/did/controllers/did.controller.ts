@@ -13,7 +13,7 @@ import {
 } from '@nestjs/common';
 import { DidService } from '../services/did.service';
 import { CreateDidDto } from '../dto/create-did.dto';
-import { DidDoc, UpdateDidDto } from '../dto/update-did.dto';
+import { DidDoc, UpdateDidDto, ResolvedDid } from '../dto/update-did.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiResponse } from '@nestjs/swagger';
 
@@ -46,7 +46,7 @@ export class DidController {
   @Get(':did')
   @ApiResponse({
     description: 'DID Resolved',
-    type: DidDoc,
+    type: ResolvedDid,
   })
   resolveDid(@Req() req: any, @Param('did') did: string): Promise<Object> {
     const appDetail = req.user;

@@ -2,6 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsAlpha, IsAlphanumeric, IsArray, IsNotEmpty, IsObject, IsString, ValidateNested, validate } from 'class-validator';
 import { ValidateVerificationMethodId } from '../decorator/did.decorator';
+import { DidMetaData } from '../schemas/did.schema';
 
 
 
@@ -121,6 +122,56 @@ export class DidDoc {
 
 
 }
+
+export class DidDocumentMetaData {
+  @ApiProperty({
+    name:"created",
+    example:"2023-01-23T13:45:17Z"
+  })
+  created:string
+  @ApiProperty({
+    name:"updated",
+    example:"2023-01-23T13:45:17Z"
+  })
+  updated:string
+  @ApiProperty({
+    name:"deactivated",
+    example:"false"
+  })
+  deactivated:boolean
+  @ApiProperty({
+    name:"versionId",
+    example:"095A65E4D2F9CA2AACE0D17A28883A0E5DDC1BBE1C9BF9D............."
+  })
+  versionId:string
+  
+}
+
+export class ResolvedDid{
+  @ApiProperty({
+    name:"didDocument",
+    description:"Resolved Did Document",
+    example:DidDoc
+    
+  })
+
+  didDocument:DidDoc
+  @ApiProperty({
+    name:"didDocumentMetadata",
+    description:"Resolved didDocumentMetadata",
+    example:DidDoc
+    
+  })
+
+  didDocumentMetadata:DidDocumentMetaData
+
+}
+
+
+
+
+
+
 
 class Service {
   @ApiProperty({
