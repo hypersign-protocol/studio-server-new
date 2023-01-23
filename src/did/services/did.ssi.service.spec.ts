@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { DidSSIService} from '../services/did.ssi.service';
-import { HidWalletService } from 'src/hid-wallet/services/hid-wallet.service';
 
 describe('DidSSIService', () => {
   let service: DidSSIService;
@@ -11,7 +10,6 @@ describe('DidSSIService', () => {
       
       
     }).compile();
-
     service = module.get<DidSSIService>(DidSSIService);
   });
 
