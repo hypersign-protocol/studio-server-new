@@ -23,6 +23,7 @@ import {
   ApiBadRequestResponse,
   ApiCreatedResponse,
   ApiHeader,
+  ApiNotFoundResponse,
   ApiResponse,
   ApiTags,
   ApiUnauthorizedResponse,
@@ -51,7 +52,7 @@ export class AppAuthController {
   })
   @Get()
   @ApiResponse({
-    description: 'List of apps',
+    description: 'App List',
     type: [App],
   })
   async getApps(@User() userId): Promise<App[]> {
@@ -72,7 +73,7 @@ export class AppAuthController {
   })
   @Get(':appId')
   @ApiResponse({
-    description: 'Fetch App by Id',
+    description: 'App details',
     type: App,
   })
   @ApiBadRequestResponse({
@@ -91,7 +92,7 @@ export class AppAuthController {
 
   @ApiHeader({
     name: 'userId',
-    description: 'Provide UserId to create App',
+    description: 'Provide UserId to create a App',
   })
   @Post()
   @UseInterceptors(
@@ -100,11 +101,11 @@ export class AppAuthController {
     }),
   )
   @ApiCreatedResponse({
-    description: 'Newly created app',
+    description: 'App Created',
     type: createAppResponse,
   })
   @ApiBadRequestResponse({
-    description: 'Application could not be registered',
+    description: 'App registration failed',
     type: AppError,
   })
   @UsePipes(ValidationPipe)
@@ -126,11 +127,11 @@ export class AppAuthController {
   })
   @Put(':appId')
   @ApiResponse({
-    description: 'Updated app',
+    description: 'App updated',
     type: App,
   })
-  @ApiBadRequestResponse({
-    description: 'Application not found',
+  @ApiNotFoundResponse({
+    description: 'App not found',
     type: AppError,
   })
   @UsePipes(ValidationPipe)
@@ -152,7 +153,7 @@ export class AppAuthController {
   @Post('oauth')
   @HttpCode(200)
   @ApiResponse({
-    description: 'Generate access token',
+    description: 'AccessToken generated',
     type: GenerateTokenResponse,
   })
   @ApiUnauthorizedResponse({

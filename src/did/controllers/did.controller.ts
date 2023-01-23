@@ -3,79 +3,80 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
-  Delete,
   UseGuards,
   Req,
   UseFilters,
+  Patch,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { DidService } from '../services/did.service';
 import { CreateDidDto } from '../dto/create-did.dto';
-import { UpdateDidDto } from '../dto/update-did.dto';
+import { DidDoc, UpdateDidDto } from '../dto/update-did.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { ApiResponse } from '@nestjs/swagger';
 
-import { ApiHeader, ApiCreatedResponse, ApiTags, ApiOperation, ApiBearerAuth, ApiSecurity } from '@nestjs/swagger';
+import { ApiCreatedResponse, ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 
 import { Did } from '../schemas/did.schema';
 import { AllExceptionsFilter } from '../../utils';
-import { SignDidDto } from '../dto/sign-did.dto';
 @UseFilters(AllExceptionsFilter)
 @ApiTags('Did')
 @Controller('did')
 @ApiTags('Did')
-
 export class DidController {
   constructor(private readonly didService: DidService) {}
- 
 
-  @ApiBearerAuth("Authorization")
-  @UseGuards(AuthGuard('jwt'))
-
-  @Post()
-  @ApiCreatedResponse({
-    description: 'Newly created did',
-    type: Did,
-  })
-  create(@Body() createDidDto: CreateDidDto, @Req() req: any) {
-    const appDetail = req.user;
-    
-    return this.didService.create(createDidDto, appDetail);
-  }
-
-  @ApiHeader({
-    description: `Please enter token in following format: Bearer <JWT>`,
-    name: 'Authorization',
-  })
+  @ApiBearerAuth('Authorization')
   @UseGuards(AuthGuard('jwt'))
   @Get()
-  @ApiCreatedResponse({
-    description: 'Newly created did',
-    type: Did,
+  @ApiResponse({
+    description: 'DID List',
+    type: String,
+    isArray: true,
   })
   getDidList(@Req() req: any): Promise<Did[]> {
     const appDetail = req.user;
     return this.didService.getDidList(appDetail);
   }
 
-  @ApiHeader({
-    description: `Please enter token in following format: Bearer <JWT>`,
-    name: 'Authorization',
-  })
+  @ApiBearerAuth('Authorization')
   @UseGuards(AuthGuard('jwt'))
-  @Get('/sign')
-  signDid(@Req() req: any, @Body() signDidDto: SignDidDto) {
+  @Get(':did')
+  @ApiResponse({
+    description: 'DID Resolved',
+    type: DidDoc,
+  })
+  resolveDid(@Req() req: any, @Param('did') did: string): Promise<Object> {
     const appDetail = req.user;
-    return this.didService.signDid(appDetail, signDidDto);
+    return this.didService.resolveDid(appDetail, did);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateDidDto: UpdateDidDto) {
-    return this.didService.update(+id, updateDidDto);
+  @ApiBearerAuth('Authorization')
+  @UseGuards(AuthGuard('jwt'))
+  @UsePipes(ValidationPipe)
+
+  @Post()
+  @ApiCreatedResponse({
+    description: 'DID Created',
+    type: DidDoc,
+  })
+  create(@Body() createDidDto: CreateDidDto, @Req() req: any) {
+    const appDetail = req.user;
+    return this.didService.create(createDidDto, appDetail);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.didService.remove(+id);
+  @UsePipes(ValidationPipe)
+  @ApiBearerAuth('Authorization')
+  @UseGuards(AuthGuard('jwt'))
+  @Patch()
+  @ApiResponse({
+    description: 'DID Updated',
+    type: DidDoc,
+  })
+  updateDid(@Req() req: any, @Body() updateDidDto: UpdateDidDto) {
+    const appDetail = req.user;
+    return this.didService.updateDid(updateDidDto, appDetail);
   }
 }

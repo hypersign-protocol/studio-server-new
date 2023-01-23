@@ -13,7 +13,7 @@ export class DidRepository {
     return this.didModel.findOne(didFilterQuery);
   }
   async find(didFilterQuery: FilterQuery<Did>): Promise<Did[]> {
-    return this.didModel.find(didFilterQuery);
+    return this.didModel.distinct('did',didFilterQuery)
   }
 
   async create(did: Did): Promise<Did> {

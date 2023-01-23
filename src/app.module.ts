@@ -18,7 +18,7 @@ import { DidModule } from './did/did.module';
       isGlobal:true
     }),
     MongooseModule.forRoot(process.env.DATABASE_CONNECTION_PATH),
-    HidWalletModule,
+    
     EdvModule,
     DidModule,
   ],
