@@ -14,19 +14,15 @@ import { ConfigService } from '@nestjs/config';
 import { HidWalletService } from '../../hid-wallet/services/hid-wallet.service';
 import { DidSSIService } from './did.ssi.service';
 
-
-
-
-
-@Injectable({scope:Scope.REQUEST})
+@Injectable({ scope: Scope.REQUEST })
 export class DidService {
   constructor(
     private readonly didRepositiory: DidRepository,
     private readonly didMetadataRepository: DidMetaDataRepo,
     private readonly edvService: EdvService,
     private readonly hidWallet: HidWalletService,
-    private readonly didSSIService: DidSSIService
-  ) { }
+    private readonly didSSIService: DidSSIService,
+  ) {}
 
   async create(createDidDto: CreateDidDto, appDetail): Promise<Object> {
     try {
@@ -35,8 +31,10 @@ export class DidService {
       await this.edvService.init(edvId);
       const docs = await this.edvService.getDecryptedDocument(edvDocId);
       const mnemonic: string = docs.mnemonic;
-      const hypersignDid = await this.didSSIService.initiateHypersignDid(mnemonic, createDidDto.method)
-
+      const hypersignDid = await this.didSSIService.initiateHypersignDid(
+        mnemonic,
+        createDidDto.method,
+      );
 
       const didData = await this.didMetadataRepository.findOne({
         appId: appDetail.appId,
@@ -88,110 +86,95 @@ export class DidService {
   }
 
   async getDidList(appDetail) {
-    const didList = await this.didRepositiory.find({ appId: appDetail.appId })
+    const didList = await this.didRepositiory.find({ appId: appDetail.appId });
     if (didList.length <= 0) {
       throw new NotFoundException([
         `No did has created for appId ${appDetail.appId}`,
       ]);
-    }    
-    
+    }
+
     return didList;
   }
 
   async resolveDid(appDetail, did: string) {
-  
-      const didInfo = await this.didRepositiory.findOne({
-        appId: appDetail.appId,
-        did,
-      });
-      if (!didInfo || didInfo == null) {
-        throw new NotFoundException([`Resource not found`]);
-      }
-      const hypersignDid = new HypersignDID();
-      const {didDocument,didDocumentMetadata} = await hypersignDid.resolve({ did });
-      if(didDocumentMetadata===null){
-        throw new NotFoundException([`${did} does not exists on chain`])
-      }
-      return didDocument;
-    
+    const didInfo = await this.didRepositiory.findOne({
+      appId: appDetail.appId,
+      did,
+    });
+    if (!didInfo || didInfo == null) {
+      throw new NotFoundException([`Resource not found`]);
+    }
+    const hypersignDid = new HypersignDID();
+    const { didDocument, didDocumentMetadata } = await hypersignDid.resolve({
+      did,
+    });
+    if (didDocumentMetadata === null) {
+      throw new NotFoundException([`${did} does not exists on chain`]);
+    }
+    return didDocument;
   }
 
-  async updateDid(updateDidDto: UpdateDidDto,  appDetail) {
-    // To Do :- how to validate didDoc is valid didDoc
-    // To Do :- should be only update those did that are generated on studio?
+  async updateDid(updateDidDto: UpdateDidDto, appDetail) {
+    if (
+      updateDidDto.didDoc['id'] == undefined ||
+      updateDidDto.didDoc['id'] == ''
+    ) {
+      throw new BadRequestException('Invalid didDoc');
+    }
 
-      if (
+    const did = updateDidDto.didDoc['id'];
+    const { edvId, edvDocId } = appDetail;
+    await this.edvService.init(edvId);
+    const docs = await this.edvService.getDecryptedDocument(edvDocId);
+    const mnemonic: string = docs.mnemonic;
 
-        updateDidDto.didDoc['id'] == undefined ||
-        updateDidDto.didDoc['id'] == ''
-      ) {
-        throw new BadRequestException('Invalid didDoc');
+    const hypersignDid = await this.didSSIService.initiateHypersignDid(
+      mnemonic,
+      'testnet',
+    );
+
+    const didInfo = await this.didRepositiory.findOne({
+      appId: appDetail.appId,
+      did,
+    });
+    if (!didInfo || didInfo == null) {
+      throw new NotFoundException([`Resource not found`]);
+    }
+
+    const resolvedDid = await hypersignDid.resolve({ did });
+    if (JSON.stringify(resolvedDid.didDocument) === '{}') {
+      throw new BadRequestException([
+        `${did} is not yet registered on blockchain`,
+      ]);
+    }
+    const slipPathKeys = this.hidWallet.makeSSIWalletPath(didInfo.hdPathIndex);
+
+    const seed = await this.hidWallet.generateMemonicToSeedFromSlip10RawIndex(
+      slipPathKeys,
+    );
+
+    const { privateKeyMultibase } = await hypersignDid.generateKeys({ seed });
+    let updatedDid;
+    try {
+      if (!updateDidDto.isToDeactivateDid) {
+        updatedDid = await hypersignDid.update({
+          didDocument: updateDidDto.didDoc,
+          privateKeyMultibase,
+          verificationMethodId: updateDidDto.didDoc['verificationMethod'][0].id,
+          versionId: resolvedDid.didDocumentMetadata.versionId,
+        });
+      } else {
+        updatedDid = await hypersignDid.deactivate({
+          didDocument: updateDidDto.didDoc,
+          privateKeyMultibase,
+          verificationMethodId: updateDidDto.didDoc['verificationMethod'][0].id,
+          versionId: resolvedDid.didDocumentMetadata.versionId,
+        });
       }
+    } catch (error) {
+      throw new BadRequestException([error.message]);
+    }
 
-      const did=updateDidDto.didDoc['id']
-      const { edvId, edvDocId } = appDetail;
-      await this.edvService.init(edvId);
-      const docs = await this.edvService.getDecryptedDocument(edvDocId);
-      const mnemonic: string = docs.mnemonic;
-
-      const hypersignDid = await this.didSSIService.initiateHypersignDid(mnemonic, 'testnet')
-
-      const didInfo = await this.didRepositiory.findOne({
-        appId: appDetail.appId,
-        did,
-      });
-      if (!didInfo || didInfo == null) {
-        throw new NotFoundException([`Resource not found`]);
-      }
-
-      const resolvedDid = await hypersignDid.resolve({ did });
-      if (JSON.stringify(resolvedDid.didDocument) === '{}') {
-        throw new BadRequestException(
-         [ `${did} is not yet registered on blockchain`],
-        );
-      }
-      const slipPathKeys = this.hidWallet.makeSSIWalletPath(
-        didInfo.hdPathIndex,
-      );
-
-      const seed = await this.hidWallet.generateMemonicToSeedFromSlip10RawIndex(
-        slipPathKeys,
-      );
-
-      const { privateKeyMultibase } = await hypersignDid.generateKeys({ seed });
-      let updatedDid;
-      try {
-        if (!updateDidDto.isToDeactivateDid) {
-        
-          updatedDid = await hypersignDid.update({
-            didDocument: updateDidDto.didDoc,
-            privateKeyMultibase,
-            verificationMethodId: updateDidDto.didDoc['verificationMethod'][0].id,
-            versionId: resolvedDid.didDocumentMetadata.versionId,
-          });
-        } else {
-          updatedDid = await hypersignDid.deactivate({
-            didDocument: updateDidDto.didDoc,
-            privateKeyMultibase,
-            verificationMethodId: updateDidDto.didDoc['verificationMethod'][0].id,
-            versionId: resolvedDid.didDocumentMetadata.versionId,
-          });
-        }
-      } catch (error) {
-        throw new BadRequestException([error.message])
-      }
-      
-      return updatedDid;
-   
+    return updatedDid;
   }
 }
-
-
-
-
-
-
-
-
-
-
