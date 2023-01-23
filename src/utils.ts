@@ -77,6 +77,8 @@ export class AllExceptionsFilter implements ExceptionFilter {
     const request = ctx.getRequest();
 
 
+   
+   
 
     let status;
     let message;
@@ -85,6 +87,8 @@ export class AllExceptionsFilter implements ExceptionFilter {
       message = exception.getResponse();
     } else {
       status = HttpStatus.INTERNAL_SERVER_ERROR;
+      
+      
       message = {
         statusCode: status,
         timestamp: new Date().toISOString(),

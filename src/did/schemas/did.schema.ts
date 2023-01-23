@@ -1,4 +1,4 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { IsOptional, IsString } from 'class-validator';
@@ -10,25 +10,21 @@ export type DidDocumentMetaData = DidMetaData & Document;
 
 @Schema()
 export class Did {
-  @ApiProperty({
-    description: 'Status of did',
-    example: 'Registered',
-  })
+  @ApiHideProperty()
   @IsOptional()
   @Prop()
   @Exclude()
   slipPathKeys?: Array<Slip10RawIndex>;
-
+  @ApiHideProperty()
   @IsOptional()
   @Prop()
   @Exclude()
   hdPathIndex?: number;
 
-  @ApiProperty({
-    description: 'Id of to which particular did is issued',
-    example: 'aa4ded21-437e-4215-8792-601ce9ba3de5',
-  })
+  @ApiHideProperty()
+  @Exclude()
   @Prop()
+
   @IsString()
   appId: string;
   @ApiProperty({
@@ -63,6 +59,8 @@ export class DidMetaData {
   @Prop()
   did: string;
 }
+
+
 
 const DidSchema = SchemaFactory.createForClass(Did);
 const DidMetaDataSchema = SchemaFactory.createForClass(DidMetaData);

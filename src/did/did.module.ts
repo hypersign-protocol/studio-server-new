@@ -5,6 +5,7 @@ import { EdvService } from 'src/edv/services/edv.service';
 import { EdvModule } from 'src/edv/edv.module';
 import { DidMetaDataRepo, DidRepository } from './repository/did.repository';
 import { MongooseModule } from '@nestjs/mongoose';
+import { DidSSIService } from './services/did.ssi.service';
 import {
   Did,
   DidMetaData,
@@ -30,6 +31,7 @@ import { HidWalletService } from 'src/hid-wallet/services/hid-wallet.service';
     DidRepository,
     DidMetaDataRepo,
     HidWalletService,
+    DidSSIService
   ],
 })
 export class DidModule {}

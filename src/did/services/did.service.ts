@@ -2,6 +2,7 @@ import {
   BadRequestException,
   Injectable,
   NotFoundException,
+  Scope,
 } from '@nestjs/common';
 import { CreateDidDto } from '../dto/create-did.dto';
 import { UpdateDidDto } from '../dto/update-did.dto';
@@ -11,15 +12,21 @@ import { EdvService } from 'src/edv/services/edv.service';
 import { Slip10RawIndex } from '@cosmjs/crypto';
 import { ConfigService } from '@nestjs/config';
 import { HidWalletService } from '../../hid-wallet/services/hid-wallet.service';
-@Injectable()
+import { DidSSIService } from './did.ssi.service';
+
+
+
+
+
+@Injectable({scope:Scope.REQUEST})
 export class DidService {
   constructor(
     private readonly didRepositiory: DidRepository,
     private readonly didMetadataRepository: DidMetaDataRepo,
     private readonly edvService: EdvService,
-    private readonly config: ConfigService,
     private readonly hidWallet: HidWalletService,
-  ) {}
+    private readonly didSSIService: DidSSIService
+  ) { }
 
   async create(createDidDto: CreateDidDto, appDetail): Promise<Object> {
     try {
@@ -27,29 +34,9 @@ export class DidService {
       const { edvId, edvDocId } = appDetail;
       await this.edvService.init(edvId);
       const docs = await this.edvService.getDecryptedDocument(edvDocId);
-
-      const walletOptions = {
-        hidNodeRestUrl: this.config.get('HID_NETWORK_API'),
-        hidNodeRPCUrl: this.config.get('HID_NETWORK_RPC'),
-      };
-
       const mnemonic: string = docs.mnemonic;
-      await this.hidWallet.generateWallet(mnemonic);
+      const hypersignDid = await this.didSSIService.initiateHypersignDid(mnemonic, createDidDto.method)
 
-      // await hidWalletInstance.generateWallet(});
-
-      const offlineSigner = this.hidWallet.getOfflineSigner();
-
-      const nodeRpcEndpoint = walletOptions.hidNodeRPCUrl;
-      const nodeRestEndpoint = walletOptions.hidNodeRestUrl;
-
-      const hypersignDid = new HypersignDID({
-        offlineSigner,
-        nodeRpcEndpoint,
-        nodeRestEndpoint,
-        namespace: nameSpace,
-      });
-      await hypersignDid.init();
 
       const didData = await this.didMetadataRepository.findOne({
         appId: appDetail.appId,
@@ -101,17 +88,18 @@ export class DidService {
   }
 
   async getDidList(appDetail) {
-    const didList = await this.didRepositiory.find({ appId: appDetail.appId });
+    const didList = await this.didRepositiory.find({ appId: appDetail.appId })
     if (didList.length <= 0) {
       throw new NotFoundException([
         `No did has created for appId ${appDetail.appId}`,
       ]);
-    }
+    }    
+    
     return didList;
   }
 
   async resolveDid(appDetail, did: string) {
-    try {
+  
       const didInfo = await this.didRepositiory.findOne({
         appId: appDetail.appId,
         did,
@@ -120,48 +108,33 @@ export class DidService {
         throw new NotFoundException([`Resource not found`]);
       }
       const hypersignDid = new HypersignDID();
-      // To Do
-      // what erro message to be sent if did is not resegistered and trying to resolve it
-      //or just send this as response or throw error `{
-      //     "didDocument": {},
-      //     "didDocumentMetadata": null
-      // }`
-      const resolvedDid = await hypersignDid.resolve({ did });
-      return resolvedDid;
-    } catch (e) {
-      throw new BadRequestException([e]);
-    }
+      const {didDocument,didDocumentMetadata} = await hypersignDid.resolve({ did });
+      if(didDocumentMetadata===null){
+        throw new NotFoundException([`${did} does not exists on chain`])
+      }
+      return didDocument;
+    
   }
 
-  async updateDid(updateDidDto: UpdateDidDto, did: string, appDetail) {
+  async updateDid(updateDidDto: UpdateDidDto,  appDetail) {
     // To Do :- how to validate didDoc is valid didDoc
     // To Do :- should be only update those did that are generated on studio?
-    try {
+
       if (
+
         updateDidDto.didDoc['id'] == undefined ||
         updateDidDto.didDoc['id'] == ''
       ) {
-        throw new BadRequestException(['Invalid didDoc']);
+        throw new BadRequestException('Invalid didDoc');
       }
-      if (updateDidDto.didDoc['id'] !== did) {
-        throw new BadRequestException([
-          "Did sent in param didn't match with didDoc id",
-        ]);
-      }
+
+      const did=updateDidDto.didDoc['id']
       const { edvId, edvDocId } = appDetail;
       await this.edvService.init(edvId);
       const docs = await this.edvService.getDecryptedDocument(edvDocId);
       const mnemonic: string = docs.mnemonic;
-      await this.hidWallet.generateWallet(mnemonic);
-      const offlineSigner = this.hidWallet.getOfflineSigner();
 
-      const hypersignDid = new HypersignDID({
-        offlineSigner,
-        nodeRpcEndpoint: this.config.get('HID_NETWORK_RPC'),
-        nodeRestEndpoint: this.config.get('HID_NETWORK_API'),
-        namespace: '',
-      });
-      await hypersignDid.init();
+      const hypersignDid = await this.didSSIService.initiateHypersignDid(mnemonic, 'testnet')
 
       const didInfo = await this.didRepositiory.findOne({
         appId: appDetail.appId,
@@ -172,38 +145,53 @@ export class DidService {
       }
 
       const resolvedDid = await hypersignDid.resolve({ did });
-      console.log(resolvedDid);
       if (JSON.stringify(resolvedDid.didDocument) === '{}') {
-        throw new BadRequestException([
-          `${did} is not yet registered on blockchain`,
-        ]);
+        throw new BadRequestException(
+         [ `${did} is not yet registered on blockchain`],
+        );
       }
       const slipPathKeys = this.hidWallet.makeSSIWalletPath(
         didInfo.hdPathIndex,
       );
+
       const seed = await this.hidWallet.generateMemonicToSeedFromSlip10RawIndex(
         slipPathKeys,
       );
+
       const { privateKeyMultibase } = await hypersignDid.generateKeys({ seed });
       let updatedDid;
-      if (!updateDidDto.isToDeactivateDid) {
-        updatedDid = await hypersignDid.update({
-          didDocument: updateDidDto.didDoc,
-          privateKeyMultibase,
-          verificationMethodId: updateDidDto.didDoc['verificationMethod'][0].id,
-          versionId: resolvedDid.didDocumentMetadata.versionId,
-        });
-      } else {
-        updatedDid = await hypersignDid.deactivate({
-          didDocument: updateDidDto.didDoc,
-          privateKeyMultibase,
-          verificationMethodId: updateDidDto.didDoc['verificationMethod'][0].id,
-          versionId: resolvedDid.didDocumentMetadata.versionId,
-        });
+      try {
+        if (!updateDidDto.isToDeactivateDid) {
+        
+          updatedDid = await hypersignDid.update({
+            didDocument: updateDidDto.didDoc,
+            privateKeyMultibase,
+            verificationMethodId: updateDidDto.didDoc['verificationMethod'][0].id,
+            versionId: resolvedDid.didDocumentMetadata.versionId,
+          });
+        } else {
+          updatedDid = await hypersignDid.deactivate({
+            didDocument: updateDidDto.didDoc,
+            privateKeyMultibase,
+            verificationMethodId: updateDidDto.didDoc['verificationMethod'][0].id,
+            versionId: resolvedDid.didDocumentMetadata.versionId,
+          });
+        }
+      } catch (error) {
+        throw new BadRequestException([error.message])
       }
+      
       return updatedDid;
-    } catch (e) {
-      console.log(e);
-    }
+   
   }
 }
+
+
+
+
+
+
+
+
+
+
