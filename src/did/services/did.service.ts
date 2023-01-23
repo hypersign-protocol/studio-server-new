@@ -107,11 +107,11 @@ export class DidService {
       throw new NotFoundException([`${did} is not found`, `${did} does not belongs to the App id: ${appDetail.appId}`]);
     }
     const hypersignDid = new HypersignDID();
-    const { didDocument, didDocumentMetadata } = await hypersignDid.resolve({ did });
-    if (didDocumentMetadata === null) {
+    const resolvedDid = await hypersignDid.resolve({ did });
+    if (resolvedDid.didDocumentMetadata === null) {
       throw new NotFoundException([`${did} does not exists on chain`])
     }
-    return didDocument;
+    return resolvedDid;
 
   }
 
