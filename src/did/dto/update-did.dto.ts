@@ -1,151 +1,152 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsArray, IsObject, IsString, ValidateNested, validate } from 'class-validator';
+import { IsAlpha, IsAlphanumeric, IsArray, IsNotEmpty, IsObject, IsString, ValidateNested, validate } from 'class-validator';
+import { ValidateVerificationMethodId } from '../decorator/did.decorator';
 
 
 
 
 
 
-class verificationMethod{
+class verificationMethod {
   @ApiProperty({
-    description:"Verification Method id",
-    example:"did:hid:testnet:z28ScfSszr2zi2Bd7qmNE4mfHX5j8nCwx4DBF6nAUHu4p#key-1",
-       
+    description: "Verification Method id",
+    example: "did:hid:testnet:z28ScfSszr2zi2Bd7qmNE4mfHX5j8nCwx4DBF6nAUHu4p#key-1",
+
   })
   @IsString()
-  id:string
+  id: string
   @ApiProperty({
-    description:"Verification Method type",
-    example:"Ed25519VerificationKey2020",
-       
-  })
-  @IsString()
-  type:string
-  @ApiProperty({
-    description:"Verification Method controller",
-    example:"did:hid:method:..............",
-       
-  })
-  @IsString()
-  controller:string
-  @ApiProperty({
-    description:"publicKeyMultibase",
-    example:"z28ScfSszr2zi2Bd7qmNE4mfHX5j8nCwx4DBF6nAUHu4p",
-       
-  })
-  @IsString()
-  publicKeyMultibase:string
+    description: "Verification Method type",
+    example: "Ed25519VerificationKey2020",
 
-  
+  })
+  @IsString()
+  type: string
+  @ApiProperty({
+    description: "Verification Method controller",
+    example: "did:hid:method:..............",
+
+  })
+  @IsString()
+  controller: string
+  @ApiProperty({
+    description: "publicKeyMultibase",
+    example: "z28ScfSszr2zi2Bd7qmNE4mfHX5j8nCwx4DBF6nAUHu4p",
+
+  })
+  @IsString()
+  publicKeyMultibase: string
+
+
 
 }
 
 export class DidDoc {
-  
+
   @ApiProperty({
-    description:"Context",
-    example:["https://www.w3.org/ns/did/v1"]
+    description: "Context",
+    example: ["https://www.w3.org/ns/did/v1"]
   })
   @IsArray()
-  "@context":Array<string>
+  "@context": Array<string>
 
 
   @ApiProperty({
-    description:"id",
-    example:"did:hid:method:......"
+    description: "id",
+    example: "did:hid:method:......"
   })
   @IsString()
-  id:string
+  id: string
   @ApiProperty({
-    description:"Controller",
-    example:["did:hid:method:......"]
+    description: "Controller",
+    example: ["did:hid:method:......"]
   })
   @IsArray()
-  controller:Array<string>
+  controller: Array<string>
   @ApiProperty({
-    description:"alsoKnownAs",
-    example:["did:hid:method:......"]
+    description: "alsoKnownAs",
+    example: ["did:hid:method:......"]
   })
   @IsArray()
-  alsoKnownAs:Array<string>
+  alsoKnownAs: Array<string>
 
-  @Type(()=>verificationMethod)
+  @Type(() => verificationMethod)
   @ValidateNested()
-  verificationMethod:Array<verificationMethod>
+  verificationMethod: Array<verificationMethod>
   @ApiProperty({
-    description:"authentication",
-    example:["did:hid:method:......"]
+    description: "authentication",
+    example: ["did:hid:method:......"]
   })
   @IsArray()
-  authentication:Array<string>
+  authentication: Array<string>
   @ApiProperty({
-    description:"assertionMethod",
-    example:["did:hid:method:......"]
+    description: "assertionMethod",
+    example: ["did:hid:method:......"]
   })
   @IsArray()
-  assertionMethod:Array<string>
+  assertionMethod: Array<string>
 
 
   @ApiProperty({
-    description:"keyAgreement",
-    example:["did:hid:method:......"]
+    description: "keyAgreement",
+    example: ["did:hid:method:......"]
   })
   @IsArray()
-  keyAgreement:Array<string>
+  keyAgreement: Array<string>
   @ApiProperty({
-    description:"capabilityInvocation",
-    example:["did:hid:method:......"]
+    description: "capabilityInvocation",
+    example: ["did:hid:method:......"]
   })
   @IsArray()
-  capabilityInvocation:Array<string>
+  capabilityInvocation: Array<string>
   @ApiProperty({
-    description:"capabilityDelegation",
-    example:["did:hid:method:......"]
+    description: "capabilityDelegation",
+    example: ["did:hid:method:......"]
   })
   @IsArray()
-  capabilityDelegation:Array<string>
+  capabilityDelegation: Array<string>
   @ApiProperty({
-    description:"service",
-    example:[{
+    description: "service",
+    example: [{
       "id": "did:hid:testnet:.......#linked-domain",
       "type": "LinkedDomains",
       "serviceEndpoint": "https://example.domain.in/exampleserver/api/v1/org/did:hid:testnet:.........."
-      }]
+    }]
   })
-  @Type(()=>Service)
+  @Type(() => Service)
   @ValidateNested()
   @IsArray()
-  service:Array<Service>
+  service: Array<Service>
 
 
 }
 
-class Service{
+class Service {
   @ApiProperty({
-    description:"id",
-    example:"did:hid:testnet:z23dCariJNNpMNca86EtVZVvrLpn61isd86fWVyWa8Jkm#linked-domain",
-       
-  })
-  @IsString()
-  id:string
-  @ApiProperty({
-    description:"type",
-    example:"LinkedDomains",
+    description: "id",
+    example: "did:hid:testnet:z23dCariJNNpMNca86EtVZVvrLpn61isd86fWVyWa8Jkm#linked-domain",
 
-       
   })
   @IsString()
-  type:string
+  id: string
   @ApiProperty({
-    description:"serviceEndpoint",
-    example:"https://stage.hypermine.in/studioserver/api/v1/org/did:hid:testnet:......................",
+    description: "type",
+    example: "LinkedDomains",
 
-       
+
   })
   @IsString()
-  serviceEndpoint:string
-  
+  type: string
+  @ApiProperty({
+    description: "serviceEndpoint",
+    example: "https://stage.hypermine.in/studioserver/api/v1/org/did:hid:testnet:......................",
+
+
+  })
+  @IsString()
+  serviceEndpoint: string
+
 
 }
 export class UpdateDidDto {
@@ -185,11 +186,11 @@ export class UpdateDidDto {
         }
       ]
     },
-    type:DidDoc
+    type: DidDoc
   })
 
 
-  @Type(()=>DidDoc)
+  @Type(() => DidDoc)
   @ValidateNested()
   didDoc: DidDoc;
 
@@ -198,6 +199,14 @@ export class UpdateDidDto {
     example: false,
   })
   isToDeactivateDid: boolean;
+  @ApiProperty({
+    description: "Verification Method id for did updation",
+    example: 'did:hid:testnet:........#key-${idx}'
+
+  })
+  @ValidateVerificationMethodId()
+  @IsString()
+  verificationMethodId: string
 }
 
 

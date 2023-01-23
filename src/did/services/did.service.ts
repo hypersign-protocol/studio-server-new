@@ -18,7 +18,7 @@ import { DidSSIService } from './did.ssi.service';
 
 
 
-@Injectable({scope:Scope.REQUEST})
+@Injectable({ scope: Scope.REQUEST })
 export class DidService {
   constructor(
     private readonly didRepositiory: DidRepository,
@@ -93,96 +93,112 @@ export class DidService {
       throw new NotFoundException([
         `No did has created for appId ${appDetail.appId}`,
       ]);
-    }    
-    
+    }
+
     return didList;
   }
 
   async resolveDid(appDetail, did: string) {
-  
-      const didInfo = await this.didRepositiory.findOne({
-        appId: appDetail.appId,
-        did,
-      });
-      if (!didInfo || didInfo == null) {
-        throw new NotFoundException([`Resource not found`]);
-      }
-      const hypersignDid = new HypersignDID();
-      const {didDocument,didDocumentMetadata} = await hypersignDid.resolve({ did });
-      if(didDocumentMetadata===null){
-        throw new NotFoundException([`${did} does not exists on chain`])
-      }
-      return didDocument;
-    
+
+    const didInfo = await this.didRepositiory.findOne({
+      appId: appDetail.appId,
+      did,
+    });
+    if (!didInfo || didInfo == null) {
+      throw new NotFoundException([`${did} is not found`, `${did} does not belongs to the App id: ${appDetail.appId}`]);
+    }
+    const hypersignDid = new HypersignDID();
+    const { didDocument, didDocumentMetadata } = await hypersignDid.resolve({ did });
+    if (didDocumentMetadata === null) {
+      throw new NotFoundException([`${did} does not exists on chain`])
+    }
+    return didDocument;
+
   }
 
-  async updateDid(updateDidDto: UpdateDidDto,  appDetail) {
+  async updateDid(updateDidDto: UpdateDidDto, appDetail) {
     // To Do :- how to validate didDoc is valid didDoc
     // To Do :- should be only update those did that are generated on studio?
 
-      if (
 
-        updateDidDto.didDoc['id'] == undefined ||
-        updateDidDto.didDoc['id'] == ''
-      ) {
-        throw new BadRequestException('Invalid didDoc');
-      }
+    const { verificationMethodId } = updateDidDto
 
-      const did=updateDidDto.didDoc['id']
-      const { edvId, edvDocId } = appDetail;
-      await this.edvService.init(edvId);
-      const docs = await this.edvService.getDecryptedDocument(edvDocId);
-      const mnemonic: string = docs.mnemonic;
 
-      const hypersignDid = await this.didSSIService.initiateHypersignDid(mnemonic, 'testnet')
+    const didOfVmId = verificationMethodId.split('#')[0]
 
-      const didInfo = await this.didRepositiory.findOne({
-        appId: appDetail.appId,
-        did,
-      });
-      if (!didInfo || didInfo == null) {
-        throw new NotFoundException([`Resource not found`]);
-      }
 
-      const resolvedDid = await hypersignDid.resolve({ did });
-      if (JSON.stringify(resolvedDid.didDocument) === '{}') {
-        throw new BadRequestException(
-         [ `${did} is not yet registered on blockchain`],
-        );
-      }
-      const slipPathKeys = this.hidWallet.makeSSIWalletPath(
-        didInfo.hdPathIndex,
+
+    if (
+
+      updateDidDto.didDoc['id'] == undefined ||
+      updateDidDto.didDoc['id'] == ''
+    ) {
+      throw new BadRequestException('Invalid didDoc');
+    }
+
+    const did = updateDidDto.didDoc['id']
+    const { edvId, edvDocId } = appDetail;
+    await this.edvService.init(edvId);
+    const docs = await this.edvService.getDecryptedDocument(edvDocId);
+    const mnemonic: string = docs.mnemonic;
+
+    const hypersignDid = await this.didSSIService.initiateHypersignDid(mnemonic, 'testnet')
+
+    const didInfo = await this.didRepositiory.findOne({
+      appId: appDetail.appId,
+      did: didOfVmId,
+    });
+    if (!didInfo || didInfo == null) {
+      throw new NotFoundException([`Resource not found`]);
+    }
+
+    const { didDocument: resolvedDid, didDocumentMetadata } = await hypersignDid.resolve({ did: didOfVmId });
+
+    if (didDocumentMetadata === null) {
+      throw new NotFoundException(
+        [`${didOfVmId} is not registered on the chain`],
       );
+    }
 
-      const seed = await this.hidWallet.generateMemonicToSeedFromSlip10RawIndex(
-        slipPathKeys,
+    const { didDocumentMetadata: updatedDidDocMetaData } = await hypersignDid.resolve({ did });
+    if (updatedDidDocMetaData === null) {
+      throw new NotFoundException(
+        [`${did} is not registered on the chain`],
       );
+    }
 
-      const { privateKeyMultibase } = await hypersignDid.generateKeys({ seed });
-      let updatedDid;
-      try {
-        if (!updateDidDto.isToDeactivateDid) {
-        
-          updatedDid = await hypersignDid.update({
-            didDocument: updateDidDto.didDoc,
-            privateKeyMultibase,
-            verificationMethodId: updateDidDto.didDoc['verificationMethod'][0].id,
-            versionId: resolvedDid.didDocumentMetadata.versionId,
-          });
-        } else {
-          updatedDid = await hypersignDid.deactivate({
-            didDocument: updateDidDto.didDoc,
-            privateKeyMultibase,
-            verificationMethodId: updateDidDto.didDoc['verificationMethod'][0].id,
-            versionId: resolvedDid.didDocumentMetadata.versionId,
-          });
-        }
-      } catch (error) {
-        throw new BadRequestException([error.message])
+    const slipPathKeys = this.hidWallet.makeSSIWalletPath(
+      didInfo.hdPathIndex,
+    );
+
+    const seed = await this.hidWallet.generateMemonicToSeedFromSlip10RawIndex(
+      slipPathKeys,
+    );
+
+    const { privateKeyMultibase } = await hypersignDid.generateKeys({ seed });
+    let updatedDid;
+    try {
+      if (!updateDidDto.isToDeactivateDid) {
+        updatedDid = await hypersignDid.update({
+          didDocument: updateDidDto.didDoc,
+          privateKeyMultibase,
+          verificationMethodId: resolvedDid['verificationMethod'][0].id,
+          versionId: updatedDidDocMetaData.versionId,
+        });
+      } else {
+        updatedDid = await hypersignDid.deactivate({
+          didDocument: updateDidDto.didDoc,
+          privateKeyMultibase,
+          verificationMethodId: resolvedDid['verificationMethod'][0].id,
+          versionId: updatedDidDocMetaData.versionId,
+        });
       }
-      
-      return updatedDid;
-   
+    } catch (error) {
+      throw new BadRequestException([error.message])
+    }
+
+    return updatedDid;
+
   }
 }
 
