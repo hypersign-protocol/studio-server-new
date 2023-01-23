@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import { existDir, createDir, store, deleteFile } from './utils';
+import { existDir, createDir, store, deleteFile } from './utils/utils';
 import { HypersignSSISdk } from 'hs-ssi-sdk';
 const hidWallet = require('hid-hd-wallet');
 import { Bip39, EnglishMnemonic } from '@cosmjs/crypto';

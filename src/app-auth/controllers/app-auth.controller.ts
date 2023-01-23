@@ -31,8 +31,8 @@ import {
 import { App, createAppResponse } from '../schemas/app.schema';
 import { AppNotFoundException } from 'src/app-auth/exceptions/app-not-found.exception';
 import { UpdateAppDto } from '../dtos/update-app.dto';
-import { MongooseClassSerializerInterceptor } from '../../utils';
-import { AllExceptionsFilter } from '../../utils';
+import { MongooseClassSerializerInterceptor } from '../../utils/utils';
+import { AllExceptionsFilter } from '../../utils/utils';
 import { AppError } from '../dtos/fetch-app.dto';
 
 @UseFilters(AllExceptionsFilter)

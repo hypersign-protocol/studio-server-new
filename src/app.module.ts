@@ -5,7 +5,7 @@ import { ConfigModule } from '@nestjs/config';
 import { HidWalletModule } from './hid-wallet/hid-wallet.module';
 import { HidWalletService } from './hid-wallet/services/hid-wallet.service';
 import { EdvModule } from './edv/edv.module';
-import { AllExceptionsFilter } from './utils';
+import { AllExceptionsFilter } from './utils/utils';
 import { APP_FILTER } from '@nestjs/core';
 
 import { AppAuthSecretService } from './app-auth/services/app-auth-passord.service';

@@ -20,7 +20,7 @@ import { ApiResponse } from '@nestjs/swagger';
 import { ApiCreatedResponse, ApiTags, ApiBearerAuth } from '@nestjs/swagger';
 
 import { Did } from '../schemas/did.schema';
-import { AllExceptionsFilter } from '../../utils';
+import { AllExceptionsFilter } from '../../utils/utils';
 @UseFilters(AllExceptionsFilter)
 @ApiTags('Did')
 @Controller('did')
