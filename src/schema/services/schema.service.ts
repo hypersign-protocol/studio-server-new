@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { CreateSchemaDto } from '../dto/create-schema.dto';
 import { UpdateSchemaDto } from '../dto/update-schema.dto';
-
 @Injectable()
 export class SchemaService {
-  create(createSchemaDto: CreateSchemaDto) {
+  constructor() {}
+  async create(createSchemaDto: CreateSchemaDto, appDetail) {
     return 'This action adds a new schema';
   }
 

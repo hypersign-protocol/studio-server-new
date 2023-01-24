@@ -13,7 +13,11 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { DidService } from '../services/did.service';
-import { CreateDidDto, CreateDidResponse, TxnHash } from '../dto/create-did.dto';
+import {
+  CreateDidDto,
+  CreateDidResponse,
+  TxnHash,
+} from '../dto/create-did.dto';
 import { DidDoc, UpdateDidDto, ResolvedDid } from '../dto/update-did.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiResponse } from '@nestjs/swagger';
@@ -63,10 +67,14 @@ export class DidController {
     type: CreateDidResponse,
   })
   create(@Body() createDidDto: CreateDidDto, @Req() req: any) {
-    const {options}=createDidDto
-    const {KeyType}=options
-    if(KeyType==='EcdsaSecp256k1RecoveryMethod2020'){
-      throw new NotFoundException({message:[`${KeyType} is not supported`,`Feature coming soon`],error:"Not Supported",status:404})
+    const { options } = createDidDto;
+    const { KeyType } = options;
+    if (KeyType === 'EcdsaSecp256k1RecoveryMethod2020') {
+      throw new NotFoundException({
+        message: [`${KeyType} is not supported`, `Feature coming soon`],
+        error: 'Not Supported',
+        status: 404,
+      });
     }
     const appDetail = req.user;
     return this.didService.create(createDidDto, appDetail);
@@ -79,7 +87,6 @@ export class DidController {
   @ApiResponse({
     description: 'DID Updated',
     type: TxnHash,
-    
   })
   updateDid(@Req() req: any, @Body() updateDidDto: UpdateDidDto) {
     const appDetail = req.user;
