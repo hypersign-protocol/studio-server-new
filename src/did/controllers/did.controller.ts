@@ -10,9 +10,10 @@ import {
   Patch,
   UsePipes,
   ValidationPipe,
+  NotFoundException,
 } from '@nestjs/common';
 import { DidService } from '../services/did.service';
-import { CreateDidDto } from '../dto/create-did.dto';
+import { CreateDidDto, CreateDidResponse, TxnHash } from '../dto/create-did.dto';
 import { DidDoc, UpdateDidDto, ResolvedDid } from '../dto/update-did.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiResponse } from '@nestjs/swagger';
@@ -53,16 +54,20 @@ export class DidController {
     return this.didService.resolveDid(appDetail, did);
   }
 
+  @UsePipes(ValidationPipe)
   @ApiBearerAuth('Authorization')
   @UseGuards(AuthGuard('jwt'))
-  @UsePipes(ValidationPipe)
-
   @Post()
   @ApiCreatedResponse({
     description: 'DID Created',
-    type: DidDoc,
+    type: CreateDidResponse,
   })
   create(@Body() createDidDto: CreateDidDto, @Req() req: any) {
+    const {options}=createDidDto
+    const {KeyType}=options
+    if(KeyType==='EcdsaSecp256k1RecoveryMethod2020'){
+      throw new NotFoundException({message:[`${KeyType} is not supported`,`Feature coming soon`],error:"Not Supported",status:404})
+    }
     const appDetail = req.user;
     return this.didService.create(createDidDto, appDetail);
   }
@@ -73,7 +78,8 @@ export class DidController {
   @Patch()
   @ApiResponse({
     description: 'DID Updated',
-    type: DidDoc,
+    type: TxnHash,
+    
   })
   updateDid(@Req() req: any, @Body() updateDidDto: UpdateDidDto) {
     const appDetail = req.user;

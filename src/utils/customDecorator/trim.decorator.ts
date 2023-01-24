@@ -26,3 +26,22 @@ export const Trim = (): PropertyDecorator => {
     },
   );
 };
+
+
+export const IsEmptyTrim = (): PropertyDecorator => {
+  return applyDecorators(
+    SetMetadata('notEmpty', true),
+    (target: Object, propertyKey: string | symbol) => {
+      let original = target[propertyKey];
+      const descriptor: PropertyDescriptor = {
+        get: () => original,
+        set: (val: any) => {
+          original = val.trim();          
+          
+        },
+
+      };
+      Object.defineProperty(target, propertyKey, descriptor);
+    },
+  );
+};

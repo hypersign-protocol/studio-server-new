@@ -3,6 +3,7 @@ import { Type } from 'class-transformer';
 import { IsAlpha, IsAlphanumeric, IsArray, IsNotEmpty, IsObject, IsString, ValidateNested, validate } from 'class-validator';
 import { ValidateVerificationMethodId } from '../decorator/did.decorator';
 import { DidMetaData } from '../schemas/did.schema';
+import { CreateDidResponse } from './create-did.dto';
 
 
 
@@ -243,13 +244,13 @@ export class UpdateDidDto {
 
   @Type(() => DidDoc)
   @ValidateNested()
-  didDoc: DidDoc;
+  didDocument: DidDoc;
 
   @ApiProperty({
     description: 'Field to check if to deactivate did or to update it ',
     example: false,
   })
-  isToDeactivateDid: boolean;
+  deactivate: boolean;
   @ApiProperty({
     description: "Verification Method id for did updation",
     example: 'did:hid:testnet:........#key-${idx}'
