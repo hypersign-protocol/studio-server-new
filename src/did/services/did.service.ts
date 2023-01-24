@@ -4,8 +4,8 @@ import {
   NotFoundException,
   Scope,
 } from '@nestjs/common';
-import { CreateDidDto } from '../dto/create-did.dto';
-import { UpdateDidDto } from '../dto/update-did.dto';
+import { CreateDidDto, CreateDidResponse, TxnHash } from '../dto/create-did.dto';
+import { DidDoc, UpdateDidDto } from '../dto/update-did.dto';
 import { HypersignDID } from 'hs-ssi-sdk';
 import { DidRepository, DidMetaDataRepo } from '../repository/did.repository';
 import { EdvService } from 'src/edv/services/edv.service';
@@ -13,6 +13,7 @@ import { Slip10RawIndex } from '@cosmjs/crypto';
 import { ConfigService } from '@nestjs/config';
 import { HidWalletService } from '../../hid-wallet/services/hid-wallet.service';
 import { DidSSIService } from './did.ssi.service';
+import { RegistrationStatus } from '../schemas/did.schema';
 
 @Injectable({ scope: Scope.REQUEST })
 export class DidService {
@@ -24,16 +25,16 @@ export class DidService {
     private readonly didSSIService: DidSSIService,
   ) {}
 
-  async create(createDidDto: CreateDidDto, appDetail): Promise<Object> {
+  async create(createDidDto: CreateDidDto, appDetail): Promise<CreateDidResponse> {
     try {
-      const nameSpace = createDidDto.method;
+      const nameSpace = createDidDto.namespace;
       const { edvId, edvDocId } = appDetail;
       await this.edvService.init(edvId);
       const docs = await this.edvService.getDecryptedDocument(edvDocId);
       const mnemonic: string = docs.mnemonic;
       const hypersignDid = await this.didSSIService.initiateHypersignDid(
         mnemonic,
-        createDidDto.method,
+        createDidDto.namespace,
       );
 
       const didData = await this.didMetadataRepository.findOne({
@@ -62,7 +63,7 @@ export class DidService {
         privateKeyMultibase,
         verificationMethodId: didDoc.verificationMethod[0].id,
       };
-      const registerDidDoc = await hypersignDid.register(params);
+      const registerDidDoc = await hypersignDid.register(params);      
       this.didMetadataRepository.findAndReplace(
         { appId: appDetail.appId },
         {
@@ -70,6 +71,8 @@ export class DidService {
           slipPathKeys,
           hdPathIndex,
           appId: appDetail.appId,
+          transactionHash: (registerDidDoc && registerDidDoc.transactionHash)?registerDidDoc.transactionHash:'',
+          registrationStatus:(registerDidDoc && registerDidDoc.transactionHash)?RegistrationStatus.COMPLETED:RegistrationStatus.PROCESSING
         },
       );
 
@@ -79,7 +82,14 @@ export class DidService {
         slipPathKeys,
         hdPathIndex,
       });
-      return didDoc;
+      return {
+        did:didDoc.id,
+        registrationStatus:(registerDidDoc && registerDidDoc.transactionHash)?RegistrationStatus.COMPLETED:RegistrationStatus.PROCESSING,
+        transactionHash: (registerDidDoc && registerDidDoc.transactionHash)?registerDidDoc.transactionHash:'',
+        metaData:{
+          didDocument:didDoc
+        }
+      };
     } catch (e) {
       throw new BadRequestException([e.message]);
     }
@@ -115,27 +125,22 @@ export class DidService {
 
   }
 
-  async updateDid(updateDidDto: UpdateDidDto, appDetail) {
+  async updateDid(updateDidDto: UpdateDidDto, appDetail):Promise<TxnHash> {
     // To Do :- how to validate didDoc is valid didDoc
     // To Do :- should be only update those did that are generated on studio?
 
 
     const { verificationMethodId } = updateDidDto
-
-
     const didOfVmId = verificationMethodId.split('#')[0]
-
-
-
     if (
 
-      updateDidDto.didDoc['id'] == undefined ||
-      updateDidDto.didDoc['id'] == ''
+      updateDidDto.didDocument['id'] == undefined ||
+      updateDidDto.didDocument['id'] == ''
     ) {
       throw new BadRequestException('Invalid didDoc');
     }
 
-    const did = updateDidDto.didDoc['id']
+    const did = updateDidDto.didDocument['id']
     const { edvId, edvDocId } = appDetail;
     await this.edvService.init(edvId);
     const docs = await this.edvService.getDecryptedDocument(edvDocId);
@@ -148,7 +153,7 @@ export class DidService {
       did: didOfVmId,
     });
     if (!didInfo || didInfo == null) {
-      throw new NotFoundException([`Resource not found`]);
+      throw new NotFoundException([`${verificationMethodId} not found`,`${verificationMethodId} is not owned by the appId ${appDetail.appId}`,`Resource not found`]);
     }
 
     const { didDocument: resolvedDid, didDocumentMetadata } = await hypersignDid.resolve({ did: didOfVmId });
@@ -177,16 +182,16 @@ export class DidService {
     const { privateKeyMultibase } = await hypersignDid.generateKeys({ seed });
     let updatedDid;
     try {
-      if (!updateDidDto.isToDeactivateDid) {
+      if (!updateDidDto.deactivate) {
         updatedDid = await hypersignDid.update({
-          didDocument: updateDidDto.didDoc,
+          didDocument: updateDidDto.didDocument,
           privateKeyMultibase,
           verificationMethodId: resolvedDid['verificationMethod'][0].id,
           versionId: updatedDidDocMetaData.versionId,
         });
       } else {
         updatedDid = await hypersignDid.deactivate({
-          didDocument: updateDidDto.didDoc,
+          didDocument: updateDidDto.didDocument,
           privateKeyMultibase,
           verificationMethodId: resolvedDid['verificationMethod'][0].id,
           versionId: updatedDidDocMetaData.versionId,
@@ -196,6 +201,6 @@ export class DidService {
       throw new BadRequestException([error.message])
     }
 
-    return updatedDid;
+    return {transactionHash: updatedDid.transactionHash}
   }
 }

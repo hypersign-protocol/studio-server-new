@@ -1,13 +1,16 @@
 import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
-import { IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsOptional, IsString } from 'class-validator';
 import { Slip10RawIndex } from '@cosmjs/crypto';
 import { Exclude } from 'class-transformer';
 
 export type DidDocument = Did & Document;
 export type DidDocumentMetaData = DidMetaData & Document;
-
+export enum RegistrationStatus{
+  PROCESSING='PROCESSING',
+  COMPLETED='COMPLETED'
+}
 @Schema()
 export class Did {
   @ApiHideProperty()
@@ -58,7 +61,24 @@ export class DidMetaData {
   })
   @Prop()
   did: string;
+  
+  @ApiProperty({
+    description: 'Txn hash during registration',
+    example:'EDAB2D76772B8401CF82FF7EE0B4CBAA4A330EC16064B27505AABD8A5BA8B05B',
+    name:'transactionHash'
+
+  })
+  @Prop()
+  transactionHash:string;
+
+  @ApiProperty({
+    name:'registrationStatus'
+  })
+  @Prop()
+  @IsEnum(RegistrationStatus)
+  registrationStatus: RegistrationStatus
 }
+
 
 
 
