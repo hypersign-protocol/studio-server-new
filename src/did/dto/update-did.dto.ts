@@ -1,247 +1,198 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsAlpha, IsAlphanumeric, IsArray, IsNotEmpty, IsObject, IsString, ValidateNested, validate } from 'class-validator';
-import { DidMetaData } from '../schemas/did.schema';
-import { CreateDidResponse } from './create-did.dto';
+import { IsArray, IsString, ValidateNested } from 'class-validator';
 import { ValidateVerificationMethodId } from 'src/utils/customDecorator/vmId.decorator';
-
-
-
-
-
 
 class verificationMethod {
   @ApiProperty({
-    description: "Verification Method id",
-    example: "did:hid:testnet:z28ScfSszr2zi2Bd7qmNE4mfHX5j8nCwx4DBF6nAUHu4p#key-1",
-
+    description: 'Verification Method id',
+    example:
+      'did:hid:testnet:z28ScfSszr2zi2Bd7qmNE4mfHX5j8nCwx4DBF6nAUHu4p#key-1',
   })
   @IsString()
-  id: string
+  id: string;
   @ApiProperty({
-    description: "Verification Method type",
-    example: "Ed25519VerificationKey2020",
-
+    description: 'Verification Method type',
+    example: 'Ed25519VerificationKey2020',
   })
   @IsString()
-  type: string
+  type: string;
   @ApiProperty({
-    description: "Verification Method controller",
-    example: "did:hid:method:..............",
-
+    description: 'Verification Method controller',
+    example: 'did:hid:method:..............',
   })
   @IsString()
-  controller: string
+  controller: string;
   @ApiProperty({
-    description: "publicKeyMultibase",
-    example: "z28ScfSszr2zi2Bd7qmNE4mfHX5j8nCwx4DBF6nAUHu4p",
-
+    description: 'publicKeyMultibase',
+    example: 'z28ScfSszr2zi2Bd7qmNE4mfHX5j8nCwx4DBF6nAUHu4p',
   })
   @IsString()
-  publicKeyMultibase: string
-
-
-
+  publicKeyMultibase: string;
 }
 
 export class DidDoc {
-
   @ApiProperty({
-    description: "Context",
-    example: ["https://www.w3.org/ns/did/v1"]
+    description: 'Context',
+    example: ['https://www.w3.org/ns/did/v1'],
   })
   @IsArray()
-  "@context": Array<string>
-
+  '@context': Array<string>;
 
   @ApiProperty({
-    description: "id",
-    example: "did:hid:method:......"
+    description: 'id',
+    example: 'did:hid:method:......',
   })
   @IsString()
-  id: string
+  id: string;
   @ApiProperty({
-    description: "Controller",
-    example: ["did:hid:method:......"]
+    description: 'Controller',
+    example: ['did:hid:method:......'],
   })
   @IsArray()
-  controller: Array<string>
+  controller: Array<string>;
   @ApiProperty({
-    description: "alsoKnownAs",
-    example: ["did:hid:method:......"]
+    description: 'alsoKnownAs',
+    example: ['did:hid:method:......'],
   })
   @IsArray()
-  alsoKnownAs: Array<string>
+  alsoKnownAs: Array<string>;
 
   @Type(() => verificationMethod)
   @ValidateNested()
-  verificationMethod: Array<verificationMethod>
+  verificationMethod: Array<verificationMethod>;
   @ApiProperty({
-    description: "authentication",
-    example: ["did:hid:method:......"]
+    description: 'authentication',
+    example: ['did:hid:method:......'],
   })
   @IsArray()
-  authentication: Array<string>
+  authentication: Array<string>;
   @ApiProperty({
-    description: "assertionMethod",
-    example: ["did:hid:method:......"]
+    description: 'assertionMethod',
+    example: ['did:hid:method:......'],
   })
   @IsArray()
-  assertionMethod: Array<string>
+  assertionMethod: Array<string>;
 
-
   @ApiProperty({
-    description: "keyAgreement",
-    example: ["did:hid:method:......"]
+    description: 'keyAgreement',
+    example: ['did:hid:method:......'],
   })
   @IsArray()
-  keyAgreement: Array<string>
+  keyAgreement: Array<string>;
   @ApiProperty({
-    description: "capabilityInvocation",
-    example: ["did:hid:method:......"]
+    description: 'capabilityInvocation',
+    example: ['did:hid:method:......'],
   })
   @IsArray()
-  capabilityInvocation: Array<string>
+  capabilityInvocation: Array<string>;
   @ApiProperty({
-    description: "capabilityDelegation",
-    example: ["did:hid:method:......"]
+    description: 'capabilityDelegation',
+    example: ['did:hid:method:......'],
   })
   @IsArray()
-  capabilityDelegation: Array<string>
+  capabilityDelegation: Array<string>;
   @ApiProperty({
-    description: "service",
-    example: [{
-      "id": "did:hid:testnet:.......#linked-domain",
-      "type": "LinkedDomains",
-      "serviceEndpoint": "https://example.domain.in/exampleserver/api/v1/org/did:hid:testnet:.........."
-    }]
+    description: 'service',
+    example: [
+      {
+        id: 'did:hid:testnet:.......#linked-domain',
+        type: 'LinkedDomains',
+        serviceEndpoint:
+          'https://example.domain.in/exampleserver/api/v1/org/did:hid:testnet:..........',
+      },
+    ],
   })
   @Type(() => Service)
   @ValidateNested()
   @IsArray()
-  service: Array<Service>
-
-
+  service: Array<Service>;
 }
 
 export class DidDocumentMetaData {
   @ApiProperty({
-    name:"created",
-    example:"2023-01-23T13:45:17Z"
+    name: 'created',
+    example: '2023-01-23T13:45:17Z',
   })
-  created:string
+  created: string;
   @ApiProperty({
-    name:"updated",
-    example:"2023-01-23T13:45:17Z"
+    name: 'updated',
+    example: '2023-01-23T13:45:17Z',
   })
-  updated:string
+  updated: string;
   @ApiProperty({
-    name:"deactivated",
-    example:"false"
+    name: 'deactivated',
+    example: 'false',
   })
-  deactivated:boolean
+  deactivated: boolean;
   @ApiProperty({
-    name:"versionId",
-    example:"095A65E4D2F9CA2AACE0D17A28883A0E5DDC1BBE1C9BF9D............."
+    name: 'versionId',
+    example: '095A65E4D2F9CA2AACE0D17A28883A0E5DDC1BBE1C9BF9D.............',
   })
-  versionId:string
-  
+  versionId: string;
 }
 
-export class ResolvedDid{
+export class ResolvedDid {
   @ApiProperty({
-    name:"didDocument",
-    description:"Resolved Did Document",
-    example:DidDoc
-    
+    name: 'didDocument',
+    description: 'Resolved Did Document',
+    example: DidDoc,
   })
-
-  didDocument:DidDoc
+  didDocument: DidDoc;
   @ApiProperty({
-    name:"didDocumentMetadata",
-    description:"Resolved didDocumentMetadata",
-    example:DidDoc
-    
+    name: 'didDocumentMetadata',
+    description: 'Resolved didDocumentMetadata',
+    example: DidDoc,
   })
-
-  didDocumentMetadata:DidDocumentMetaData
-
+  didDocumentMetadata: DidDocumentMetaData;
 }
-
-
-
-
-
-
 
 class Service {
   @ApiProperty({
-    description: "id",
-    example: "did:hid:testnet:z23dCariJNNpMNca86EtVZVvrLpn61isd86fWVyWa8Jkm#linked-domain",
-
+    description: 'id',
+    example:
+      'did:hid:testnet:z23dCariJNNpMNca86EtVZVvrLpn61isd86fWVyWa8Jkm#linked-domain',
   })
   @IsString()
-  id: string
+  id: string;
   @ApiProperty({
-    description: "type",
-    example: "LinkedDomains",
-
-
+    description: 'type',
+    example: 'LinkedDomains',
   })
   @IsString()
-  type: string
+  type: string;
   @ApiProperty({
-    description: "serviceEndpoint",
-    example: "https://stage.hypermine.in/studioserver/api/v1/org/did:hid:testnet:......................",
-
-
+    description: 'serviceEndpoint',
+    example:
+      'https://stage.hypermine.in/studioserver/api/v1/org/did:hid:testnet:......................',
   })
   @IsString()
-  serviceEndpoint: string
-
-
+  serviceEndpoint: string;
 }
 export class UpdateDidDto {
   @ApiProperty({
     description: 'Did doc to be updated',
     example: {
-      "@context": [
-        "https://www.w3.org/ns/did/v1"
-      ],
-      "id": "did:hid:method:......",
-      "controller": [
-        "did:hid:method:......"
-      ],
-      "alsoKnownAs": [
-        "did:hid:method:......"
-      ],
-      "authentication": [
-        "did:hid:method:......"
-      ],
-      "assertionMethod": [
-        "did:hid:method:......"
-      ],
-      "keyAgreement": [
-        "did:hid:method:......"
-      ],
-      "capabilityInvocation": [
-        "did:hid:method:......"
-      ],
-      "capabilityDelegation": [
-        "did:hid:method:......"
-      ],
-      "service": [
+      '@context': ['https://www.w3.org/ns/did/v1'],
+      id: 'did:hid:method:......',
+      controller: ['did:hid:method:......'],
+      alsoKnownAs: ['did:hid:method:......'],
+      authentication: ['did:hid:method:......'],
+      assertionMethod: ['did:hid:method:......'],
+      keyAgreement: ['did:hid:method:......'],
+      capabilityInvocation: ['did:hid:method:......'],
+      capabilityDelegation: ['did:hid:method:......'],
+      service: [
         {
-          "id": "did:hid:testnet:.......#linked-domain",
-          "type": "LinkedDomains",
-          "serviceEndpoint": "https://example.domain.in/exampleserver/api/v1/org/did:hid:testnet:.........."
-        }
-      ]
+          id: 'did:hid:testnet:.......#linked-domain',
+          type: 'LinkedDomains',
+          serviceEndpoint:
+            'https://example.domain.in/exampleserver/api/v1/org/did:hid:testnet:..........',
+        },
+      ],
     },
-    type: DidDoc
+    type: DidDoc,
   })
-
-
   @Type(() => DidDoc)
   @ValidateNested()
   didDocument: DidDoc;
@@ -252,14 +203,10 @@ export class UpdateDidDto {
   })
   deactivate: boolean;
   @ApiProperty({
-    description: "Verification Method id for did updation",
-    example: 'did:hid:testnet:........#key-${idx}'
-
+    description: 'Verification Method id for did updation',
+    example: 'did:hid:testnet:........#key-${idx}',
   })
   @ValidateVerificationMethodId()
   @IsString()
-  verificationMethodId: string
+  verificationMethodId: string;
 }
-
-
-

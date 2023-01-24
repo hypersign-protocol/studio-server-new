@@ -3,9 +3,7 @@ import {
   Get,
   Post,
   Body,
-  Patch,
   Param,
-  Delete,
   UseFilters,
   UseGuards,
   Req,
@@ -13,50 +11,83 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { SchemaService } from '../services/schema.service';
-import { CreateSchemaDto, createSchemaResponse } from '../dto/create-schema.dto';
-import { UpdateSchemaDto } from '../dto/update-schema.dto';
+import {
+  CreateSchemaDto,
+  createSchemaResponse,
+} from '../dto/create-schema.dto';
+import { SchemaError } from '../dto/error-schema.dto';
+import { ResolveSchema } from '../dto/resolve-schema.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { AllExceptionsFilter } from 'src/utils/utils';
-import { ApiTags } from '@nestjs/swagger';
-import { ApiBearerAuth } from '@nestjs/swagger';
-import { ApiCreatedResponse } from '@nestjs/swagger';
+import {
+  ApiTags,
+  ApiBearerAuth,
+  ApiResponse,
+  ApiCreatedResponse,
+  ApiNotFoundResponse,
+  ApiBadRequestResponse,
+} from '@nestjs/swagger';
+import { Schemas } from '../schemas/schemas.schema';
 @UseFilters(AllExceptionsFilter)
 @ApiTags('Schema')
 @Controller('schema')
 @ApiBearerAuth('Authorization')
 @UseGuards(AuthGuard('jwt'))
-
 export class SchemaController {
   constructor(private readonly schemaService: SchemaService) {}
 
   @Post()
   @ApiCreatedResponse({
     description: 'Schema Created',
-     type: createSchemaResponse
+    type: createSchemaResponse,
+  })
+  @ApiNotFoundResponse({
+    status: 404,
+    description: 'Error in finding resource',
+    type: SchemaError,
+  })
+  @ApiBadRequestResponse({
+    status: 400,
+    description: 'Error occured at the time of creating schema',
+    type: SchemaError,
   })
   @UsePipes(ValidationPipe)
   create(@Body() createSchemaDto: CreateSchemaDto, @Req() req: any) {
-    const appDetail = req.user;    
+    const appDetail = req.user;
     return this.schemaService.create(createSchemaDto, appDetail);
   }
 
   @Get()
-  findAll() {
-    return this.schemaService.findAll();
+  @ApiResponse({
+    description: 'Schema List',
+    type: String,
+    isArray: true,
+  })
+  @ApiNotFoundResponse({
+    status: 404,
+    description: 'No schema has created',
+    type: SchemaError,
+  })
+  getSchemaList(@Req() req: any): Promise<Schemas[]> {
+    const appDetial = req.user;
+    return this.schemaService.getSchemaList(appDetial);
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.schemaService.findOne(+id);
-  }
-
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateSchemaDto: UpdateSchemaDto) {
-    return this.schemaService.update(+id, updateSchemaDto);
-  }
-
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.schemaService.remove(+id);
+  @Get(':schemaId')
+  @ApiResponse({
+    description: 'Resolved schema detail',
+    type: ResolveSchema,
+  })
+  @ApiNotFoundResponse({
+    status: 404,
+    description: 'sch:hid:testnet:......',
+    type: SchemaError,
+  })
+  resolveSchema(
+    @Param('schemaId') schemaId: string,
+    @Req() req: any,
+  ): Promise<ResolveSchema> {
+    const appDetail = req.user;
+    return this.schemaService.resolveSchema(schemaId, appDetail);
   }
 }
