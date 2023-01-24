@@ -9,8 +9,8 @@ class Proof {
   type: string;
   @ApiProperty({
     name: 'created',
-    description: 'name of the schema ',
-    example: 'schema for railway ticket',
+    description: 'Time of schema creation ',
+    example: '2023-01-24T14:35:53Z',
   })
   created: string;
   @ApiProperty({
@@ -106,7 +106,7 @@ export class ResolveSchema {
   author: string;
   @ApiProperty({
     name: 'authored',
-    description: 'Time of schema reation ',
+    description: 'Time of schema creation ',
     example: '2023-01-24T14:35:53Z',
   })
   authored: string;

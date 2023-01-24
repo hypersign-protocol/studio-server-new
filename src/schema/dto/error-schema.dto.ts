@@ -23,3 +23,26 @@ export class SchemaError {
   @IsString()
   error: string;
 }
+
+export class SchemaNotFoundError {
+  @ApiProperty({
+    description: 'statusCode',
+    example: 404,
+  })
+  @IsNumber()
+  statusCode: number;
+
+  @ApiProperty({
+    description: 'message',
+    example: ['error message 1', 'error message 2'],
+  })
+  @IsString()
+  message: Array<string>;
+
+  @ApiProperty({
+    description: 'error',
+    example: 'Not Found',
+  })
+  @IsString()
+  error: string;
+}

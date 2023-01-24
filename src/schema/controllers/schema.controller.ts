@@ -15,7 +15,7 @@ import {
   CreateSchemaDto,
   createSchemaResponse,
 } from '../dto/create-schema.dto';
-import { SchemaError } from '../dto/error-schema.dto';
+import { SchemaError, SchemaNotFoundError } from '../dto/error-schema.dto';
 import { ResolveSchema } from '../dto/resolve-schema.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { AllExceptionsFilter } from 'src/utils/utils';
@@ -44,7 +44,7 @@ export class SchemaController {
   @ApiNotFoundResponse({
     status: 404,
     description: 'Error in finding resource',
-    type: SchemaError,
+    type: SchemaNotFoundError,
   })
   @ApiBadRequestResponse({
     status: 400,
@@ -66,7 +66,7 @@ export class SchemaController {
   @ApiNotFoundResponse({
     status: 404,
     description: 'No schema has created',
-    type: SchemaError,
+    type: SchemaNotFoundError,
   })
   getSchemaList(@Req() req: any): Promise<Schemas[]> {
     const appDetial = req.user;
@@ -81,7 +81,7 @@ export class SchemaController {
   @ApiNotFoundResponse({
     status: 404,
     description: 'sch:hid:testnet:......',
-    type: SchemaError,
+    type: SchemaNotFoundError,
   })
   resolveSchema(
     @Param('schemaId') schemaId: string,
