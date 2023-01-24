@@ -1,31 +1,59 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
-  IsArray,
   IsBoolean,
+  IsEnum,
   IsNotEmpty,
-  IsObject,
   IsOptional,
   IsString,
   ValidateNested,
 } from 'class-validator';
-import { IsEmptyTrim, Trim } from '../../utils/customDecorator/trim.decorator';
-import { Prop } from '@nestjs/mongoose';
+import { Trim } from '../../utils/customDecorator/trim.decorator';
 import { Type } from 'class-transformer';
 import { IsDid } from '../decorator/schema.decorator';
 import { ValidateVerificationMethodId } from 'src/utils/customDecorator/vmId.decorator';
 
+export enum DataType {
+  string = 'string',
+  number = 'number',
+  integer = 'integer',
+  boolean = 'boolean',
+  date = 'date',
+}
 
+export class Fields {
+  @ApiProperty({
+    name: 'name',
+    description: 'Name of the field',
+    example: 'name',
+  })
+  @IsString()
+  @Trim()
+  name: string;
+  @ApiProperty({
+    name: 'format',
+    description: 'format',
+    example: '',
+  })
+  @IsString()
+  @IsOptional()
+  format?: string;
 
-// export class Fields{
-//   @ApiProperty({
-//     name:'name',
-//     description:"Name of the field",
-//     example:"firstname"
-//   })
-//   @Prop({isRequired:true})
-//   name:string
-  
-// }
+  @ApiProperty({
+    name: 'type',
+    description: 'type of properties',
+    example: 'string',
+  })
+  @Trim()
+  @IsEnum(DataType)
+  type: DataType;
+  @ApiProperty({
+    name: 'isRequired',
+    description: 'State wheter field is required',
+    example: false,
+  })
+  @IsBoolean()
+  isRequired: boolean;
+}
 export class SchemaBody {
   @ApiProperty({
     description: 'Name of the schema',
@@ -40,7 +68,7 @@ export class SchemaBody {
     example: 'did:hid:namespace:................',
   })
   @IsString()
-  @IsNotEmpty()  
+  @IsNotEmpty()
   @IsDid()
   author: string;
 
@@ -61,72 +89,63 @@ export class SchemaBody {
 
   @ApiProperty({
     description: 'Schema configuration',
-    example: [],
+    example: [{}],
   })
-  @IsArray()
-  fields: object;
+  @ValidateNested()
+  @Type(() => Fields)
+  fields: Array<Fields>;
 }
 
-export class CreateSchemaDto{
+export class CreateSchemaDto {
+  @ApiProperty({
+    name: 'schema',
+    description: 'Schema body',
+    example: {
+      name: 'testSchema',
+      description: 'This is a test schema generation',
+      author: '',
+      fields: [
+        {
+          name: 'name',
+          type: 'string',
+          isRequired: false,
+        },
+      ],
+      additionalProperties: false,
+    },
+  })
+  @ValidateNested()
+  @Type(() => SchemaBody)
+  schema: SchemaBody;
 
-    @ApiProperty({
-      name:'schema',
-      description:'Schema body',
-      example:{
-        "name": "testSchema",
-        "description": "This is a test schema generation",
-        "author": "",
-        "fields": [
-            {
-                "name": "name",
-                "type": "string",
-                "isRequired": false
-            }
-        ],
-        "additionalProperties": false
-    }
-    })
-
-    @ValidateNested()
-    @Type(()=>SchemaBody)
-    schema:SchemaBody
-
-    @ApiProperty({
-      name: "namespace",
-      description: 'Namespace to be added in did.',
-      example: 'testnet',
-    })
-    @IsString()
-    @IsEmptyTrim()
-    namespace: string;
-    @ApiProperty({
-      description: "Verification Method id for did updation",
-      example: 'did:hid:testnet:........#key-${idx}'
-  
-    })
-    @ValidateVerificationMethodId()
-    @IsString()
-    verificationMethodId: string
-
-
-
-
+  @ApiProperty({
+    name: 'namespace',
+    description: 'Namespace to be added in did.',
+    example: 'testnet',
+  })
+  @IsString()
+  @Trim()
+  namespace: string;
+  @ApiProperty({
+    description: 'Verification Method id for did updation',
+    example: 'did:hid:testnet:........#key-${idx}',
+  })
+  @ValidateVerificationMethodId()
+  @IsString()
+  verificationMethodId: string;
 }
 
-
-export class createSchemaResponse{
-  
+export class createSchemaResponse {
   @ApiProperty({
-    name:'schemaId',
-    description:'Schema id',
-    example:'sch:hid:namespce:.....................'
+    name: 'schemaId',
+    description: 'Schema id',
+    example: 'sch:hid:namespce:.....................',
   })
-  schemaId:string
+  schemaId: string;
   @ApiProperty({
-    name:'transactionHash',
-    description:'transaction hash for schema',
-    example:'KAGSLKAGDLKJGA..................'
+    name: 'transactionHash',
+    description: 'transaction hash for schema',
+    example: 'KAGSLKAGDLKJGA..................',
   })
-  transactionHash:string
-  
+  transactionHash: string;
 }
