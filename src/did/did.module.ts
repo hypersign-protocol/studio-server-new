@@ -33,6 +33,11 @@ import { HidWalletService } from 'src/hid-wallet/services/hid-wallet.service';
     HidWalletService,
     DidSSIService,
   ],
-  exports: [DidService, MongooseModule],
+  exports: [DidService,
+    EdvService,
+    DidRepository,
+    DidMetaDataRepo,
+    HidWalletService,
+    DidSSIService],
 })
-export class DidModule {}
+export class DidModule { }

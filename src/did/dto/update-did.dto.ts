@@ -1,9 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsAlpha, IsAlphanumeric, IsArray, IsNotEmpty, IsObject, IsString, ValidateNested, validate } from 'class-validator';
-import { ValidateVerificationMethodId } from '../decorator/did.decorator';
 import { DidMetaData } from '../schemas/did.schema';
 import { CreateDidResponse } from './create-did.dto';
+import { ValidateVerificationMethodId } from 'src/utils/customDecorator/vmId.decorator';
 
 
 

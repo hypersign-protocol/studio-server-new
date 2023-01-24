@@ -71,8 +71,7 @@ export class DidService {
           slipPathKeys,
           hdPathIndex,
           appId: appDetail.appId,
-          transactionHash: (registerDidDoc && registerDidDoc.transactionHash)?registerDidDoc.transactionHash:'',
-          registrationStatus:(registerDidDoc && registerDidDoc.transactionHash)?RegistrationStatus.COMPLETED:RegistrationStatus.PROCESSING
+         
         },
       );
 
@@ -81,6 +80,8 @@ export class DidService {
         appId: appDetail.appId,
         slipPathKeys,
         hdPathIndex,
+        transactionHash: (registerDidDoc && registerDidDoc.transactionHash)?registerDidDoc.transactionHash:'',
+        registrationStatus:(registerDidDoc && registerDidDoc.transactionHash)?RegistrationStatus.COMPLETED:RegistrationStatus.PROCESSING
       });
       return {
         did:didDoc.id,

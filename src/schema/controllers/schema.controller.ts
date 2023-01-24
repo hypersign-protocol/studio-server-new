@@ -9,9 +9,11 @@ import {
   UseFilters,
   UseGuards,
   Req,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { SchemaService } from '../services/schema.service';
-import { CreateSchemaDto } from '../dto/create-schema.dto';
+import { CreateSchemaDto, createSchemaResponse } from '../dto/create-schema.dto';
 import { UpdateSchemaDto } from '../dto/update-schema.dto';
 import { AuthGuard } from '@nestjs/passport';
 import { AllExceptionsFilter } from 'src/utils/utils';
@@ -22,18 +24,19 @@ import { ApiCreatedResponse } from '@nestjs/swagger';
 @ApiTags('Schema')
 @Controller('schema')
 @ApiBearerAuth('Authorization')
+@UseGuards(AuthGuard('jwt'))
+
 export class SchemaController {
   constructor(private readonly schemaService: SchemaService) {}
 
-  @UseGuards(AuthGuard('jwt'))
   @Post()
   @ApiCreatedResponse({
     description: 'Schema Created',
-    // type: Schemas,
+     type: createSchemaResponse
   })
+  @UsePipes(ValidationPipe)
   create(@Body() createSchemaDto: CreateSchemaDto, @Req() req: any) {
-    const appDetail = req.user;
-    console.log(appDetail);
+    const appDetail = req.user;    
     return this.schemaService.create(createSchemaDto, appDetail);
   }
 
