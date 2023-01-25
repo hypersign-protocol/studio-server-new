@@ -15,7 +15,7 @@ export class DidSSIService {
 
   }
 
-  async initiateHypersignDid(mnemonic: string, nameSpace: string) {
+  async initiateHypersignDid(mnemonic: string, namespace: string) {
     const nodeRpcEndpoint = this.config.get('HID_NETWORK_RPC')
     const nodeRestEndpoint = this.config.get('HID_NETWORK_API')
     await this.hidWallet.generateWallet(mnemonic);
@@ -24,7 +24,7 @@ export class DidSSIService {
       offlineSigner,
       nodeRpcEndpoint,
       nodeRestEndpoint,
-      namespace: nameSpace
+      namespace: namespace
     });
     await hypersignDid.init();
     return hypersignDid

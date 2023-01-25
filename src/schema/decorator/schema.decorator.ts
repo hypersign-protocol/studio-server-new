@@ -1,8 +1,8 @@
-import { BadRequestException, SetMetadata, applyDecorators } from "@nestjs/common";
+import { applyDecorators, SetMetadata, BadRequestException } from "@nestjs/common";
 
-export const ValidateVerificationMethodId = (): PropertyDecorator => {
+export const IsDid = (): PropertyDecorator => {
     return applyDecorators(
-        SetMetadata('validateVerificationMethodId', true),
+        SetMetadata('isDid', true),
         (target: Object, propertyKey: string | symbol) => {
             let original = target[propertyKey];
             const descriptor: PropertyDescriptor = {
@@ -12,7 +12,7 @@ export const ValidateVerificationMethodId = (): PropertyDecorator => {
                         throw new BadRequestException([`${propertyKey.toString()} cannot be empty`]);
                     }
                     
-                    const did=val.split('#')[0]
+                    const did=val
                     if(!did.includes('did:hid:')){
                         throw new BadRequestException([`Invalid ${propertyKey.toString()}`])
                     }
