@@ -59,6 +59,7 @@ export class SchemaController {
 
   @Get()
   @ApiResponse({
+    status: 200,
     description: 'Schema List',
     type: String,
     isArray: true,
@@ -75,12 +76,13 @@ export class SchemaController {
 
   @Get(':schemaId')
   @ApiResponse({
+    status: 200,
     description: 'Resolved schema detail',
     type: ResolveSchema,
   })
   @ApiNotFoundResponse({
     status: 404,
-    description: 'sch:hid:testnet:......',
+    description: 'sch:hid:testnet:...... is not found',
     type: SchemaNotFoundError,
   })
   resolveSchema(
