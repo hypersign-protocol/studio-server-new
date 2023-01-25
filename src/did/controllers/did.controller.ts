@@ -11,6 +11,7 @@ import {
   UsePipes,
   ValidationPipe,
   NotFoundException,
+  Query,
 } from '@nestjs/common';
 import { DidService } from '../services/did.service';
 import {
@@ -27,10 +28,12 @@ import {
   ApiCreatedResponse,
   ApiTags,
   ApiBearerAuth,
+  ApiQuery,
+  ApiOkResponse,
 } from '@nestjs/swagger';
 import { DidError, DidNotFoundError } from '../dto/error-did.dto';
-import { Did } from '../schemas/did.schema';
 import { AllExceptionsFilter } from '../../utils/utils';
+import { PaginationDto } from 'src/utils/pagination.dto';
 @UseFilters(AllExceptionsFilter)
 @ApiTags('Did')
 @Controller('did')
@@ -39,10 +42,9 @@ import { AllExceptionsFilter } from '../../utils/utils';
 @UseGuards(AuthGuard('jwt'))
 export class DidController {
   constructor(private readonly didService: DidService) {}
-
+  @UsePipes(ValidationPipe)
   @Get()
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'DID List',
     type: String,
     isArray: true,
@@ -52,13 +54,24 @@ export class DidController {
     description: 'Error in finding resource',
     type: DidNotFoundError,
   })
-  getDidList(@Req() req: any): Promise<Did[]> {
+  @ApiQuery({
+    name: 'page',
+    description: 'Page value',
+  })
+  @ApiQuery({
+    name: 'limit',
+    description: 'Fetch limited list of data',
+  })
+  getDidList(
+    @Req() req: any,
+    @Query() pageOption: PaginationDto,
+  ): Promise<string[]> {
     const appDetail = req.user;
-    return this.didService.getDidList(appDetail);
+    return this.didService.getDidList(appDetail, pageOption);
   }
+
   @Get(':did')
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'DID Resolved',
     type: ResolvedDid,
   })
@@ -98,8 +111,7 @@ export class DidController {
   }
   @UsePipes(ValidationPipe)
   @Patch()
-  @ApiResponse({
-    status: 200,
+  @ApiOkResponse({
     description: 'DID Updated',
     type: TxnHash,
   })

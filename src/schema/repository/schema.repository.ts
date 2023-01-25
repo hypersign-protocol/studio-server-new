@@ -14,7 +14,10 @@ export class SchemaRepository {
     return this.schemaModel.findOne(schemaFilterQuery);
   }
   async find(schemaFilterQuery: FilterQuery<Schemas>): Promise<Schemas[]> {
-    return this.schemaModel.distinct('schemaId', schemaFilterQuery);
+    return await this.schemaModel
+      .find({ appId: schemaFilterQuery.appId }, { schemaId: 1, _id: 0 })
+      .skip(schemaFilterQuery.paginationOption.skip)
+      .limit(schemaFilterQuery.paginationOption.limit);
   }
 
   async create(schema: Schemas): Promise<Schemas> {

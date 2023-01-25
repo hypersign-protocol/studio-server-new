@@ -7,9 +7,9 @@ import { Exclude } from 'class-transformer';
 
 export type DidDocument = Did & Document;
 export type DidDocumentMetaData = DidMetaData & Document;
-export enum RegistrationStatus{
-  PROCESSING='PROCESSING',
-  COMPLETED='COMPLETED'
+export enum RegistrationStatus {
+  PROCESSING = 'PROCESSING',
+  COMPLETED = 'COMPLETED',
 }
 @Schema()
 export class Did {
@@ -27,7 +27,6 @@ export class Did {
   @ApiHideProperty()
   @Exclude()
   @Prop()
-
   @IsString()
   appId: string;
   @ApiProperty({
@@ -38,22 +37,20 @@ export class Did {
   @IsString()
   did: string;
 
-    
   @ApiProperty({
     description: 'Txn hash during registration',
-    example:'EDAB2D76772B8401CF82FF7EE0B4CBAA4A330EC16064B27505AABD8A5BA8B05B',
-    name:'transactionHash'
-
+    example: 'EDAB2D76772B8401CF82FF7EE0B4CBAA4A330EC16064B27505AABD8A5BA8B05B',
+    name: 'transactionHash',
   })
   @Prop()
-  transactionHash:string;
+  transactionHash: string;
 
   @ApiProperty({
-    name:'registrationStatus'
+    name: 'registrationStatus',
   })
   @Prop()
   @IsEnum(RegistrationStatus)
-  registrationStatus: RegistrationStatus
+  registrationStatus: RegistrationStatus;
 }
 
 @Schema()
@@ -78,11 +75,7 @@ export class DidMetaData {
   })
   @Prop()
   did: string;
-
 }
-
-
-
 
 const DidSchema = SchemaFactory.createForClass(Did);
 const DidMetaDataSchema = SchemaFactory.createForClass(DidMetaData);

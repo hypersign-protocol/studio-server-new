@@ -9,7 +9,9 @@ import {
   Req,
   UsePipes,
   ValidationPipe,
+  Query,
 } from '@nestjs/common';
+import { PaginationDto } from 'src/utils/pagination.dto';
 import { SchemaService } from '../services/schema.service';
 import {
   CreateSchemaDto,
@@ -56,7 +58,7 @@ export class SchemaController {
     const appDetail = req.user;
     return this.schemaService.create(createSchemaDto, appDetail);
   }
-
+  @UsePipes(ValidationPipe)
   @Get()
   @ApiResponse({
     status: 200,
@@ -69,9 +71,9 @@ export class SchemaController {
     description: 'No schema has created',
     type: SchemaNotFoundError,
   })
-  getSchemaList(@Req() req: any): Promise<Schemas[]> {
+  getSchemaList(@Req() req: any, @Query() pagenationOption: PaginationDto) {
     const appDetial = req.user;
-    return this.schemaService.getSchemaList(appDetial);
+    return this.schemaService.getSchemaList(appDetial, pagenationOption);
   }
 
   @Get(':schemaId')

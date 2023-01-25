@@ -16,7 +16,7 @@ import { EdvService } from 'src/edv/services/edv.service';
 import { Slip10RawIndex } from '@cosmjs/crypto';
 import { HidWalletService } from '../../hid-wallet/services/hid-wallet.service';
 import { DidSSIService } from './did.ssi.service';
-import { RegistrationStatus } from '../schemas/did.schema';
+import { Did, RegistrationStatus } from '../schemas/did.schema';
 
 @Injectable({ scope: Scope.REQUEST })
 export class DidService {
@@ -113,15 +113,20 @@ export class DidService {
     }
   }
 
-  async getDidList(appDetail) {
-    const didList = await this.didRepositiory.find({ appId: appDetail.appId });
+  async getDidList(appDetail, option) {
+    const skip = (option.page - 1) * option.limit;
+    option['skip'] = skip;
+    const didList = await this.didRepositiory.find({
+      appId: appDetail.appId,
+      option,
+    });
     if (didList.length <= 0) {
       throw new NotFoundException([
         `No did has created for appId ${appDetail.appId}`,
       ]);
     }
 
-    return didList;
+    return didList.map((x) => x.did);
   }
 
   async resolveDid(appDetail, did: string) {
