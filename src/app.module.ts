@@ -11,6 +11,7 @@ import { APP_FILTER } from '@nestjs/core';
 import { AppAuthSecretService } from './app-auth/services/app-auth-passord.service';
 import { DidModule } from './did/did.module';
 import { SchemaModule } from './schema/schema.module';
+import { CredentialModule } from './credential/credential.module';
 @Module({
   imports: [
     AppAuthModule,
@@ -23,6 +24,7 @@ import { SchemaModule } from './schema/schema.module';
     EdvModule,
     DidModule,
     SchemaModule,
+    CredentialModule,
   ],
   controllers: [],
   providers: [
