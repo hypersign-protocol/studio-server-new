@@ -33,7 +33,7 @@ export class DidService {
     appDetail,
   ): Promise<CreateDidResponse> {
     try {
-      const nameSpace = createDidDto.namespace;
+      const methodSpecificId = createDidDto.methodSpecificId;
       const { edvId, edvDocId } = appDetail;
       await this.edvService.init(edvId);
       const docs = await this.edvService.getDecryptedDocument(edvDocId);
@@ -61,8 +61,10 @@ export class DidService {
       );
       const { publicKeyMultibase, privateKeyMultibase } =
         await hypersignDid.generateKeys({ seed });
-
-      const didDoc = await hypersignDid.generate({ publicKeyMultibase });
+      const didDoc = await hypersignDid.generate({
+        methodSpecificId,
+        publicKeyMultibase,
+      });
 
       const params = {
         didDocument: didDoc,
