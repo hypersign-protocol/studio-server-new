@@ -91,12 +91,13 @@ export class CredentialController {
   verify(@Body() createCredentialDto: CreateCredentialDto, @Req() req) {
     return this.credentialService.create(createCredentialDto, req.user);
   }
-
+  @UsePipes(ValidationPipe)
   @Patch(':id')
   update(
-    @Param('id') id: string,
-    @Body() updateCredentialDto: UpdateCredentialDto,
+  @Param('id') id: string,
+  @Body() updateCredentialDto: UpdateCredentialDto,
+  @Req() req,
   ) {
-    return this.credentialService.update(+id, updateCredentialDto);
+    return this.credentialService.update(id, updateCredentialDto,req.user);
   }
 }
