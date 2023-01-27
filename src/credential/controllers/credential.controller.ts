@@ -33,7 +33,10 @@ import {
 } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { PaginationDto } from 'src/utils/pagination.dto';
-import { VerifyCredentialDto } from '../dto/verify-credential.dto';
+import {
+  VerifyCredentialDto,
+  VerifyCredentialResponse,
+} from '../dto/verify-credential.dto';
 import { BooleanPipe } from 'src/utils/Pipes/boolean.pipe';
 @ApiBearerAuth('Authorization')
 @UseGuards(AuthGuard('jwt'))
@@ -120,6 +123,20 @@ export class CredentialController {
 
   @UsePipes(ValidationPipe)
   @Post('/verify')
+  @ApiOkResponse({
+    description: 'verification result of credential',
+    type: VerifyCredentialResponse,
+  })
+  @ApiBadRequestResponse({
+    status: 400,
+    description: 'Error occured at the time of verifying credential',
+    type: CredentialError,
+  })
+  @ApiNotFoundResponse({
+    status: 404,
+    description: 'Resource not found',
+    type: CredentialNotFoundError,
+  })
   verify(@Body() verifyCredentialDto: VerifyCredentialDto, @Req() req) {
     return this.credentialService.verfiyCredential(
       verifyCredentialDto,
