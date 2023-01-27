@@ -128,7 +128,7 @@ export class CredentialController {
   }
 
   @UsePipes(ValidationPipe)
-  @Patch(':id')
+  @Patch(':credentialId')
   @ApiOkResponse({
     description: 'Credential Updated',
     type: ResolveCredential,
@@ -144,10 +144,10 @@ export class CredentialController {
     type: CredentialError,
   })
   update(
-    @Param('id') id: string,
+    @Param(':credentialId') credentialId: string,
     @Body() updateCredentialDto: UpdateCredentialDto,
     @Req() req,
   ) {
-    return this.credentialService.update(id, updateCredentialDto, req.user);
+    return this.credentialService.update(credentialId, updateCredentialDto, req.user);
   }
 }
