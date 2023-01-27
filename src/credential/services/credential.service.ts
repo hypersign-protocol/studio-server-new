@@ -129,9 +129,6 @@ export class CredentialService {
   }
 
   async resolveCredential(credentialId: string, appDetail, retrieveCredential: boolean) {
-
-
-
     const credentialDetail = await this.credentialRepository.findOne({
       appId: appDetail.appId,
       credentialId,
@@ -164,9 +161,6 @@ export class CredentialService {
       persist: credentialDetail.persist,
       retrieveCredential
     }
-
-
-
   }
 
   async update(id: string, updateCredentialDto: UpdateCredentialDto, appDetail) {
