@@ -22,7 +22,7 @@ export class CredentialService {
     private readonly hidWallet: HidWalletService,
     private credentialRepository: CredentialRepository,
     private readonly didRepositiory: DidRepository,
-  ) {}
+  ) { }
   async create(createCredentialDto: CreateCredentialDto, appDetail) {
     const {
       schemaId,
@@ -72,13 +72,30 @@ export class CredentialService {
         mnemonic,
         nameSpace,
       );
-      const credential = await hypersignVC.generate({
-        schemaId,
-        subjectDid,
-        issuerDid,
-        fields,
-        expirationDate,
-      });
+      let credential;
+
+      if (schemaId) {
+        credential = await hypersignVC.generate({
+          schemaId,
+          subjectDid,
+          issuerDid,
+          fields,
+          expirationDate,
+        });
+      } else {
+        if (!schemaContext || !type) {
+          throw new BadRequestException(['schemaContext and type is required to create a schema'])
+        }
+        credential = await hypersignVC.generate({
+          schemaContext,
+          type,
+          subjectDid,
+          issuerDid,
+          fields,
+          expirationDate,
+        });
+
+      }
       const {
         signedCredential,
         credentialStatus,
@@ -118,11 +135,18 @@ export class CredentialService {
     return credentialList.map((credential) => credential.credentialId);
   }
 
-  async resolveCredential(credentialId: string, appDetail) {
+  async resolveCredential(credentialId: string, appDetail, retrieveCredential: boolean) {
     const credentialDetail = await this.credentialRepository.findOne({
       appId: appDetail.appId,
       credentialId,
     });
+    let credential;
+    if (credentialDetail.persist === true && retrieveCredential === true) {
+      const { edvId } = appDetail;
+      await this.edvService.init(edvId);
+      const { signedCredential } = await this.edvService.getDecryptedDocument(credentialDetail.edvDocId)
+      credential = signedCredential
+    }
     if (!credentialDetail || credentialDetail == null) {
       throw new NotFoundException([
         `${credentialId} is not found`,
@@ -130,16 +154,20 @@ export class CredentialService {
       ]);
     }
     const hypersignCredential = new HypersignVerifiableCredential();
-    let resolvedCredential;
+    let credentialStatus;
     try {
-      resolvedCredential = await hypersignCredential.resolveCredentialStatus({
+      credentialStatus = await hypersignCredential.resolveCredentialStatus({
         credentialId,
       });
     } catch (e) {
       throw new BadRequestException([e.message]);
     }
-
-    return resolvedCredential;
+    return {
+      credential: (credential ? credential : undefined),
+      credentialStatus,
+      persist: credentialDetail.persist,
+      retrieveCredential
+    }
   }
 
   async update(

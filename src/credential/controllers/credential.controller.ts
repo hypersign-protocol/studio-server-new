@@ -34,14 +34,13 @@ import {
 import { AuthGuard } from '@nestjs/passport';
 import { PaginationDto } from 'src/utils/pagination.dto';
 import { VerifyCredentialDto } from '../dto/verify-credential.dto';
-
+import { BooleanPipe } from 'src/utils/Pipes/boolean.pipe';
 @ApiBearerAuth('Authorization')
 @UseGuards(AuthGuard('jwt'))
 @Controller('credential')
 @ApiTags('credential')
 export class CredentialController {
-  constructor(private readonly credentialService: CredentialService) {}
-
+  constructor(private readonly credentialService: CredentialService) { }
   @Get()
   @ApiOkResponse({
     description: 'List of credentials',
@@ -81,9 +80,11 @@ export class CredentialController {
   resolveCredential(
     @Req() req: any,
     @Param('credentialId') credentialId: string,
+    @Query('retrieveCredential',BooleanPipe) retrieveCredential: boolean
   ) {
-    const appDetail = req.user;
-    return this.credentialService.resolveCredential(credentialId, appDetail);
+    const appDetail = req.user;        
+     retrieveCredential = retrieveCredential  === true ? true : false
+    return this.credentialService.resolveCredential(credentialId, appDetail, retrieveCredential);
   }
 
   @UsePipes(ValidationPipe)

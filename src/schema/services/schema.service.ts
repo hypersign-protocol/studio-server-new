@@ -46,8 +46,8 @@ export class SchemaService {
     });
     if (!didInfo || didInfo == null) {
       throw new NotFoundException([
-        `${author} not found`,
-        `${author} is not owned by the appId ${appDetail.appId}`,
+        `${didOfvmId} not found`,
+        `${didOfvmId} is not owned by the appId ${appDetail.appId}`,
         `Resource not found`,
       ]);
     }
