@@ -84,7 +84,7 @@ export class SchemaController {
   })
   @ApiNotFoundResponse({
     status: 404,
-    description: 'sch:hid:testnet:...... is not found',
+    description: 'schema with id sch:hid:testnet:...... not found',
     type: SchemaNotFoundError,
   })
   resolveSchema(

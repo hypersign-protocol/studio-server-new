@@ -125,6 +125,7 @@ export class EdvService {
       },
       edvId: edvId ? edvId : this.edvId,
     };
+    this.edvId = config.edvId
     const client = new HypersignEdvClient({
       keyResolver: this.hypersignDIDKeyResolverForEd25519KeyPair,
       url: this.edvUrl,
