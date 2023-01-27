@@ -97,12 +97,7 @@ export class CreateCredentialDto {
 }
 
 class CredentialSubject {
-  @ApiProperty({
-    description: 'name',
-    example: 'Random name',
-  })
-  @IsString()
-  name: string;
+ 
   @ApiProperty({
     description: 'id',
     example: 'did:hid:testnet:...............',
