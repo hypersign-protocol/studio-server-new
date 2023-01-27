@@ -1,8 +1,13 @@
-import { Did, DidDocument ,DidDocumentMetaData,DidMetaData} from '../schemas/did.schema';
+import {
+  Did,
+  DidDocument,
+  DidDocumentMetaData,
+  DidMetaData,
+} from '../schemas/did.schema';
 import { FilterQuery, Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { Injectable } from '@nestjs/common';
- 
+
 @Injectable()
 export class DidRepository {
   constructor(
@@ -13,7 +18,10 @@ export class DidRepository {
     return this.didModel.findOne(didFilterQuery);
   }
   async find(didFilterQuery: FilterQuery<Did>): Promise<Did[]> {
-    return this.didModel.distinct('did',didFilterQuery)
+    return await this.didModel
+      .find({ appId: didFilterQuery.appId }, { did: 1, _id: 0 })
+      .skip(didFilterQuery.option.skip)
+      .limit(didFilterQuery.option.limit);
   }
 
   async create(did: Did): Promise<Did> {
@@ -29,15 +37,16 @@ export class DidRepository {
   }
 }
 
-
-
 @Injectable()
 export class DidMetaDataRepo {
   constructor(
-    @InjectModel(DidMetaData.name) private readonly didModel: Model<DidDocumentMetaData>,
+    @InjectModel(DidMetaData.name)
+    private readonly didModel: Model<DidDocumentMetaData>,
   ) {}
 
-  async findOne(didFilterQuery: FilterQuery<DidMetaData>): Promise<DidMetaData> {
+  async findOne(
+    didFilterQuery: FilterQuery<DidMetaData>,
+  ): Promise<DidMetaData> {
     return this.didModel.findOne(didFilterQuery);
   }
   async find(didFilterQuery: FilterQuery<DidMetaData>): Promise<DidMetaData[]> {
@@ -49,15 +58,21 @@ export class DidMetaDataRepo {
     return newDid.save();
   }
 
-  async findAndReplace(didFilterQuery: FilterQuery<DidMetaData>,
-    did: DidMetaData): Promise<DidMetaData> {     
-    return  this.didModel.findOneAndReplace(didFilterQuery,did,{upsert:true})
+  async findAndReplace(
+    didFilterQuery: FilterQuery<DidMetaData>,
+    did: DidMetaData,
+  ): Promise<DidMetaData> {
+    return this.didModel.findOneAndReplace(didFilterQuery, did, {
+      upsert: true,
+    });
   }
 
   async findOneAndUpdate(
     didFilterQuery: FilterQuery<DidMetaData>,
     did: Partial<DidMetaData>,
   ): Promise<Did> {
-    return this.didModel.findOneAndUpdate(didFilterQuery, did, { upsert: true })
+    return this.didModel.findOneAndUpdate(didFilterQuery, did, {
+      upsert: true,
+    });
   }
 }

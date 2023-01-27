@@ -52,13 +52,14 @@ export class AppAuthController {
   })
   @Get()
   @ApiResponse({
+    status: 200,
     description: 'App List',
     type: [App],
   })
   async getApps(@User() userId): Promise<App[]> {
-    const appList =await this.appAuthService.getAllApps(userId);
-    if(appList.length===0){
-      throw new AppNotFoundException()
+    const appList = await this.appAuthService.getAllApps(userId);
+    if (appList.length === 0) {
+      throw new AppNotFoundException();
     }
     if (appList) return appList;
   }
@@ -73,6 +74,7 @@ export class AppAuthController {
   })
   @Get(':appId')
   @ApiResponse({
+    status: 200,
     description: 'App details',
     type: App,
   })
@@ -127,6 +129,7 @@ export class AppAuthController {
   })
   @Put(':appId')
   @ApiResponse({
+    status: 200,
     description: 'App updated',
     type: App,
   })
@@ -153,6 +156,7 @@ export class AppAuthController {
   @Post('oauth')
   @HttpCode(200)
   @ApiResponse({
+    status: 200,
     description: 'AccessToken generated',
     type: GenerateTokenResponse,
   })
