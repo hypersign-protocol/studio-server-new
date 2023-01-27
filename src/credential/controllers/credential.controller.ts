@@ -11,7 +11,11 @@ import {
   ValidationPipe,
 } from '@nestjs/common';
 import { CredentialService } from '../services/credential.service';
-import { CreateCredentialDto } from '../dto/create-credential.dto';
+import {
+  CreateCredentialDto,
+  CreateCredentialResponse,
+  ResolveCredential,
+} from '../dto/create-credential.dto';
 import { UpdateCredentialDto } from '../dto/update-credential.dto';
 import {
   CredentialError,
@@ -52,11 +56,11 @@ export class CredentialController {
   @Get(':credentialId')
   @ApiOkResponse({
     description: 'Resolved credential detail',
-    // type: ,
+    type: ResolveCredential,
   })
   @ApiNotFoundResponse({
     status: 404,
-    description: 'vc:hid:testnet:......',
+    description: 'Credential with id vc:hid:testnet:...... not found',
     type: CredentialNotFoundError,
   })
   resolveCredential(
@@ -71,11 +75,11 @@ export class CredentialController {
   @Post()
   @ApiCreatedResponse({
     description: 'Credential Created',
-    type: Object,
+    type: CreateCredentialResponse,
   })
   @ApiBadRequestResponse({
     status: 400,
-    description: 'Error occured at the time of creating schema',
+    description: 'Error occured at the time of creating credential',
     type: CredentialError,
   })
   @ApiNotFoundResponse({
@@ -91,13 +95,28 @@ export class CredentialController {
   verify(@Body() createCredentialDto: CreateCredentialDto, @Req() req) {
     return this.credentialService.create(createCredentialDto, req.user);
   }
+
   @UsePipes(ValidationPipe)
   @Patch(':id')
+  @ApiOkResponse({
+    description: 'Credential Updated',
+    type: ResolveCredential,
+  })
+  @ApiNotFoundResponse({
+    status: 404,
+    description: 'did:hid:testnet:........#key-${idx} not found',
+    type: CredentialNotFoundError,
+  })
+  @ApiBadRequestResponse({
+    status: 400,
+    description: 'Error occured at the time of creating credential',
+    type: CredentialError,
+  })
   update(
-  @Param('id') id: string,
-  @Body() updateCredentialDto: UpdateCredentialDto,
-  @Req() req,
+    @Param('id') id: string,
+    @Body() updateCredentialDto: UpdateCredentialDto,
+    @Req() req,
   ) {
-    return this.credentialService.update(id, updateCredentialDto,req.user);
+    return this.credentialService.update(id, updateCredentialDto, req.user);
   }
 }

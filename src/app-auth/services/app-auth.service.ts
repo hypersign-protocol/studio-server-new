@@ -80,10 +80,10 @@ export class AppAuthService {
     generateTokenDto: GenerateTokenDto,
     userId: string,
   ): Promise<{ access_token; expiresIn; tokenType }> {
-    const { appId, appSecret, grantType } = generateTokenDto;
+    const { appId, grantType } = generateTokenDto;
     const payload = {
       appId,
-      appSecret,
+      userId,
       grantType,
     };
     const appDetail = await this.appRepository.findOne({
@@ -91,14 +91,6 @@ export class AppAuthService {
     });
 
     if (!appDetail) {
-      throw new UnauthorizedException(['access_denied']);
-    }
-    // compare appSecret sent by user and appSecret hash stored in db
-    const compareHash = await this.appAuthSecretService.comapareSecret(
-      appSecret,
-      appDetail.appSecret,
-    );
-    if (!compareHash) {
       throw new UnauthorizedException(['access_denied']);
     }
     if (userId !== appDetail.userId) {

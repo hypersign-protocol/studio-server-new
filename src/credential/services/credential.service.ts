@@ -91,7 +91,7 @@ export class CredentialService {
       });
       let edvData = undefined;
       if (persist) {
-        edvData = await this.edvService.createDocument({ signedCredential })
+        edvData = await this.edvService.createDocument({ signedCredential });
       }
       await this.credentialRepository.create({
         appId: appDetail.appId,
@@ -135,9 +135,19 @@ export class CredentialService {
     return resolvedCredential;
   }
 
-  async update(id: string, updateCredentialDto: UpdateCredentialDto, appDetail) {
-    let { status, statusReason, issuerDid, namespace, verificationMethodId } = updateCredentialDto
-    const statusChange = status === 'SUSPEND' ? 'SUSPENDED' : (status === 'REVOKE' ? 'REVOKED' : 'LIVE')
+  async update(
+    id: string,
+    updateCredentialDto: UpdateCredentialDto,
+    appDetail,
+  ) {
+    let { status, statusReason, issuerDid, namespace, verificationMethodId } =
+      updateCredentialDto;
+    const statusChange =
+      status === 'SUSPEND'
+        ? 'SUSPENDED'
+        : status === 'REVOKE'
+        ? 'REVOKED'
+        : 'LIVE';
     const didOfvmId = verificationMethodId.split('#')[0];
 
     const { edvId, edvDocId } = appDetail;
@@ -154,40 +164,46 @@ export class CredentialService {
       ]);
     }
 
-
     const docs = await this.edvService.getDecryptedDocument(edvDocId);
     const mnemonic: string = docs.mnemonic;
-    await this.hidWallet.generateWallet(mnemonic)
+    await this.hidWallet.generateWallet(mnemonic);
 
     try {
-      const slipPathKeys = this.hidWallet.makeSSIWalletPath(didInfo.hdPathIndex);
+      const slipPathKeys = this.hidWallet.makeSSIWalletPath(
+        didInfo.hdPathIndex,
+      );
       const seed = await this.hidWallet.generateMemonicToSeedFromSlip10RawIndex(
         slipPathKeys,
       );
 
       const hypersignDid = new HypersignDID();
       const { privateKeyMultibase } = await hypersignDid.generateKeys({ seed });
-      const hypersignVC = await this.credentialSSIService.initateHypersignVC(mnemonic, namespace)
+      const hypersignVC = await this.credentialSSIService.initateHypersignVC(
+        mnemonic,
+        namespace,
+      );
       const credentialStatus = await hypersignVC.resolveCredentialStatus({
-        credentialId: id
-      })
+        credentialId: id,
+      });
       const updatedCredResult = await hypersignVC.updateCredentialStatus({
         credentialStatus,
         issuerDid,
         verificationMethodId,
         privateKeyMultibase,
         status: statusChange,
-        statusReason
-      })
-      await this.credentialRepository.findOneAndUpdate({ appId: appDetail.appId, credentialId: id }, { transactionHash: updatedCredResult.transactionHash })
+        statusReason,
+      });
+      await this.credentialRepository.findOneAndUpdate(
+        { appId: appDetail.appId, credentialId: id },
+        { transactionHash: updatedCredResult.transactionHash },
+      );
 
       return await hypersignVC.resolveCredentialStatus({
-        credentialId: id
+        credentialId: id,
       });
     } catch (e) {
-      throw new BadRequestException([e.message])
+      throw new BadRequestException([e.message]);
     }
-
   }
 
   remove(id: number) {
