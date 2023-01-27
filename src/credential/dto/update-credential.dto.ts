@@ -8,7 +8,7 @@ import { ValidateVerificationMethodId } from 'src/utils/customDecorator/vmId.dec
 import { Trim } from 'src/utils/customDecorator/trim.decorator';
 
 
-export enum status{
+export enum Status{
     LIVE='LIVE',
     SUSPEND='SUSPEND',
     REVOKE='REVOKE'
@@ -28,8 +28,8 @@ export class UpdateCredentialDto {
         description:'Credential status',
         example:'LIVE / SUSPEND / REVOKE'
     })
-    @IsEnum(status)
-    status:status
+    @IsEnum(Status)
+    status:Status
     @ApiProperty({
         name:'statusReason',
         description:'Credential status Reason',

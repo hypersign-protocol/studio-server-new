@@ -5,7 +5,7 @@ import { Trim } from 'src/utils/customDecorator/trim.decorator';
 import { RegistrationStatus } from '../schemas/did.schema';
 import { DidDoc } from '../dto/update-did.dto';
 
-export enum keyType {
+export enum KeyType {
   EcdsaSecp256k1RecoveryMethod2020 = 'EcdsaSecp256k1RecoveryMethod2020',
   Ed25519VerificationKey2020 = 'Ed25519VerificationKey2020',
 }
@@ -17,8 +17,8 @@ export class Options {
     example: 'keyType:EcdsaSecp256k1RecoveryMethod2020',
     name: 'keyType',
   })
-  @IsEnum(keyType)
-  keyType: keyType;
+  @IsEnum(KeyType)
+  keyType: KeyType;
 }
 export class CreateDidDto {
   @ApiProperty({
