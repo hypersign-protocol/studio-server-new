@@ -137,7 +137,7 @@ class CredentialStatus {
   type: string;
 }
 
-class CredentialProof {
+export class CredentialProof {
   @ApiProperty({
     name: 'type',
     description: 'type using which credential has signed',
