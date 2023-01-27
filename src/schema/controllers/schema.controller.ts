@@ -28,6 +28,7 @@ import {
   ApiCreatedResponse,
   ApiNotFoundResponse,
   ApiBadRequestResponse,
+  ApiQuery,
 } from '@nestjs/swagger';
 import { Schemas } from '../schemas/schemas.schema';
 @UseFilters(AllExceptionsFilter)
@@ -58,7 +59,7 @@ export class SchemaController {
     const appDetail = req.user;
     return this.schemaService.create(createSchemaDto, appDetail);
   }
-  @UsePipes(ValidationPipe)
+  @UsePipes(new ValidationPipe({ transform: true }))
   @Get()
   @ApiResponse({
     status: 200,
@@ -71,9 +72,19 @@ export class SchemaController {
     description: 'No schema has created',
     type: SchemaNotFoundError,
   })
-  getSchemaList(@Req() req: any, @Query() pagenationOption: PaginationDto) {
+  @ApiQuery({
+    name: 'page',
+    description: 'Page value',
+    required: false,
+  })
+  @ApiQuery({
+    name: 'limit',
+    description: 'Fetch limited list of data',
+    required: false,
+  })
+  getSchemaList(@Req() req: any, @Query() paginationOption: PaginationDto) {
     const appDetial = req.user;
-    return this.schemaService.getSchemaList(appDetial, pagenationOption);
+    return this.schemaService.getSchemaList(appDetial, paginationOption);
   }
 
   @Get(':schemaId')
@@ -84,7 +95,7 @@ export class SchemaController {
   })
   @ApiNotFoundResponse({
     status: 404,
-    description: 'sch:hid:testnet:...... is not found',
+    description: 'schema with id sch:hid:testnet:...... not found',
     type: SchemaNotFoundError,
   })
   resolveSchema(

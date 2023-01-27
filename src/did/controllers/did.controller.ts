@@ -42,7 +42,7 @@ import { PaginationDto } from 'src/utils/pagination.dto';
 @UseGuards(AuthGuard('jwt'))
 export class DidController {
   constructor(private readonly didService: DidService) {}
-  @UsePipes(ValidationPipe)
+  @UsePipes(new ValidationPipe({ transform: true }))
   @Get()
   @ApiOkResponse({
     description: 'DID List',
@@ -57,10 +57,12 @@ export class DidController {
   @ApiQuery({
     name: 'page',
     description: 'Page value',
+    required: false,
   })
   @ApiQuery({
     name: 'limit',
     description: 'Fetch limited list of data',
+    required: false,
   })
   getDidList(
     @Req() req: any,
@@ -98,10 +100,10 @@ export class DidController {
   })
   create(@Body() createDidDto: CreateDidDto, @Req() req: any) {
     const { options } = createDidDto;
-    const { KeyType } = options;
-    if (KeyType === 'EcdsaSecp256k1RecoveryMethod2020') {
+    const { keyType } = options;
+    if (keyType === 'EcdsaSecp256k1RecoveryMethod2020') {
       throw new NotFoundException({
-        message: [`${KeyType} is not supported`, `Feature coming soon`],
+        message: [`${keyType} is not supported`, `Feature coming soon`],
         error: 'Not Supported',
         status: 404,
       });

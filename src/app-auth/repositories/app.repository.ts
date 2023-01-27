@@ -14,7 +14,10 @@ export class AppRepository {
   }
 
   async find(appsFilterQuery: FilterQuery<App>): Promise<App[]> {
-    return this.appModel.find(appsFilterQuery);
+    return this.appModel
+      .find({ userId: appsFilterQuery.userId })
+      .skip(appsFilterQuery.paginationOption.skip)
+      .limit(appsFilterQuery.paginationOption.limit);
   }
 
   async create(app: App): Promise<App> {
