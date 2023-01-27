@@ -9,6 +9,7 @@ import {
   Req,
   UsePipes,
   ValidationPipe,
+  Query,
 } from '@nestjs/common';
 import { CredentialService } from '../services/credential.service';
 import {
@@ -28,8 +29,10 @@ import {
   ApiCreatedResponse,
   ApiBadRequestResponse,
   ApiTags,
+  ApiQuery,
 } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
+import { PaginationDto } from 'src/utils/pagination.dto';
 
 @ApiBearerAuth('Authorization')
 @UseGuards(AuthGuard('jwt'))
@@ -39,18 +42,29 @@ export class CredentialController {
   constructor(private readonly credentialService: CredentialService) {}
 
   @Get()
-  @ApiNotFoundResponse({
-    status: 404,
-    description: 'Error in finding resource',
-    type: CredentialNotFoundError,
-  })
   @ApiOkResponse({
     description: 'List of credentials',
     type: String,
     isArray: true,
   })
-  findAll(@Req() req) {
-    return this.credentialService.findAll(req.user);
+  @ApiNotFoundResponse({
+    status: 404,
+    description: 'Error in finding resource',
+    type: CredentialNotFoundError,
+  })
+  @ApiQuery({
+    name: 'page',
+    description: 'Page value',
+  })
+  @ApiQuery({
+    name: 'limit',
+    description: 'Fetch limited list of data',
+  })
+  findAll(
+    @Req() req: any,
+    @Query() pageOption: PaginationDto,
+  ): Promise<string[]> {
+    return this.credentialService.findAll(req.user, pageOption);
   }
 
   @Get(':credentialId')

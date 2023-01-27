@@ -60,8 +60,10 @@ export class AppAuthService {
     return appData;
   }
 
-  getAllApps(userId: string): Promise<App[]> {
-    return this.appRepository.find({ userId });
+  getAllApps(userId: string, paginationOption): Promise<App[]> {
+    const skip = (paginationOption.page - 1) * paginationOption.limit;
+    paginationOption.skip = skip;
+    return this.appRepository.find({ userId, paginationOption });
   }
 
   async getAppById(appId: string, userId: string): Promise<App> {

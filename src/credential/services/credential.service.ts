@@ -107,8 +107,14 @@ export class CredentialService {
     }
   }
 
-  findAll(appDetail) {
-    return this.credentialRepository.find({ appId: appDetail.appId });
+  async findAll(appDetail, paginationOption) {
+    const skip = (paginationOption.page - 1) * paginationOption.limit;
+    paginationOption['skip'] = skip;
+    const credentialList = await this.credentialRepository.find({
+      appId: appDetail.appId,
+      paginationOption,
+    });
+    return credentialList.map((credential) => credential.credentialId);
   }
 
   async resolveCredential(credentialId: string, appDetail) {
@@ -140,7 +146,7 @@ export class CredentialService {
     updateCredentialDto: UpdateCredentialDto,
     appDetail,
   ) {
-    let { status, statusReason, issuerDid, namespace, verificationMethodId } =
+    const { status, statusReason, issuerDid, namespace, verificationMethodId } =
       updateCredentialDto;
     const statusChange =
       status === 'SUSPEND'

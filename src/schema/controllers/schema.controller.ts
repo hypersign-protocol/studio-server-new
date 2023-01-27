@@ -71,9 +71,9 @@ export class SchemaController {
     description: 'No schema has created',
     type: SchemaNotFoundError,
   })
-  getSchemaList(@Req() req: any, @Query() pagenationOption: PaginationDto) {
+  getSchemaList(@Req() req: any, @Query() paginationOption: PaginationDto) {
     const appDetial = req.user;
-    return this.schemaService.getSchemaList(appDetial, pagenationOption);
+    return this.schemaService.getSchemaList(appDetial, paginationOption);
   }
 
   @Get(':schemaId')
