@@ -18,7 +18,10 @@ export class CredentialRepository {
   async find(
     credentialFilterQuery: FilterQuery<CredentialModel>,
   ): Promise<CredentialModel[]> {
-    return this.credentialModel.distinct('credentialId', credentialFilterQuery);
+    return await this.credentialModel
+      .find({ appId: credentialFilterQuery.appId }, { credentialId: 1, _id: 0 })
+      .skip(credentialFilterQuery.paginationOption.skip)
+      .limit(credentialFilterQuery.paginationOption.limit);
   }
 
   async create(credential: Credential): Promise<CredentialModel> {

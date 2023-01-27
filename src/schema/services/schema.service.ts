@@ -92,16 +92,19 @@ export class SchemaService {
     }
   }
 
-  async getSchemaList(appDetial) {
+  async getSchemaList(appDetial, paginationOption) {
+    const skip = (paginationOption.page - 1) * paginationOption.limit;
+    paginationOption['skip'] = skip;
     const schemaList = await this.schemaRepository.find({
       appId: appDetial.appId,
+      paginationOption,
     });
     if (schemaList.length <= 0) {
       throw new NotFoundException([
         `No schema has created for appId ${appDetial.appId}`,
       ]);
     }
-    return schemaList;
+    return schemaList.map((x) => x.schemaId);
   }
 
   async resolveSchema(schemaId: string, appDetail) {

@@ -10,6 +10,7 @@ import {
   UseInterceptors,
   HttpCode,
   UseFilters,
+  Query,
 } from '@nestjs/common';
 import { User } from '../decorator/user.decorator';
 import { CreateAppDto } from 'src/app-auth/dtos/create-app.dto';
@@ -24,6 +25,7 @@ import {
   ApiCreatedResponse,
   ApiHeader,
   ApiNotFoundResponse,
+  ApiQuery,
   ApiResponse,
   ApiTags,
   ApiUnauthorizedResponse,
@@ -34,6 +36,7 @@ import { UpdateAppDto } from '../dtos/update-app.dto';
 import { MongooseClassSerializerInterceptor } from '../../utils/utils';
 import { AllExceptionsFilter } from '../../utils/utils';
 import { AppError } from '../dtos/fetch-app.dto';
+import { PaginationDto } from 'src/utils/pagination.dto';
 
 @UseFilters(AllExceptionsFilter)
 @ApiTags('App')
@@ -52,13 +55,30 @@ export class AppAuthController {
   })
   @Get()
   @ApiResponse({
+    status: 200,
     description: 'App List',
     type: [App],
   })
-  async getApps(@User() userId): Promise<App[]> {
-    const appList =await this.appAuthService.getAllApps(userId);
-    if(appList.length===0){
-      throw new AppNotFoundException()
+  @ApiNotFoundResponse({
+    status: 404,
+    description: 'App not found',
+    type: AppError,
+  })
+  @ApiQuery({
+    name: 'page',
+    description: 'Page value',
+  })
+  @ApiQuery({
+    name: 'limit',
+    description: 'limit value',
+  })
+  async getApps(
+    @User() userId,
+    @Query() pageOption: PaginationDto,
+  ): Promise<App[]> {
+    const appList = await this.appAuthService.getAllApps(userId, pageOption);
+    if (appList.length === 0) {
+      throw new AppNotFoundException();
     }
     if (appList) return appList;
   }
@@ -73,6 +93,7 @@ export class AppAuthController {
   })
   @Get(':appId')
   @ApiResponse({
+    status: 200,
     description: 'App details',
     type: App,
   })
@@ -127,6 +148,7 @@ export class AppAuthController {
   })
   @Put(':appId')
   @ApiResponse({
+    status: 200,
     description: 'App updated',
     type: App,
   })
@@ -153,6 +175,7 @@ export class AppAuthController {
   @Post('oauth')
   @HttpCode(200)
   @ApiResponse({
+    status: 200,
     description: 'AccessToken generated',
     type: GenerateTokenResponse,
   })

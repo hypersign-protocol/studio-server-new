@@ -12,7 +12,11 @@ import {
   Query,
 } from '@nestjs/common';
 import { CredentialService } from '../services/credential.service';
-import { CreateCredentialDto } from '../dto/create-credential.dto';
+import {
+  CreateCredentialDto,
+  CreateCredentialResponse,
+  ResolveCredential,
+} from '../dto/create-credential.dto';
 import { UpdateCredentialDto } from '../dto/update-credential.dto';
 import {
   CredentialError,
@@ -25,10 +29,12 @@ import {
   ApiCreatedResponse,
   ApiBadRequestResponse,
   ApiTags,
+  ApiQuery,
 } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
+import { PaginationDto } from 'src/utils/pagination.dto';
+import { VerifyCredentialDto } from '../dto/verify-credential.dto';
 import { BooleanPipe } from 'src/utils/Pipes/boolean.pipe';
-
 @ApiBearerAuth('Authorization')
 @UseGuards(AuthGuard('jwt'))
 @Controller('credential')
@@ -36,28 +42,39 @@ import { BooleanPipe } from 'src/utils/Pipes/boolean.pipe';
 export class CredentialController {
   constructor(private readonly credentialService: CredentialService) { }
   @Get()
-  @ApiNotFoundResponse({
-    status: 404,
-    description: 'Error in finding resource',
-    type: CredentialNotFoundError,
-  })
   @ApiOkResponse({
     description: 'List of credentials',
     type: String,
     isArray: true,
   })
-  findAll(@Req() req) {
-    return this.credentialService.findAll(req.user);
+  @ApiNotFoundResponse({
+    status: 404,
+    description: 'Error in finding resource',
+    type: CredentialNotFoundError,
+  })
+  @ApiQuery({
+    name: 'page',
+    description: 'Page value',
+  })
+  @ApiQuery({
+    name: 'limit',
+    description: 'Fetch limited list of data',
+  })
+  findAll(
+    @Req() req: any,
+    @Query() pageOption: PaginationDto,
+  ): Promise<string[]> {
+    return this.credentialService.findAll(req.user, pageOption);
   }
 
   @Get(':credentialId')
   @ApiOkResponse({
     description: 'Resolved credential detail',
-    // type: ,
+    type: ResolveCredential,
   })
   @ApiNotFoundResponse({
     status: 404,
-    description: 'vc:hid:testnet:......',
+    description: 'Credential with id vc:hid:testnet:...... not found',
     type: CredentialNotFoundError,
   })
   resolveCredential(
@@ -74,11 +91,11 @@ export class CredentialController {
   @Post()
   @ApiCreatedResponse({
     description: 'Credential Created',
-    type: Object,
+    type: CreateCredentialResponse,
   })
   @ApiBadRequestResponse({
     status: 400,
-    description: 'Error occured at the time of creating schema',
+    description: 'Error occured at the time of creating credential',
     type: CredentialError,
   })
   @ApiNotFoundResponse({
@@ -90,12 +107,31 @@ export class CredentialController {
     return this.credentialService.create(createCredentialDto, req.user);
   }
 
+  @UsePipes(ValidationPipe)
   @Post('/verify')
-  verify(@Body() createCredentialDto: CreateCredentialDto, @Req() req) {
-    return this.credentialService.create(createCredentialDto, req.user);
+  verify(@Body() verifyCredentialDto: VerifyCredentialDto, @Req() req) {
+    return this.credentialService.verfiyCredential(
+      verifyCredentialDto,
+      req.user,
+    );
   }
+
   @UsePipes(ValidationPipe)
   @Patch(':id')
+  @ApiOkResponse({
+    description: 'Credential Updated',
+    type: ResolveCredential,
+  })
+  @ApiNotFoundResponse({
+    status: 404,
+    description: 'did:hid:testnet:........#key-${idx} not found',
+    type: CredentialNotFoundError,
+  })
+  @ApiBadRequestResponse({
+    status: 400,
+    description: 'Error occured at the time of creating credential',
+    type: CredentialError,
+  })
   update(
     @Param('id') id: string,
     @Body() updateCredentialDto: UpdateCredentialDto,

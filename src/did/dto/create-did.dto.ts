@@ -1,11 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsEnum, IsString, ValidateNested } from 'class-validator';
+import { IsEnum, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { Trim } from 'src/utils/customDecorator/trim.decorator';
 import { RegistrationStatus } from '../schemas/did.schema';
 import { DidDoc } from '../dto/update-did.dto';
 
-export enum KeyType {
+export enum keyType {
   EcdsaSecp256k1RecoveryMethod2020 = 'EcdsaSecp256k1RecoveryMethod2020',
   Ed25519VerificationKey2020 = 'Ed25519VerificationKey2020',
 }
@@ -14,11 +14,11 @@ export class Options {
   @ApiProperty({
     description:
       'Verification Method Keytype Ed25519VerificationKey2020 or EcdsaSecp256k1RecoveryMethod2020',
-    example: 'KeyType:EcdsaSecp256k1RecoveryMethod2020',
-    name: 'KeyType',
+    example: 'keyType:EcdsaSecp256k1RecoveryMethod2020',
+    name: 'keyType',
   })
-  @IsEnum(KeyType)
-  KeyType: KeyType;
+  @IsEnum(keyType)
+  keyType: keyType;
 }
 export class CreateDidDto {
   @ApiProperty({
@@ -29,12 +29,21 @@ export class CreateDidDto {
   @IsString()
   @Trim()
   namespace: string;
+  @IsOptional()
+  @IsString()
+  @ApiProperty({
+    name: 'methodSpecificId',
+    description: 'MethodSpecificId to be added in did',
+    example: '0x19d73aeeBcc6FEf2d0342375090401301Fe9663F',
+    required: false,
+  })
+  methodSpecificId?: string;
 
   @ApiProperty({
     name: 'options',
     description: '',
     example: {
-      KeyType: 'Ed25519VerificationKey2020',
+      keyType: 'Ed25519VerificationKey2020',
     },
   })
   @Type(() => Options)

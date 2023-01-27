@@ -12,6 +12,7 @@ import { CredentialRepository } from '../repository/credential.repository';
 import { EdvService } from 'src/edv/services/edv.service';
 import { DidRepository } from 'src/did/repository/did.repository';
 import { HypersignDID, HypersignVerifiableCredential } from 'hs-ssi-sdk';
+import { VerifyCredentialDto } from '../dto/verify-credential.dto';
 @Injectable()
 export class CredentialService {
   constructor(
@@ -108,7 +109,7 @@ export class CredentialService {
       });
       let edvData = undefined;
       if (persist) {
-        edvData = await this.edvService.createDocument({ signedCredential })
+        edvData = await this.edvService.createDocument({ signedCredential });
       }
       await this.credentialRepository.create({
         appId: appDetail.appId,
@@ -124,8 +125,14 @@ export class CredentialService {
     }
   }
 
-  findAll(appDetail) {
-    return this.credentialRepository.find({ appId: appDetail.appId });
+  async findAll(appDetail, paginationOption) {
+    const skip = (paginationOption.page - 1) * paginationOption.limit;
+    paginationOption['skip'] = skip;
+    const credentialList = await this.credentialRepository.find({
+      appId: appDetail.appId,
+      paginationOption,
+    });
+    return credentialList.map((credential) => credential.credentialId);
   }
 
   async resolveCredential(credentialId: string, appDetail, retrieveCredential: boolean) {
@@ -163,9 +170,19 @@ export class CredentialService {
     }
   }
 
-  async update(id: string, updateCredentialDto: UpdateCredentialDto, appDetail) {
-    let { status, statusReason, issuerDid, namespace, verificationMethodId } = updateCredentialDto
-    const statusChange = status === 'SUSPEND' ? 'SUSPENDED' : (status === 'REVOKE' ? 'REVOKED' : 'LIVE')
+  async update(
+    id: string,
+    updateCredentialDto: UpdateCredentialDto,
+    appDetail,
+  ) {
+    const { status, statusReason, issuerDid, namespace, verificationMethodId } =
+      updateCredentialDto;
+    const statusChange =
+      status === 'SUSPEND'
+        ? 'SUSPENDED'
+        : status === 'REVOKE'
+        ? 'REVOKED'
+        : 'LIVE';
     const didOfvmId = verificationMethodId.split('#')[0];
 
     const { edvId, edvDocId } = appDetail;
@@ -182,43 +199,82 @@ export class CredentialService {
       ]);
     }
 
-
     const docs = await this.edvService.getDecryptedDocument(edvDocId);
     const mnemonic: string = docs.mnemonic;
-    await this.hidWallet.generateWallet(mnemonic)
+    await this.hidWallet.generateWallet(mnemonic);
 
     try {
-      const slipPathKeys = this.hidWallet.makeSSIWalletPath(didInfo.hdPathIndex);
+      const slipPathKeys = this.hidWallet.makeSSIWalletPath(
+        didInfo.hdPathIndex,
+      );
       const seed = await this.hidWallet.generateMemonicToSeedFromSlip10RawIndex(
         slipPathKeys,
       );
 
       const hypersignDid = new HypersignDID();
       const { privateKeyMultibase } = await hypersignDid.generateKeys({ seed });
-      const hypersignVC = await this.credentialSSIService.initateHypersignVC(mnemonic, namespace)
+      const hypersignVC = await this.credentialSSIService.initateHypersignVC(
+        mnemonic,
+        namespace,
+      );
       const credentialStatus = await hypersignVC.resolveCredentialStatus({
-        credentialId: id
-      })
+        credentialId: id,
+      });
       const updatedCredResult = await hypersignVC.updateCredentialStatus({
         credentialStatus,
         issuerDid,
         verificationMethodId,
         privateKeyMultibase,
         status: statusChange,
-        statusReason
-      })
-      await this.credentialRepository.findOneAndUpdate({ appId: appDetail.appId, credentialId: id }, { transactionHash: updatedCredResult.transactionHash })
+        statusReason,
+      });
+      await this.credentialRepository.findOneAndUpdate(
+        { appId: appDetail.appId, credentialId: id },
+        { transactionHash: updatedCredResult.transactionHash },
+      );
 
       return await hypersignVC.resolveCredentialStatus({
-        credentialId: id
+        credentialId: id,
       });
     } catch (e) {
-      throw new BadRequestException([e.message])
+      throw new BadRequestException([e.message]);
     }
-
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} credential`;
+  async verfiyCredential(verifyCredentialDto: VerifyCredentialDto, appDetail) {
+    const { id, issuer } = verifyCredentialDto.credential;
+    const credentialDetail = await this.credentialRepository.findOne({
+      appId: appDetail.appId,
+      credentialId: id,
+    });
+    if (!credentialDetail || credentialDetail == null) {
+      throw new NotFoundException([
+        `${id} is not found`,
+        `${id} does not belongs to the App id: ${appDetail.appId}`,
+      ]);
+    }
+    const issuerDetail = await this.didRepositiory.findOne({
+      appId: appDetail.appId,
+      did: issuer,
+    });
+    if (!issuerDetail || issuerDetail == null) {
+      throw new NotFoundException([
+        `${issuerDetail.did} is not found`,
+        `${issuerDetail.did} does not belongs to the App id: ${appDetail.appId}`,
+      ]);
+    }
+    const hypersignCredential = new HypersignVerifiableCredential();
+    let verificationResult;
+    try {
+      verificationResult = await hypersignCredential.verify({
+        credential: verifyCredentialDto.credential,
+        issuerDid: issuer,
+        verificationMethodId:
+          verifyCredentialDto.credential.proof.verificationMethod,
+      });
+    } catch (e) {
+      throw new BadRequestException([e.message]);
+    }
+    return verificationResult;
   }
 }
