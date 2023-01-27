@@ -40,7 +40,8 @@ import { BooleanPipe } from 'src/utils/Pipes/boolean.pipe';
 @Controller('credential')
 @ApiTags('credential')
 export class CredentialController {
-  constructor(private readonly credentialService: CredentialService) { }
+  constructor(private readonly credentialService: CredentialService) {}
+  @UsePipes(new ValidationPipe({ transform: true }))
   @Get()
   @ApiOkResponse({
     description: 'List of credentials',
@@ -55,10 +56,12 @@ export class CredentialController {
   @ApiQuery({
     name: 'page',
     description: 'Page value',
+    required: false,
   })
   @ApiQuery({
     name: 'limit',
     description: 'Fetch limited list of data',
+    required: false,
   })
   findAll(
     @Req() req: any,
@@ -78,17 +81,21 @@ export class CredentialController {
     type: CredentialNotFoundError,
   })
   @ApiQuery({
-    name:'retrieveCredential',
-    required:false
+    name: 'retrieveCredential',
+    required: false,
   })
   resolveCredential(
     @Req() req: any,
     @Param('credentialId') credentialId: string,
-    @Query('retrieveCredential',BooleanPipe) retrieveCredential: boolean
+    @Query('retrieveCredential', BooleanPipe) retrieveCredential: boolean,
   ) {
-    const appDetail = req.user;        
-     retrieveCredential = retrieveCredential  === true ? true : false
-    return this.credentialService.resolveCredential(credentialId, appDetail, retrieveCredential);
+    const appDetail = req.user;
+    retrieveCredential = retrieveCredential === true ? true : false;
+    return this.credentialService.resolveCredential(
+      credentialId,
+      appDetail,
+      retrieveCredential,
+    );
   }
 
   @UsePipes(ValidationPipe)

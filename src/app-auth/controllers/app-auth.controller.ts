@@ -53,6 +53,7 @@ export class AppAuthController {
     description:
       'Provide userId to get list of all the apps created by the userId',
   })
+  @UsePipes(new ValidationPipe({ transform: true }))
   @Get()
   @ApiResponse({
     status: 200,
@@ -67,10 +68,12 @@ export class AppAuthController {
   @ApiQuery({
     name: 'page',
     description: 'Page value',
+    required: false,
   })
   @ApiQuery({
     name: 'limit',
     description: 'limit value',
+    required: false,
   })
   async getApps(
     @User() userId,

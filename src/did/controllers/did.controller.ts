@@ -42,7 +42,7 @@ import { PaginationDto } from 'src/utils/pagination.dto';
 @UseGuards(AuthGuard('jwt'))
 export class DidController {
   constructor(private readonly didService: DidService) {}
-  @UsePipes(ValidationPipe)
+  @UsePipes(new ValidationPipe({ transform: true }))
   @Get()
   @ApiOkResponse({
     description: 'DID List',
@@ -57,12 +57,12 @@ export class DidController {
   @ApiQuery({
     name: 'page',
     description: 'Page value',
-    required:false
+    required: false,
   })
   @ApiQuery({
     name: 'limit',
     description: 'Fetch limited list of data',
-    required:false
+    required: false,
   })
   getDidList(
     @Req() req: any,
