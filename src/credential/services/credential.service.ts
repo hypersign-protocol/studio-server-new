@@ -12,6 +12,7 @@ import { CredentialRepository } from '../repository/credential.repository';
 import { EdvService } from 'src/edv/services/edv.service';
 import { DidRepository } from 'src/did/repository/did.repository';
 import { HypersignDID, HypersignVerifiableCredential } from 'hs-ssi-sdk';
+import { VerifyCredentialDto } from '../dto/verify-credential.dto';
 @Injectable()
 export class CredentialService {
   constructor(
@@ -212,7 +213,40 @@ export class CredentialService {
     }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} credential`;
+  async verfiyCredential(verifyCredentialDto: VerifyCredentialDto, appDetail) {
+    const { id, issuer } = verifyCredentialDto.credential;
+    const credentialDetail = await this.credentialRepository.findOne({
+      appId: appDetail.appId,
+      credentialId: id,
+    });
+    if (!credentialDetail || credentialDetail == null) {
+      throw new NotFoundException([
+        `${id} is not found`,
+        `${id} does not belongs to the App id: ${appDetail.appId}`,
+      ]);
+    }
+    const issuerDetail = await this.didRepositiory.findOne({
+      appId: appDetail.appId,
+      did: issuer,
+    });
+    if (!issuerDetail || issuerDetail == null) {
+      throw new NotFoundException([
+        `${issuerDetail.did} is not found`,
+        `${issuerDetail.did} does not belongs to the App id: ${appDetail.appId}`,
+      ]);
+    }
+    const hypersignCredential = new HypersignVerifiableCredential();
+    let verificationResult;
+    try {
+      verificationResult = await hypersignCredential.verify({
+        credential: verifyCredentialDto.credential,
+        issuerDid: issuer,
+        verificationMethodId:
+          verifyCredentialDto.credential.proof.verificationMethod,
+      });
+    } catch (e) {
+      throw new BadRequestException([e.message]);
+    }
+    return verificationResult;
   }
 }

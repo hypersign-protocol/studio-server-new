@@ -98,10 +98,10 @@ export class DidController {
   })
   create(@Body() createDidDto: CreateDidDto, @Req() req: any) {
     const { options } = createDidDto;
-    const { KeyType } = options;
-    if (KeyType === 'EcdsaSecp256k1RecoveryMethod2020') {
+    const { keyType } = options;
+    if (keyType === 'EcdsaSecp256k1RecoveryMethod2020') {
       throw new NotFoundException({
-        message: [`${KeyType} is not supported`, `Feature coming soon`],
+        message: [`${keyType} is not supported`, `Feature coming soon`],
         error: 'Not Supported',
         status: 404,
       });

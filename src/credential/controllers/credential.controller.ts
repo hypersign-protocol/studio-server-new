@@ -33,6 +33,7 @@ import {
 } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
 import { PaginationDto } from 'src/utils/pagination.dto';
+import { VerifyCredentialDto } from '../dto/verify-credential.dto';
 
 @ApiBearerAuth('Authorization')
 @UseGuards(AuthGuard('jwt'))
@@ -105,9 +106,13 @@ export class CredentialController {
     return this.credentialService.create(createCredentialDto, req.user);
   }
 
+  @UsePipes(ValidationPipe)
   @Post('/verify')
-  verify(@Body() createCredentialDto: CreateCredentialDto, @Req() req) {
-    return this.credentialService.create(createCredentialDto, req.user);
+  verify(@Body() verifyCredentialDto: VerifyCredentialDto, @Req() req) {
+    return this.credentialService.verfiyCredential(
+      verifyCredentialDto,
+      req.user,
+    );
   }
 
   @UsePipes(ValidationPipe)
