@@ -57,10 +57,12 @@ export class DidController {
   @ApiQuery({
     name: 'page',
     description: 'Page value',
+    required:false
   })
   @ApiQuery({
     name: 'limit',
     description: 'Fetch limited list of data',
+    required:false
   })
   getDidList(
     @Req() req: any,

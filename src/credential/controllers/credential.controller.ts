@@ -77,6 +77,10 @@ export class CredentialController {
     description: 'Credential with id vc:hid:testnet:...... not found',
     type: CredentialNotFoundError,
   })
+  @ApiQuery({
+    name:'retrieveCredential',
+    required:false
+  })
   resolveCredential(
     @Req() req: any,
     @Param('credentialId') credentialId: string,
