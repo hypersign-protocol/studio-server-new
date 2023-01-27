@@ -17,6 +17,7 @@ export class CreateCredentialDto {
     description: 'schemaId for credential Schema',
   })
   @IsString()
+  @IsOptional()
   @IsNotEmpty()
   schemaId: string;
 

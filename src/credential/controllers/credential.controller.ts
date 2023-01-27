@@ -9,6 +9,7 @@ import {
   Req,
   UsePipes,
   ValidationPipe,
+  Query,
 } from '@nestjs/common';
 import { CredentialService } from '../services/credential.service';
 import { CreateCredentialDto } from '../dto/create-credential.dto';
@@ -26,14 +27,14 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { AuthGuard } from '@nestjs/passport';
+import { BooleanPipe } from 'src/utils/Pipes/boolean.pipe';
 
 @ApiBearerAuth('Authorization')
 @UseGuards(AuthGuard('jwt'))
 @Controller('credential')
 @ApiTags('credential')
 export class CredentialController {
-  constructor(private readonly credentialService: CredentialService) {}
-
+  constructor(private readonly credentialService: CredentialService) { }
   @Get()
   @ApiNotFoundResponse({
     status: 404,
@@ -62,9 +63,11 @@ export class CredentialController {
   resolveCredential(
     @Req() req: any,
     @Param('credentialId') credentialId: string,
+    @Query('retrieveCredential',BooleanPipe) retrieveCredential: boolean
   ) {
-    const appDetail = req.user;
-    return this.credentialService.resolveCredential(credentialId, appDetail);
+    const appDetail = req.user;        
+     retrieveCredential = retrieveCredential  === true ? true : false
+    return this.credentialService.resolveCredential(credentialId, appDetail, retrieveCredential);
   }
 
   @UsePipes(ValidationPipe)
@@ -94,10 +97,10 @@ export class CredentialController {
   @UsePipes(ValidationPipe)
   @Patch(':id')
   update(
-  @Param('id') id: string,
-  @Body() updateCredentialDto: UpdateCredentialDto,
-  @Req() req,
+    @Param('id') id: string,
+    @Body() updateCredentialDto: UpdateCredentialDto,
+    @Req() req,
   ) {
-    return this.credentialService.update(id, updateCredentialDto,req.user);
+    return this.credentialService.update(id, updateCredentialDto, req.user);
   }
 }
