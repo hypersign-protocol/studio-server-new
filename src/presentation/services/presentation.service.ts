@@ -8,6 +8,10 @@ export class PresentationService {
     createPresentationTemplateDto: CreatePresentationTemplateDto,
     appDetail,
   ) {
+
+    const {domain,name,query}=createPresentationTemplateDto
+    const {type,credentialQuery}=query
+    
     return 'This action adds a new presentation';
   }
 

@@ -45,7 +45,7 @@ export class QueryExample {
   @ApiProperty({
     name: 'type',
     description: 'Type of schema used',
-    example: 'AdharCard',
+    example: 'AlumniCredential',
   })
   @IsString()
   type: string;
@@ -107,7 +107,7 @@ export class CredentialQuery {
       'sample detail of credential for which presentation template is to be created',
     example: {
       '@context': ['https://www.w3.org/2018/credentials/v1'],
-      type: 'AdharCard',
+      type: 'AlumniCredential',
       credentialSubject: {
         name: 'Random name',
         id: 'did:hid:testnet:.............................',
@@ -144,7 +144,7 @@ export class Query {
         reason: 'We need you to prove your eligibility to work.',
         example: {
           '@context': ['https://www.w3.org/2018/credentials/v1'],
-          type: 'AdharCard',
+          type: 'AlumniCredential',
           credentialSubject: {
             name: 'Random name',
             id: 'did:hid:testnet:.............................',
@@ -175,7 +175,7 @@ export class CreatePresentationTemplateDto {
   // add chek for valid domain
   @IsString()
   @IsNotEmpty()
-  @IsUrl({ protocols: ['http', 'https'] })
+  @IsUrl()
   domain: string;
 
   @ApiProperty({
@@ -199,7 +199,7 @@ export class CreatePresentationTemplateDto {
             reason: 'We need you to prove your eligibility to work.',
             example: {
               '@context': ['https://www.w3.org/2018/credentials/v1'],
-              type: 'AdharCard',
+              type: 'AlumniCredential',
               credentialSubject: {
                 name: 'Random name',
                 id: 'did:hid:testnet:.............................',

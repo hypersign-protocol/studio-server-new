@@ -26,7 +26,7 @@ import { AllExceptionsFilter } from 'src/utils/utils';
 export class PresentationController {
   constructor(private readonly presentationService: PresentationService) {}
 
-  @UsePipes(ValidationPipe)
+  @UsePipes(new ValidationPipe({transform:true}))
   @Post()
   @ApiCreatedResponse({
     description: 'presentaion template  Created',

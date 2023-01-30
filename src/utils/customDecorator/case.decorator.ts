@@ -21,7 +21,7 @@ String.prototype.toPascalCase = function() {
 };
 
 String.prototype.toSnakeCase=function() {
-  return this.split('').map((character) => {
+  return this.split(' ').map((character) => {
       if (character == character.toUpperCase()) {
           return '_' + character.toLowerCase();
       } else {
