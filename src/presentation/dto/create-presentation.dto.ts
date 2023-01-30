@@ -1,6 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsNotEmpty, IsString, IsUrl, ValidateNested } from 'class-validator';
+import { ToSnakeCase } from 'src/utils/customDecorator/toPascalCase.decorator';
 import { Trim } from 'src/utils/customDecorator/trim.decorator';
+import { Query } from '../schemas/presentation-template.schema';
 
 export class CreatePresentationTemplateDto {
   @ApiProperty({
@@ -10,54 +13,23 @@ export class CreatePresentationTemplateDto {
   })
   // add chek for valid domain
   @IsString()
-  @Trim()
   @IsNotEmpty()
+  @IsUrl({ protocols: ['http', 'https'] })
   domain: string;
 
   @ApiProperty({
     name: 'name',
     description: 'name of the presentation template',
-    example: 'RailTicket template',
+    example: 'alumni_credential_request (sanke_case)',
   })
+
   @IsString()
-  @Trim()
   @IsNotEmpty()
+  @ToSnakeCase()
   name: string;
-  @ApiProperty({
-    name: 'reason',
-    description: 'reason for creating a tempate',
-    example: 'For verifying  railway ticket',
-  })
-  @IsString()
-  @Trim()
-  @IsNotEmpty()
-  reason: string;
-  @ApiProperty({
-    name: 'queryType',
-    description: '',
-    example: 'QueryByExample',
-  })
-  @IsString()
-  @Trim()
-  @IsNotEmpty()
-  queryType: string;
-  @ApiProperty({
-    name: 'issuerDid',
-    description:
-      'did of the issuer of credential for which presentation is to be created',
-    example: 'did:hid:testnet:..................',
-  })
-  @IsString()
-  @Trim()
-  @IsNotEmpty()
-  issuerDid: string;
-  @ApiProperty({
-    name: 'schemaId',
-    description: 'id of schema for which presentaion has created',
-    example: 'sch:hid:testnet:..................',
-  })
-  @IsString()
-  @Trim()
-  @IsNotEmpty()
-  schemaId: string;
+
+  @ValidateNested()
+  @Type(() => Query)
+  query: Array<Query>
+
 }

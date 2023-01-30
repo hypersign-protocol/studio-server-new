@@ -3,8 +3,10 @@ import { applyDecorators, SetMetadata } from "@nestjs/common";
 
 declare global {
   interface String{
-    toPascalCase():string
+    toPascalCase():string;
+    toSnakeCase():string;
   }
+  
 }
 
 String.prototype.toPascalCase = function() {
@@ -17,6 +19,18 @@ String.prototype.toPascalCase = function() {
     )
     .replace(new RegExp(/\w/), s => s.toUpperCase());
 };
+
+String.prototype.toSnakeCase=function() {
+  return this.split('').map((character) => {
+      if (character == character.toUpperCase()) {
+          return '_' + character.toLowerCase();
+      } else {
+          return character;
+      }
+  })
+  .join('');
+}
+
 export const ToPascalCase = (): PropertyDecorator => {
     return applyDecorators(
       SetMetadata('toPascalCase', true),
@@ -35,5 +49,23 @@ export const ToPascalCase = (): PropertyDecorator => {
     );
   };
 
+
+  export const ToSnakeCase = (): PropertyDecorator => {
+    return applyDecorators(
+      SetMetadata('toSnakeCase', true),
+      (target: Object, propertyKey: string | symbol) => {
+        let original = target[propertyKey];
+        const descriptor: PropertyDescriptor = {
+          get: () => original,
+          set: (val: string) => {
+           
+            original = val.toSnakeCase()               
+          },
+  
+        };
+        Object.defineProperty(target, propertyKey, descriptor);
+      },
+    );
+  };
 
   export {}
