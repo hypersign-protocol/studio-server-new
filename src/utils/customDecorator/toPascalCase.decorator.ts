@@ -1,6 +1,22 @@
 import { applyDecorators, SetMetadata } from "@nestjs/common";
 
 
+declare global {
+  interface String{
+    toPascalCase():string
+  }
+}
+
+String.prototype.toPascalCase = function() {
+  return this
+    .replace(new RegExp(/[-_]+/, 'g'), ' ')
+    .replace(new RegExp(/[^\w\s]/, 'g'), '')
+    .replace(
+      new RegExp(/\s+(.)(\w*)/, 'g'),
+      ($1, $2, $3) => `${$2.toUpperCase() + $3}`
+    )
+    .replace(new RegExp(/\w/), s => s.toUpperCase());
+};
 export const ToPascalCase = (): PropertyDecorator => {
     return applyDecorators(
       SetMetadata('toPascalCase', true),
@@ -8,8 +24,9 @@ export const ToPascalCase = (): PropertyDecorator => {
         let original = target[propertyKey];
         const descriptor: PropertyDescriptor = {
           get: () => original,
-          set: (val: any) => {
-            original = val.replace(/\w\S*/g,m=>m.charAt(0).toUpperCase()+m.substring(1).toLocaleLowerCase())                    
+          set: (val: string) => {
+           
+            original = val.toPascalCase()               
           },
   
         };
@@ -17,3 +34,6 @@ export const ToPascalCase = (): PropertyDecorator => {
       },
     );
   };
+
+
+  export {}

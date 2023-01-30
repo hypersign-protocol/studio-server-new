@@ -42,7 +42,7 @@ import { BooleanPipe } from 'src/utils/Pipes/boolean.pipe';
 @ApiBearerAuth('Authorization')
 @UseGuards(AuthGuard('jwt'))
 @Controller('credential')
-@ApiTags('credential')
+@ApiTags('Credential')
 export class CredentialController {
   constructor(private readonly credentialService: CredentialService) {}
   @UsePipes(new ValidationPipe({ transform: true }))

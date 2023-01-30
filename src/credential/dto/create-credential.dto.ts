@@ -96,7 +96,7 @@ export class CreateCredentialDto {
   persist: boolean;
 }
 
-class CredentialSubject {
+export class CredentialSubject {
  
   @ApiProperty({
     description: 'id',
@@ -105,7 +105,7 @@ class CredentialSubject {
   @IsString()
   id: string;
 }
-class CredentialSchema {
+export class CredentialSchema {
   @ApiProperty({
     description: 'id',
     example: 'sch:hid:testnet:...............',
