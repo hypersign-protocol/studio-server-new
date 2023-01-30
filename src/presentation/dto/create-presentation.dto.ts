@@ -67,8 +67,8 @@ export class QueryExample {
     name: 'credentialSchema',
     description: 'Schema detail based on which credential has issued',
     example: {
-      name: 'sch:hid:testnet:...........',
       id: 'JsonSchemaValidator2018',
+      type: 'some type',
     },
   })
   @ValidateNested()
@@ -114,7 +114,7 @@ export class CredentialQuery {
         id: 'did:hid:testnet:.............................',
       },
       credentialSchema: {
-        name: 'sch:hid:testnet:...........',
+        type: 'some type',
         id: 'JsonSchemaValidator2018',
       },
       truestedIssuer: {
@@ -151,8 +151,8 @@ export class Query {
             id: 'did:hid:testnet:.............................',
           },
           credentialSchema: {
-            name: 'sch:hid:testnet:...........',
             id: 'JsonSchemaValidator2018',
+            type: 'some type',
           },
           truestedIssuer: {
             required: true,
@@ -206,7 +206,7 @@ export class CreatePresentationTemplateDto {
                 id: 'did:hid:testnet:.............................',
               },
               credentialSchema: {
-                name: 'sch:hid:testnet:...........',
+                type: 'some type',
                 id: 'JsonSchemaValidator2018',
               },
               truestedIssuer: {
