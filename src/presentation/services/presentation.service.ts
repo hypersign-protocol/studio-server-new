@@ -10,7 +10,7 @@ export class PresentationService {
   ) {
 
     const {domain,name,query}=createPresentationTemplateDto
-    const {type,credentialQuery}=query
+    console.log(domain,name,query);
     
     return 'This action adds a new presentation';
   }

@@ -15,8 +15,10 @@ export const IsDid = (): PropertyDecorator => {
                     const did=val
                     if(!did.includes('did:hid:')){
                         throw new BadRequestException([`Invalid ${propertyKey.toString()}`])
+                    }                    
+                    if(did.includes('.')){
+                        throw new BadRequestException([`Invalid ${propertyKey.toString()}`])
                     }
-
                     original = val;
                 },
             };

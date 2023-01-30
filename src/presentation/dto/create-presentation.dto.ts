@@ -24,6 +24,7 @@ export class TruestedIssuer {
   })
   @IsBoolean()
   required: boolean;
+
   @ApiProperty({
     name: 'issuer',
     description: 'did of the issuer',
@@ -218,7 +219,8 @@ export class CreatePresentationTemplateDto {
       },
     ],
   })
-  @Type(() => Query)
+
   @ValidateNested()
+  @Type(() => Query)
   query: Query;
 }
