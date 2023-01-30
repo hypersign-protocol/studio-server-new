@@ -36,7 +36,6 @@ export class PresentationController {
     @Body() createPresentationTemplateDto: CreatePresentationTemplateDto,
     @Req() req: any,
   ) {
-    console.log(createPresentationTemplateDto);
     return this.presentationService.createPresentationTemplate(
       createPresentationTemplateDto,
       req.user,

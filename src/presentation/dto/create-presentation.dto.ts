@@ -222,5 +222,5 @@ export class CreatePresentationTemplateDto {
   @IsArray()
   @ValidateNested()
   @Type(() => Query)
-  query: Query;
+  query: Array<Query>;
 }
