@@ -11,6 +11,7 @@ import { Trim } from '../../utils/customDecorator/trim.decorator';
 import { Type } from 'class-transformer';
 import { IsDid } from '../decorator/schema.decorator';
 import { ValidateVerificationMethodId } from 'src/utils/customDecorator/vmId.decorator';
+import { ToPascalCase } from 'src/utils/customDecorator/toPascalCase.decorator';
 
 export enum DataType {
   string = 'string',
@@ -60,7 +61,7 @@ export class SchemaBody {
     example: 'Railway ticket schemas',
   })
   @IsString()
-  @Trim()
+  @ToPascalCase()
   name: string;
 
   @ApiProperty({

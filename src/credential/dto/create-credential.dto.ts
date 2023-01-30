@@ -12,7 +12,7 @@ import {
 import { Type } from 'class-transformer';
 
 import { IsDid } from 'src/schema/decorator/schema.decorator';
-import { Trim } from 'src/utils/customDecorator/trim.decorator';
+import { IsEmptyTrim, Trim } from 'src/utils/customDecorator/trim.decorator';
 import { ValidateVerificationMethodId } from 'src/utils/customDecorator/vmId.decorator';
 
 export class CreateCredentialDto {
@@ -20,9 +20,9 @@ export class CreateCredentialDto {
     name: 'schemaId',
     description: 'schemaId for credential Schema',
   })
-  @IsString()
   @IsOptional()
-  @IsNotEmpty()
+  @IsString()
+  @IsEmptyTrim()
   schemaId: string;
 
   @ApiProperty({

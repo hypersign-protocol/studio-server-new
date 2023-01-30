@@ -102,7 +102,7 @@ export class CredentialController {
     );
   }
 
-  @UsePipes(ValidationPipe)
+  @UsePipes(new ValidationPipe({transform:true}))
   @Post()
   @ApiCreatedResponse({
     description: 'Credential Created',

@@ -119,7 +119,8 @@ export class CredentialService {
         persist: persist,
         edvDocId: edvData && edvData.id ? edvData.id : '',
         transactionHash: credentialStatusRegistrationResult.transactionHash,
-      });
+        type:signedCredential.type[1] // TODO : MAYBE REMOVE HARDCODING MAYBE NOT
+      });      
       return { credential: signedCredential, credentialStatus, persist };
     } catch (e) {
       throw new BadRequestException([e.message]);

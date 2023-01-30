@@ -31,6 +31,9 @@ export class Credential{
     @Prop()
     transactionHash:string
 
+    @IsString()
+    @Prop()
+    type:string
 
 }
 

@@ -54,7 +54,7 @@ export class SchemaController {
     description: 'Error occured at the time of creating schema',
     type: SchemaError,
   })
-  @UsePipes(ValidationPipe)
+  @UsePipes(new ValidationPipe({transform:true}))
   create(@Body() createSchemaDto: CreateSchemaDto, @Req() req: any) {
     const appDetail = req.user;
     return this.schemaService.create(createSchemaDto, appDetail);
