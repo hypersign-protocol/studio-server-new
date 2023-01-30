@@ -83,7 +83,7 @@ export class QueryExample {
     },
   })
   @Type(() => TruestedIssuer)
-  @ValidateNested({each:true})
+  @ValidateNested({ each: true })
   trustedIssuer: Array<TruestedIssuer>;
 }
 
@@ -163,7 +163,7 @@ export class Query {
     ],
   })
   @IsArray()
-  @ValidateNested({each:true})
+  @ValidateNested({ each: true })
   @Type(() => CredentialQuery)
   credentialQuery: Array<CredentialQuery>;
 }
@@ -219,7 +219,7 @@ export class CreatePresentationTemplateDto {
       },
     ],
   })
-
+  @IsArray()
   @ValidateNested()
   @Type(() => Query)
   query: Query;

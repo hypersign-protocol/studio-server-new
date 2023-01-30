@@ -26,7 +26,7 @@ import { AllExceptionsFilter } from 'src/utils/utils';
 export class PresentationController {
   constructor(private readonly presentationService: PresentationService) {}
 
-  @UsePipes(new ValidationPipe({transform:true}))
+  @UsePipes(new ValidationPipe({ transform: true }))
   @Post()
   @ApiCreatedResponse({
     description: 'presentaion template  Created',
@@ -36,6 +36,7 @@ export class PresentationController {
     @Body() createPresentationTemplateDto: CreatePresentationTemplateDto,
     @Req() req: any,
   ) {
+    console.log(createPresentationTemplateDto);
     return this.presentationService.createPresentationTemplate(
       createPresentationTemplateDto,
       req.user,

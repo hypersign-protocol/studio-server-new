@@ -39,7 +39,7 @@ export class Query {
   type: queryType;
 
   @IsArray()
-  @ValidateNested({each:true})
+  @ValidateNested({ each: true })
   @Type(() => CredentialQuery)
   @Prop({ required: true })
   credentialQuery: Array<CredentialQuery>;
@@ -57,7 +57,7 @@ export class TruestedIssuer {
 export class QueryExample {
   @IsArray()
   @Prop()
-  '@context': Array<String>;
+  '@context': Array<string>;
 
   @IsString()
   @ToPascalCase()
@@ -75,7 +75,7 @@ export class QueryExample {
   credentialSchema: CredentialSchema;
 
   @Type(() => TruestedIssuer)
-  @ValidateNested({each:true})
+  @ValidateNested({ each: true })
   @Prop()
   trustedIssuer: Array<TruestedIssuer>;
 }
@@ -106,18 +106,23 @@ export class PresentationTemplate {
   @Prop({ required: true })
   domain: string;
 
-  @IsString()
-  @Prop({ required: true })
-  challenge: string;
+  // @IsString()
+  // @Prop({ required: false })
+  // challenge: string;
 
   @IsArray()
-  @ValidateNested({each:true})
+  @ValidateNested({ each: true })
   @Type(() => Query)
   @Prop({ required: true })
   query: Array<Query>;
+  // @Prop({
+  //   required: true,
+  //   type: [Schema.ObjectId],
+  // })
+  //query: Types.Array<Query>;
 }
 
-const presentationTemplateSchema =
+const PresentationTemplateSchema =
   SchemaFactory.createForClass(PresentationTemplate);
-presentationTemplateSchema.index({ appId: 1, _id: 1 }, { unique: true });
-export { presentationTemplateSchema };
+PresentationTemplateSchema.index({ appId: 1, _id: 1 }, { unique: true });
+export { PresentationTemplateSchema };
