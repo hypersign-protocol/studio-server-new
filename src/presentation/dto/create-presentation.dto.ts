@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsNotEmpty, IsString, IsUrl, ValidateNested } from 'class-validator';
-import { ToSnakeCase } from 'src/utils/customDecorator/toPascalCase.decorator';
+import { ToSnakeCase } from 'src/utils/customDecorator/case.decorator';
 import { Trim } from 'src/utils/customDecorator/trim.decorator';
 import { Query } from '../schemas/presentation-template.schema';
 

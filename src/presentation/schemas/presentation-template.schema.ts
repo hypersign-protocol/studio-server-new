@@ -5,7 +5,7 @@ import { IsArray, IsBoolean, IsEnum, IsObject, IsString, IsUrl, ValidateNested }
 import { Document } from 'mongoose';
 import { CreateCredentialDto, CredentialSchema, CredentialSubject } from 'src/credential/dto/create-credential.dto';
 import { IsDid } from 'src/schema/decorator/schema.decorator';
-import { ToPascalCase } from 'src/utils/customDecorator/toPascalCase.decorator';
+import { ToPascalCase } from 'src/utils/customDecorator/case.decorator';
 
 export type PresentationTemplateDocument = PresentationTemplate & Document;
 
