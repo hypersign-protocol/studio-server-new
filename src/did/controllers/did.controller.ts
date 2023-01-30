@@ -37,7 +37,6 @@ import { PaginationDto } from 'src/utils/pagination.dto';
 @UseFilters(AllExceptionsFilter)
 @ApiTags('Did')
 @Controller('did')
-@ApiTags('Did')
 @ApiBearerAuth('Authorization')
 @UseGuards(AuthGuard('jwt'))
 export class DidController {
