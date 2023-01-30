@@ -10,6 +10,7 @@ import {
   UsePipes,
   ValidationPipe,
   Query,
+  HttpCode,
 } from '@nestjs/common';
 import { CredentialService } from '../services/credential.service';
 import {
@@ -122,6 +123,7 @@ export class CredentialController {
   }
 
   @UsePipes(ValidationPipe)
+  @HttpCode(200)
   @Post('/verify')
   @ApiOkResponse({
     description: 'verification result of credential',
@@ -165,6 +167,10 @@ export class CredentialController {
     @Body() updateCredentialDto: UpdateCredentialDto,
     @Req() req,
   ) {
-    return this.credentialService.update(credentialId, updateCredentialDto, req.user);
+    return this.credentialService.update(
+      credentialId,
+      updateCredentialDto,
+      req.user,
+    );
   }
 }
