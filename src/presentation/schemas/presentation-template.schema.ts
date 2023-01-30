@@ -39,7 +39,7 @@ export class Query {
   type: queryType;
 
   @IsArray()
-  @ValidateNested()
+  @ValidateNested({each:true})
   @Type(() => CredentialQuery)
   @Prop({ required: true })
   credentialQuery: Array<CredentialQuery>;
@@ -75,7 +75,7 @@ export class QueryExample {
   credentialSchema: CredentialSchema;
 
   @Type(() => TruestedIssuer)
-  @ValidateNested()
+  @ValidateNested({each:true})
   @Prop()
   trustedIssuer: Array<TruestedIssuer>;
 }
@@ -111,7 +111,7 @@ export class PresentationTemplate {
   challenge: string;
 
   @IsArray()
-  @ValidateNested()
+  @ValidateNested({each:true})
   @Type(() => Query)
   @Prop({ required: true })
   query: Array<Query>;
