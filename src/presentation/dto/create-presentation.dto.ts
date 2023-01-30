@@ -116,7 +116,7 @@ export class CredentialQuery {
         name: 'sch:hid:testnet:...........',
         id: 'JsonSchemaValidator2018',
       },
-      TruestedIssuer: {
+      truestedIssuer: {
         required: true,
         issuer: 'did:hid:testnet:................',
       },
@@ -153,7 +153,7 @@ export class Query {
             name: 'sch:hid:testnet:...........',
             id: 'JsonSchemaValidator2018',
           },
-          TruestedIssuer: {
+          truestedIssuer: {
             required: true,
             issuer: 'did:hid:testnet:................',
           },
@@ -208,7 +208,7 @@ export class CreatePresentationTemplateDto {
                 name: 'sch:hid:testnet:...........',
                 id: 'JsonSchemaValidator2018',
               },
-              TruestedIssuer: {
+              truestedIssuer: {
                 required: true,
                 issuer: 'did:hid:testnet:................',
               },
