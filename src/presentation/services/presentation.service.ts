@@ -7,7 +7,7 @@ import { CreatePresentationTemplateDto } from '../dto/create-presentation-temple
 import { UpdatePresentationDto } from '../dto/update-presentation.dto';
 import { PresentationTemplateRepository } from '../repository/presentation-template.repository';
 import { PresentationTemplate } from '../schemas/presentation-template.schema';
-import { CreatePresentationDto, CreatePresentationRequestDto } from '../dto/create-presentation-request.dto';
+import { CreatePresentationDto, CreatePresentationRequestDto, verifiPresntationDto } from '../dto/create-presentation-request.dto';
 import { uuid } from 'uuidv4';
 import { HypersignVerifiablePresentation, HypersignDID } from 'hs-ssi-sdk';
 import { ConfigService } from '@nestjs/config';
@@ -221,14 +221,45 @@ export class PresentationRequestService {
     const { privateKeyMultibase } = await hypersignDID.generateKeys({ seed });
 
 
-    const signedVerifiablePresentation=await hypersignVP.sign({
-      presentation:unsignedverifiablePresentation,
+    const signedVerifiablePresentation = await hypersignVP.sign({
+      presentation: unsignedverifiablePresentation,
       holderDid,
-      verificationMethodId:verificationMethodIdforAssert,
-      challenge,privateKeyMultibase,
+      verificationMethodId: verificationMethodIdforAssert,
+      challenge, privateKeyMultibase,
       domain
     })
-    return {presentation:signedVerifiablePresentation}
+    return { presentation: signedVerifiablePresentation }
+  }
+
+
+
+  async verifyPresentation(presentations: verifiPresntationDto, appDetail) {
+    const hypersignVP = new HypersignVerifiablePresentation(
+      {
+        nodeRestEndpoint: this.config.get('HID_NETWORK_API'),
+        nodeRpcEndpoint: this.config.get('HID_NETWORK_RPC'),
+        namespace: 'testnet',
+      }
+    )
+    const { presentation } = presentations
+
+    const holderDid = presentation['holder']
+    const issuerDid = presentation['verifiableCredential'][0]['issuer']
+    
+    const domain = presentation['proof']['domain']
+    const challenge = presentation['proof']['challenge']
+
+      const verifiedPresentationDetail=await hypersignVP.verify({
+        signedPresentation:presentation,
+        issuerDid,
+        holderDid,
+        holderVerificationMethodId:holderDid+'#key-1',
+        issuerVerificationMethodId:issuerDid+'#key-1',
+        challenge
+      })
+
+
+      return verifiedPresentationDetail
   }
 
 

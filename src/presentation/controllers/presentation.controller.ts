@@ -33,7 +33,7 @@ import {
   PTemplateNotFoundError,
 } from '../dto/error-presentation.dto';
 import { PresentationTemplate } from '../schemas/presentation-template.schema';
-import { CreatePresentationRequestDto, CreatePresentationDto } from '../dto/create-presentation-request.dto';
+import { CreatePresentationRequestDto, CreatePresentationDto, verifiPresntationDto } from '../dto/create-presentation-request.dto';
 import { uuid } from 'uuidv4';
 import { CredDoc } from 'src/credential/dto/create-credential.dto';
 
@@ -185,6 +185,19 @@ export class Presentation {
   ){
 
    return this.presentationRequestService.createPresentation(presentation,req.user)
+  }
+
+
+
+  @Post('/verify')
+  verify(
+    @Body()  presentation:verifiPresntationDto,
+    @Req() req
+
+  ){
+
+    return this.presentationRequestService.verifyPresentation(presentation,req.user)
+
   }
 }
 

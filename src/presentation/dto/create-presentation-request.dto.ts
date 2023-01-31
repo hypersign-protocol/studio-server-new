@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { Type } from "class-transformer";
-import { IsDate, IsNotEmpty, IsNumber, IsOptional, IsString, IsUrl, Min, MinDate, ValidateNested, isURL } from "class-validator";
+import { IsDate, IsNotEmpty, IsNumber, IsObject, IsOptional, IsString, IsUrl, Min, MinDate, ValidateNested, isURL } from "class-validator";
 import { CredDoc } from "src/credential/dto/create-credential.dto";
 import { IsDid } from "src/schema/decorator/schema.decorator";
 import { Trim } from "src/utils/customDecorator/trim.decorator";
@@ -122,4 +122,18 @@ export  class CreatePresentationDto{
     @Trim()
     @IsNotEmpty()
     domain:string
+}
+
+
+
+export class verifiPresntationDto{
+    @ApiProperty({
+        name:"presentation",
+        description:"list of credentials"
+        ,example:{
+
+        }
+    })
+    @IsObject()
+    presentation:object
 }
