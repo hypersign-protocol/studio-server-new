@@ -13,8 +13,8 @@ import {
   Req,
   Query,
 } from '@nestjs/common';
-import { PresentationService } from '../services/presentation.service';
-import { CreatePresentationTemplateDto } from '../dto/create-presentation.dto';
+import { PresentationRequestService, PresentationService } from '../services/presentation.service';
+import { CreatePresentationTemplateDto } from '../dto/create-presentation-templete.dto';
 import { UpdatePresentationDto } from '../dto/update-presentation.dto';
 import {
   ApiBadRequestResponse,
@@ -33,13 +33,22 @@ import {
   PTemplateNotFoundError,
 } from '../dto/error-presentation.dto';
 import { PresentationTemplate } from '../schemas/presentation-template.schema';
+import { CreatePresentationRequestDto, CreatePresentationDto, verifiPresntationDto } from '../dto/create-presentation-request.dto';
+import { uuid } from 'uuidv4';
+import { CredDoc } from 'src/credential/dto/create-credential.dto';
+
+
+
+
+
+
 @ApiTags('Presentation')
 @UseGuards(AuthGuard('jwt'))
 @ApiBearerAuth('Authorization')
 @UseFilters(AllExceptionsFilter)
 @Controller('presentation/template')
-export class PresentationController {
-  constructor(private readonly presentationService: PresentationService) {}
+export class PresentationTempleteController {
+  constructor(private readonly presentationService: PresentationService) { }
 
   @UsePipes(new ValidationPipe({ transform: true }))
   @Post()
@@ -150,3 +159,57 @@ export class PresentationController {
     );
   }
 }
+
+
+@ApiTags('Presentation')
+@UseGuards(AuthGuard('jwt'))
+@ApiBearerAuth('Authorization')
+@UseFilters(AllExceptionsFilter)
+@Controller('presentation/request')
+export class PresenstationRequsetController {
+  constructor(private readonly presentationRequestService:PresentationRequestService){}
+  @UsePipes(new ValidationPipe({ transform: true }))
+  @Post()
+  create(
+    @Body() createPresentationRequestDto: CreatePresentationRequestDto,
+    @Req() req
+  ) {
+   return this.presentationRequestService.createPresentationRequest(createPresentationRequestDto,req.user)
+
+  }
+}
+
+
+
+
+
+@ApiTags('Presentation')
+@UseGuards(AuthGuard('jwt'))
+@ApiBearerAuth('Authorization')
+@UseFilters(AllExceptionsFilter)
+@Controller('presentation')
+export class Presentation {
+  constructor(private readonly presentationRequestService:PresentationRequestService ){}
+  @Post()
+  create(
+    @Body()  presentation:CreatePresentationDto,
+    @Req() req
+  ){
+
+   return this.presentationRequestService.createPresentation(presentation,req.user)
+  }
+
+
+
+  @Post('/verify')
+  verify(
+    @Body()  presentation:verifiPresntationDto,
+    @Req() req
+
+  ){
+
+    return this.presentationRequestService.verifyPresentation(presentation,req.user)
+
+  }
+}
+

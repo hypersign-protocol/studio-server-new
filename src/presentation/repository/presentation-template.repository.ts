@@ -16,8 +16,8 @@ export class PresentationTemplateRepository {
     presentationTemplateFilterQuery: FilterQuery<PresentationTemplate>,
   ): Promise<PresentationTemplate> {
     return this.presentationTemplateModel.findOne(
-      presentationTemplateFilterQuery,
-    );
+      presentationTemplateFilterQuery,{__v:0}
+    ).lean();
   }
   async find(
     presentationTemplateFilterQuery: FilterQuery<PresentationTemplate>,
