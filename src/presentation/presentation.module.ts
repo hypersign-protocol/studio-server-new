@@ -1,14 +1,19 @@
 import { Module } from '@nestjs/common';
-import { PresentationService } from './services/presentation.service';
-import { PresentationController } from './controllers/presentation.controller';
+import { PresentationRequestService, PresentationService } from './services/presentation.service';
+import { PresenstationRequsetController, Presentation, PresentationTempleteController } from './controllers/presentation.controller';
 import {
   PresentationTemplate,
   PresentationTemplateSchema,
 } from './schemas/presentation-template.schema';
 import { MongooseModule } from '@nestjs/mongoose';
 import { PresentationTemplateRepository } from './repository/presentation-template.repository';
+import { HidWalletService } from 'src/hid-wallet/services/hid-wallet.service';
+import { EdvService } from 'src/edv/services/edv.service';
+import { DidRepository } from 'src/did/repository/did.repository';
+import { DidModule } from 'src/did/did.module';
 @Module({
   imports: [
+    DidModule,
     MongooseModule.forFeature([
       {
         name: PresentationTemplate.name,
@@ -16,7 +21,11 @@ import { PresentationTemplateRepository } from './repository/presentation-templa
       },
     ]),
   ],
-  controllers: [PresentationController],
-  providers: [PresentationService, PresentationTemplateRepository],
+  controllers: [PresentationTempleteController,PresenstationRequsetController,Presentation],
+  providers: [PresentationService, PresentationTemplateRepository,PresentationRequestService,HidWalletService,EdvService],
 })
-export class PresentationModule {}
+export class PresentationModule {
+
+
+  
+}

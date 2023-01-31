@@ -11,7 +11,7 @@ import { ToSnakeCase } from 'src/utils/customDecorator/case.decorator';
 import {
   CreatePresentationTemplateDto,
   Query,
-} from './create-presentation.dto';
+} from './create-presentation-templete.dto';
 
 export class UpdatePresentationDto extends PartialType(
   CreatePresentationTemplateDto,

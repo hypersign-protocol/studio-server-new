@@ -86,14 +86,28 @@ export class AllExceptionsFilter implements ExceptionFilter {
       status = exception.getStatus();
       message = exception.getResponse();
     } else {
+     let msg=[]
+      const error:Error=exception as Error
+      if(error.name){
+        msg.push(error.name)
+      }
+      if(error.message){
+        msg.push(error.message)
+      }  
+
+       
+    
+      
+      
       status = HttpStatus.INTERNAL_SERVER_ERROR;
       
-      
+      msg.push('Internal server error')
+
       message = {
         statusCode: status,
         timestamp: new Date().toISOString(),
         path: request.url,
-        message: ['Internal server error'],
+        message: msg,
       };
     }
 

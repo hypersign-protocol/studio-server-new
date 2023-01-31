@@ -77,10 +77,10 @@ export class QueryExample {
   @ApiProperty({
     name: 'trustedIssuer',
     description: 'Specify credentials from a particular issuer only',
-    example: {
+    example: [{
       required: true,
       issuer: 'did:hid:testnet:................',
-    },
+    }],
   })
   @Type(() => TruestedIssuer)
   @ValidateNested({ each: true })
@@ -117,10 +117,10 @@ export class CredentialQuery {
         type: 'some type',
         id: 'JsonSchemaValidator2018',
       },
-      truestedIssuer: {
+      truestedIssuer: [{
         required: true,
         issuer: 'did:hid:testnet:................',
-      },
+      }],
     },
   })
   @ValidateNested()
@@ -154,10 +154,10 @@ export class Query {
             id: 'JsonSchemaValidator2018',
             type: 'some type',
           },
-          truestedIssuer: {
+          truestedIssuer: [{
             required: true,
             issuer: 'did:hid:testnet:................',
-          },
+          }],
         },
       },
     ],
@@ -209,10 +209,10 @@ export class CreatePresentationTemplateDto {
                 type: 'some type',
                 id: 'JsonSchemaValidator2018',
               },
-              truestedIssuer: {
+              truestedIssuer: [{
                 required: true,
                 issuer: 'did:hid:testnet:................',
-              },
+              }],
             },
           },
         ],
