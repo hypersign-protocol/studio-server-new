@@ -134,7 +134,19 @@ export class PresentationController {
     );
   }
 
-  // remove(@Param('id') id: string) {
-  //   return this.presentationService.deletePresentationTemplate(+id);
-  // }
+  @Delete(':templateId')
+  @ApiOkResponse({
+    description: 'Template Deleted Successfully',
+    type: PresentationTemplate,
+  })
+  @ApiNotFoundResponse({
+    description: `No resource found for templateId 63d7c558743fea9d22aab...`,
+    type: PTemplateNotFoundError,
+  })
+  remove(@Param('templateId') templateId: string, @Req() req: any) {
+    return this.presentationService.deletePresentationTemplate(
+      templateId,
+      req.user,
+    );
+  }
 }

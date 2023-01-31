@@ -49,4 +49,12 @@ export class PresentationTemplateRepository {
       },
     );
   }
+
+  async findOneAndDelete(
+    presentationTemplateFilterQuery: FilterQuery<PresentationTemplate>,
+  ): Promise<PresentationTemplate> {
+    return this.presentationTemplateModel.findOneAndDelete(
+      presentationTemplateFilterQuery,
+    );
+  }
 }

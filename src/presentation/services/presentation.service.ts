@@ -98,7 +98,22 @@ export class PresentationService {
     return updatedresult;
   }
 
-  deletePresentationTemplate(id: number) {
-    return `This action removes a #${id} presentation`;
+  async deletePresentationTemplate(
+    templateId: string,
+    appDetail,
+  ): Promise<PresentationTemplate> {
+    let templateDetail = await this.presentationtempleteReopsitory.findOne({
+      appId: appDetail.appId,
+      _id: templateId,
+    });
+    if (!templateDetail) {
+      throw new NotFoundException([
+        `No resource found for templateId ${templateId}`,
+      ]);
+    }
+    templateDetail = await this.presentationtempleteReopsitory.findOneAndDelete(
+      { appId: appDetail.appId, _id: templateId },
+    );
+    return templateDetail;
   }
 }
