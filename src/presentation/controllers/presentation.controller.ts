@@ -13,7 +13,10 @@ import {
   Req,
   Query,
 } from '@nestjs/common';
-import { PresentationRequestService, PresentationService } from '../services/presentation.service';
+import {
+  PresentationRequestService,
+  PresentationService,
+} from '../services/presentation.service';
 import { CreatePresentationTemplateDto } from '../dto/create-presentation-templete.dto';
 import { UpdatePresentationDto } from '../dto/update-presentation.dto';
 import {
@@ -33,25 +36,27 @@ import {
   PTemplateNotFoundError,
 } from '../dto/error-presentation.dto';
 import { PresentationTemplate } from '../schemas/presentation-template.schema';
-import { CreatePresentationRequestDto, CreatePresentationDto, verifiPresntationDto } from '../dto/create-presentation-request.dto';
+import {
+  CreatePresentationRequestDto,
+  CreatePresentationDto,
+  verifyPresentationDto,
+  CreatePresentationResponseDto,
+} from '../dto/create-presentation-request.dto';
 import { uuid } from 'uuidv4';
 import { CredDoc } from 'src/credential/dto/create-credential.dto';
-
-
-
-
-
 
 @ApiTags('Presentation')
 @UseGuards(AuthGuard('jwt'))
 @ApiBearerAuth('Authorization')
 @UseFilters(AllExceptionsFilter)
-@Controller('presentation/template')
+@Controller('presentation')
 export class PresentationTempleteController {
-  constructor(private readonly presentationService: PresentationService) { }
-
+  constructor(
+    private readonly presentationService: PresentationService,
+    private readonly presentationRequestService: PresentationRequestService,
+  ) {}
   @UsePipes(new ValidationPipe({ transform: true }))
-  @Post()
+  @Post('template')
   @ApiCreatedResponse({
     description: 'presentaion template  Created',
     type: CreatePresentationTemplateDto,
@@ -61,7 +66,7 @@ export class PresentationTempleteController {
     description: 'name must be unique for an app',
     type: PTemplateError,
   })
-  create(
+  createPresentationTemplate(
     @Body() createPresentationTemplateDto: CreatePresentationTemplateDto,
     @Req() req: any,
   ): Promise<PresentationTemplate> {
@@ -71,7 +76,7 @@ export class PresentationTempleteController {
     );
   }
   @UsePipes(new ValidationPipe({ transform: true }))
-  @Get()
+  @Get('template')
   @ApiOkResponse({
     description: 'List of presentation template',
     type: [PresentationTemplate],
@@ -101,7 +106,7 @@ export class PresentationTempleteController {
     );
   }
 
-  @Get(':templateId')
+  @Get('template/:templateId')
   @ApiOkResponse({
     description: 'Presentation template detail',
     type: PresentationTemplate,
@@ -121,7 +126,7 @@ export class PresentationTempleteController {
     );
   }
 
-  @Patch(':templateId')
+  @Patch('template/:templateId')
   @ApiOkResponse({
     description: 'Template Updated',
     type: PresentationTemplate,
@@ -143,61 +148,56 @@ export class PresentationTempleteController {
     );
   }
 
-  // remove(@Param('id') id: string) {
-  //   return this.presentationService.deletePresentationTemplate(+id);
-  // }
-}
-
-
-@ApiTags('Presentation')
-@UseGuards(AuthGuard('jwt'))
-@ApiBearerAuth('Authorization')
-@UseFilters(AllExceptionsFilter)
-@Controller('presentation/request')
-export class PresenstationRequsetController {
-  constructor(private readonly presentationRequestService:PresentationRequestService){}
+  @Delete('template/:templateId')
+  @ApiOkResponse({
+    description: 'Template Deleted Successfully',
+    type: PresentationTemplate,
+  })
+  @ApiNotFoundResponse({
+    description: `No resource found for templateId 63d7c558743fea9d22aab...`,
+    type: PTemplateNotFoundError,
+  })
+  remove(@Param('templateId') templateId: string, @Req() req: any) {
+    return this.presentationService.deletePresentationTemplate(
+      templateId,
+      req.user,
+    );
+  }
+  @Post()
+  @ApiNotFoundResponse({
+    description: 'did:hid:testnet:......#key-${id} not found',
+    type: PTemplateNotFoundError,
+  })
+  create(@Body() presentation: CreatePresentationDto, @Req() req) {
+    return this.presentationRequestService.createPresentation(
+      presentation,
+      req.user,
+    );
+  }
   @UsePipes(new ValidationPipe({ transform: true }))
-  @Post()
-  create(
+  @Post('request')
+  @ApiCreatedResponse({
+    description: 'Presentation request is created',
+    type: CreatePresentationResponseDto,
+  })
+  @ApiBadRequestResponse({
+    description: 'templeteId :62874356...  not found',
+    type: PTemplateError,
+  })
+  createPresentationRequest(
     @Body() createPresentationRequestDto: CreatePresentationRequestDto,
-    @Req() req
+    @Req() req,
   ) {
-   return this.presentationRequestService.createPresentationRequest(createPresentationRequestDto,req.user)
-
+    return this.presentationRequestService.createPresentationRequest(
+      createPresentationRequestDto,
+      req.user,
+    );
   }
-}
-
-
-
-
-
-@ApiTags('Presentation')
-@UseGuards(AuthGuard('jwt'))
-@ApiBearerAuth('Authorization')
-@UseFilters(AllExceptionsFilter)
-@Controller('presentation')
-export class Presentation {
-  constructor(private readonly presentationRequestService:PresentationRequestService ){}
-  @Post()
-  create(
-    @Body()  presentation:CreatePresentationDto,
-    @Req() req
-  ){
-
-   return this.presentationRequestService.createPresentation(presentation,req.user)
-  }
-
-
-
   @Post('/verify')
-  verify(
-    @Body()  presentation:verifiPresntationDto,
-    @Req() req
-
-  ){
-
-    return this.presentationRequestService.verifyPresentation(presentation,req.user)
-
+  verify(@Body() presentation: verifyPresentationDto, @Req() req) {
+    return this.presentationRequestService.verifyPresentation(
+      presentation,
+      req.user,
+    );
   }
 }
-

@@ -7,7 +7,11 @@ import { CreatePresentationTemplateDto } from '../dto/create-presentation-temple
 import { UpdatePresentationDto } from '../dto/update-presentation.dto';
 import { PresentationTemplateRepository } from '../repository/presentation-template.repository';
 import { PresentationTemplate } from '../schemas/presentation-template.schema';
-import { CreatePresentationDto, CreatePresentationRequestDto, verifiPresntationDto } from '../dto/create-presentation-request.dto';
+import {
+  CreatePresentationDto,
+  CreatePresentationRequestDto,
+  verifyPresentationDto,
+} from '../dto/create-presentation-request.dto';
 import { uuid } from 'uuidv4';
 import { HypersignVerifiablePresentation, HypersignDID } from 'hs-ssi-sdk';
 import { ConfigService } from '@nestjs/config';
@@ -19,7 +23,7 @@ import { DidRepository } from 'src/did/repository/did.repository';
 export class PresentationService {
   constructor(
     private readonly presentationtempleteReopsitory: PresentationTemplateRepository,
-  ) { }
+  ) {}
   async createPresentationTemplate(
     createPresentationTemplateDto: CreatePresentationTemplateDto,
     appDetail,
@@ -30,7 +34,10 @@ export class PresentationService {
       name,
     });
     if (templateDetail) {
-      throw new BadRequestException([`${name} must be unique`]);
+      throw new BadRequestException([
+        `Template name must be unique`,
+        `${name} already exists`,
+      ]);
     }
     const newPresentationTemplate = this.presentationtempleteReopsitory.create({
       appId: appDetail.appId,
@@ -88,7 +95,10 @@ export class PresentationService {
       _id: { $ne: templateId },
     });
     if (templateDetail) {
-      throw new BadRequestException([`${name} must be unique`]);
+      throw new BadRequestException([
+        `Template name must be unique`,
+        `${name} already exists`,
+      ]);
     }
     const updatedresult = this.presentationtempleteReopsitory.findOneAndUpdate(
       {
@@ -105,36 +115,54 @@ export class PresentationService {
     return updatedresult;
   }
 
-  deletePresentationTemplate(id: number) {
-    return `This action removes a #${id} presentation`;
+  async deletePresentationTemplate(
+    templateId: string,
+    appDetail,
+  ): Promise<PresentationTemplate> {
+    let templateDetail = await this.presentationtempleteReopsitory.findOne({
+      appId: appDetail.appId,
+      _id: templateId,
+    });
+    if (!templateDetail) {
+      throw new NotFoundException([
+        `No resource found for templateId ${templateId}`,
+      ]);
+    }
+    templateDetail = await this.presentationtempleteReopsitory.findOneAndDelete(
+      { appId: appDetail.appId, _id: templateId },
+    );
+    return templateDetail;
   }
 }
 
-
 @Injectable()
 export class PresentationRequestService {
-
   constructor(
     private readonly presentationtempleteReopsitory: PresentationTemplateRepository,
     private readonly didRepositiory: DidRepository,
     private readonly config: ConfigService,
     private readonly edvService: EdvService,
     private readonly hidWallet: HidWalletService,
-  ) { }
+  ) {}
 
-  async createPresentationRequest(createPresentationRequestDto: CreatePresentationRequestDto, appDetail) {
-    const { challenge, did, templateId, expiresTime, callbackUrl } = createPresentationRequestDto
-    let presentationTemplete = undefined
+  async createPresentationRequest(
+    createPresentationRequestDto: CreatePresentationRequestDto,
+    appDetail,
+  ) {
+    const { challenge, did, templateId, expiresTime, callbackUrl } =
+      createPresentationRequestDto;
+    let presentationTemplete = undefined;
     try {
-      presentationTemplete = await this.presentationtempleteReopsitory.findOne({ appId: appDetail.appId, _id: templateId })
-
+      presentationTemplete = await this.presentationtempleteReopsitory.findOne({
+        appId: appDetail.appId,
+        _id: templateId,
+      });
     } catch (error) {
-      throw new BadRequestException([`templeteId : ${templateId} not found`])
+      throw new BadRequestException([`templeteId : ${templateId} not found`]);
     }
 
-    const body = presentationTemplete
-    body.challenge = challenge
-
+    const body = presentationTemplete;
+    body.challenge = challenge;
 
     const response = {
       id: uuid(),
@@ -142,54 +170,38 @@ export class PresentationRequestService {
       created_time: Number(new Date()),
       expires_time: expiresTime,
       reply_url: callbackUrl,
-      reply_to: [
-        did
-      ],
-      body
+      reply_to: [did],
+      body,
+    };
 
-    }
-
-    return response
-
-
+    return response;
   }
 
-
   async createPresentation(credentialsDto: CreatePresentationDto, appDetail) {
+    const hypersignVP = new HypersignVerifiablePresentation({
+      nodeRestEndpoint: this.config.get('HID_NETWORK_API'),
+      nodeRpcEndpoint: this.config.get('HID_NETWORK_RPC'),
+      namespace: 'testnet',
+    });
 
+    const hypersignDID = new HypersignDID({
+      nodeRestEndpoint: this.config.get('HID_NETWORK_API'),
+      nodeRpcEndpoint: this.config.get('HID_NETWORK_RPC'),
+      namespace: 'testnet',
+    });
 
+    const { credentials, holderDid, challenge, domain } = credentialsDto;
 
-    const hypersignVP = new HypersignVerifiablePresentation(
-      {
-        nodeRestEndpoint: this.config.get('HID_NETWORK_API'),
-        nodeRpcEndpoint: this.config.get('HID_NETWORK_RPC'),
-        namespace: 'testnet',
-      }
-    )
-
-    const hypersignDID = new HypersignDID(
-      {
-        nodeRestEndpoint: this.config.get('HID_NETWORK_API'),
-        nodeRpcEndpoint: this.config.get('HID_NETWORK_RPC'),
-        namespace: 'testnet',
-      }
-    )
-
-
-    const { credentials, holderDid, challenge, domain } = credentialsDto
-
-    const unsignedverifiablePresentation = await hypersignVP.generate(
-      {
-        verifiableCredentials: credentials,
-        holderDid: holderDid
-      }
-    );
+    const unsignedverifiablePresentation = await hypersignVP.generate({
+      verifiableCredentials: credentials,
+      holderDid: holderDid,
+    });
 
     const { didDocument, didDocumentMetadata } = await hypersignDID.resolve({
-      did: holderDid
-    })
+      did: holderDid,
+    });
 
-    const verificationMethodIdforAssert = didDocument.assertionMethod[0] //remove hardcoding
+    const verificationMethodIdforAssert = didDocument.assertionMethod[0]; //remove hardcoding
 
     const { edvId, edvDocId } = appDetail;
     await this.edvService.init(edvId);
@@ -205,66 +217,50 @@ export class PresentationRequestService {
       ]);
     }
 
-
     const docs = await this.edvService.getDecryptedDocument(edvDocId);
     const mnemonic: string = docs.mnemonic;
     await this.hidWallet.generateWallet(mnemonic);
 
-
-    const slipPathKeys = this.hidWallet.makeSSIWalletPath(
-      didInfo.hdPathIndex,
-    );
+    const slipPathKeys = this.hidWallet.makeSSIWalletPath(didInfo.hdPathIndex);
 
     const seed = await this.hidWallet.generateMemonicToSeedFromSlip10RawIndex(
       slipPathKeys,
     );
     const { privateKeyMultibase } = await hypersignDID.generateKeys({ seed });
 
-
     const signedVerifiablePresentation = await hypersignVP.sign({
       presentation: unsignedverifiablePresentation,
       holderDid,
       verificationMethodId: verificationMethodIdforAssert,
-      challenge, privateKeyMultibase,
-      domain
-    })
-    return { presentation: signedVerifiablePresentation }
+      challenge,
+      privateKeyMultibase,
+      domain,
+    });
+    return { presentation: signedVerifiablePresentation };
   }
 
+  async verifyPresentation(presentations: verifyPresentationDto, appDetail) {
+    const hypersignVP = new HypersignVerifiablePresentation({
+      nodeRestEndpoint: this.config.get('HID_NETWORK_API'),
+      nodeRpcEndpoint: this.config.get('HID_NETWORK_RPC'),
+      namespace: 'testnet',
+    });
+    const { presentation } = presentations;
 
+    const holderDid = presentation['holder'];
+    const issuerDid = presentation['verifiableCredential'][0]['issuer'];
 
-  async verifyPresentation(presentations: verifiPresntationDto, appDetail) {
-    const hypersignVP = new HypersignVerifiablePresentation(
-      {
-        nodeRestEndpoint: this.config.get('HID_NETWORK_API'),
-        nodeRpcEndpoint: this.config.get('HID_NETWORK_RPC'),
-        namespace: 'testnet',
-      }
-    )
-    const { presentation } = presentations
+    const domain = presentation['proof']['domain'];
+    const challenge = presentation['proof']['challenge'];
+    const verifiedPresentationDetail = await hypersignVP.verify({
+      signedPresentation: presentation,
+      issuerDid,
+      holderDid,
+      holderVerificationMethodId: holderDid + '#key-1',
+      issuerVerificationMethodId: issuerDid + '#key-1',
+      challenge,
+    });
 
-    const holderDid = presentation['holder']
-    const issuerDid = presentation['verifiableCredential'][0]['issuer']
-    
-    const domain = presentation['proof']['domain']
-    const challenge = presentation['proof']['challenge']
-
-      const verifiedPresentationDetail=await hypersignVP.verify({
-        signedPresentation:presentation,
-        issuerDid,
-        holderDid,
-        holderVerificationMethodId:holderDid+'#key-1',
-        issuerVerificationMethodId:issuerDid+'#key-1',
-        challenge
-      })
-
-
-      return verifiedPresentationDetail
+    return verifiedPresentationDetail;
   }
-
-
 }
-
-
-
-

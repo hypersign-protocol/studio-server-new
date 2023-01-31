@@ -4,6 +4,7 @@ import { IsEnum, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { Trim } from 'src/utils/customDecorator/trim.decorator';
 import { RegistrationStatus } from '../schemas/did.schema';
 import { DidDoc } from '../dto/update-did.dto';
+import { IsDid } from 'src/utils/customDecorator/did.decorator';
 
 export enum KeyType {
   EcdsaSecp256k1RecoveryMethod2020 = 'EcdsaSecp256k1RecoveryMethod2020',
@@ -66,6 +67,8 @@ export class CreateDidResponse {
     description: 'Did document id',
     example: 'did:hid:namespace:.......................',
   })
+  @IsString()
+  @IsDid()
   did: string;
 
   @ApiProperty({

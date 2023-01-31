@@ -5,15 +5,15 @@ import {
   IsNotEmptyObject,
   IsOptional,
   IsString,
-  isNotEmpty,
   ValidateNested,
   IsArray,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-
-import { IsDid } from 'src/schema/decorator/schema.decorator';
 import { IsEmptyTrim, Trim } from 'src/utils/customDecorator/trim.decorator';
 import { ValidateVerificationMethodId } from 'src/utils/customDecorator/vmId.decorator';
+import { IsDid } from 'src/utils/customDecorator/did.decorator';
+import { IsSchemaId } from 'src/utils/customDecorator/schemaId.deceorator';
+import { IsVcId } from 'src/utils/customDecorator/vc.decorator';
 
 export class CreateCredentialDto {
   @ApiProperty({
@@ -97,12 +97,12 @@ export class CreateCredentialDto {
 }
 
 export class CredentialSubject {
- 
   @ApiProperty({
     description: 'id',
     example: 'did:hid:testnet:...............',
   })
   @IsString()
+  @IsDid()
   id: string;
 }
 export class CredentialSchema {
@@ -111,6 +111,7 @@ export class CredentialSchema {
     example: 'sch:hid:testnet:...............',
   })
   @IsString()
+  @IsSchemaId()
   id: string;
   @ApiProperty({
     name: 'type',
@@ -158,6 +159,7 @@ export class CredentialProof {
     example: 'did:hid:testnet:...............#key-${id}',
   })
   @IsString()
+  @ValidateVerificationMethodId()
   verificationMethod: string;
   @ApiProperty({
     name: 'proofPurpose',
@@ -180,13 +182,15 @@ class Claim {
   @ApiProperty({
     name: 'id',
     description: 'Credential id',
-    example: 'vc:his:testnet:................',
+    example: 'vc:hid:testnet:................',
   })
+  @IsString()
+  @IsVcId()
   id: string;
   @ApiProperty({
     name: 'currentStatus',
     description: 'Status of credential',
-    example: 'vc:his:testnet:................',
+    example: 'vc:hid:testnet:................',
   })
   currentStatus: string;
   @ApiProperty({
@@ -213,6 +217,7 @@ class CredStatus {
     example: 'did:hid:testnet:..............',
   })
   @IsString()
+  @IsDid()
   issuer: string;
   @ApiProperty({
     name: 'issuanceDate',
@@ -253,9 +258,10 @@ export class CredDoc {
   '@context': Array<string>;
   @ApiProperty({
     description: 'id',
-    example: 'did:hid:method:......',
+    example: 'vc:hid:testnet:......',
   })
   @IsString()
+  @IsVcId()
   id: string;
   @ApiProperty({
     description: 'type',
@@ -278,6 +284,8 @@ export class CredDoc {
     description: 'issuer did',
     example: 'did:hid:testnet:..........',
   })
+  @IsString()
+  @IsDid()
   issuer: Date;
 
   @ApiProperty({
@@ -296,8 +304,8 @@ export class CredDoc {
     name: 'credentialSchema',
     description: 'Schema detail based on which credential has issued',
     example: {
-      name: 'sch:hid:testnet:...........',
-      id: 'JsonSchemaValidator2018',
+      id: 'sch:hid:testnet:...........',
+      name: 'JsonSchemaValidator2018',
     },
   })
   @Type(() => CredentialSchema)

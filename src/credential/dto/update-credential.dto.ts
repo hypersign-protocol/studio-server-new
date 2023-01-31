@@ -9,9 +9,9 @@ import {
 } from 'class-validator';
 import { Prop } from '@nestjs/mongoose';
 import { Type } from 'class-transformer';
-import { IsDid } from 'src/schema/decorator/schema.decorator';
 import { ValidateVerificationMethodId } from 'src/utils/customDecorator/vmId.decorator';
 import { Trim } from 'src/utils/customDecorator/trim.decorator';
+import { IsDid } from 'src/utils/customDecorator/did.decorator';
 
 export enum Status {
   LIVE = 'LIVE',

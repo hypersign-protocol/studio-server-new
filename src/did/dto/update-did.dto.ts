@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsArray, IsString, ValidateNested } from 'class-validator';
+import { IsDid } from 'src/utils/customDecorator/did.decorator';
 import { ValidateVerificationMethodId } from 'src/utils/customDecorator/vmId.decorator';
 
 class verificationMethod {
@@ -10,6 +11,7 @@ class verificationMethod {
       'did:hid:testnet:z28ScfSszr2zi2Bd7qmNE4mfHX5j8nCwx4DBF6nAUHu4p#key-1',
   })
   @IsString()
+  @ValidateVerificationMethodId()
   id: string;
   @ApiProperty({
     description: 'Verification Method type',
@@ -21,6 +23,7 @@ class verificationMethod {
     description: 'Verification Method controller',
     example: 'did:hid:method:..............',
   })
+  @IsDid()
   @IsString()
   controller: string;
   @ApiProperty({
@@ -43,6 +46,7 @@ export class DidDoc {
     description: 'id',
     example: 'did:hid:method:......',
   })
+  @IsDid()
   @IsString()
   id: string;
   @ApiProperty({
@@ -153,6 +157,7 @@ class Service {
     example:
       'did:hid:testnet:z23dCariJNNpMNca86EtVZVvrLpn61isd86fWVyWa8Jkm#linked-domain',
   })
+  @IsDid()
   @IsString()
   id: string;
   @ApiProperty({

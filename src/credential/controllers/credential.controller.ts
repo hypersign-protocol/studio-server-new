@@ -102,7 +102,7 @@ export class CredentialController {
     );
   }
 
-  @UsePipes(new ValidationPipe({transform:true}))
+  @UsePipes(new ValidationPipe({ transform: true }))
   @Post()
   @ApiCreatedResponse({
     description: 'Credential Created',
@@ -163,7 +163,7 @@ export class CredentialController {
     type: CredentialError,
   })
   update(
-    @Param(':credentialId') credentialId: string,
+    @Param('credentialId') credentialId: string,
     @Body() updateCredentialDto: UpdateCredentialDto,
     @Req() req,
   ) {

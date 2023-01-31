@@ -15,8 +15,8 @@ import {
   CredentialSchema,
   CredentialSubject,
 } from 'src/credential/dto/create-credential.dto';
-import { IsDid } from 'src/schema/decorator/schema.decorator';
 import { ToPascalCase } from 'src/utils/customDecorator/case.decorator';
+import { IsDid } from 'src/utils/customDecorator/did.decorator';
 
 export type PresentationTemplateDocument = PresentationTemplate & Document;
 
@@ -44,11 +44,12 @@ export class Query {
   credentialQuery: Array<CredentialQuery>;
 }
 
-export class TruestedIssuer {
+export class TrustedIssuer {
   @IsBoolean()
   @Prop()
   required: boolean;
   @IsDid()
+  @IsString()
   @Prop()
   issuer: string;
 }
@@ -73,10 +74,10 @@ export class QueryExample {
   @Prop({ required: false })
   credentialSchema: CredentialSchema;
 
-  @Type(() => TruestedIssuer)
+  @Type(() => TrustedIssuer)
   @ValidateNested({ each: true })
   @Prop()
-  trustedIssuer: Array<TruestedIssuer>;
+  trustedIssuer: Array<TrustedIssuer>;
 }
 
 export class CredentialQuery {
@@ -129,13 +130,15 @@ export class PresentationTemplate {
                 id: 'did:hid:testnet:.............................',
               },
               credentialSchema: {
-                type: 'some type',
-                id: 'JsonSchemaValidator2018',
+                id: 'sch:hid:testnet:...............',
+                type: 'JsonSchemaValidator2018',
               },
-              truestedIssuer: {
-                required: true,
-                issuer: 'did:hid:testnet:................',
-              },
+              trustedIssuer: [
+                {
+                  required: true,
+                  issuer: 'did:hid:testnet:................',
+                },
+              ],
             },
           },
         ],

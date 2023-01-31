@@ -52,13 +52,15 @@ export class UpdatePresentationDto extends PartialType(
                 id: 'did:hid:testnet:.............................',
               },
               credentialSchema: {
-                type: 'some type',
-                id: 'JsonSchemaValidator2018',
+                id: 'sch:hid:testnet:...............',
+                type: 'JsonSchemaValidator2018',
               },
-              truestedIssuer: {
-                required: true,
-                issuer: 'did:hid:testnet:................',
-              },
+              trustedIssuer: [
+                {
+                  required: true,
+                  issuer: 'did:hid:testnet:................',
+                },
+              ],
             },
           },
         ],
