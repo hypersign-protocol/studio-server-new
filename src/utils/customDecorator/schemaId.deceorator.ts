@@ -24,11 +24,6 @@ export const IsSchemaId = (): PropertyDecorator => {
               `Invalid ${propertyKey.toString()}`,
             ]);
           }
-          if (schemaId.includes('.')) {
-            throw new BadRequestException([
-              `Invalid ${propertyKey.toString()}`,
-            ]);
-          }
           original = val;
         },
       };

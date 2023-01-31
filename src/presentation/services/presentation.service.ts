@@ -23,7 +23,10 @@ export class PresentationService {
       name,
     });
     if (templateDetail) {
-      throw new BadRequestException([`${name} must be unique`]);
+      throw new BadRequestException([
+        `Template name must be unique`,
+        `${name} already exists`,
+      ]);
     }
     const newPresentationTemplate = this.presentationtempleteReopsitory.create({
       appId: appDetail.appId,
@@ -81,7 +84,10 @@ export class PresentationService {
       _id: { $ne: templateId },
     });
     if (templateDetail) {
-      throw new BadRequestException([`${name} must be unique`]);
+      throw new BadRequestException([
+        `Template name must be unique`,
+        `${name} already exists`,
+      ]);
     }
     const updatedresult = this.presentationtempleteReopsitory.findOneAndUpdate(
       {

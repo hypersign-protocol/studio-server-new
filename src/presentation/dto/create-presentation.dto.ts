@@ -16,7 +16,7 @@ import { ToSnakeCase } from 'src/utils/customDecorator/case.decorator';
 import { IsDid } from 'src/utils/customDecorator/did.decorator';
 import { Trim } from 'src/utils/customDecorator/trim.decorator';
 import { queryType } from '../schemas/presentation-template.schema';
-export class TruestedIssuer {
+export class TrustedIssuer {
   @ApiProperty({
     name: 'required',
     description: 'defining property is required or not',
@@ -71,7 +71,7 @@ export class QueryExample {
       type: 'JsonSchemaValidator2018',
     },
   })
-  @ValidateNested()
+  @ValidateNested({ each: true })
   @Type(() => CredentialSchema)
   credentialSchema: CredentialSchema;
   @ApiProperty({
@@ -81,10 +81,12 @@ export class QueryExample {
       required: true,
       issuer: 'did:hid:testnet:................',
     },
+    type: [TrustedIssuer],
   })
-  @Type(() => TruestedIssuer)
+  @IsArray()
   @ValidateNested({ each: true })
-  trustedIssuer: Array<TruestedIssuer>;
+  @Type(() => TrustedIssuer)
+  trustedIssuer: Array<TrustedIssuer>;
 }
 
 export class CredentialQuery {
@@ -117,7 +119,7 @@ export class CredentialQuery {
         id: 'sch:hid:testnet:...............',
         type: 'JsonSchemaValidator2018',
       },
-      truestedIssuer: [
+      trustedIssuer: [
         {
           required: true,
           issuer: 'did:hid:testnet:................',
@@ -156,7 +158,7 @@ export class Query {
             id: 'sch:hid:testnet:...............',
             type: 'JsonSchemaValidator2018',
           },
-          truestedIssuer: [
+          trustedIssuer: [
             {
               required: true,
               issuer: 'did:hid:testnet:................',
@@ -212,7 +214,7 @@ export class CreatePresentationTemplateDto {
                 id: 'sch:hid:testnet:...............',
                 type: 'JsonSchemaValidator2018',
               },
-              truestedIssuer: [
+              trustedIssuer: [
                 {
                   required: true,
                   issuer: 'did:hid:testnet:................',
