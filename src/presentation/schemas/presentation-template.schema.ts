@@ -5,14 +5,13 @@ import {
   IsArray,
   IsBoolean,
   IsEnum,
-  IsObject,
+  IsNotEmpty,
   IsString,
   IsUrl,
   ValidateNested,
 } from 'class-validator';
 import { Document } from 'mongoose';
 import {
-  CreateCredentialDto,
   CredentialSchema,
   CredentialSubject,
 } from 'src/credential/dto/create-credential.dto';
@@ -97,29 +96,63 @@ export class CredentialQuery {
 
 @Schema()
 export class PresentationTemplate {
+  @ApiProperty({
+    description: 'Application Id',
+    example: '43...18-...........',
+  })
   @IsString()
   @Prop({ required: true })
   appId: string;
-
+  @ApiProperty({
+    description: 'Domain name',
+    example: 'fyre.hypersign.id',
+  })
   @IsString()
   @IsUrl({ protocols: ['http', 'https'] })
   @Prop({ required: true })
   domain: string;
-
-  // @IsString()
-  // @Prop({ required: false })
-  // challenge: string;
-
+  @ApiProperty({
+    description: 'Domain name',
+    type: Query,
+    example: [
+      {
+        type: 'QueryByExample',
+        credentialQuery: [
+          {
+            required: true,
+            reason: 'We need you to prove your eligibility to work.',
+            example: {
+              '@context': ['https://www.w3.org/2018/credentials/v1'],
+              type: 'AlumniCredential',
+              credentialSubject: {
+                name: 'Random name',
+                id: 'did:hid:testnet:.............................',
+              },
+              credentialSchema: {
+                type: 'some type',
+                id: 'JsonSchemaValidator2018',
+              },
+              truestedIssuer: {
+                required: true,
+                issuer: 'did:hid:testnet:................',
+              },
+            },
+          },
+        ],
+      },
+    ],
+  })
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => Query)
   @Prop({ required: true })
   query: Array<Query>;
-  // @Prop({
-  //   required: true,
-  //   type: [Schema.ObjectId],
-  // })
-  //query: Types.Array<Query>;
+  @Prop({
+    required: true,
+  })
+  @IsString()
+  @IsNotEmpty()
+  name: string;
 }
 
 const PresentationTemplateSchema =
