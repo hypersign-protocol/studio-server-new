@@ -110,6 +110,7 @@ export class SchemaService {
   async resolveSchema(schemaId: string, appDetail) {
     const schemaDetail = await this.schemaRepository.findOne({
       appId: appDetail.appId,
+      schemaId,
     });
     if (!schemaDetail || schemaDetail == null) {
       throw new NotFoundException([

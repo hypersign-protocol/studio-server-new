@@ -13,10 +13,24 @@ import { CredentialRepository } from './repository/credential.repository';
 import { DidModule } from 'src/did/did.module';
 
 @Module({
-  imports:[MongooseModule.forFeature([{
-    name:Credential.name,schema:CredentialSchema
-  }]),EdvModule,HidWalletModule,DidModule],
+  imports: [
+    MongooseModule.forFeature([
+      {
+        name: Credential.name,
+        schema: CredentialSchema,
+      },
+    ]),
+    EdvModule,
+    HidWalletModule,
+    DidModule,
+  ],
   controllers: [CredentialController],
-  providers: [CredentialService,CredentialSSIService,EdvService,HidWalletService,CredentialRepository]
+  providers: [
+    CredentialService,
+    CredentialSSIService,
+    EdvService,
+    HidWalletService,
+    CredentialRepository,
+  ],
 })
 export class CredentialModule {}

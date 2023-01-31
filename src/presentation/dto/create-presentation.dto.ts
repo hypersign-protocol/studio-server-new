@@ -12,8 +12,8 @@ import {
   CredentialSchema,
   CredentialSubject,
 } from 'src/credential/dto/create-credential.dto';
-import { IsDid } from 'src/schema/decorator/schema.decorator';
 import { ToSnakeCase } from 'src/utils/customDecorator/case.decorator';
+import { IsDid } from 'src/utils/customDecorator/did.decorator';
 import { Trim } from 'src/utils/customDecorator/trim.decorator';
 import { queryType } from '../schemas/presentation-template.schema';
 export class TruestedIssuer {
@@ -67,8 +67,8 @@ export class QueryExample {
     name: 'credentialSchema',
     description: 'Schema detail based on which credential has issued',
     example: {
-      id: 'JsonSchemaValidator2018',
-      type: 'some type',
+      id: 'sch:hid:testnet:...............',
+      type: 'JsonSchemaValidator2018',
     },
   })
   @ValidateNested()
@@ -114,13 +114,15 @@ export class CredentialQuery {
         id: 'did:hid:testnet:.............................',
       },
       credentialSchema: {
-        type: 'some type',
-        id: 'JsonSchemaValidator2018',
+        id: 'sch:hid:testnet:...............',
+        type: 'JsonSchemaValidator2018',
       },
-      truestedIssuer: {
-        required: true,
-        issuer: 'did:hid:testnet:................',
-      },
+      truestedIssuer: [
+        {
+          required: true,
+          issuer: 'did:hid:testnet:................',
+        },
+      ],
     },
   })
   @ValidateNested()
@@ -151,13 +153,15 @@ export class Query {
             id: 'did:hid:testnet:.............................',
           },
           credentialSchema: {
-            id: 'JsonSchemaValidator2018',
-            type: 'some type',
+            id: 'sch:hid:testnet:...............',
+            type: 'JsonSchemaValidator2018',
           },
-          truestedIssuer: {
-            required: true,
-            issuer: 'did:hid:testnet:................',
-          },
+          truestedIssuer: [
+            {
+              required: true,
+              issuer: 'did:hid:testnet:................',
+            },
+          ],
         },
       },
     ],
@@ -173,7 +177,6 @@ export class CreatePresentationTemplateDto {
     description: 'Domain name',
     example: 'fyre.hypersign.id',
   })
-  // add chek for valid domain
   @IsString()
   @IsNotEmpty()
   @IsUrl()
@@ -206,13 +209,15 @@ export class CreatePresentationTemplateDto {
                 id: 'did:hid:testnet:.............................',
               },
               credentialSchema: {
-                type: 'some type',
-                id: 'JsonSchemaValidator2018',
+                id: 'sch:hid:testnet:...............',
+                type: 'JsonSchemaValidator2018',
               },
-              truestedIssuer: {
-                required: true,
-                issuer: 'did:hid:testnet:................',
-              },
+              truestedIssuer: [
+                {
+                  required: true,
+                  issuer: 'did:hid:testnet:................',
+                },
+              ],
             },
           },
         ],

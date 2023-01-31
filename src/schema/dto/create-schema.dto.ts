@@ -9,9 +9,9 @@ import {
 } from 'class-validator';
 import { Trim } from '../../utils/customDecorator/trim.decorator';
 import { Type } from 'class-transformer';
-import { IsDid } from '../decorator/schema.decorator';
 import { ValidateVerificationMethodId } from 'src/utils/customDecorator/vmId.decorator';
 import { ToPascalCase } from 'src/utils/customDecorator/case.decorator';
+import { IsDid } from 'src/utils/customDecorator/did.decorator';
 
 export enum DataType {
   string = 'string',
