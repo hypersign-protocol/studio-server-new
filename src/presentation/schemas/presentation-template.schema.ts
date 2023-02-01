@@ -74,7 +74,7 @@ export class QueryExample {
   @Prop({ required: false })
   credentialSchema: CredentialSchema;
 
-  @Type(() => TrustedIssuer)
+  @Type(() => Array<TrustedIssuer>)
   @ValidateNested({ each: true })
   @Prop()
   trustedIssuer: Array<TrustedIssuer>;
@@ -147,7 +147,7 @@ export class PresentationTemplate {
   })
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => Query)
+  @Type(() => Array<Query>)
   @Prop({ required: true })
   query: Array<Query>;
   @Prop({

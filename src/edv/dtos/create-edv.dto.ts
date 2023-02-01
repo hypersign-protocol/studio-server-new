@@ -32,11 +32,11 @@ export class EdvDocsDto {
     readonly address: string;
 
     @ValidateNested()    
-    @Type(() => DidsDto)
+    @Type(() => Array<DidsDto>)
     readonly dids?: Array<DidsDto>;
 
     @ValidateNested()
-    @Type(() => CredsDto)
+    @Type(() => Array<CredsDto>)
     readonly vcs?: Array<CredsDto>
 
 }

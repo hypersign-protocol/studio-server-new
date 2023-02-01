@@ -179,8 +179,8 @@ export class CreatePresentationDto {
     },
   })
   @ValidateNested()
-  @Type(() => CredDoc)
-  credentials: [CredDoc];
+  @Type(() => Array<CredDoc>)
+  credentials: Array<CredDoc>;
 
   @ApiProperty({
     name: 'holderDid',

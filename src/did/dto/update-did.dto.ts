@@ -107,7 +107,7 @@ export class DidDoc {
       },
     ],
   })
-  @Type(() => Service)
+  @Type(() => Array<Service>)
   @ValidateNested()
   @IsArray()
   service: Array<Service>;

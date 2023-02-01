@@ -69,6 +69,6 @@ export class UpdatePresentationDto extends PartialType(
   })
   @IsArray()
   @ValidateNested()
-  @Type(() => Query)
+  @Type(() => Array<Query>)
   query: Array<Query>;
 }
