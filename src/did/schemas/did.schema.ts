@@ -4,6 +4,7 @@ import { Document } from 'mongoose';
 import { IsEnum, IsOptional, IsString } from 'class-validator';
 import { Slip10RawIndex } from '@cosmjs/crypto';
 import { Exclude } from 'class-transformer';
+import { IsDid } from 'src/utils/customDecorator/did.decorator';
 
 export type DidDocument = Did & Document;
 export type DidDocumentMetaData = DidMetaData & Document;
@@ -35,6 +36,7 @@ export class Did {
   })
   @Prop()
   @IsString()
+  @IsDid()
   did: string;
 
   @ApiProperty({

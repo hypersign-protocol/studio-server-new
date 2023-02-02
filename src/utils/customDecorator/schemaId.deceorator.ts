@@ -4,9 +4,9 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 
-export const ValidateVerificationMethodId = (): PropertyDecorator => {
+export const IsSchemaId = (): PropertyDecorator => {
   return applyDecorators(
-    SetMetadata('validateVerificationMethodId', true),
+    SetMetadata('IsSchemaId', true),
     (target: object, propertyKey: string | symbol) => {
       let original = target[propertyKey];
       const descriptor: PropertyDescriptor = {
@@ -18,13 +18,12 @@ export const ValidateVerificationMethodId = (): PropertyDecorator => {
             ]);
           }
 
-          const did = val.split('#')[0];
-          if (!did.includes('did:hid:')) {
+          const schemaId = val;
+          if (!schemaId.includes('sch:hid:')) {
             throw new BadRequestException([
               `Invalid ${propertyKey.toString()}`,
             ]);
           }
-
           original = val;
         },
       };

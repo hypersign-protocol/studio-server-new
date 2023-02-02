@@ -42,7 +42,7 @@ import { BooleanPipe } from 'src/utils/Pipes/boolean.pipe';
 @ApiBearerAuth('Authorization')
 @UseGuards(AuthGuard('jwt'))
 @Controller('credential')
-@ApiTags('credential')
+@ApiTags('Credential')
 export class CredentialController {
   constructor(private readonly credentialService: CredentialService) {}
   @UsePipes(new ValidationPipe({ transform: true }))
@@ -102,7 +102,7 @@ export class CredentialController {
     );
   }
 
-  @UsePipes(new ValidationPipe({transform:true}))
+  @UsePipes(new ValidationPipe({ transform: true }))
   @Post()
   @ApiCreatedResponse({
     description: 'Credential Created',
@@ -163,7 +163,7 @@ export class CredentialController {
     type: CredentialError,
   })
   update(
-    @Param(':credentialId') credentialId: string,
+    @Param('credentialId') credentialId: string,
     @Body() updateCredentialDto: UpdateCredentialDto,
     @Req() req,
   ) {

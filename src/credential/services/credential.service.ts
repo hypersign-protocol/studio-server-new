@@ -119,8 +119,8 @@ export class CredentialService {
         persist: persist,
         edvDocId: edvData && edvData.id ? edvData.id : '',
         transactionHash: credentialStatusRegistrationResult.transactionHash,
-        type:signedCredential.type[1] // TODO : MAYBE REMOVE HARDCODING MAYBE NOT
-      });      
+        type: signedCredential.type[1], // TODO : MAYBE REMOVE HARDCODING MAYBE NOT
+      });
       return { credential: signedCredential, credentialStatus, persist };
     } catch (e) {
       throw new BadRequestException([e.message]);
@@ -146,6 +146,12 @@ export class CredentialService {
       appId: appDetail.appId,
       credentialId,
     });
+    if (!credentialDetail || credentialDetail == null) {
+      throw new NotFoundException([
+        `${credentialId} is not found`,
+        `${credentialId} does not belongs to the App id: ${appDetail.appId}`,
+      ]);
+    }
     let credential;
     if (credentialDetail.persist === true && retrieveCredential === true) {
       const { edvId } = appDetail;
@@ -155,12 +161,7 @@ export class CredentialService {
       );
       credential = signedCredential;
     }
-    if (!credentialDetail || credentialDetail == null) {
-      throw new NotFoundException([
-        `${credentialId} is not found`,
-        `${credentialId} does not belongs to the App id: ${appDetail.appId}`,
-      ]);
-    }
+
     const hypersignCredential = new HypersignVerifiableCredential();
     let credentialStatus;
     try {

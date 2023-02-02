@@ -25,18 +25,15 @@ export class Schemas {
   })
   appId: string;
   @Prop()
-  
   @IsString()
   @IsNotEmpty()
   @ApiProperty({
     description: 'issuer Did',
     example: 'did:hid:namespace:.....................',
-  })  
+  })
   authorDid: string;
 
-  
-
-  @Prop({required:false})
+  @Prop({ required: false })
   @IsString()
   @IsNotEmpty()
   @ApiProperty({
@@ -47,12 +44,11 @@ export class Schemas {
 }
 
 const SchemasSchema = SchemaFactory.createForClass(Schemas);
-SchemasSchema.index({transactionHash:1},{unique:true})
-SchemasSchema.index({ appId: 1, schemaId: 1 ,authorDid:1}, { unique: true });
-SchemasSchema.index({schemaId:1},{unique:true})
+SchemasSchema.index({ transactionHash: 1 }, { unique: true });
+SchemasSchema.index({ appId: 1, schemaId: 1, authorDid: 1 }, { unique: true });
+SchemasSchema.index({ schemaId: 1 }, { unique: true });
 
 export { SchemasSchema };
-  function Ref(): (target: Schemas, propertyKey: "authorDid") => void {
-    throw new Error('Function not implemented.');
-  }
-
+function Ref(): (target: Schemas, propertyKey: 'authorDid') => void {
+  throw new Error('Function not implemented.');
+}

@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsArray, IsString, ValidateNested } from 'class-validator';
+import { IsDid } from 'src/utils/customDecorator/did.decorator';
 import { ValidateVerificationMethodId } from 'src/utils/customDecorator/vmId.decorator';
 
 class verificationMethod {
@@ -10,6 +11,7 @@ class verificationMethod {
       'did:hid:testnet:z28ScfSszr2zi2Bd7qmNE4mfHX5j8nCwx4DBF6nAUHu4p#key-1',
   })
   @IsString()
+  @ValidateVerificationMethodId()
   id: string;
   @ApiProperty({
     description: 'Verification Method type',
@@ -21,6 +23,7 @@ class verificationMethod {
     description: 'Verification Method controller',
     example: 'did:hid:method:..............',
   })
+  @IsDid()
   @IsString()
   controller: string;
   @ApiProperty({
@@ -30,7 +33,29 @@ class verificationMethod {
   @IsString()
   publicKeyMultibase: string;
 }
-
+class Service {
+  @ApiProperty({
+    description: 'id',
+    example:
+      'did:hid:testnet:z23dCariJNNpMNca86EtVZVvrLpn61isd86fWVyWa8Jkm#linked-domain',
+  })
+  @IsDid()
+  @IsString()
+  id: string;
+  @ApiProperty({
+    description: 'type',
+    example: 'LinkedDomains',
+  })
+  @IsString()
+  type: string;
+  @ApiProperty({
+    description: 'serviceEndpoint',
+    example:
+      'https://stage.hypermine.in/studioserver/api/v1/org/did:hid:testnet:......................',
+  })
+  @IsString()
+  serviceEndpoint: string;
+}
 export class DidDoc {
   @ApiProperty({
     description: 'Context',
@@ -43,6 +68,7 @@ export class DidDoc {
     description: 'id',
     example: 'did:hid:method:......',
   })
+  @IsDid()
   @IsString()
   id: string;
   @ApiProperty({
@@ -57,7 +83,11 @@ export class DidDoc {
   })
   @IsArray()
   alsoKnownAs: Array<string>;
-
+  @ApiProperty({
+    description: 'verificationMethod',
+    type: verificationMethod,
+    isArray: true,
+  })
   @Type(() => verificationMethod)
   @ValidateNested()
   verificationMethod: Array<verificationMethod>;
@@ -94,16 +124,10 @@ export class DidDoc {
   capabilityDelegation: Array<string>;
   @ApiProperty({
     description: 'service',
-    example: [
-      {
-        id: 'did:hid:testnet:.......#linked-domain',
-        type: 'LinkedDomains',
-        serviceEndpoint:
-          'https://example.domain.in/exampleserver/api/v1/org/did:hid:testnet:..........',
-      },
-    ],
+    type: Service,
+    isArray: true,
   })
-  @Type(() => Service)
+  @Type(() => Array<Service>)
   @ValidateNested()
   @IsArray()
   service: Array<Service>;
@@ -147,50 +171,9 @@ export class ResolvedDid {
   didDocumentMetadata: DidDocumentMetaData;
 }
 
-class Service {
-  @ApiProperty({
-    description: 'id',
-    example:
-      'did:hid:testnet:z23dCariJNNpMNca86EtVZVvrLpn61isd86fWVyWa8Jkm#linked-domain',
-  })
-  @IsString()
-  id: string;
-  @ApiProperty({
-    description: 'type',
-    example: 'LinkedDomains',
-  })
-  @IsString()
-  type: string;
-  @ApiProperty({
-    description: 'serviceEndpoint',
-    example:
-      'https://stage.hypermine.in/studioserver/api/v1/org/did:hid:testnet:......................',
-  })
-  @IsString()
-  serviceEndpoint: string;
-}
 export class UpdateDidDto {
   @ApiProperty({
     description: 'Did doc to be updated',
-    example: {
-      '@context': ['https://www.w3.org/ns/did/v1'],
-      id: 'did:hid:method:......',
-      controller: ['did:hid:method:......'],
-      alsoKnownAs: ['did:hid:method:......'],
-      authentication: ['did:hid:method:......'],
-      assertionMethod: ['did:hid:method:......'],
-      keyAgreement: ['did:hid:method:......'],
-      capabilityInvocation: ['did:hid:method:......'],
-      capabilityDelegation: ['did:hid:method:......'],
-      service: [
-        {
-          id: 'did:hid:testnet:.......#linked-domain',
-          type: 'LinkedDomains',
-          serviceEndpoint:
-            'https://example.domain.in/exampleserver/api/v1/org/did:hid:testnet:..........',
-        },
-      ],
-    },
     type: DidDoc,
   })
   @Type(() => DidDoc)

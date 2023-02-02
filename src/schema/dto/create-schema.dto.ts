@@ -9,9 +9,9 @@ import {
 } from 'class-validator';
 import { Trim } from '../../utils/customDecorator/trim.decorator';
 import { Type } from 'class-transformer';
-import { IsDid } from '../decorator/schema.decorator';
 import { ValidateVerificationMethodId } from 'src/utils/customDecorator/vmId.decorator';
-import { ToPascalCase } from 'src/utils/customDecorator/toPascalCase.decorator';
+import { ToPascalCase } from 'src/utils/customDecorator/case.decorator';
+import { IsDid } from 'src/utils/customDecorator/did.decorator';
 
 export enum DataType {
   string = 'string',
@@ -90,10 +90,11 @@ export class SchemaBody {
 
   @ApiProperty({
     description: 'Schema configuration',
-    example: [{}],
+    type: Fields,
+    isArray: true,
   })
-  @ValidateNested()
-  @Type(() => Fields)
+  @ValidateNested({ each: true })
+  @Type(() => Array<Fields>)
   fields: Array<Fields>;
 }
 
@@ -101,21 +102,9 @@ export class CreateSchemaDto {
   @ApiProperty({
     name: 'schema',
     description: 'Schema body',
-    example: {
-      name: 'testSchema',
-      description: 'This is a test schema generation',
-      author: '',
-      fields: [
-        {
-          name: 'name',
-          type: 'string',
-          isRequired: false,
-        },
-      ],
-      additionalProperties: false,
-    },
+    type: SchemaBody,
   })
-  @ValidateNested()
+  @ValidateNested({ each: true })
   @Type(() => SchemaBody)
   schema: SchemaBody;
 

@@ -12,6 +12,7 @@ import { AppAuthSecretService } from './app-auth/services/app-auth-passord.servi
 import { DidModule } from './did/did.module';
 import { SchemaModule } from './schema/schema.module';
 import { CredentialModule } from './credential/credential.module';
+import { PresentationModule } from './presentation/presentation.module';
 @Module({
   imports: [
     AppAuthModule,
@@ -25,6 +26,7 @@ import { CredentialModule } from './credential/credential.module';
     DidModule,
     SchemaModule,
     CredentialModule,
+    PresentationModule,
   ],
   controllers: [],
   providers: [

@@ -4,6 +4,7 @@ import { IsEnum, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { Trim } from 'src/utils/customDecorator/trim.decorator';
 import { RegistrationStatus } from '../schemas/did.schema';
 import { DidDoc } from '../dto/update-did.dto';
+import { IsDid } from 'src/utils/customDecorator/did.decorator';
 
 export enum KeyType {
   EcdsaSecp256k1RecoveryMethod2020 = 'EcdsaSecp256k1RecoveryMethod2020',
@@ -41,7 +42,7 @@ export class CreateDidDto {
 
   @ApiProperty({
     name: 'options',
-    description: '',
+    description: ' keyType used for verification',
     example: {
       keyType: 'Ed25519VerificationKey2020',
     },
@@ -66,6 +67,8 @@ export class CreateDidResponse {
     description: 'Did document id',
     example: 'did:hid:namespace:.......................',
   })
+  @IsString()
+  @IsDid()
   did: string;
 
   @ApiProperty({
@@ -87,27 +90,7 @@ export class CreateDidResponse {
   @ApiProperty({
     name: 'metaData',
     description: 'metaData constaing initial didDocument',
-    example: {
-      didDocument: {
-        '@context': ['https://www.w3.org/ns/did/v1'],
-        id: 'did:hid:method:......',
-        controller: ['did:hid:method:......'],
-        alsoKnownAs: ['did:hid:method:......'],
-        authentication: ['did:hid:method:......'],
-        assertionMethod: ['did:hid:method:......'],
-        keyAgreement: ['did:hid:method:......'],
-        capabilityInvocation: ['did:hid:method:......'],
-        capabilityDelegation: ['did:hid:method:......'],
-        service: [
-          {
-            id: 'did:hid:testnet:.......#linked-domain',
-            type: 'LinkedDomains',
-            serviceEndpoint:
-              'https://example.domain.in/exampleserver/api/v1/org/did:hid:testnet:..........',
-          },
-        ],
-      },
-    },
+    type: DidDoc,
   })
   @ValidateNested()
   @Type(() => DidDoc)
