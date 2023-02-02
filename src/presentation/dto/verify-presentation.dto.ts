@@ -4,6 +4,7 @@ import {
   IsArray,
   IsBoolean,
   IsNotEmpty,
+  IsNotEmptyObject,
   IsObject,
   IsString,
   ValidateNested,
@@ -19,7 +20,8 @@ export class VerifyPresentationDto {
     type: Presentation,
   })
   @IsObject()
-  @Type(() => Presentation) // check why getting verified false on using this line
+  @IsNotEmptyObject()
+  @Type(() => Presentation)
   @ValidateNested({ each: true })
   presentation: Presentation;
 }

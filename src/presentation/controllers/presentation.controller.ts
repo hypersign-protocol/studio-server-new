@@ -204,7 +204,7 @@ export class PresentationTempleteController {
       req.user,
     );
   }
-  @UsePipes(new ValidationPipe({ transform: true }))
+  @UsePipes(ValidationPipe)
   @Post('/verify')
   @ApiOkResponse({
     description: 'presentation verification done successfully',
