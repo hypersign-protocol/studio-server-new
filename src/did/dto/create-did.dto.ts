@@ -42,10 +42,8 @@ export class CreateDidDto {
 
   @ApiProperty({
     name: 'options',
-    description: '',
-    example: {
-      keyType: 'Ed25519VerificationKey2020',
-    },
+    description: ' keyType used for verification',
+    type: Options,
   })
   @Type(() => Options)
   @ValidateNested()
@@ -90,27 +88,7 @@ export class CreateDidResponse {
   @ApiProperty({
     name: 'metaData',
     description: 'metaData constaing initial didDocument',
-    example: {
-      didDocument: {
-        '@context': ['https://www.w3.org/ns/did/v1'],
-        id: 'did:hid:method:......',
-        controller: ['did:hid:method:......'],
-        alsoKnownAs: ['did:hid:method:......'],
-        authentication: ['did:hid:method:......'],
-        assertionMethod: ['did:hid:method:......'],
-        keyAgreement: ['did:hid:method:......'],
-        capabilityInvocation: ['did:hid:method:......'],
-        capabilityDelegation: ['did:hid:method:......'],
-        service: [
-          {
-            id: 'did:hid:testnet:.......#linked-domain',
-            type: 'LinkedDomains',
-            serviceEndpoint:
-              'https://example.domain.in/exampleserver/api/v1/org/did:hid:testnet:..........',
-          },
-        ],
-      },
-    },
+    type: DidDoc,
   })
   @ValidateNested()
   @Type(() => DidDoc)
