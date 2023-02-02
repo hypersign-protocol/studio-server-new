@@ -12,6 +12,7 @@ import {
   ValidationPipe,
   Req,
   Query,
+  HttpCode,
 } from '@nestjs/common';
 import {
   PresentationRequestService,
@@ -39,11 +40,15 @@ import { PresentationTemplate } from '../schemas/presentation-template.schema';
 import {
   CreatePresentationRequestDto,
   CreatePresentationDto,
-  verifyPresentationDto,
-  CreatePresentationResponseDto,
+  CreatePresentationResponse,
+  PresentationResponse,
 } from '../dto/create-presentation-request.dto';
 import { uuid } from 'uuidv4';
 import { CredDoc } from 'src/credential/dto/create-credential.dto';
+import {
+  VerifyPresentationDto,
+  VerifyPresentationResponse,
+} from '../dto/verify-presentation.dto';
 
 @ApiTags('Presentation')
 @UseGuards(AuthGuard('jwt'))
@@ -163,7 +168,13 @@ export class PresentationTempleteController {
       req.user,
     );
   }
+  @UsePipes(ValidationPipe)
   @Post()
+  @HttpCode(200)
+  @ApiOkResponse({
+    description: 'Response of presentation',
+    type: PresentationResponse,
+  })
   @ApiNotFoundResponse({
     description: 'did:hid:testnet:......#key-${id} not found',
     type: PTemplateNotFoundError,
@@ -178,7 +189,7 @@ export class PresentationTempleteController {
   @Post('request')
   @ApiCreatedResponse({
     description: 'Presentation request is created',
-    type: CreatePresentationResponseDto,
+    type: CreatePresentationResponse,
   })
   @ApiBadRequestResponse({
     description: 'templeteId :62874356...  not found',
@@ -193,8 +204,13 @@ export class PresentationTempleteController {
       req.user,
     );
   }
+  @UsePipes(ValidationPipe)
   @Post('/verify')
-  verify(@Body() presentation: verifyPresentationDto, @Req() req) {
+  @ApiOkResponse({
+    description: 'presentation verification done successfully',
+    type: VerifyPresentationResponse,
+  })
+  verify(@Body() presentation: VerifyPresentationDto, @Req() req) {
     return this.presentationRequestService.verifyPresentation(
       presentation,
       req.user,

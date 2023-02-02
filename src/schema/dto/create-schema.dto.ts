@@ -90,9 +90,10 @@ export class SchemaBody {
 
   @ApiProperty({
     description: 'Schema configuration',
-    example: [{}],
+    type: Fields,
+    isArray: true,
   })
-  @ValidateNested({each:true})
+  @ValidateNested({ each: true })
   @Type(() => Array<Fields>)
   fields: Array<Fields>;
 }
@@ -101,21 +102,9 @@ export class CreateSchemaDto {
   @ApiProperty({
     name: 'schema',
     description: 'Schema body',
-    example: {
-      name: 'testSchema',
-      description: 'This is a test schema generation',
-      author: '',
-      fields: [
-        {
-          name: 'name',
-          type: 'string',
-          isRequired: false,
-        },
-      ],
-      additionalProperties: false,
-    },
+    type: SchemaBody,
   })
-  @ValidateNested({each:true})
+  @ValidateNested({ each: true })
   @Type(() => SchemaBody)
   schema: SchemaBody;
 

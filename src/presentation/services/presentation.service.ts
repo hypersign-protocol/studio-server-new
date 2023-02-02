@@ -10,7 +10,6 @@ import { PresentationTemplate } from '../schemas/presentation-template.schema';
 import {
   CreatePresentationDto,
   CreatePresentationRequestDto,
-  verifyPresentationDto,
 } from '../dto/create-presentation-request.dto';
 import { uuid } from 'uuidv4';
 import { HypersignVerifiablePresentation, HypersignDID } from 'hs-ssi-sdk';
@@ -18,6 +17,7 @@ import { ConfigService } from '@nestjs/config';
 import { EdvService } from 'src/edv/services/edv.service';
 import { HidWalletService } from 'src/hid-wallet/services/hid-wallet.service';
 import { DidRepository } from 'src/did/repository/did.repository';
+import { VerifyPresentationDto } from '../dto/verify-presentation.dto';
 
 @Injectable()
 export class PresentationService {
@@ -239,7 +239,7 @@ export class PresentationRequestService {
     return { presentation: signedVerifiablePresentation };
   }
 
-  async verifyPresentation(presentations: verifyPresentationDto, appDetail) {
+  async verifyPresentation(presentations: VerifyPresentationDto, appDetail) {
     const hypersignVP = new HypersignVerifiablePresentation({
       nodeRestEndpoint: this.config.get('HID_NETWORK_API'),
       nodeRpcEndpoint: this.config.get('HID_NETWORK_RPC'),

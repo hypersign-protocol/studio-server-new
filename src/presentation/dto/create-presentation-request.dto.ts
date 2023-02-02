@@ -17,6 +17,7 @@ import {
 import { CredDoc } from 'src/credential/dto/create-credential.dto';
 import { IsDid } from 'src/utils/customDecorator/did.decorator';
 import { Trim } from 'src/utils/customDecorator/trim.decorator';
+import { ValidateVerificationMethodId } from 'src/utils/customDecorator/vmId.decorator';
 import { PresentationTemplate } from '../schemas/presentation-template.schema';
 
 export class CreatePresentationRequestDto {
@@ -73,7 +74,7 @@ export class CreatePresentationRequestDto {
   callbackUrl: string;
 }
 
-export class CreatePresentationResponseDto {
+export class CreatePresentationResponse {
   @ApiProperty({
     name: 'id',
     description: 'id of presentation request template',
@@ -139,46 +140,10 @@ export class CreatePresentationDto {
   @ApiProperty({
     name: 'credentials',
     description: 'list of credentials',
-    example: {
-      '@context': [
-        'https://www.w3.org/2018/credentials/v1',
-        {
-          hs: 'https://api.jagrat.hypersign.id/hypersign-protocol/hidnode/ssi/schema/sch:hid:testnet:z3KX4ZqoizKTaED645aV4aE8dBbnSpmQYe3xfzVBJadPY:1.0:',
-        },
-        {
-          name: 'hs:name',
-        },
-        'https://w3id.org/security/suites/ed25519-2020/v1',
-      ],
-      id: 'vc:hid:testnet:zE2NevJ8tXJ92fRyCmWXbTJyhzR8GrcqB6FBM24u64LJT',
-      type: ['VerifiableCredential', 'nameschema'],
-      expirationDate: '2027-12-10T18:30:00Z',
-      issuanceDate: '2023-01-26T19:08:59Z',
-      issuer: 'did:hid:testnet:zHNL81YLsHxwnCKxK6wyWxoTjt5xi2svw47RdUyPcmCps',
-      credentialSubject: {
-        name: 'varsha',
-        id: 'did:hid:testnet:zHNL81YLsHxwnCKxK6wyWxoTjt5xi2svw47RdUyPcmCps',
-      },
-      credentialSchema: {
-        id: 'sch:hid:testnet:z3KX4ZqoizKTaED645aV4aE8dBbnSpmQYe3xfzVBJadPY:1.0',
-        type: 'JsonSchemaValidator2018',
-      },
-      credentialStatus: {
-        id: 'https://api.jagrat.hypersign.id/hypersign-protocol/hidnode/ssi/credential/vc:hid:testnet:zE2NevJ8tXJ92fRyCmWXbTJyhzR8GrcqB6FBM24u64LJT',
-        type: 'CredentialStatusList2017',
-      },
-      proof: {
-        type: 'Ed25519Signature2020',
-        created: '2023-01-26T19:10:50Z',
-        verificationMethod:
-          'did:hid:testnet:zHNL81YLsHxwnCKxK6wyWxoTjt5xi2svw47RdUyPcmCps#key-1',
-        proofPurpose: 'assertionMethod',
-        proofValue:
-          'zEmgea5FY4RkS7scGxE73UgYBskAbAY1CaWRWYwBEd1hh42uWGnJStreWY9Deo8co1zHoFXELWfTXJELR2L8UDsy',
-      },
-    },
+    type: CredDoc,
+    isArray: true,
   })
-  @ValidateNested()
+  @ValidateNested({ each: true })
   @Type(() => Array<CredDoc>)
   credentials: Array<CredDoc>;
 
@@ -210,12 +175,113 @@ export class CreatePresentationDto {
   domain: string;
 }
 
-export class verifyPresentationDto {
+class PresentationProof {
+  @ApiProperty({
+    name: 'type',
+    description: 'type using which credential has signed',
+    example: 'Ed25519Signature2020',
+  })
+  @IsString()
+  type: string;
+  @ApiProperty({
+    name: 'created',
+    description: 'Date on which credential has issued',
+    example: '2023-01-25T17:01:02Z',
+  })
+  @IsString()
+  created: Date;
+  @ApiProperty({
+    name: 'verificationMethod',
+    description: 'Verification id using which credential has signed',
+    example: 'did:hid:testnet:...............#key-${id}',
+  })
+  @IsString()
+  @ValidateVerificationMethodId()
+  verificationMethod: string;
+  @ApiProperty({
+    name: 'proofPurpose',
+    description: '',
+    example: 'authentication',
+  })
+  @IsString()
+  proofPurpose: string;
+  @ApiProperty({
+    name: 'challenge',
+    description: 'challenge used for generating presentation',
+    example: 'skfdhldklgjh-gaghkdhgaskda-aisgkjheyi',
+  })
+  @IsString()
+  challenge: string;
+  @ApiProperty({
+    name: 'proofValue',
+    description: 'Proof value',
+    example:
+      'z5LairjrBYkc5FtPWeDVuLdQUzpMTBULcp3Q5YDnrLh63UuBuY6BpdiQYhTEcKBFW76TEXFHm37aDvcMtCvnYfmvQ',
+  })
+  @IsString()
+  proofValue: string;
+}
+export class Presentation {
+  @ApiProperty({
+    name: '@context',
+    description: 'Context of the credential',
+    example: ['https://www.w3.org/2018/credentials/v1'],
+  })
+  @IsArray()
+  '@context': Array<string>;
+  @ApiProperty({
+    name: 'type',
+    description: 'Type of presentation geenrated',
+    example: ['VerifiablePresentation'],
+  })
+  @IsArray()
+  type: Array<string>;
+  @ApiProperty({
+    name: 'verifiableCredential',
+    description:
+      'Array of credentials that has passed to generate presentation',
+    type: CredDoc,
+    isArray: true,
+  })
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => CredDoc)
+  verifiableCredential: CredDoc;
+
+  @ApiProperty({
+    name: 'id',
+    description: 'Vp id',
+    example: 'vp:hid:testnet:..........................',
+  })
+  @IsString()
+  @IsNotEmpty()
+  id: string;
+  @ApiProperty({
+    name: 'holder',
+    description: 'did of the holder of credential',
+    example: 'did:hid:testnet:..............',
+  })
+  @IsString()
+  @IsNotEmpty()
+  @IsDid()
+  holder: string;
+  @ApiProperty({
+    name: 'proof',
+    description: 'proof of presentation',
+    type: PresentationProof,
+  })
+  @ValidateNested({ each: true })
+  @Type(() => PresentationProof)
+  proof: PresentationProof;
+}
+export class PresentationResponse {
   @ApiProperty({
     name: 'presentation',
-    description: 'list of credentials',
-    example: {},
+    description: 'Detail of presentaion that has created',
+    type: Presentation,
   })
   @IsObject()
-  presentation: object;
+  @ValidateNested({ each: true })
+  @Type(() => Presentation)
+  presentation: Presentation;
 }
