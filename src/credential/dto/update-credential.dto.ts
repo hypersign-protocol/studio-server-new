@@ -1,14 +1,5 @@
-import { ApiProperty, PartialType } from '@nestjs/swagger';
-import { CreateCredentialDto } from './create-credential.dto';
-import {
-  IsEnum,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-  ValidateNested,
-} from 'class-validator';
-import { Prop } from '@nestjs/mongoose';
-import { Type } from 'class-transformer';
+import { ApiProperty } from '@nestjs/swagger';
+import { IsEnum, IsOptional, IsString } from 'class-validator';
 import { ValidateVerificationMethodId } from 'src/utils/customDecorator/vmId.decorator';
 import { Trim } from 'src/utils/customDecorator/trim.decorator';
 import { IsDid } from 'src/utils/customDecorator/did.decorator';

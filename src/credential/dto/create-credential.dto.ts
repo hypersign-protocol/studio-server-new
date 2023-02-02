@@ -171,8 +171,7 @@ export class CredentialProof {
   @ApiProperty({
     name: 'proofValue',
     description: '',
-    example:
-      'z5LairjrBYkc5FtPWeDVuLdQUzpMTBULcp3Q5YDnrLh63UuBuY6BpdiQYhTEcKBFW76TEXFHm37aDvcMtCvnYfmvQ',
+    example: 'z5LairjrBYkc5FtP.......................EXFHm37aDvcMtCvnYfmvQ',
   })
   @IsString()
   proofValue: string;
@@ -204,11 +203,7 @@ class CredStatus {
   @ApiProperty({
     name: 'claim',
     description: ' ',
-    example: {
-      id: 'vc:hid:testnet:...............',
-      currentStatus: 'Live',
-      statusReason: 'Credential is active',
-    },
+    type: Claim,
   })
   claim: Claim;
   @ApiProperty({
@@ -227,19 +222,19 @@ class CredStatus {
   @IsString()
   issuanceDate: Date;
   @ApiProperty({
-    name: 'issuanceDate',
-    description: 'Date on which credential has issued',
+    name: 'expirationDate',
+    description: 'Date on which credential will expire',
     example: '2023-01-25T16:59:21Z',
   })
   @IsString()
   expirationDate: Date;
   @ApiProperty({
-    name: 'issuanceDate',
-    description: 'Date on which credential will expire',
-    example: '2027-12-10T18:30:00Z',
+    name: 'credentialHash',
+    description: 'Hash of credential',
+    example: 'ae93886f2a............3f6d1c6ae4..........393d43730',
   })
   @IsString()
-  credentialHash: Date;
+  credentialHash: string;
 }
 export class CredDoc {
   @ApiProperty({
@@ -247,7 +242,7 @@ export class CredDoc {
     example: [
       'https://www.w3.org/2018/credentials/v1',
       {
-        hs: 'https://api.jagrat.hypersign.id/hypersign-protocol/hidnode/ssi/schema/sch:hid:testnet:z3KX4ZqoizKTaED645aV4aE8dBbnSpmQYe3xfzVBJadPY:1.0:',
+        hs: 'https://api.jagrat.hypersign.id/hypersign-protocol/hidnode/ssi/schema/sch:hid:testnet:...........:1.0:',
       },
       {
         name: 'hs:name',
@@ -266,6 +261,7 @@ export class CredDoc {
   @ApiProperty({
     description: 'type',
     example: ['VerifiableCredential', 'nameschema'],
+    isArray: true,
   })
   @IsArray()
   type: Array<string>;
@@ -286,39 +282,30 @@ export class CredDoc {
   })
   @IsString()
   @IsDid()
-  issuer: Date;
+  issuer: string;
 
   @ApiProperty({
     name: 'CredentialSubject',
     description: 'Field value based on schema',
-    example: {
-      name: 'Random name',
-      id: 'did:hid:testnet:.............................',
-    },
+    type: CredentialSubject,
   })
   @Type(() => CredentialSubject)
-  @ValidateNested()
+  @ValidateNested({ each: true })
   credentialSubject: CredentialSubject;
 
   @ApiProperty({
     name: 'credentialSchema',
     description: 'Schema detail based on which credential has issued',
-    example: {
-      id: 'sch:hid:testnet:...........',
-      name: 'JsonSchemaValidator2018',
-    },
+    type: CredentialSchema,
   })
   @Type(() => CredentialSchema)
-  @ValidateNested()
+  @ValidateNested({ each: true })
   credentialSchema: CredentialSchema;
 
   @ApiProperty({
     name: 'credentialStatus',
     description: 'Information of credential status',
-    example: {
-      id: 'https://api.jagrat.hypersign.id/hypersign-protocol/hidnode/ssi/credential/vc:hid:testnet:.............',
-      type: 'CredentialStatusList2017',
-    },
+    type: CredentialStatus,
   })
   @Type(() => CredentialStatus)
   @ValidateNested()
@@ -327,81 +314,26 @@ export class CredDoc {
   @ApiProperty({
     name: 'proof',
     description: 'Proof of credential',
-    example: {
-      type: 'Ed25519Signature2020',
-      created: '2023-01-25T17:01:02Z',
-      verificationMethod: 'did:hid:testnet:...............#key-${id}',
-      proofPurpose: 'assertionMethod',
-      proofValue:
-        'z5LairjrBYkc5FtPWeDVuLdQUzpMTBULcp3Q5YDnrLh63UuBuY6BpdiQYhTEcKBFW76TEXFHm37aDvcMtCvnYfmvQ',
-    },
+    type: CredentialProof,
   })
   @Type(() => CredentialProof)
-  @ValidateNested()
+  @ValidateNested({ each: true })
   proof: CredentialProof;
 }
 export class CreateCredentialResponse {
   @ApiProperty({
     name: 'credential',
     description: 'Credential doc',
-    example: {
-      '@context': [
-        'https://www.w3.org/2018/credentials/v1',
-        {
-          hs: 'https://api.jagrat.hypersign.id/hypersign-protocol/hidnode/ssi/schema/sch:hid:testnet:z3KX4ZqoizKTaED645aV4aE8dBbnSpmQYe3xfzVBJadPY:1.0:',
-        },
-        {
-          name: 'hs:name',
-        },
-        'https://w3id.org/security/suites/ed25519-2020/v1',
-      ],
-      id: 'vc:hid:testnet:zE2NevJ8tXJ92fRyCmWXbTJyhzR8GrcqB6FBM24u64LJT',
-      type: ['VerifiableCredential', 'nameschema'],
-      expirationDate: '2027-12-10T18:30:00Z',
-      issuanceDate: '2023-01-26T19:08:59Z',
-      issuer: 'did:hid:testnet:zHNL81YLsHxwnCKxK6wyWxoTjt5xi2svw47RdUyPcmCps',
-      credentialSubject: {
-        name: 'varsha',
-        id: 'did:hid:testnet:zHNL81YLsHxwnCKxK6wyWxoTjt5xi2svw47RdUyPcmCps',
-      },
-      credentialSchema: {
-        id: 'sch:hid:testnet:z3KX4ZqoizKTaED645aV4aE8dBbnSpmQYe3xfzVBJadPY:1.0',
-        type: 'JsonSchemaValidator2018',
-      },
-      credentialStatus: {
-        id: 'https://api.jagrat.hypersign.id/hypersign-protocol/hidnode/ssi/credential/vc:hid:testnet:zE2NevJ8tXJ92fRyCmWXbTJyhzR8GrcqB6FBM24u64LJT',
-        type: 'CredentialStatusList2017',
-      },
-      proof: {
-        type: 'Ed25519Signature2020',
-        created: '2023-01-26T19:10:50Z',
-        verificationMethod:
-          'did:hid:testnet:zHNL81YLsHxwnCKxK6wyWxoTjt5xi2svw47RdUyPcmCps#key-1',
-        proofPurpose: 'assertionMethod',
-        proofValue:
-          'zEmgea5FY4RkS7scGxE73UgYBskAbAY1CaWRWYwBEd1hh42uWGnJStreWY9Deo8co1zHoFXELWfTXJELR2L8UDsy',
-      },
-    },
+    type: CredDoc,
   })
-  @ValidateNested()
+  @ValidateNested({ each: true })
   @Type(() => CredDoc)
   credential: CredDoc;
 
   @ApiProperty({
     name: 'credentialStatus',
     description: 'Status detail of credential',
-    example: {
-      claim: {
-        id: 'vc:hid:testnet:....................',
-        currentStatus: 'Live',
-        statusReason: 'Credential is active',
-      },
-      issuer: 'did:hid:testnet:....................',
-      issuanceDate: '2023-01-25T16:59:21Z',
-      expirationDate: '2027-12-10T18:30:00Z',
-      credentialHash:
-        'ae93886f2af41144340e57eab576ac35edfee43f6d1c6ae4b644a81393d43730',
-    },
+    type: CredStatus,
   })
   credentialStatus: CredStatus;
   @ApiProperty({
@@ -425,17 +357,9 @@ export class ResolveCredential extends CredStatus {
   @ApiProperty({
     name: 'proof',
     description: 'proof of credential',
-    example: {
-      type: 'Ed25519Signature2020',
-      created: '2023-01-25T16:07:46Z',
-      updated: '2023-01-25T16:07:46Z',
-      verificationMethod: 'did:hid:testnet:.....................#key-1',
-      proofPurpose: 'assertion',
-      proofValue:
-        'ptMxg+b12cE5ephfj4cCpPR5UBaB5EzU1arE5xp/irTzC2WECM+BYeFxPYkmJeInVpoSlgKKTFw9RRnJmtZlAw==',
-    },
+    type: CredProof,
   })
   @Type(() => CredProof)
-  @ValidateNested()
+  @ValidateNested({ each: true })
   proof: CredProof;
 }
