@@ -43,7 +43,9 @@ export class CreateDidDto {
   @ApiProperty({
     name: 'options',
     description: ' keyType used for verification',
-    type: Options,
+    example: {
+      keyType: 'Ed25519VerificationKey2020',
+    },
   })
   @Type(() => Options)
   @ValidateNested()
