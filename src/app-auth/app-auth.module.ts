@@ -20,7 +20,7 @@ import { EdvModule } from 'src/edv/edv.module';
 import { EdvService } from 'src/edv/services/edv.service';
 import { AppAuthSecretService } from './services/app-auth-passord.service';
 import { JwtModule } from '@nestjs/jwt';
-import { JwtStrategy } from './strategy/jwt.strategy';
+import { JwtStrategy, JwtStrategyApp } from './strategy/jwt.strategy';
 import { AppAuthApiKeyService } from './services/app-auth-apikey.service';
 @Module({
   imports: [
@@ -36,20 +36,10 @@ import { AppAuthApiKeyService } from './services/app-auth-apikey.service';
     EdvService,
     AppAuthSecretService,
     JwtStrategy,
+    JwtStrategyApp,
     AppAuthApiKeyService
     
   ],
   controllers: [AppAuthController,AppOAuthController],
 })
-export class AppAuthModule implements NestModule {
-  configure(consumer: MiddlewareConsumer) {
-    //// Appy middleware on all routes
-    consumer.apply(ValidateHeadersMiddleware).forRoutes(AppAuthController);
-
-    //// or Apply on specific routes
-    // consumer.apply(ValidateHeadersMiddleware).forRoutes({
-    //     path: '/app-auth/register',
-    //     method: RequestMethod.POST,
-    // })
-  }
-}
+export class AppAuthModule{} 
