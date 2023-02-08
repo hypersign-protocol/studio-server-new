@@ -15,9 +15,10 @@ import {
 import { User } from '../decorator/user.decorator';
 import { CreateAppDto } from 'src/app-auth/dtos/create-app.dto';
 import {
-  GenerateTokenDto,
+  
   GenerateTokenError,
   GenerateTokenResponse,
+  RegenrateAppApiSecretResponse,
 } from '../dtos/generate-token.dto';
 import { AppAuthService } from 'src/app-auth/services/app-auth.service';
 import {
@@ -37,6 +38,8 @@ import { MongooseClassSerializerInterceptor } from '../../utils/utils';
 import { AllExceptionsFilter } from '../../utils/utils';
 import { AppError } from '../dtos/fetch-app.dto';
 import { PaginationDto } from 'src/utils/pagination.dto';
+import { AppSecretHeader } from '../decorator/app-sercret.decorator';
+import { AppAuthApiKeyService } from '../services/app-auth-apikey.service';
 
 @UseFilters(AllExceptionsFilter)
 @ApiTags('App')
@@ -45,7 +48,7 @@ export class AppAuthController {
   constructor(private readonly appAuthService: AppAuthService) {}
   @UseInterceptors(
     MongooseClassSerializerInterceptor(App, {
-      excludePrefixes: ['appSecret', '_', '__'],
+      excludePrefixes: ['apiKeySecret','apiKeyPrefix', '_', '__'],
     }),
   )
   @ApiHeader({
@@ -87,7 +90,7 @@ export class AppAuthController {
   }
   @UseInterceptors(
     MongooseClassSerializerInterceptor(App, {
-      excludePrefixes: ['appSecret', '_', '__'],
+      excludePrefixes: ['apiKeySecret','apiKeyPrefix', '_', '__'],
     }),
   )
   @ApiHeader({
@@ -121,7 +124,7 @@ export class AppAuthController {
   @Post()
   @UseInterceptors(
     MongooseClassSerializerInterceptor(createAppResponse, {
-      excludePrefixes: ['_', '__'],
+      excludePrefixes: ['apiKeyPrefix','_', '__'],
     }),
   )
   @ApiCreatedResponse({
@@ -142,7 +145,7 @@ export class AppAuthController {
 
   @UseInterceptors(
     MongooseClassSerializerInterceptor(App, {
-      excludePrefixes: ['appSecret', '_', '__'],
+      excludePrefixes: ['apiKeySecret','apiKeyPrefix', '_', '__'],
     }),
   )
   @ApiHeader({
@@ -171,9 +174,49 @@ export class AppAuthController {
     } else throw new AppNotFoundException();
   }
 
+
+
   @ApiHeader({
     name: 'userId',
     description: 'Provide userId to get app details',
+  })
+  @Post(':appId/secret/new')
+  @HttpCode(200)
+  @ApiResponse({
+    status: 200,
+    description: 'Api Secret  Regenerated',
+    type: RegenrateAppApiSecretResponse,
+  })
+  @ApiBadRequestResponse({
+    description: 'Bad Request',
+    type: AppError,
+  })
+ async reGenerateAppSecretKey(
+    @User() userId,
+    @Param('appId') appId: string,
+  ){
+    const app = await this.appAuthService.getAppById(appId, userId);
+    if (!app)  {throw new AppNotFoundException()}
+    return this.appAuthService.reGenerateAppSecretKey(app,userId)
+  }
+
+
+
+  
+}
+
+
+
+
+
+@ApiTags('App')
+@Controller('app')
+export class AppOAuthController {
+  constructor(private readonly appAuthService: AppAuthService) { }
+  
+  @ApiHeader({
+    name: 'X-APP-SECRET-KEY',
+    description: 'Provide Api key to get access token',
   })
   @Post('oauth')
   @HttpCode(200)
@@ -188,9 +231,15 @@ export class AppAuthController {
   })
   @UsePipes(ValidationPipe)
   generateAccessToken(
-    @User() userId,
-    @Body() generateAccessToken: GenerateTokenDto,
+    @AppSecretHeader() appSecreatKey
   ): Promise<{ access_token; expiresIn; tokenType }> {
-    return this.appAuthService.generateAccessToken(generateAccessToken, userId);
+    return this.appAuthService.generateAccessToken(appSecreatKey);
   }
+
+
+
+
+
+
+
 }

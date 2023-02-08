@@ -4,8 +4,11 @@ import {
   NestModule,
   RequestMethod,
 } from '@nestjs/common';
+
+
+
 import { AppAuthService } from './services/app-auth.service';
-import { AppAuthController } from './controllers/app-auth.controller';
+import { AppAuthController, AppOAuthController } from './controllers/app-auth.controller';
 import { ValidateHeadersMiddleware } from './middlewares/validate-headers.middleware';
 import { MongooseModule } from '@nestjs/mongoose';
 import { App, AppSchema } from './schemas/app.schema';
@@ -18,6 +21,7 @@ import { EdvService } from 'src/edv/services/edv.service';
 import { AppAuthSecretService } from './services/app-auth-passord.service';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './strategy/jwt.strategy';
+import { AppAuthApiKeyService } from './services/app-auth-apikey.service';
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: App.name, schema: AppSchema }]),
@@ -32,9 +36,10 @@ import { JwtStrategy } from './strategy/jwt.strategy';
     EdvService,
     AppAuthSecretService,
     JwtStrategy,
+    AppAuthApiKeyService
     
   ],
-  controllers: [AppAuthController],
+  controllers: [AppAuthController,AppOAuthController],
 })
 export class AppAuthModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
