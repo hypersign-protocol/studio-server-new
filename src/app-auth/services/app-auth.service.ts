@@ -82,7 +82,7 @@ export class AppAuthService {
     generateTokenDto: GenerateTokenDto,
     userId: string,
   ): Promise<{ access_token; expiresIn; tokenType }> {
-    const { appId, grantType } = generateTokenDto;
+    const { appId, grantType, appSecret } = generateTokenDto;
     const payload = {
       appId,
       userId,
@@ -91,12 +91,20 @@ export class AppAuthService {
     const appDetail = await this.appRepository.findOne({
       appId,
     });
-
     if (!appDetail) {
       throw new UnauthorizedException(['access_denied']);
     }
     if (userId !== appDetail.userId) {
       throw new UnauthorizedException(['access_denied']);
+    }
+    // compare appSecret sent by user and appSecret hash stored in db
+    const compareHash = await this.appAuthSecretService.comapareSecret(
+      appSecret,
+      appDetail.appSecret,
+    );
+    if (!compareHash) {
+      console.log('not compared hassh');
+      throw new UnauthorizedException('access_denied');
     }
     const secret = this.config.get('JWT_SECRET');
     const token = await this.jwt.signAsync(payload, {
