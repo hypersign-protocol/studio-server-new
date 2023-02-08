@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { CredentialService } from './services/credential.service';
 import { CredentialController } from './controllers/credential.controller';
 import { Mongoose } from 'mongoose';
@@ -11,7 +11,8 @@ import { HidWalletModule } from 'src/hid-wallet/hid-wallet.module';
 import { HidWalletService } from 'src/hid-wallet/services/hid-wallet.service';
 import { CredentialRepository } from './repository/credential.repository';
 import { DidModule } from 'src/did/did.module';
-
+import { AppAuthModule } from 'src/app-auth/app-auth.module';
+import { WhitelistMiddleware } from 'src/utils/middleware/cors.middleware';
 @Module({
   imports: [
     MongooseModule.forFeature([
@@ -23,6 +24,7 @@ import { DidModule } from 'src/did/did.module';
     EdvModule,
     HidWalletModule,
     DidModule,
+    AppAuthModule,
   ],
   controllers: [CredentialController],
   providers: [
@@ -33,4 +35,8 @@ import { DidModule } from 'src/did/did.module';
     CredentialRepository,
   ],
 })
-export class CredentialModule {}
+export class CredentialModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(WhitelistMiddleware).forRoutes(CredentialController);
+  }
+}

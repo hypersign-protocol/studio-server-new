@@ -18,6 +18,7 @@ import { EdvService } from 'src/edv/services/edv.service';
 import { AppAuthSecretService } from './services/app-auth-passord.service';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './strategy/jwt.strategy';
+import { WhitelistMiddleware } from 'src/utils/middleware/cors.middleware';
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: App.name, schema: AppSchema }]),
@@ -32,14 +33,16 @@ import { JwtStrategy } from './strategy/jwt.strategy';
     EdvService,
     AppAuthSecretService,
     JwtStrategy,
-    
   ],
   controllers: [AppAuthController],
+  exports: [AppAuthService, AppRepository],
 })
 export class AppAuthModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     //// Appy middleware on all routes
-    consumer.apply(ValidateHeadersMiddleware).forRoutes(AppAuthController);
+    consumer
+      .apply(ValidateHeadersMiddleware, WhitelistMiddleware)
+      .forRoutes(AppAuthController);
 
     //// or Apply on specific routes
     // consumer.apply(ValidateHeadersMiddleware).forRoutes({

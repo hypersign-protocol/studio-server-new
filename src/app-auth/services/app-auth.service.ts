@@ -103,7 +103,6 @@ export class AppAuthService {
       appDetail.appSecret,
     );
     if (!compareHash) {
-      console.log('not compared hassh');
       throw new UnauthorizedException('access_denied');
     }
     const secret = this.config.get('JWT_SECRET');
