@@ -11,6 +11,8 @@ import {
   HttpCode,
   UseFilters,
   Query,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
 import { User } from '../decorator/user.decorator';
 import { CreateAppDto } from 'src/app-auth/dtos/create-app.dto';
@@ -23,6 +25,7 @@ import {
 import { AppAuthService } from 'src/app-auth/services/app-auth.service';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiCreatedResponse,
   ApiHeader,
   ApiNotFoundResponse,
@@ -40,10 +43,13 @@ import { AppError } from '../dtos/fetch-app.dto';
 import { PaginationDto } from 'src/utils/pagination.dto';
 import { AppSecretHeader } from '../decorator/app-sercret.decorator';
 import { AppAuthApiKeyService } from '../services/app-auth-apikey.service';
+import { AuthGuard } from '@nestjs/passport';
 
 @UseFilters(AllExceptionsFilter)
 @ApiTags('App')
 @Controller('app')
+@ApiBearerAuth('Authorization')
+@UseGuards(AuthGuard('jwtApp'))
 export class AppAuthController {
   constructor(private readonly appAuthService: AppAuthService) {}
   @UseInterceptors(
@@ -51,11 +57,7 @@ export class AppAuthController {
       excludePrefixes: ['apiKeySecret','apiKeyPrefix', '_', '__'],
     }),
   )
-  @ApiHeader({
-    name: 'userId',
-    description:
-      'Provide userId to get list of all the apps created by the userId',
-  })
+
   @UsePipes(new ValidationPipe({ transform: true }))
   @Get()
   @ApiResponse({
@@ -79,9 +81,11 @@ export class AppAuthController {
     required: false,
   })
   async getApps(
-    @User() userId,
+    @Req()  req:any,
     @Query() pageOption: PaginationDto,
   ): Promise<App[]> {
+    const userId=req.user.userId    
+    
     const appList = await this.appAuthService.getAllApps(userId, pageOption);
     if (appList.length === 0) {
       throw new AppNotFoundException();
@@ -93,10 +97,7 @@ export class AppAuthController {
       excludePrefixes: ['apiKeySecret','apiKeyPrefix', '_', '__'],
     }),
   )
-  @ApiHeader({
-    name: 'userId',
-    description: 'Provide userId to get app details',
-  })
+
   @Get(':appId')
   @ApiResponse({
     status: 200,
@@ -109,18 +110,18 @@ export class AppAuthController {
     type: AppError,
   })
   async getAppById(
-    @User() userId,
+    @Req()  req:any,
+
     @Param('appId') appId: string,
   ): Promise<App> {
+    const userId=req.user.userId    
+
     const app = await this.appAuthService.getAppById(appId, userId);
     if (app) return app;
     else throw new AppNotFoundException(); // Custom Exception handling
   }
 
-  @ApiHeader({
-    name: 'userId',
-    description: 'Provide UserId to create a App',
-  })
+
   @Post()
   @UseInterceptors(
     MongooseClassSerializerInterceptor(createAppResponse, {
@@ -137,9 +138,11 @@ export class AppAuthController {
   })
   @UsePipes(ValidationPipe)
   register(
-    @User() userId,
+    @Req() req:any,
     @Body() createAppDto: CreateAppDto,
   ): Promise<createAppResponse> {
+    const userId=req.user.userId    
+
     return this.appAuthService.createAnApp(createAppDto, userId);
   }
 
@@ -148,10 +151,7 @@ export class AppAuthController {
       excludePrefixes: ['apiKeySecret','apiKeyPrefix', '_', '__'],
     }),
   )
-  @ApiHeader({
-    name: 'userId',
-    description: 'Provide userId to get app details',
-  })
+
   @Put(':appId')
   @ApiResponse({
     status: 200,
@@ -164,10 +164,12 @@ export class AppAuthController {
   })
   @UsePipes(ValidationPipe)
   async update(
-    @User() userId,
+@Req() req:any,
     @Param('appId') appId: string,
     @Body() updateAppDto: UpdateAppDto,
   ): Promise<App> {
+    const userId=req.user.userId    
+
     const app = await this.appAuthService.getAppById(appId, userId);
     if (app) {
       return this.appAuthService.updateAnApp(appId, updateAppDto, userId);
@@ -176,10 +178,7 @@ export class AppAuthController {
 
 
 
-  @ApiHeader({
-    name: 'userId',
-    description: 'Provide userId to get app details',
-  })
+
   @Post(':appId/secret/new')
   @HttpCode(200)
   @ApiResponse({
@@ -192,9 +191,11 @@ export class AppAuthController {
     type: AppError,
   })
  async reGenerateAppSecretKey(
-    @User() userId,
-    @Param('appId') appId: string,
+@Req() req:any,
+  @Param('appId') appId: string,
   ){
+    const userId=req.user.userId    
+
     const app = await this.appAuthService.getAppById(appId, userId);
     if (!app)  {throw new AppNotFoundException()}
     return this.appAuthService.reGenerateAppSecretKey(app,userId)
