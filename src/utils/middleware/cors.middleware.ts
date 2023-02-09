@@ -9,7 +9,7 @@ import { NextFunction, Request, Response } from 'express';
 import { AppRepository } from 'src/app-auth/repositories/app.repository';
 @Injectable()
 export class WhitelistMiddleware implements NestMiddleware {
-  constructor(private readonly appRepositiory: AppRepository) { }
+  constructor(private readonly appRepositiory: AppRepository) {}
   async use(req: Request, res: Response, next: NextFunction) {
     const origin = req.header('Origin');
     if (req.header('authorization') == 'undefined') {
@@ -26,13 +26,15 @@ export class WhitelistMiddleware implements NestMiddleware {
         appId: decoded['appId'],
         userId: decoded['userId'],
       });
-      
-      if(appInfo.whitelistedCors.includes("*")){
-       return next()
 
+      if (appInfo.whitelistedCors.includes('*')) {
+        return next();
       }
 
-      if ((!appInfo.whitelistedCors.includes("*")) || (!appInfo['whitelistedCors'].includes(origin))) {
+      if (
+        !appInfo.whitelistedCors.includes('*') ||
+        !appInfo['whitelistedCors'].includes(origin)
+      ) {
         throw new UnauthorizedException(['Origin mismatch']);
       }
     } else {

@@ -27,8 +27,8 @@ export class AppAuthService {
     private readonly edvService: EdvService,
     private readonly appAuthSecretService: AppAuthSecretService,
     private readonly jwt: JwtService,
-    private readonly appAuthApiKeyService: AppAuthApiKeyService
-  ) { }
+    private readonly appAuthApiKeyService: AppAuthApiKeyService,
+  ) {}
 
   async createAnApp(
     createAppDto: CreateAppDto,
@@ -42,7 +42,8 @@ export class AppAuthService {
       address,
     };
 
-    const { apiSecretKey, apiSecret } = await this.appAuthApiKeyService.generateApiKey()
+    const { apiSecretKey, apiSecret } =
+      await this.appAuthApiKeyService.generateApiKey();
 
     const { id: edvDocId } = await this.edvService.createDocument(document);
     const appData = await this.appRepository.create({
@@ -54,7 +55,7 @@ export class AppAuthService {
       kmsId: 'demo-kms-1',
       edvDocId,
       walletAddress: address,
-      apiKeyPrefix: apiSecretKey.split('.')[0]
+      apiKeyPrefix: apiSecretKey.split('.')[0],
     });
 
     appData.apiKeySecret = apiSecretKey;
@@ -62,15 +63,16 @@ export class AppAuthService {
   }
 
   async reGenerateAppSecretKey(app, userId) {
+    const { apiSecretKey, apiSecret } =
+      await this.appAuthApiKeyService.generateApiKey();
 
-    const { apiSecretKey, apiSecret } = await this.appAuthApiKeyService.generateApiKey()
+    const appData = await this.appRepository.findOneAndUpdate(
+      { appId: app.appId, userId },
+      { apiKeyPrefix: apiSecretKey.split('.')[0], apiKeySecret: apiSecret },
+    );
 
-    const appData = await this.appRepository.findOneAndUpdate({ appId: app.appId, userId }, { apiKeyPrefix: apiSecretKey.split('.')[0], apiKeySecret: apiSecret })
-
-    return { apiSecretKey }
+    return { apiSecretKey };
   }
-
-
 
   getAllApps(userId: string, paginationOption): Promise<App[]> {
     const skip = (paginationOption.page - 1) * paginationOption.limit;
@@ -93,9 +95,9 @@ export class AppAuthService {
   async generateAccessToken(
     appSecreatKey: string,
   ): Promise<{ access_token; expiresIn; tokenType }> {
-    const apikeyIndex = appSecreatKey.split('.')[0]
+    const apikeyIndex = appSecreatKey.split('.')[0];
 
-    const grantType = "client_credentials" //TODO: Remove hardcoding
+    const grantType = 'client_credentials'; //TODO: Remove hardcoding
     const appDetail = await this.appRepository.findOne({
       apiKeyPrefix: apikeyIndex,
     });
@@ -107,7 +109,7 @@ export class AppAuthService {
       appSecreatKey,
       appDetail.apiKeySecret,
     );
-    
+
     if (!compareHash) {
       throw new UnauthorizedException('access_denied');
     }
@@ -117,7 +119,6 @@ export class AppAuthService {
       userId: appDetail.userId,
       grantType,
     };
-
 
     const secret = this.config.get('JWT_SECRET');
     const token = await this.jwt.signAsync(payload, {
