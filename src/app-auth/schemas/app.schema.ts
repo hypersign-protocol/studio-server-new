@@ -53,9 +53,9 @@ export class App {
   @Prop()
   @Exclude()
   kmsId: string;
-@ApiHideProperty()
-@Prop()
-apiKeyPrefix:string
+  @ApiHideProperty()
+  @Prop()
+  apiKeyPrefix: string;
   @ApiProperty({
     description: 'hid wallet address',
     example: 'hid17wgv5xqdlldvjp3ly4rsl4s48xls0ut4rtvupt',
@@ -100,18 +100,10 @@ export class createAppResponse extends App {
   })
   @Prop()
   apiKeySecret: string;
-
-
-
-
 }
-
-
 
 export const AppSchema = SchemaFactory.createForClass(App);
 
-
-
-AppSchema.index({apiKeyPrefix:1,apiKeySecret:1},{unique:true})
-AppSchema.index({appId:1},{unique:true})
-AppSchema.index({appId:1,walletAddress:1,edvId:1},{unique:true})
+AppSchema.index({ apiKeyPrefix: 1, apiKeySecret: 1 }, { unique: true });
+AppSchema.index({ appId: 1 }, { unique: true });
+AppSchema.index({ appId: 1, walletAddress: 1, edvId: 1 }, { unique: true });

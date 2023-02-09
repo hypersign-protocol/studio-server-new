@@ -32,8 +32,8 @@ export class UpdateAppDto {
   })
   @IsString()
   @IsNotEmpty()
-  @IsUrl()
   description: string;
+  @IsUrl()
   @ApiProperty({
     description: 'logoUrl',
     example: 'http://image.png',
