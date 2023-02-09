@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import {
   PresentationRequestService,
   PresentationService,
@@ -13,9 +13,12 @@ import { PresentationTemplateRepository } from './repository/presentation-templa
 import { HidWalletService } from 'src/hid-wallet/services/hid-wallet.service';
 import { EdvService } from 'src/edv/services/edv.service';
 import { DidModule } from 'src/did/did.module';
+import { AppAuthModule } from 'src/app-auth/app-auth.module';
+import { WhitelistMiddleware } from 'src/utils/middleware/cors.middleware';
 @Module({
   imports: [
     DidModule,
+    AppAuthModule,
     MongooseModule.forFeature([
       {
         name: PresentationTemplate.name,
@@ -32,4 +35,10 @@ import { DidModule } from 'src/did/did.module';
     EdvService,
   ],
 })
-export class PresentationModule {}
+export class PresentationModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer
+      .apply(WhitelistMiddleware)
+      .forRoutes(PresentationTempleteController);
+  }
+}

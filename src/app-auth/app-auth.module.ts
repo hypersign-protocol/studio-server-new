@@ -22,6 +22,7 @@ import { AppAuthSecretService } from './services/app-auth-passord.service';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy, JwtStrategyApp } from './strategy/jwt.strategy';
 import { AppAuthApiKeyService } from './services/app-auth-apikey.service';
+import { WhitelistMiddleware } from 'src/utils/middleware/cors.middleware';
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: App.name, schema: AppSchema }]),
@@ -41,5 +42,8 @@ import { AppAuthApiKeyService } from './services/app-auth-apikey.service';
     
   ],
   controllers: [AppAuthController,AppOAuthController],
+
+  exports: [AppAuthService, AppRepository],
 })
 export class AppAuthModule{} 
+

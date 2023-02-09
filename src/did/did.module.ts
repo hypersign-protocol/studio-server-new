@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { DidService } from './services/did.service';
 import { DidController } from './controllers/did.controller';
 import { EdvService } from 'src/edv/services/edv.service';
@@ -14,7 +14,8 @@ import {
 } from './schemas/did.schema';
 import { HidWalletModule } from 'src/hid-wallet/hid-wallet.module';
 import { HidWalletService } from 'src/hid-wallet/services/hid-wallet.service';
-
+import { AppAuthModule } from 'src/app-auth/app-auth.module';
+import { WhitelistMiddleware } from 'src/utils/middleware/cors.middleware';
 @Module({
   imports: [
     MongooseModule.forFeature([
@@ -23,6 +24,7 @@ import { HidWalletService } from 'src/hid-wallet/services/hid-wallet.service';
     ]),
     EdvModule,
     HidWalletModule,
+    AppAuthModule,
   ],
   controllers: [DidController],
   providers: [
@@ -33,11 +35,17 @@ import { HidWalletService } from 'src/hid-wallet/services/hid-wallet.service';
     HidWalletService,
     DidSSIService,
   ],
-  exports: [DidService,
+  exports: [
+    DidService,
     EdvService,
     DidRepository,
     DidMetaDataRepo,
     HidWalletService,
-    DidSSIService],
+    DidSSIService,
+  ],
 })
-export class DidModule { }
+export class DidModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(WhitelistMiddleware).forRoutes(DidController);
+  }
+}
