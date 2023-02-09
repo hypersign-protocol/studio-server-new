@@ -5,6 +5,7 @@ import {
   IsOptional,
   IsString,
   IsUrl,
+  Length,
   Matches,
   ValidateNested,
 } from 'class-validator';
@@ -18,6 +19,7 @@ export class CreateAppDto {
   })
   @Trim()
   @IsNotEmpty()
+  @Length(5,50)
   appName: string;
 
   @ApiProperty({
@@ -35,8 +37,10 @@ export class CreateAppDto {
     description: 'description',
     example: 'Example description',
   })
+  @IsOptional()
   @IsString()
   @IsNotEmpty()
+  @Length(20,100)
   description: string;
   @IsOptional()
   @IsString()

@@ -5,6 +5,7 @@ import {
   IsOptional,
   IsString,
   IsUrl,
+  Length,
   Matches,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
@@ -17,6 +18,7 @@ export class UpdateAppDto {
   })
   @Trim()
   @IsNotEmpty()
+  @Length(5,50)
   appName: string;
   @ApiProperty({
     description: 'Whitelisted cors',
@@ -32,8 +34,10 @@ export class UpdateAppDto {
     description: 'description',
     example: 'Example description',
   })
+  @IsOptional()
   @IsString()
   @IsNotEmpty()
+  @Length(20,100)
   description: string;
   @IsOptional()
   @IsUrl()
