@@ -15,8 +15,8 @@ import * as fs from 'fs';
 import { ConfigService } from '@nestjs/config';
 import { EdvDocsDto } from 'src/edv/dtos/create-edv.dto';
 import { AppAuthSecretService } from './app-auth-passord.service';
-import { GenerateTokenDto } from '../dtos/generate-token.dto';
 import { JwtService } from '@nestjs/jwt';
+import { AppAuthApiKeyService } from './app-auth-apikey.service';
 
 @Injectable()
 export class AppAuthService {
@@ -27,7 +27,8 @@ export class AppAuthService {
     private readonly edvService: EdvService,
     private readonly appAuthSecretService: AppAuthSecretService,
     private readonly jwt: JwtService,
-  ) {}
+    private readonly appAuthApiKeyService: AppAuthApiKeyService
+  ) { }
 
   async createAnApp(
     createAppDto: CreateAppDto,
@@ -41,24 +42,35 @@ export class AppAuthService {
       address,
     };
 
-    const appSecret = uuid();
-    const hash = await this.appAuthSecretService.hashSecrets(appSecret);
+    const { apiSecretKey, apiSecret } = await this.appAuthApiKeyService.generateApiKey()
 
     const { id: edvDocId } = await this.edvService.createDocument(document);
     const appData = await this.appRepository.create({
       ...createAppDto,
       userId,
-      appId: uuid(), // generate app id
-      appSecret: hash, // TODO: generate app secret and should be handled like password by hashing and all...
+      appId: await this.appAuthApiKeyService.generateAppId(), // generate app id
+      apiKeySecret: apiSecret, // TODO: generate app secret and should be handled like password by hashing and all...
       edvId, // generate edvId  by called hypersign edv service
       kmsId: 'demo-kms-1',
       edvDocId,
       walletAddress: address,
+      apiKeyPrefix: apiSecretKey.split('.')[0]
     });
 
-    appData.appSecret = appSecret;
+    appData.apiKeySecret = apiSecretKey;
     return appData;
   }
+
+  async reGenerateAppSecretKey(app, userId) {
+
+    const { apiSecretKey, apiSecret } = await this.appAuthApiKeyService.generateApiKey()
+
+    const appData = await this.appRepository.findOneAndUpdate({ appId: app.appId, userId }, { apiKeyPrefix: apiSecretKey.split('.')[0], apiKeySecret: apiSecret })
+
+    return { apiSecretKey }
+  }
+
+
 
   getAllApps(userId: string, paginationOption): Promise<App[]> {
     const skip = (paginationOption.page - 1) * paginationOption.limit;
@@ -79,32 +91,34 @@ export class AppAuthService {
   }
 
   async generateAccessToken(
-    generateTokenDto: GenerateTokenDto,
-    userId: string,
+    appSecreatKey: string,
   ): Promise<{ access_token; expiresIn; tokenType }> {
-    const { appId, grantType, appSecret } = generateTokenDto;
-    const payload = {
-      appId,
-      userId,
-      grantType,
-    };
+    const apikeyIndex = appSecreatKey.split('.')[0]
+
+    const grantType = "client_credentials" //TODO: Remove hardcoding
     const appDetail = await this.appRepository.findOne({
-      appId,
+      apiKeyPrefix: apikeyIndex,
     });
     if (!appDetail) {
       throw new UnauthorizedException(['access_denied']);
     }
-    if (userId !== appDetail.userId) {
-      throw new UnauthorizedException(['access_denied']);
-    }
-    // compare appSecret sent by user and appSecret hash stored in db
+
     const compareHash = await this.appAuthSecretService.comapareSecret(
-      appSecret,
-      appDetail.appSecret,
+      appSecreatKey,
+      appDetail.apiKeySecret,
     );
+    
     if (!compareHash) {
       throw new UnauthorizedException('access_denied');
     }
+
+    const payload = {
+      appId: appDetail.appId,
+      userId: appDetail.userId,
+      grantType,
+    };
+
+
     const secret = this.config.get('JWT_SECRET');
     const token = await this.jwt.signAsync(payload, {
       expiresIn: '4h',
