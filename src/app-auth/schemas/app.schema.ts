@@ -2,6 +2,15 @@ import { ApiProperty, ApiHideProperty } from '@nestjs/swagger';
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { Exclude } from 'class-transformer';
+import {
+  ArrayNotEmpty,
+  IsArray,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  IsUrl,
+} from 'class-validator';
+import { Trim } from 'src/utils/customDecorator/trim.decorator';
 
 export type AppDocument = App & Document;
 
@@ -51,6 +60,35 @@ export class App {
   })
   @Prop()
   walletAddress: string;
+
+  @ApiProperty({
+    description: 'description',
+    example: 'Example description',
+  })
+  @Trim()
+  @IsString()
+  @IsNotEmpty()
+  @Prop()
+  description: string;
+  @ApiProperty({
+    description: 'whitelistedCors',
+    example: ['https://example.com'],
+    isArray: true,
+  })
+  @IsArray()
+  @ArrayNotEmpty()
+  @Prop()
+  whitelistedCors: Array<string>;
+  @ApiProperty({
+    description: 'logoUrl',
+    example: 'http://image.png',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  @IsUrl()
+  @Prop({ isRequired: false })
+  logoUrl?: string;
 }
 
 export class createAppResponse extends App {

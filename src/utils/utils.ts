@@ -4,9 +4,20 @@ import {
   PlainLiteralObject,
   Type,
 } from '@nestjs/common';
-import { ClassTransformOptions, Exclude, plainToClass } from 'class-transformer';
+import {
+  ClassTransformOptions,
+  Exclude,
+  plainToClass,
+} from 'class-transformer';
 import { Document } from 'mongoose';
-import { ExceptionFilter, Catch, HttpException, ArgumentsHost, HttpStatus, HttpExceptionOptions } from '@nestjs/common';
+import {
+  ExceptionFilter,
+  Catch,
+  HttpException,
+  ArgumentsHost,
+  HttpStatus,
+  HttpExceptionOptions,
+} from '@nestjs/common';
 
 export const existDir = (dirPath) => {
   if (!dirPath) throw new Error('Directory path undefined');
@@ -36,14 +47,14 @@ export const deleteFile = (filePath) => {
 };
 export function MongooseClassSerializerInterceptor(
   classToIntercept: Type,
-  options:ClassTransformOptions
+  options: ClassTransformOptions,
 ): typeof ClassSerializerInterceptor {
   return class Interceptor extends ClassSerializerInterceptor {
     private changePlainObjectToClass(document: PlainLiteralObject) {
       if (!(document instanceof Document)) {
         return document;
       }
-      return plainToClass(classToIntercept, document.toJSON(),options);
+      return plainToClass(classToIntercept, document.toJSON(), options);
     }
     private prepareResponse(
       response: PlainLiteralObject | PlainLiteralObject[],
@@ -55,30 +66,19 @@ export function MongooseClassSerializerInterceptor(
     }
     serialize(
       response: PlainLiteralObject | PlainLiteralObject[],
-      options: ClassTransformOptions
+      options: ClassTransformOptions,
     ) {
-           
       return super.serialize(this.prepareResponse(response), options);
     }
   };
 }
 
-
-
-
-
-
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
   catch(exception: unknown, host: ArgumentsHost) {
-
     const ctx = host.switchToHttp();
     const response = ctx.getResponse();
     const request = ctx.getRequest();
-
-
-   
-   
 
     let status;
     let message;
@@ -86,22 +86,18 @@ export class AllExceptionsFilter implements ExceptionFilter {
       status = exception.getStatus();
       message = exception.getResponse();
     } else {
-     let msg=[]
-      const error:Error=exception as Error
-      if(error.name){
-        msg.push(error.name)
+      const msg = [];
+      const error: Error = exception as Error;
+      if (error.name) {
+        msg.push(error.name);
       }
-      if(error.message){
-        msg.push(error.message)
-      }  
+      if (error.message) {
+        msg.push(error.message);
+      }
 
-       
-    
-      
-      
       status = HttpStatus.INTERNAL_SERVER_ERROR;
-      
-      msg.push('Internal server error')
+
+      msg.push('Internal server error');
 
       message = {
         statusCode: status,
@@ -114,5 +110,3 @@ export class AllExceptionsFilter implements ExceptionFilter {
     response.status(status).json(message);
   }
 }
-
-
