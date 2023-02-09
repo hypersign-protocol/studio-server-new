@@ -106,6 +106,15 @@ export class AppAuthService {
       throw new UnauthorizedException(['access_denied']);
     }
 
+
+    const compareHash = await this.appAuthSecretService.comapareSecret(
+      appSecreatKey,
+      appDetail.apiKeySecret,
+    );
+    
+    if (!compareHash) {
+      throw new UnauthorizedException('access_denied');
+    }
     const payload = {
       appId: appDetail.appId,
       userId: appDetail.userId,
