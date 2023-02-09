@@ -11,15 +11,17 @@ import { AppRepository } from 'src/app-auth/repositories/app.repository';
 export class WhitelistMiddleware implements NestMiddleware {
   constructor(private readonly appRepositiory: AppRepository) {}
   async use(req: Request, res: Response, next: NextFunction) {
-    const whitelistedOrigins = process.env.WHITELISTED_CORS;
     const origin = req.header('Origin');
-    // To Do Remove this line at the time of pushing code to prod
-    console.log(origin);
-    if (whitelistedOrigins.includes(origin)) {
-      res.header('Access-Control-Allow-Origin', origin);
+    if (req.header('authorization') == 'undefined') {
+      throw new UnauthorizedException(['Unauthorized']);
     } else if (req.header('authorization')) {
       const token = req.header('authorization').split(' ')[1];
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      let decoded;
+      try {
+        decoded = jwt.verify(token, process.env.JWT_SECRET);
+      } catch (e) {
+        throw new UnauthorizedException([e]);
+      }
       const appInfo = await this.appRepositiory.findOne({
         appId: decoded['appId'],
         userId: decoded['userId'],

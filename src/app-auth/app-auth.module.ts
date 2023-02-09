@@ -10,7 +10,6 @@ import {
   AppAuthController,
   AppOAuthController,
 } from './controllers/app-auth.controller';
-import { ValidateHeadersMiddleware } from './middlewares/validate-headers.middleware';
 import { MongooseModule } from '@nestjs/mongoose';
 import { App, AppSchema } from './schemas/app.schema';
 
@@ -23,7 +22,7 @@ import { AppAuthSecretService } from './services/app-auth-passord.service';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy, JwtStrategyApp } from './strategy/jwt.strategy';
 import { AppAuthApiKeyService } from './services/app-auth-apikey.service';
-import { WhitelistMiddleware } from 'src/utils/middleware/cors.middleware';
+import { WhitelistCorsMiddleware } from './middlewares/cors.middleware';
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: App.name, schema: AppSchema }]),
@@ -48,7 +47,7 @@ import { WhitelistMiddleware } from 'src/utils/middleware/cors.middleware';
 export class AppAuthModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
-      .apply( WhitelistMiddleware)
-      .forRoutes(AppAuthController,AppOAuthController);
+      .apply(WhitelistCorsMiddleware)
+      .forRoutes(AppAuthController, AppOAuthController);
   }
 }

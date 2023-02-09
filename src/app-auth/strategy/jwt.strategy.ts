@@ -25,9 +25,6 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   }
 }
 
-
-
-
 @Injectable()
 export class JwtStrategyApp extends PassportStrategy(Strategy, 'jwtApp') {
   constructor(
@@ -41,12 +38,8 @@ export class JwtStrategyApp extends PassportStrategy(Strategy, 'jwtApp') {
       secretOrKey: config.get('JWT_SECRET_HYPERSIGN'),
     });
   }
-  async validate(payload) {    
-    payload.userId=payload.email
-    return payload
+  async validate(payload) {
+    payload.userId = payload.email;
+    return payload;
   }
-
-
 }
-
-
