@@ -2,6 +2,7 @@ import {
   ArrayNotEmpty,
   IsArray,
   IsNotEmpty,
+  IsOptional,
   IsString,
   IsUrl,
   Matches,
@@ -22,6 +23,7 @@ export class UpdateAppDto {
     example: ['https://example.com'],
     isArray: true,
   })
+  @IsOptional()
   @IsArray()
   @ArrayNotEmpty()
   @Matches(/^(https?:\/\/[^ ]+|\*)$/, { each: true })
@@ -33,6 +35,7 @@ export class UpdateAppDto {
   @IsString()
   @IsNotEmpty()
   description: string;
+  @IsOptional()
   @IsUrl()
   @ApiProperty({
     description: 'logoUrl',
