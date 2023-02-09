@@ -96,16 +96,12 @@ export class AppAuthService {
     const apikeyIndex = appSecreatKey.split('.')[0]
 
     const grantType = "client_credentials" //TODO: Remove hardcoding
-
-
     const appDetail = await this.appRepository.findOne({
       apiKeyPrefix: apikeyIndex,
     });
-
     if (!appDetail) {
       throw new UnauthorizedException(['access_denied']);
     }
-
 
     const compareHash = await this.appAuthSecretService.comapareSecret(
       appSecreatKey,
@@ -115,11 +111,13 @@ export class AppAuthService {
     if (!compareHash) {
       throw new UnauthorizedException('access_denied');
     }
+
     const payload = {
       appId: appDetail.appId,
       userId: appDetail.userId,
       grantType,
     };
+
 
     const secret = this.config.get('JWT_SECRET');
     const token = await this.jwt.signAsync(payload, {
