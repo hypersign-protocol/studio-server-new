@@ -13,6 +13,8 @@ export class WhitelistMiddleware implements NestMiddleware {
   async use(req: Request, res: Response, next: NextFunction) {
     const whitelistedOrigins = process.env.WHITELISTED_CORS;
     const origin = req.header('Origin');
+    // To Do Remove this line at the time of pushing code to prod
+    console.log(origin);
     if (whitelistedOrigins.includes(origin)) {
       res.header('Access-Control-Allow-Origin', origin);
     } else if (req.header('authorization')) {

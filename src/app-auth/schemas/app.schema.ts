@@ -8,7 +8,7 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
-  ValidateNested,
+  IsUrl,
 } from 'class-validator';
 import { Trim } from 'src/utils/customDecorator/trim.decorator';
 
@@ -78,7 +78,6 @@ export class App {
   @IsArray()
   @ArrayNotEmpty()
   @Prop()
-  @ValidateNested()
   whitelistedCors: Array<string>;
   @ApiProperty({
     description: 'logoUrl',
@@ -87,6 +86,7 @@ export class App {
   })
   @IsOptional()
   @IsString()
+  @IsUrl()
   @Prop({ isRequired: false })
   logoUrl?: string;
 }

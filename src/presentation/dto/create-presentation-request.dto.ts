@@ -1,17 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
-  IsDate,
   IsNotEmpty,
   IsNumber,
   IsObject,
-  IsOptional,
   IsString,
   IsUrl,
   Min,
   MinDate,
   ValidateNested,
-  isURL,
   IsArray,
 } from 'class-validator';
 import { CredDoc } from 'src/credential/dto/create-credential.dto';

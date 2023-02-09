@@ -1,4 +1,12 @@
-import { ArrayNotEmpty, IsArray, IsNotEmpty, IsString } from 'class-validator';
+import {
+  ArrayNotEmpty,
+  IsArray,
+  IsNotEmpty,
+  IsString,
+  IsUrl,
+  Matches,
+  ValidateNested,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Trim } from 'src/utils/customDecorator/trim.decorator';
 
@@ -18,6 +26,7 @@ export class CreateAppDto {
   })
   @IsArray()
   @ArrayNotEmpty()
+  @Matches(/^(https?:\/\/[^ ]+|\*)$/, { each: true })
   whitelistedCors: Array<string>;
   @ApiProperty({
     description: 'description',
@@ -25,6 +34,7 @@ export class CreateAppDto {
   })
   @IsString()
   @IsNotEmpty()
+  @IsUrl()
   description: string;
   @ApiProperty({
     description: 'logoUrl',
