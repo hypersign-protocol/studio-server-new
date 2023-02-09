@@ -48,7 +48,7 @@ import { WhitelistMiddleware } from 'src/utils/middleware/cors.middleware';
 export class AppAuthModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
-      .apply(ValidateHeadersMiddleware, WhitelistMiddleware)
-      .forRoutes(AppAuthController);
+      .apply( WhitelistMiddleware)
+      .forRoutes(AppAuthController,AppOAuthController);
   }
 }
