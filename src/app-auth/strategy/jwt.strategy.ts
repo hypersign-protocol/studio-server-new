@@ -35,7 +35,7 @@ export class JwtStrategyApp extends PassportStrategy(Strategy, 'jwtApp') {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: config.get('JWT_SECRET_HYPERSIGN'),
+      secretOrKey: config.get('WHITELISTED_CORS'),
     });
   }
   async validate(payload) {
