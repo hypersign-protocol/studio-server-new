@@ -15,17 +15,25 @@ export class PresentationTemplateRepository {
   async findOne(
     presentationTemplateFilterQuery: FilterQuery<PresentationTemplate>,
   ): Promise<PresentationTemplate> {
-    return this.presentationTemplateModel.findOne(
-      presentationTemplateFilterQuery,{__v:0}
-    ).lean();
+    return this.presentationTemplateModel
+      .findOne(presentationTemplateFilterQuery, { __v: 0 })
+      .lean();
   }
   async find(
     presentationTemplateFilterQuery: FilterQuery<PresentationTemplate>,
   ): Promise<PresentationTemplate[]> {
-    return await this.presentationTemplateModel
-      .find({ appId: presentationTemplateFilterQuery.appId })
-      .skip(presentationTemplateFilterQuery.paginationOption.skip)
-      .limit(presentationTemplateFilterQuery.paginationOption.limit);
+    return await this.presentationTemplateModel.aggregate([
+      { $match: { appId: presentationTemplateFilterQuery.appId } },
+      {
+        $facet: {
+          totalTemplatesCount: [{ $count: 'total' }],
+          data: [
+            { $skip: presentationTemplateFilterQuery.paginationOption.skip },
+            { $limit: presentationTemplateFilterQuery.paginationOption.limit },
+          ],
+        },
+      },
+    ]);
   }
 
   async create(

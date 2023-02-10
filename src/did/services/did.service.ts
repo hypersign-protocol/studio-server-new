@@ -122,12 +122,11 @@ export class DidService {
       appId: appDetail.appId,
       option,
     });
-    if (didList.length <= 0) {
-      throw new NotFoundException([
-        `No did has created for appId ${appDetail.appId}`,
-      ]);
-    }
-
+    // if (didList.length <= 0) {
+    //   throw new NotFoundException([
+    //     `No did has created for appId ${appDetail.appId}`,
+    //   ]);
+    // }
     return didList;
   }
 
