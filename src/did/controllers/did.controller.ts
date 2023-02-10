@@ -12,6 +12,7 @@ import {
   ValidationPipe,
   NotFoundException,
   Query,
+  UseInterceptors,
 } from '@nestjs/common';
 import { DidService } from '../services/did.service';
 import {
@@ -34,6 +35,8 @@ import {
 import { DidError, DidNotFoundError } from '../dto/error-did.dto';
 import { AllExceptionsFilter } from '../../utils/utils';
 import { PaginationDto } from 'src/utils/pagination.dto';
+import { Did } from '../schemas/did.schema';
+import { DidResponseInterceptor } from '../interceptors/transformResponse.interseptor';
 @UseFilters(AllExceptionsFilter)
 @ApiTags('Did')
 @Controller('did')
@@ -63,10 +66,11 @@ export class DidController {
     description: 'Fetch limited list of data',
     required: false,
   })
+  @UseInterceptors(DidResponseInterceptor)
   getDidList(
     @Req() req: any,
     @Query() pageOption: PaginationDto,
-  ): Promise<string[]> {
+  ): Promise<Did[]> {
     const appDetail = req.user;
     return this.didService.getDidList(appDetail, pageOption);
   }

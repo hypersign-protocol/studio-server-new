@@ -115,7 +115,7 @@ export class DidService {
     }
   }
 
-  async getDidList(appDetail, option) {
+  async getDidList(appDetail, option): Promise<Did[]> {
     const skip = (option.page - 1) * option.limit;
     option['skip'] = skip;
     const didList = await this.didRepositiory.find({
@@ -128,7 +128,7 @@ export class DidService {
       ]);
     }
 
-    return didList.map((x) => x.did);
+    return didList;
   }
 
   async resolveDid(appDetail, did: string) {

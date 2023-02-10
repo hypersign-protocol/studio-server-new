@@ -6,13 +6,13 @@ import {
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
-import { Credential } from '../schemas/credntial.schema';
+import { Did } from '../schemas/did.schema';
 export interface Response {
-  totalCredentialCount: number;
-  data: Array<Credential['credentialId']>;
+  totalDidCount: number;
+  data: Array<Did['did']>;
 }
 @Injectable()
-export class CredentialResponseInterceptor implements NestInterceptor {
+export class DidResponseInterceptor implements NestInterceptor {
   intercept(
     context: ExecutionContext,
     next: CallHandler,
@@ -20,7 +20,7 @@ export class CredentialResponseInterceptor implements NestInterceptor {
     return next.handle().pipe(
       map((data) => {
         const modifiedResponse = {
-          totalCredentialCount: data[0]['totalCredentialCount'][0].total,
+          totalDidCount: data[0]['totalDidCount'][0].total,
           data: this.mapData(data[0]['data']),
         };
         return modifiedResponse;
@@ -28,6 +28,6 @@ export class CredentialResponseInterceptor implements NestInterceptor {
     );
   }
   mapData(data) {
-    return data.map((credential) => credential.credentialId);
+    return data.map((Did) => Did.did);
   }
 }
