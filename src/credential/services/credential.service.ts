@@ -130,11 +130,10 @@ export class CredentialService {
   async findAll(appDetail, paginationOption) {
     const skip = (paginationOption.page - 1) * paginationOption.limit;
     paginationOption['skip'] = skip;
-    const credentialList = await this.credentialRepository.find({
+    return await this.credentialRepository.find({
       appId: appDetail.appId,
       paginationOption,
     });
-    return credentialList.map((credential) => credential.credentialId);
   }
 
   async resolveCredential(

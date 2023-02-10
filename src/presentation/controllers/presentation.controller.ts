@@ -13,6 +13,7 @@ import {
   Req,
   Query,
   HttpCode,
+  UseInterceptors,
 } from '@nestjs/common';
 import {
   PresentationRequestService,
@@ -49,6 +50,7 @@ import {
   VerifyPresentationDto,
   VerifyPresentationResponse,
 } from '../dto/verify-presentation.dto';
+import { TemplateResponseInterceptor } from '../interceptors/transformResponse.interseptor';
 
 @ApiTags('Presentation')
 @UseGuards(AuthGuard('jwt'))
@@ -101,6 +103,7 @@ export class PresentationTempleteController {
     description: 'Fetch limited list of data',
     required: false,
   })
+  @UseInterceptors(TemplateResponseInterceptor)
   fetchListOfPresentationTemplate(
     @Req() req: any,
     @Query() pageOption: PaginationDto,

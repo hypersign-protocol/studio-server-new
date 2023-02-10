@@ -58,11 +58,11 @@ export class PresentationService {
       appId: appDetail.appId,
       paginationOption,
     });
-    if (templateList.length <= 0) {
-      throw new NotFoundException([
-        `No template has created for appId ${appDetail.appId}`,
-      ]);
-    }
+    // if (templateList.length <= 0) {
+    //   throw new NotFoundException([
+    //     `No template has created for appId ${appDetail.appId}`,
+    //   ]);
+    // }
     return templateList;
   }
 

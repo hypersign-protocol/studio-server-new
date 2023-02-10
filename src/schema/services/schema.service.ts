@@ -16,6 +16,7 @@ import { EdvService } from 'src/edv/services/edv.service';
 import { DidRepository } from 'src/did/repository/did.repository';
 import { HypersignDID } from 'hs-ssi-sdk';
 import { SchemaRepository } from '../repository/schema.repository';
+import { Schemas } from '../schemas/schemas.schema';
 
 @Injectable({ scope: Scope.REQUEST })
 export class SchemaService {
@@ -92,7 +93,7 @@ export class SchemaService {
     }
   }
 
-  async getSchemaList(appDetial, paginationOption) {
+  async getSchemaList(appDetial, paginationOption): Promise<Schemas[]> {
     const skip = (paginationOption.page - 1) * paginationOption.limit;
     paginationOption['skip'] = skip;
     const schemaList = await this.schemaRepository.find({
@@ -104,7 +105,7 @@ export class SchemaService {
         `No schema has created for appId ${appDetial.appId}`,
       ]);
     }
-    return schemaList.map((x) => x.schemaId);
+    return schemaList;
   }
 
   async resolveSchema(schemaId: string, appDetail) {

@@ -77,14 +77,10 @@ export class GenerateTokenResponse {
   expiresIn: number;
 }
 
-
-
-export class RegenrateAppApiSecretResponse{
+export class RegenrateAppApiSecretResponse {
   @ApiProperty({
     description: 'apiSecretKey for getting access token',
-    example: '${prefix}.{secret}',
+    example: 'xyz.ert34nbhjf48959',
   })
-  apiSecretKey :string
+  apiSecretKey: string;
 }
-
-

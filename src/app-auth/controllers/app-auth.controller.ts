@@ -42,6 +42,7 @@ import { AppError } from '../dtos/fetch-app.dto';
 import { PaginationDto } from 'src/utils/pagination.dto';
 import { AppSecretHeader } from '../decorator/app-sercret.decorator';
 import { AuthGuard } from '@nestjs/passport';
+import { TransformResponseInterceptor } from '../interceptors/transformResponse.interseptor';
 
 @UseFilters(AllExceptionsFilter)
 @ApiTags('App')
@@ -77,13 +78,16 @@ export class AppAuthController {
     description: 'limit value',
     required: false,
   })
+  @UseInterceptors(TransformResponseInterceptor)
   async getApps(
     @Req() req: any,
     @Query() pageOption: PaginationDto,
   ): Promise<App[]> {
     const userId = req.user.userId;
-
-    const appList = await this.appAuthService.getAllApps(userId, pageOption);
+    const appList: any = await this.appAuthService.getAllApps(
+      userId,
+      pageOption,
+    );
     if (appList.length === 0) {
       throw new AppNotFoundException();
     }
@@ -156,7 +160,11 @@ export class AppAuthController {
     description: 'App not found',
     type: AppError,
   })
-  @UsePipes(ValidationPipe)
+  @UsePipes(
+    new ValidationPipe({
+      whitelist: true,
+    }),
+  )
   async update(
     @Req() req: any,
     @Param('appId') appId: string,
@@ -198,7 +206,7 @@ export class AppOAuthController {
   constructor(private readonly appAuthService: AppAuthService) {}
 
   @ApiHeader({
-    name: 'X-APP-SECRET-KEY',
+    name: 'X-App-Secret-Key',
     description: 'Provide Api key to get access token',
   })
   @Post('oauth')

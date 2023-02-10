@@ -8,7 +8,7 @@ import { Bip39, EnglishMnemonic } from '@cosmjs/crypto';
 //import { Header } from '@nestjs/common';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule,{cors:true});
+  const app = await NestFactory.create(AppModule, { cors: true });
   // Adding prefix to our api
 
   const walletOptions = {

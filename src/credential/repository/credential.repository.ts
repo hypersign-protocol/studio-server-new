@@ -11,17 +11,28 @@ export class CredentialRepository {
   ) {}
 
   async findOne(
-    credentialFilterQuery: FilterQuery<CredentialModel>,
+    credentialFilterQuery: FilterQuery<Credential>,
   ): Promise<CredentialModel> {
     return this.credentialModel.findOne(credentialFilterQuery);
   }
   async find(
-    credentialFilterQuery: FilterQuery<CredentialModel>,
-  ): Promise<CredentialModel[]> {
-    return await this.credentialModel
-      .find({ appId: credentialFilterQuery.appId }, { credentialId: 1, _id: 0 })
-      .skip(credentialFilterQuery.paginationOption.skip)
-      .limit(credentialFilterQuery.paginationOption.limit);
+    credentialFilterQuery: FilterQuery<Credential>,
+  ): Promise<Credential[]> {
+    return await this.credentialModel.aggregate([
+      { $match: { appId: credentialFilterQuery.appId } },
+      {
+        $facet: {
+          totalCount: [{ $count: 'total' }],
+          data: [
+            { $skip: credentialFilterQuery.paginationOption.skip },
+            { $limit: credentialFilterQuery.paginationOption.limit },
+            {
+              $project: { credentialId: 1, _id: 0 },
+            },
+          ],
+        },
+      },
+    ]);
   }
 
   async create(credential: Credential): Promise<CredentialModel> {
