@@ -42,6 +42,7 @@ import {
 import { BooleanPipe } from 'src/utils/Pipes/boolean.pipe';
 import { CredentialResponseInterceptor } from '../interceptors/transformResponse.interseptor';
 import { Credential } from '../schemas/credntial.schema';
+import { GetCredentialList } from '../dto/fetch-credential.dto';
 @ApiBearerAuth('Authorization')
 @UseGuards(AuthGuard('jwt'))
 @Controller('credential')
@@ -52,7 +53,7 @@ export class CredentialController {
   @Get()
   @ApiOkResponse({
     description: 'List of credentials',
-    type: String,
+    type: GetCredentialList,
     isArray: true,
   })
   @ApiNotFoundResponse({

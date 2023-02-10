@@ -33,6 +33,7 @@ import {
 } from '@nestjs/swagger';
 import { Schemas } from '../schemas/schemas.schema';
 import { SchemaResponseInterceptor } from '../interceptors/transformResponse.interseptor';
+import { GetSchemaList } from '../dto/get-schema.dto';
 @UseFilters(AllExceptionsFilter)
 @ApiTags('Schema')
 @Controller('schema')
@@ -66,7 +67,7 @@ export class SchemaController {
   @ApiResponse({
     status: 200,
     description: 'Schema List',
-    type: String,
+    type: GetSchemaList,
     isArray: true,
   })
   @ApiNotFoundResponse({

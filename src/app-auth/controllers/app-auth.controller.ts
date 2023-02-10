@@ -38,7 +38,7 @@ import { AppNotFoundException } from 'src/app-auth/exceptions/app-not-found.exce
 import { UpdateAppDto } from '../dtos/update-app.dto';
 import { MongooseClassSerializerInterceptor } from '../../utils/utils';
 import { AllExceptionsFilter } from '../../utils/utils';
-import { AppError } from '../dtos/fetch-app.dto';
+import { AppError, GetAppList } from '../dtos/fetch-app.dto';
 import { PaginationDto } from 'src/utils/pagination.dto';
 import { AppSecretHeader } from '../decorator/app-sercret.decorator';
 import { AuthGuard } from '@nestjs/passport';
@@ -61,7 +61,7 @@ export class AppAuthController {
   @ApiResponse({
     status: 200,
     description: 'App List',
-    type: [App],
+    type: GetAppList,
   })
   @ApiNotFoundResponse({
     status: 404,

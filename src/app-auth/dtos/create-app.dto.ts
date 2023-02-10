@@ -27,7 +27,9 @@ export class CreateAppDto {
   })
   @IsOptional()
   @IsArray()
-  @Matches(/^(https?:\/\/[^ ]+|\*)$/, { each: true })
+  @Matches(/^(https?:\/\/[^ ]+|\*)$/, {
+    each: true,
+  })
   whitelistedCors: Array<string>;
   @ApiProperty({
     description: 'description',
