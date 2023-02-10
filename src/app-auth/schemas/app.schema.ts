@@ -3,14 +3,12 @@ import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { Exclude } from 'class-transformer';
 import {
-  ArrayNotEmpty,
   IsArray,
   IsNotEmpty,
   IsOptional,
   IsString,
   IsUrl,
 } from 'class-validator';
-import { Trim } from 'src/utils/customDecorator/trim.decorator';
 
 export type AppDocument = App & Document;
 
@@ -25,14 +23,17 @@ export class App {
     description: 'Application name',
     example: 'demo app',
   })
-  @Prop()
+  @IsNotEmpty()
+  @IsString()
+  @IsNotEmpty()
+  @Prop({ required: true })
   appName: string;
 
   @ApiProperty({
     description: 'Application id',
     example: 'app-1',
   })
-  @Prop()
+  @Prop({ required: false })
   appId: string;
 
   @ApiHideProperty()
@@ -66,21 +67,22 @@ export class App {
   @ApiProperty({
     description: 'description',
     example: 'Example description',
+    required: false,
   })
-  @Trim()
+  @IsOptional()
   @IsString()
-  @IsNotEmpty()
-  @Prop()
+  @Prop({ required: false })
   description: string;
+
   @ApiProperty({
     description: 'whitelistedCors',
     example: ['https://example.com'],
     isArray: true,
   })
   @IsArray()
-  @ArrayNotEmpty()
-  @Prop()
+  @Prop({ required: false })
   whitelistedCors: Array<string>;
+
   @ApiProperty({
     description: 'logoUrl',
     example: 'http://image.png',
@@ -89,8 +91,8 @@ export class App {
   @IsOptional()
   @IsString()
   @IsUrl()
-  @Prop({ isRequired: false })
-  logoUrl?: string;
+  @Prop({ required: false })
+  logoUrl: string;
 }
 
 export class createAppResponse extends App {

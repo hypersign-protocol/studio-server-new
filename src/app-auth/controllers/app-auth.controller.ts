@@ -135,7 +135,7 @@ export class AppAuthController {
     description: 'App registration failed',
     type: AppError,
   })
-  @UsePipes(ValidationPipe)
+  @UsePipes(new ValidationPipe({ transform: true }))
   register(
     @Req() req: any,
     @Body() createAppDto: CreateAppDto,
@@ -162,6 +162,7 @@ export class AppAuthController {
   })
   @UsePipes(
     new ValidationPipe({
+      transform: true,
       whitelist: true,
     }),
   )
@@ -207,7 +208,7 @@ export class AppOAuthController {
 
   @ApiHeader({
     name: 'X-App-Secret-Key',
-    description: 'Provide Api key to get access token',
+    description: 'Provide App key to get access token',
   })
   @Post('oauth')
   @HttpCode(200)
