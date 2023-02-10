@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Did } from '../schemas/did.schema';
 export interface Response {
-  totalDidCount: number;
+  totalCount: number;
   data: Array<Did['did']>;
 }
 @Injectable()
@@ -20,7 +20,7 @@ export class DidResponseInterceptor implements NestInterceptor {
     return next.handle().pipe(
       map((data) => {
         const modifiedResponse = {
-          totalDidCount: data[0]['totalDidCount'][0].total,
+          totalCount: data[0]['totalCount'][0].total,
           data: this.mapData(data[0]['data']),
         };
         return modifiedResponse;

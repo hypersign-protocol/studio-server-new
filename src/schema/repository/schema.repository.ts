@@ -18,7 +18,7 @@ export class SchemaRepository {
       { $match: { appId: schemaFilterQuery.appId } },
       {
         $facet: {
-          totalSchemaCount: [{ $count: 'total' }],
+          totalCount: [{ $count: 'total' }],
           data: [
             { $skip: schemaFilterQuery.paginationOption.skip },
             { $limit: schemaFilterQuery.paginationOption.limit },

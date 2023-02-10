@@ -22,7 +22,7 @@ export class CredentialRepository {
       { $match: { appId: credentialFilterQuery.appId } },
       {
         $facet: {
-          totalCredentialCount: [{ $count: 'total' }],
+          totalCount: [{ $count: 'total' }],
           data: [
             { $skip: credentialFilterQuery.paginationOption.skip },
             { $limit: credentialFilterQuery.paginationOption.limit },

@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { PresentationTemplate } from '../schemas/presentation-template.schema';
 export interface Response {
-  totalTemplatesCount: number;
+  totalCount: number;
   data: Array<PresentationTemplate>;
 }
 @Injectable()
@@ -20,7 +20,7 @@ export class TemplateResponseInterceptor implements NestInterceptor {
     return next.handle().pipe(
       map((data) => {
         const modifiedResponse = {
-          totalTemplatesCount: data[0]['totalTemplatesCount'][0].total,
+          totalCount: data[0]['totalCount'][0].total,
           data: data[0].data,
         };
         return modifiedResponse;

@@ -17,7 +17,7 @@ export class AppRepository {
       { $match: { userId: appsFilterQuery.userId } },
       {
         $facet: {
-          totalAppCount: [{ $count: 'total' }],
+          totalCount: [{ $count: 'total' }],
           data: [
             { $skip: appsFilterQuery.paginationOption.skip },
             { $limit: appsFilterQuery.paginationOption.limit },

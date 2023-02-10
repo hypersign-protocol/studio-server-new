@@ -8,7 +8,7 @@ import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Credential } from '../schemas/credntial.schema';
 export interface Response {
-  totalCredentialCount: number;
+  totalCount: number;
   data: Array<Credential['credentialId']>;
 }
 @Injectable()
@@ -20,7 +20,7 @@ export class CredentialResponseInterceptor implements NestInterceptor {
     return next.handle().pipe(
       map((data) => {
         const modifiedResponse = {
-          totalCredentialCount: data[0]['totalCredentialCount'][0].total,
+          totalCount: data[0]['totalCount'][0].total,
           data: this.mapData(data[0]['data']),
         };
         return modifiedResponse;

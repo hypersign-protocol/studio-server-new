@@ -9,7 +9,7 @@ import { map } from 'rxjs/operators';
 import { App } from '../schemas/app.schema';
 
 export interface Response {
-  totalAppCount: number;
+  totalCount: number;
   data: App;
 }
 @Injectable()
@@ -21,7 +21,7 @@ export class TransformResponseInterceptor implements NestInterceptor {
     return next.handle().pipe(
       map((data) => {
         const modifiedResponse = {
-          totalAppCount: data[0]['totalAppCount'][0].total,
+          totalCount: data[0]['totalCount'][0].total,
           data: data[0]['data'],
         };
         return modifiedResponse;

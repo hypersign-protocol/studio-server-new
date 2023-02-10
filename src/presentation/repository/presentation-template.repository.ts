@@ -26,7 +26,7 @@ export class PresentationTemplateRepository {
       { $match: { appId: presentationTemplateFilterQuery.appId } },
       {
         $facet: {
-          totalTemplatesCount: [{ $count: 'total' }],
+          totalCount: [{ $count: 'total' }],
           data: [
             { $skip: presentationTemplateFilterQuery.paginationOption.skip },
             { $limit: presentationTemplateFilterQuery.paginationOption.limit },

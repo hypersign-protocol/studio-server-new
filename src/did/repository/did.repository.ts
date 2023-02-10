@@ -22,7 +22,7 @@ export class DidRepository {
       { $match: { appId: didFilterQuery.appId } },
       {
         $facet: {
-          totalDidCount: [{ $count: 'total' }],
+          totalCount: [{ $count: 'total' }],
           data: [
             { $skip: didFilterQuery.option.skip },
             { $limit: didFilterQuery.option.limit },
