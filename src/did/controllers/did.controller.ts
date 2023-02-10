@@ -37,6 +37,7 @@ import { AllExceptionsFilter } from '../../utils/utils';
 import { PaginationDto } from 'src/utils/pagination.dto';
 import { Did } from '../schemas/did.schema';
 import { DidResponseInterceptor } from '../interceptors/transformResponse.interseptor';
+import { GetDidList } from '../dto/fetch-did.dto';
 @UseFilters(AllExceptionsFilter)
 @ApiTags('Did')
 @Controller('did')
@@ -48,7 +49,7 @@ export class DidController {
   @Get()
   @ApiOkResponse({
     description: 'DID List',
-    type: String,
+    type: GetDidList,
     isArray: true,
   })
   @ApiNotFoundResponse({
