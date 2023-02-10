@@ -12,12 +12,31 @@ export class AppRepository {
   async findOne(appFilterQuery: FilterQuery<App>): Promise<App> {
     return this.appModel.findOne(appFilterQuery);
   }
-
   async find(appsFilterQuery: FilterQuery<App>): Promise<App[]> {
-    return this.appModel
-      .find({ userId: appsFilterQuery.userId })
-      .skip(appsFilterQuery.paginationOption.skip)
-      .limit(appsFilterQuery.paginationOption.limit);
+    return this.appModel.aggregate([
+      { $match: { userId: appsFilterQuery.userId } },
+      {
+        $facet: {
+          totalAppCount: [{ $count: 'total' }],
+          data: [
+            { $skip: appsFilterQuery.paginationOption.skip },
+            { $limit: appsFilterQuery.paginationOption.limit },
+            {
+              $project: {
+                appName: 1,
+                appId: 1,
+                edvId: 1,
+                walletAddress: 1,
+                description: 1,
+                logoUrl: 1,
+                whitelistedCors: 1,
+                _id: 0,
+              },
+            },
+          ],
+        },
+      },
+    ]);
   }
 
   async create(app: App): Promise<App> {
