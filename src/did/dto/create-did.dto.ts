@@ -1,10 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsEnum, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { IsEmpty, IsEnum, IsIn, IsObject, IsOptional, IsString, Validate, ValidateIf, ValidateNested } from 'class-validator';
 import { Trim } from 'src/utils/customDecorator/trim.decorator';
 import { RegistrationStatus } from '../schemas/did.schema';
 import { DidDoc } from '../dto/update-did.dto';
 import { IsDid } from 'src/utils/customDecorator/did.decorator';
+import { Optional } from '@nestjs/common';
 
 export enum KeyType {
   EcdsaSecp256k1RecoveryMethod2020 = 'EcdsaSecp256k1RecoveryMethod2020',
@@ -18,6 +19,7 @@ export class Options {
     example: 'keyType:EcdsaSecp256k1RecoveryMethod2020',
     name: 'keyType',
   })
+  @ValidateIf((o) => o.keyType !== undefined)
   @IsEnum(KeyType)
   keyType: KeyType;
 }
@@ -47,8 +49,13 @@ export class CreateDidDto {
       keyType: 'Ed25519VerificationKey2020',
     },
   })
+
+  @IsOptional()
+  @IsObject()
   @Type(() => Options)
-  @ValidateNested()
+  @ValidateNested({
+    each: true,
+  })
   options: Options;
 }
 

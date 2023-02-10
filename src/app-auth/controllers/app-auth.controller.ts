@@ -207,8 +207,8 @@ export class AppOAuthController {
   constructor(private readonly appAuthService: AppAuthService) {}
 
   @ApiHeader({
-    name: 'X-App-Secret-Key',
-    description: 'Provide App key to get access token',
+    name: 'X-Api-Secret-Key',
+    description: 'Provide Api Secret  key to get access token',
   })
   @Post('oauth')
   @HttpCode(200)
