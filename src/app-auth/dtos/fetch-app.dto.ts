@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsString } from 'class-validator';
+import { IsArray, IsNumber, IsString } from 'class-validator';
+import { App } from '../schemas/app.schema';
 
 export class AppError {
   @ApiProperty({
@@ -22,4 +23,22 @@ export class AppError {
   })
   @IsString()
   error: string;
+}
+
+export class GetAppList {
+  @ApiProperty({
+    description: 'totalCount',
+    example: 12,
+  })
+  @IsNumber()
+  totalCount: number;
+
+  @ApiProperty({
+    description: 'data',
+    type: App,
+    isArray: true,
+  })
+  @IsString()
+  @IsArray()
+  data: Array<App>;
 }

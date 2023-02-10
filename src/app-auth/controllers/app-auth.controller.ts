@@ -38,7 +38,7 @@ import { AppNotFoundException } from 'src/app-auth/exceptions/app-not-found.exce
 import { UpdateAppDto } from '../dtos/update-app.dto';
 import { MongooseClassSerializerInterceptor } from '../../utils/utils';
 import { AllExceptionsFilter } from '../../utils/utils';
-import { AppError } from '../dtos/fetch-app.dto';
+import { AppError, GetAppList } from '../dtos/fetch-app.dto';
 import { PaginationDto } from 'src/utils/pagination.dto';
 import { AppSecretHeader } from '../decorator/app-sercret.decorator';
 import { AuthGuard } from '@nestjs/passport';
@@ -61,7 +61,7 @@ export class AppAuthController {
   @ApiResponse({
     status: 200,
     description: 'App List',
-    type: [App],
+    type: GetAppList,
   })
   @ApiNotFoundResponse({
     status: 404,
@@ -135,7 +135,7 @@ export class AppAuthController {
     description: 'App registration failed',
     type: AppError,
   })
-  @UsePipes(ValidationPipe)
+  @UsePipes(new ValidationPipe({ transform: true }))
   register(
     @Req() req: any,
     @Body() createAppDto: CreateAppDto,
@@ -162,6 +162,7 @@ export class AppAuthController {
   })
   @UsePipes(
     new ValidationPipe({
+      transform: true,
       whitelist: true,
     }),
   )
@@ -206,8 +207,8 @@ export class AppOAuthController {
   constructor(private readonly appAuthService: AppAuthService) {}
 
   @ApiHeader({
-    name: 'X-App-Secret-Key',
-    description: 'Provide Api key to get access token',
+    name: 'X-Api-Secret-Key',
+    description: 'Provide Api Secret  key to get access token',
   })
   @Post('oauth')
   @HttpCode(200)

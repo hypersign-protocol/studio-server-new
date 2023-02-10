@@ -16,7 +16,7 @@ export const Trim = (): PropertyDecorator => {
               `${propertyKey.toString()} cannot be empty`,
             ]);
           }
-          original = val;
+          original = val.trim();
         },
       };
       Object.defineProperty(target, propertyKey, descriptor);
