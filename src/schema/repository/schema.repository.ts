@@ -14,10 +14,21 @@ export class SchemaRepository {
     return this.schemaModel.findOne(schemaFilterQuery);
   }
   async find(schemaFilterQuery: FilterQuery<Schemas>): Promise<Schemas[]> {
-    return await this.schemaModel
-      .find({ appId: schemaFilterQuery.appId }, { schemaId: 1, _id: 0 })
-      .skip(schemaFilterQuery.paginationOption.skip)
-      .limit(schemaFilterQuery.paginationOption.limit);
+    return await this.schemaModel.aggregate([
+      { $match: { appId: schemaFilterQuery.appId } },
+      {
+        $facet: {
+          totalSchemaCount: [{ $count: 'total' }],
+          data: [
+            { $skip: schemaFilterQuery.paginationOption.skip },
+            { $limit: schemaFilterQuery.paginationOption.limit },
+            {
+              $project: { schemaId: 1, _id: 0 },
+            },
+          ],
+        },
+      },
+    ]);
   }
 
   async create(schema: Schemas): Promise<Schemas> {
