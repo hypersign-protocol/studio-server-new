@@ -91,7 +91,7 @@ export class DidController {
     return this.didService.resolveDid(appDetail, did);
   }
 
-  @UsePipes(ValidationPipe)
+  @UsePipes(new ValidationPipe({ whitelist:true ,transform:true ,forbidNonWhitelisted:true}))
   @Post()
   @ApiCreatedResponse({
     description: 'DID Created',
@@ -104,14 +104,14 @@ export class DidController {
   })
   create(@Body() createDidDto: CreateDidDto, @Req() req: any) {
     const { options } = createDidDto;
-    const { keyType } = options;
-    if (keyType === 'EcdsaSecp256k1RecoveryMethod2020') {
+    
+      if (options?.keyType === 'EcdsaSecp256k1RecoveryMethod2020') {
       throw new NotFoundException({
-        message: [`${keyType} is not supported`, `Feature coming soon`],
+        message: [`${options.keyType} is not supported`, `Feature coming soon`],
         error: 'Not Supported',
         status: 404,
       });
-    }
+    }  
     const appDetail = req.user;
     return this.didService.create(createDidDto, appDetail);
   }

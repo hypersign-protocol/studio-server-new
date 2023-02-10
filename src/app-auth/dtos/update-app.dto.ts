@@ -30,7 +30,7 @@ export class UpdateAppDto {
   })
   @IsOptional()
   @IsArray()
-  @Matches(/^(https?:\/\/[^ ]+|\*)$/, { each: true })
+  @Matches(/^(https?:\/\/[^ ]+|\*)$/, { each: true ,message: 'Whitelisted cors must be a valid url or *'})
   whitelistedCors: Array<string>;
   @ApiProperty({
     description: 'description',
@@ -39,7 +39,7 @@ export class UpdateAppDto {
   })
   @IsOptional()
   @IsString()
-  @MaxLength(100)
+  @MaxLength(200)
   description: string;
   @ApiProperty({
     description: 'logoUrl',

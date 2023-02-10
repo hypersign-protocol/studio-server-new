@@ -27,9 +27,7 @@ export class CreateAppDto {
   })
   @IsOptional()
   @IsArray()
-  @Matches(/^(https?:\/\/[^ ]+|\*)$/, {
-    each: true,
-  })
+  @Matches(/^(https?:\/\/[^ ]+|\*)$/, { each: true ,message: 'Whitelisted cors must be a valid url or *'})
   whitelistedCors: Array<string>;
   @ApiProperty({
     description: 'description',
