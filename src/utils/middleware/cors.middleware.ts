@@ -30,11 +30,7 @@ export class WhitelistMiddleware implements NestMiddleware {
       if (appInfo.whitelistedCors.includes('*')) {
         return next();
       }
-
-      if (
-        !appInfo.whitelistedCors.includes('*') ||
-        !appInfo['whitelistedCors'].includes(origin)
-      ) {
+      if (!appInfo['whitelistedCors'].includes(origin)) {
         throw new UnauthorizedException(['Origin mismatch']);
       }
     } else {
