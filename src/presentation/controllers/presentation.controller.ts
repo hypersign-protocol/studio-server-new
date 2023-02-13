@@ -132,7 +132,7 @@ export class PresentationTempleteController {
       req.user,
     );
   }
-
+  @UsePipes(ValidationPipe)
   @Patch('template/:templateId')
   @ApiOkResponse({
     description: 'Template Updated',

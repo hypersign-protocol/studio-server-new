@@ -1,7 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEnum, IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { ValidateVerificationMethodId } from 'src/utils/customDecorator/vmId.decorator';
-import { Trim } from 'src/utils/customDecorator/trim.decorator';
 import { IsDid } from 'src/utils/customDecorator/did.decorator';
 
 export enum Status {
@@ -17,7 +16,7 @@ export class UpdateCredentialDto {
     example: 'testnet',
   })
   @IsString()
-  @Trim()
+  @IsNotEmpty()
   namespace: string;
   @ApiProperty({
     name: 'status',
@@ -38,6 +37,7 @@ export class UpdateCredentialDto {
     description: 'issuerDid of the credential',
   })
   @IsString()
+  @IsNotEmpty()
   @IsDid()
   issuerDid: string;
 
@@ -47,5 +47,6 @@ export class UpdateCredentialDto {
   })
   @ValidateVerificationMethodId()
   @IsString()
+  @IsNotEmpty()
   verificationMethodId: string;
 }

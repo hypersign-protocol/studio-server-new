@@ -41,7 +41,6 @@ export class AppAuthService {
       mnemonic,
       address,
     };
-
     const { apiSecretKey, apiSecret } =
       await this.appAuthApiKeyService.generateApiKey();
 

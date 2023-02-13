@@ -1,4 +1,9 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+} from '@nestjs/common';
 import { SchemaService } from './services/schema.service';
 import { SchemaController } from './controllers/schema.controller';
 import { SchemaSSIService } from './services/schema.ssi.service';
@@ -11,6 +16,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Schemas, SchemasSchema } from './schemas/schemas.schema';
 import { WhitelistMiddleware } from 'src/utils/middleware/cors.middleware';
 import { AppAuthModule } from 'src/app-auth/app-auth.module';
+import { TrimMiddleware } from 'src/utils/middleware/trim.middleware';
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: Schemas.name, schema: SchemasSchema }]),
@@ -32,5 +38,13 @@ export class SchemaModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     //// Appy middleware on all routes
     consumer.apply(WhitelistMiddleware).forRoutes(SchemaController);
+    //apply middleware on all routes except mentioned in exclude()
+    consumer
+      .apply(TrimMiddleware)
+      .exclude(
+        { path: 'schema', method: RequestMethod.GET },
+        { path: 'schema/:schemaId', method: RequestMethod.GET },
+      )
+      .forRoutes(SchemaController);
   }
 }
