@@ -41,7 +41,6 @@ export class AppAuthService {
       mnemonic,
       address,
     };
-
     const { apiSecretKey, apiSecret } =
       await this.appAuthApiKeyService.generateApiKey();
 
@@ -57,7 +56,6 @@ export class AppAuthService {
       walletAddress: address,
       apiKeyPrefix: apiSecretKey.split('.')[0],
     });
-
     appData.apiKeySecret = apiSecretKey;
     return appData;
   }

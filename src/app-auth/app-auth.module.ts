@@ -23,6 +23,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy, JwtStrategyApp } from './strategy/jwt.strategy';
 import { AppAuthApiKeyService } from './services/app-auth-apikey.service';
 import { WhitelistCorsMiddleware } from './middlewares/cors.middleware';
+import { TrimMiddleware } from 'src/utils/middleware/trim.middleware';
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: App.name, schema: AppSchema }]),
@@ -49,5 +50,12 @@ export class AppAuthModule implements NestModule {
     consumer
       .apply(WhitelistCorsMiddleware)
       .forRoutes(AppAuthController, AppOAuthController);
+    consumer
+      .apply(TrimMiddleware)
+      .exclude(
+        { path: 'app', method: RequestMethod.GET },
+        { path: 'app', method: RequestMethod.DELETE },
+      )
+      .forRoutes(AppAuthController);
   }
 }
