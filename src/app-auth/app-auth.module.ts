@@ -55,6 +55,7 @@ export class AppAuthModule implements NestModule {
       .exclude(
         { path: 'app', method: RequestMethod.GET },
         { path: 'app', method: RequestMethod.DELETE },
+        { path: 'app/:appId', method: RequestMethod.GET },
       )
       .forRoutes(AppAuthController);
   }

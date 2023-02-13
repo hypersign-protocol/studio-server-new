@@ -45,7 +45,10 @@ export class CredentialModule implements NestModule {
     consumer.apply(WhitelistMiddleware).forRoutes(CredentialController);
     consumer
       .apply(TrimMiddleware)
-      .exclude({ path: 'credential', method: RequestMethod.GET })
+      .exclude(
+        { path: 'credential', method: RequestMethod.GET },
+        { path: 'credential/:credentialId', method: RequestMethod.GET },
+      )
       .forRoutes(CredentialController);
   }
 }
