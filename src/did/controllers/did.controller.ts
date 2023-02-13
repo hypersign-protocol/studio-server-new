@@ -12,6 +12,7 @@ import {
   ValidationPipe,
   NotFoundException,
   Query,
+  UseInterceptors,
 } from '@nestjs/common';
 import { DidService } from '../services/did.service';
 import {
@@ -34,6 +35,9 @@ import {
 import { DidError, DidNotFoundError } from '../dto/error-did.dto';
 import { AllExceptionsFilter } from '../../utils/utils';
 import { PaginationDto } from 'src/utils/pagination.dto';
+import { Did } from '../schemas/did.schema';
+import { DidResponseInterceptor } from '../interceptors/transformResponse.interseptor';
+import { GetDidList } from '../dto/fetch-did.dto';
 @UseFilters(AllExceptionsFilter)
 @ApiTags('Did')
 @Controller('did')
@@ -45,7 +49,7 @@ export class DidController {
   @Get()
   @ApiOkResponse({
     description: 'DID List',
-    type: String,
+    type: GetDidList,
     isArray: true,
   })
   @ApiNotFoundResponse({
@@ -63,10 +67,11 @@ export class DidController {
     description: 'Fetch limited list of data',
     required: false,
   })
+  @UseInterceptors(DidResponseInterceptor)
   getDidList(
     @Req() req: any,
     @Query() pageOption: PaginationDto,
-  ): Promise<string[]> {
+  ): Promise<Did[]> {
     const appDetail = req.user;
     return this.didService.getDidList(appDetail, pageOption);
   }
@@ -86,7 +91,7 @@ export class DidController {
     return this.didService.resolveDid(appDetail, did);
   }
 
-  @UsePipes(ValidationPipe)
+  @UsePipes(new ValidationPipe({ whitelist:true ,transform:true ,forbidNonWhitelisted:true}))
   @Post()
   @ApiCreatedResponse({
     description: 'DID Created',
@@ -99,14 +104,14 @@ export class DidController {
   })
   create(@Body() createDidDto: CreateDidDto, @Req() req: any) {
     const { options } = createDidDto;
-    const { keyType } = options;
-    if (keyType === 'EcdsaSecp256k1RecoveryMethod2020') {
+    
+      if (options?.keyType === 'EcdsaSecp256k1RecoveryMethod2020') {
       throw new NotFoundException({
-        message: [`${keyType} is not supported`, `Feature coming soon`],
+        message: [`${options.keyType} is not supported`, `Feature coming soon`],
         error: 'Not Supported',
         status: 404,
       });
-    }
+    }  
     const appDetail = req.user;
     return this.didService.create(createDidDto, appDetail);
   }

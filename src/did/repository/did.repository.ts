@@ -18,10 +18,21 @@ export class DidRepository {
     return this.didModel.findOne(didFilterQuery);
   }
   async find(didFilterQuery: FilterQuery<Did>): Promise<Did[]> {
-    return await this.didModel
-      .find({ appId: didFilterQuery.appId }, { did: 1, _id: 0 })
-      .skip(didFilterQuery.option.skip)
-      .limit(didFilterQuery.option.limit);
+    return await this.didModel.aggregate([
+      { $match: { appId: didFilterQuery.appId } },
+      {
+        $facet: {
+          totalCount: [{ $count: 'total' }],
+          data: [
+            { $skip: didFilterQuery.option.skip },
+            { $limit: didFilterQuery.option.limit },
+            {
+              $project: { did: 1, _id: 0 },
+            },
+          ],
+        },
+      },
+    ]);
   }
 
   async create(did: Did): Promise<Did> {

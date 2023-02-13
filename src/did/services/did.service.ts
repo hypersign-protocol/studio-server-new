@@ -115,20 +115,19 @@ export class DidService {
     }
   }
 
-  async getDidList(appDetail, option) {
+  async getDidList(appDetail, option): Promise<Did[]> {
     const skip = (option.page - 1) * option.limit;
     option['skip'] = skip;
     const didList = await this.didRepositiory.find({
       appId: appDetail.appId,
       option,
     });
-    if (didList.length <= 0) {
-      throw new NotFoundException([
-        `No did has created for appId ${appDetail.appId}`,
-      ]);
-    }
-
-    return didList.map((x) => x.did);
+    // if (didList.length <= 0) {
+    //   throw new NotFoundException([
+    //     `No did has created for appId ${appDetail.appId}`,
+    //   ]);
+    // }
+    return didList;
   }
 
   async resolveDid(appDetail, did: string) {

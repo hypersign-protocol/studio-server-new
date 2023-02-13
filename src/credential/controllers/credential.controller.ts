@@ -11,6 +11,7 @@ import {
   ValidationPipe,
   Query,
   HttpCode,
+  UseInterceptors,
 } from '@nestjs/common';
 import { CredentialService } from '../services/credential.service';
 import {
@@ -39,6 +40,9 @@ import {
   VerifyCredentialResponse,
 } from '../dto/verify-credential.dto';
 import { BooleanPipe } from 'src/utils/Pipes/boolean.pipe';
+import { CredentialResponseInterceptor } from '../interceptors/transformResponse.interseptor';
+import { Credential } from '../schemas/credntial.schema';
+import { GetCredentialList } from '../dto/fetch-credential.dto';
 @ApiBearerAuth('Authorization')
 @UseGuards(AuthGuard('jwt'))
 @Controller('credential')
@@ -49,7 +53,7 @@ export class CredentialController {
   @Get()
   @ApiOkResponse({
     description: 'List of credentials',
-    type: String,
+    type: GetCredentialList,
     isArray: true,
   })
   @ApiNotFoundResponse({
@@ -67,10 +71,11 @@ export class CredentialController {
     description: 'Fetch limited list of data',
     required: false,
   })
+  @UseInterceptors(CredentialResponseInterceptor)
   findAll(
     @Req() req: any,
     @Query() pageOption: PaginationDto,
-  ): Promise<string[]> {
+  ): Promise<Credential[]> {
     return this.credentialService.findAll(req.user, pageOption);
   }
 

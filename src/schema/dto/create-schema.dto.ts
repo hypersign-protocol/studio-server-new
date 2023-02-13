@@ -58,7 +58,7 @@ export class Fields {
 export class SchemaBody {
   @ApiProperty({
     description: 'Name of the schema',
-    example: 'Railway ticket schemas',
+    example: 'Railway ticket schema',
   })
   @IsString()
   @ToPascalCase()

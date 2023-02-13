@@ -11,17 +11,20 @@ import {
   HttpCode,
   UseFilters,
   Query,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
 import { User } from '../decorator/user.decorator';
 import { CreateAppDto } from 'src/app-auth/dtos/create-app.dto';
 import {
-  GenerateTokenDto,
   GenerateTokenError,
   GenerateTokenResponse,
+  RegenrateAppApiSecretResponse,
 } from '../dtos/generate-token.dto';
 import { AppAuthService } from 'src/app-auth/services/app-auth.service';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiCreatedResponse,
   ApiHeader,
   ApiNotFoundResponse,
@@ -35,30 +38,30 @@ import { AppNotFoundException } from 'src/app-auth/exceptions/app-not-found.exce
 import { UpdateAppDto } from '../dtos/update-app.dto';
 import { MongooseClassSerializerInterceptor } from '../../utils/utils';
 import { AllExceptionsFilter } from '../../utils/utils';
-import { AppError } from '../dtos/fetch-app.dto';
+import { AppError, GetAppList } from '../dtos/fetch-app.dto';
 import { PaginationDto } from 'src/utils/pagination.dto';
+import { AppSecretHeader } from '../decorator/app-sercret.decorator';
+import { AuthGuard } from '@nestjs/passport';
+import { TransformResponseInterceptor } from '../interceptors/transformResponse.interseptor';
 
 @UseFilters(AllExceptionsFilter)
 @ApiTags('App')
 @Controller('app')
+@ApiBearerAuth('Authorization')
+@UseGuards(AuthGuard('jwtApp'))
 export class AppAuthController {
   constructor(private readonly appAuthService: AppAuthService) {}
   @UseInterceptors(
     MongooseClassSerializerInterceptor(App, {
-      excludePrefixes: ['appSecret', '_', '__'],
+      excludePrefixes: ['apiKeySecret', 'apiKeyPrefix', '_', '__'],
     }),
   )
-  @ApiHeader({
-    name: 'userId',
-    description:
-      'Provide userId to get list of all the apps created by the userId',
-  })
   @UsePipes(new ValidationPipe({ transform: true }))
   @Get()
   @ApiResponse({
     status: 200,
     description: 'App List',
-    type: [App],
+    type: GetAppList,
   })
   @ApiNotFoundResponse({
     status: 404,
@@ -75,11 +78,16 @@ export class AppAuthController {
     description: 'limit value',
     required: false,
   })
+  @UseInterceptors(TransformResponseInterceptor)
   async getApps(
-    @User() userId,
+    @Req() req: any,
     @Query() pageOption: PaginationDto,
   ): Promise<App[]> {
-    const appList = await this.appAuthService.getAllApps(userId, pageOption);
+    const userId = req.user.userId;
+    const appList: any = await this.appAuthService.getAllApps(
+      userId,
+      pageOption,
+    );
     if (appList.length === 0) {
       throw new AppNotFoundException();
     }
@@ -87,13 +95,9 @@ export class AppAuthController {
   }
   @UseInterceptors(
     MongooseClassSerializerInterceptor(App, {
-      excludePrefixes: ['appSecret', '_', '__'],
+      excludePrefixes: ['apiKeySecret', 'apiKeyPrefix', '_', '__'],
     }),
   )
-  @ApiHeader({
-    name: 'userId',
-    description: 'Provide userId to get app details',
-  })
   @Get(':appId')
   @ApiResponse({
     status: 200,
@@ -106,22 +110,21 @@ export class AppAuthController {
     type: AppError,
   })
   async getAppById(
-    @User() userId,
+    @Req() req: any,
+
     @Param('appId') appId: string,
   ): Promise<App> {
+    const userId = req.user.userId;
+
     const app = await this.appAuthService.getAppById(appId, userId);
     if (app) return app;
     else throw new AppNotFoundException(); // Custom Exception handling
   }
 
-  @ApiHeader({
-    name: 'userId',
-    description: 'Provide UserId to create a App',
-  })
   @Post()
   @UseInterceptors(
     MongooseClassSerializerInterceptor(createAppResponse, {
-      excludePrefixes: ['_', '__'],
+      excludePrefixes: ['apiKeyPrefix', '_', '__'],
     }),
   )
   @ApiCreatedResponse({
@@ -132,23 +135,21 @@ export class AppAuthController {
     description: 'App registration failed',
     type: AppError,
   })
-  @UsePipes(ValidationPipe)
+  @UsePipes(new ValidationPipe({ transform: true }))
   register(
-    @User() userId,
+    @Req() req: any,
     @Body() createAppDto: CreateAppDto,
   ): Promise<createAppResponse> {
+    const userId = req.user.userId;
+
     return this.appAuthService.createAnApp(createAppDto, userId);
   }
 
   @UseInterceptors(
     MongooseClassSerializerInterceptor(App, {
-      excludePrefixes: ['appSecret', '_', '__'],
+      excludePrefixes: ['apiKeySecret', 'apiKeyPrefix', '_', '__'],
     }),
   )
-  @ApiHeader({
-    name: 'userId',
-    description: 'Provide userId to get app details',
-  })
   @Put(':appId')
   @ApiResponse({
     status: 200,
@@ -159,21 +160,55 @@ export class AppAuthController {
     description: 'App not found',
     type: AppError,
   })
-  @UsePipes(ValidationPipe)
+  @UsePipes(
+    new ValidationPipe({
+      transform: true,
+      whitelist: true,
+    }),
+  )
   async update(
-    @User() userId,
+    @Req() req: any,
     @Param('appId') appId: string,
     @Body() updateAppDto: UpdateAppDto,
   ): Promise<App> {
+    const userId = req.user.userId;
+
     const app = await this.appAuthService.getAppById(appId, userId);
     if (app) {
       return this.appAuthService.updateAnApp(appId, updateAppDto, userId);
     } else throw new AppNotFoundException();
   }
 
+  @Post(':appId/secret/new')
+  @HttpCode(200)
+  @ApiResponse({
+    status: 200,
+    description: 'Api Secret  Regenerated',
+    type: RegenrateAppApiSecretResponse,
+  })
+  @ApiBadRequestResponse({
+    description: 'Bad Request',
+    type: AppError,
+  })
+  async reGenerateAppSecretKey(@Req() req: any, @Param('appId') appId: string) {
+    const userId = req.user.userId;
+
+    const app = await this.appAuthService.getAppById(appId, userId);
+    if (!app) {
+      throw new AppNotFoundException();
+    }
+    return this.appAuthService.reGenerateAppSecretKey(app, userId);
+  }
+}
+
+@ApiTags('App')
+@Controller('app')
+export class AppOAuthController {
+  constructor(private readonly appAuthService: AppAuthService) {}
+
   @ApiHeader({
-    name: 'userId',
-    description: 'Provide userId to get app details',
+    name: 'X-Api-Secret-Key',
+    description: 'Provide Api Secret  key to get access token',
   })
   @Post('oauth')
   @HttpCode(200)
@@ -188,9 +223,8 @@ export class AppAuthController {
   })
   @UsePipes(ValidationPipe)
   generateAccessToken(
-    @User() userId,
-    @Body() generateAccessToken: GenerateTokenDto,
+    @AppSecretHeader() appSecreatKey,
   ): Promise<{ access_token; expiresIn; tokenType }> {
-    return this.appAuthService.generateAccessToken(generateAccessToken, userId);
+    return this.appAuthService.generateAccessToken(appSecreatKey);
   }
 }

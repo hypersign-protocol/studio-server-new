@@ -8,7 +8,7 @@ import { Bip39, EnglishMnemonic } from '@cosmjs/crypto';
 //import { Header } from '@nestjs/common';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, { cors: true });
   // Adding prefix to our api
 
   const walletOptions = {
@@ -50,22 +50,23 @@ async function bootstrap() {
   const config = new DocumentBuilder()
     .setTitle('Entity Studio API Documentation')
     .setDescription('Open API Documentation of the Entity Studio')
-    .addBearerAuth({
-      type:'http',
-      name:'Authorization',
-      in:'header'
-    },"Authorization")
-    
+    .addBearerAuth(
+      {
+        type: 'http',
+        name: 'Authorization',
+        in: 'header',
+      },
+      'Authorization',
+    )
+
     .setVersion('1.0')
     .build();
-    
-    const document = SwaggerModule.createDocument(app, config);
-  
+
+  const document = SwaggerModule.createDocument(app, config);
+
   SwaggerModule.setup('api', app, document, {
     swaggerOptions: { defaultModelsExpandDepth: -1 },
   });
-  
-
   await app.listen(3001);
 }
 bootstrap();

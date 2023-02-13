@@ -13,6 +13,7 @@ import {
   Req,
   Query,
   HttpCode,
+  UseInterceptors,
 } from '@nestjs/common';
 import {
   PresentationRequestService,
@@ -43,12 +44,12 @@ import {
   CreatePresentationResponse,
   PresentationResponse,
 } from '../dto/create-presentation-request.dto';
-import { uuid } from 'uuidv4';
-import { CredDoc } from 'src/credential/dto/create-credential.dto';
 import {
   VerifyPresentationDto,
   VerifyPresentationResponse,
 } from '../dto/verify-presentation.dto';
+import { TemplateResponseInterceptor } from '../interceptors/transformResponse.interseptor';
+import { GetPresentationTemplateListList } from '../dto/fetch-presentationTemp.dto';
 
 @ApiTags('Presentation')
 @UseGuards(AuthGuard('jwt'))
@@ -84,7 +85,7 @@ export class PresentationTempleteController {
   @Get('template')
   @ApiOkResponse({
     description: 'List of presentation template',
-    type: [PresentationTemplate],
+    type: GetPresentationTemplateListList,
   })
   @ApiNotFoundResponse({
     status: 404,
@@ -101,6 +102,7 @@ export class PresentationTempleteController {
     description: 'Fetch limited list of data',
     required: false,
   })
+  @UseInterceptors(TemplateResponseInterceptor)
   fetchListOfPresentationTemplate(
     @Req() req: any,
     @Query() pageOption: PaginationDto,

@@ -10,6 +10,7 @@ import {
   UsePipes,
   ValidationPipe,
   Query,
+  UseInterceptors,
 } from '@nestjs/common';
 import { PaginationDto } from 'src/utils/pagination.dto';
 import { SchemaService } from '../services/schema.service';
@@ -31,6 +32,8 @@ import {
   ApiQuery,
 } from '@nestjs/swagger';
 import { Schemas } from '../schemas/schemas.schema';
+import { SchemaResponseInterceptor } from '../interceptors/transformResponse.interseptor';
+import { GetSchemaList } from '../dto/get-schema.dto';
 @UseFilters(AllExceptionsFilter)
 @ApiTags('Schema')
 @Controller('schema')
@@ -64,7 +67,7 @@ export class SchemaController {
   @ApiResponse({
     status: 200,
     description: 'Schema List',
-    type: String,
+    type: GetSchemaList,
     isArray: true,
   })
   @ApiNotFoundResponse({
@@ -82,7 +85,11 @@ export class SchemaController {
     description: 'Fetch limited list of data',
     required: false,
   })
-  getSchemaList(@Req() req: any, @Query() paginationOption: PaginationDto) {
+  @UseInterceptors(SchemaResponseInterceptor)
+  getSchemaList(
+    @Req() req: any,
+    @Query() paginationOption: PaginationDto,
+  ): Promise<Schemas[]> {
     const appDetial = req.user;
     return this.schemaService.getSchemaList(appDetial, paginationOption);
   }
