@@ -1,7 +1,7 @@
 import {
   UnauthorizedException,
   Injectable,
-  BadRequestException,
+  NotFoundException,
 } from '@nestjs/common';
 import { CreateAppDto } from '../dtos/create-app.dto';
 
@@ -57,7 +57,6 @@ export class AppAuthService {
       walletAddress: address,
       apiKeyPrefix: apiSecretKey.split('.')[0],
     });
-
     appData.apiKeySecret = apiSecretKey;
     return appData;
   }
@@ -93,6 +92,20 @@ export class AppAuthService {
     userId: string,
   ): Promise<App> {
     return this.appRepository.findOneAndUpdate({ appId, userId }, updataAppDto);
+  }
+
+  async deleteApp(appId: string, userId: string): Promise<App> {
+    let appDetail = await this.appRepository.findOne({ appId, userId });
+    if (!appDetail) {
+      throw new NotFoundException([`No App found for appId ${appId}`]);
+    }
+    //commenting this code as delete operation is not implemented in edvClient
+
+    // const { edvId, edvDocId } = appDetail;
+    // await this.edvService.init(edvId);
+    // await this.edvService.deleteDoc(edvDocId);
+    appDetail = await this.appRepository.findOneAndDelete({ appId, userId });
+    return appDetail;
   }
 
   async generateAccessToken(

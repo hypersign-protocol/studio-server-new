@@ -50,4 +50,8 @@ export class AppRepository {
   ): Promise<App> {
     return this.appModel.findOneAndUpdate(appFilterQuery, app, { new: true });
   }
+
+  async findOneAndDelete(appFilterQuery: FilterQuery<App>): Promise<App> {
+    return this.appModel.findOneAndDelete(appFilterQuery);
+  }
 }

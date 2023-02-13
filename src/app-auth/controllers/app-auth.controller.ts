@@ -13,6 +13,7 @@ import {
   Query,
   UseGuards,
   Req,
+  Delete,
 } from '@nestjs/common';
 import { User } from '../decorator/user.decorator';
 import { CreateAppDto } from 'src/app-auth/dtos/create-app.dto';
@@ -179,6 +180,29 @@ export class AppAuthController {
     } else throw new AppNotFoundException();
   }
 
+  @Delete(':appId')
+  @ApiResponse({
+    status: 200,
+    description: 'App deleted',
+    type: App,
+  })
+  @ApiNotFoundResponse({
+    description: ' App not found',
+    type: AppError,
+  })
+  @UseInterceptors(
+    MongooseClassSerializerInterceptor(App, {
+      excludePrefixes: ['apiKeySecret', 'apiKeyPrefix', '_', '__'],
+    }),
+  )
+  async deleteApp(
+    @Req() req: any,
+    @Param('appId') appId: string,
+  ): Promise<App> {
+    const userId = req.user.userId;
+    const app = await this.appAuthService.deleteApp(appId, userId);
+    return app;
+  }
   @Post(':appId/secret/new')
   @HttpCode(200)
   @ApiResponse({
