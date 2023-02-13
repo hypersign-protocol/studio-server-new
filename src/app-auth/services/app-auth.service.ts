@@ -99,9 +99,11 @@ export class AppAuthService {
     if (!appDetail) {
       throw new NotFoundException([`No App found for appId ${appId}`]);
     }
-    const { edvId, edvDocId } = appDetail;
-    await this.edvService.init(edvId);
-    await this.edvService.deleteDoc(edvDocId);
+    //commenting this code as delete operation is not implemented in edvClient
+
+    // const { edvId, edvDocId } = appDetail;
+    // await this.edvService.init(edvId);
+    // await this.edvService.deleteDoc(edvDocId);
     appDetail = await this.appRepository.findOneAndDelete({ appId, userId });
     return appDetail;
   }
