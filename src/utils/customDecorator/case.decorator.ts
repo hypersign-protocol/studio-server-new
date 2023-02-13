@@ -1,4 +1,8 @@
-import { applyDecorators, SetMetadata } from '@nestjs/common';
+import {
+  applyDecorators,
+  BadRequestException,
+  SetMetadata,
+} from '@nestjs/common';
 
 declare global {
   interface String {
@@ -53,6 +57,11 @@ export const ToSnakeCase = (): PropertyDecorator => {
       const descriptor: PropertyDescriptor = {
         get: () => original,
         set: (val: string) => {
+          if (val.trim() === '') {
+            throw new BadRequestException([
+              `${propertyKey.toString()} cannot be empty`,
+            ]);
+          }
           original = val.toSnakeCase();
         },
       };
