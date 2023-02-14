@@ -12,8 +12,11 @@ export class WhitelistMiddleware implements NestMiddleware {
   constructor(private readonly appRepositiory: AppRepository) {}
   async use(req: Request, res: Response, next: NextFunction) {
     const origin = req.header('Origin');
-    if (req.header('authorization') == 'undefined') {
-      throw new UnauthorizedException(['Unauthorized']);
+    if (req.header('authorization') == undefined) {
+      throw new UnauthorizedException([
+        'Unauthorized',
+        'Please pass access token',
+      ]);
     } else if (req.header('authorization')) {
       const token = req.header('authorization').split(' ')[1];
       let decoded;
