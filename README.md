@@ -1,10 +1,9 @@
-
-
 ## Description
 
 [Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
 
 ## Concepts with code commits
+
 Added basic project st. with following features
 
 - [Basic project st.](https://github.com/hypersign-protocol/studio-api/commit/d80f266d6ed4a458c66257b60b1df2bd84d1622b)
@@ -19,7 +18,6 @@ Added basic project st. with following features
 - [Mongo Database connection](https://github.com/hypersign-protocol/studio-api/commit/357436181e4a525fe50b2c8cc4a50c016a437489)
 - [environment var](https://github.com/hypersign-protocol/studio-api/commit/2d119e6898a772dcf6ff54e477eb5d354e9b4e18)
 
-
 ## Pre-requisites
 
 Node version `v14.20.0`
@@ -28,11 +26,10 @@ Node version `v14.20.0`
 npm i -g @nestjs/cli
 ```
 
-
 ## Use full commands
 
 ```bash
-## Generate a new module 
+## Generate a new module
 nest g module <module-name>
 
 ## Generate a controller
@@ -44,7 +41,6 @@ nest g service <module-name/services/service-name>
 ## Generate a  middleware
 nest g middleware <module-name/middlewares/middleware-name>
 ```
-
 
 ## Installation
 
@@ -76,13 +72,16 @@ $ yarn run test:e2e
 
 # test coverage
 $ yarn run test:cov
+
+#Test using postman collection
+ npm i -g newman
+ newman run ${path}/studio-api.postman_collection.json
 ```
 
 ## Docs
 
 - http://localhost:3001/api
 - http://localhost:3001/api-json
-
 
 ## Support
 

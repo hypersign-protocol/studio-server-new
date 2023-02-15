@@ -1,0 +1,5788 @@
+{
+	"info": {
+		"_postman_id": "1873bf09-510b-49dd-8c12-dda25dded546",
+		"name": "new-studio-api",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "13310082"
+	},
+	"item": [
+		{
+			"name": "auth",
+			"item": [
+				{
+					"name": "register an app",
+					"item": [
+						{
+							"name": "empty appName",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var responseBody = pm.response.json()",
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"pm.test('Response body should be an object', function () {",
+											"    pm.expect(typeof responseBody).to.equal(\"object\")",
+											"})",
+											"pm.test(\"Should be able to fail as appName passed in request body is empty or less than 5 characters\", function () {",
+											"    pm.expect(responseBody.hasOwnProperty(\"statusCode\")).to.be.true;",
+											"    pm.expect(responseBody.statusCode).to.be.a('number')",
+											"    pm.expect(responseBody.statusCode).to.be.equal(400)",
+											"    pm.expect(responseBody.hasOwnProperty(\"message\")).to.be.true;",
+											"    pm.expect(responseBody.message).to.be.an(\"array\");",
+											"    pm.expect(responseBody.message[0]).to.be.equal(\"appName must be longer than or equal to 5 characters\")",
+											"    pm.expect(responseBody.hasOwnProperty(\"error\")).to.be.true;",
+											"    pm.expect(responseBody.error).to.be.equal(\"Bad Request\")",
+											"",
+											"});",
+											"",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{studio_API_auth}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "origin",
+										"value": "{{Origin}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"appName\":\"t\",\n    \"description\":\"This is a test description\",\n    \"whitelistedCors\":[\"http://localhost:3001\",\"*\"],\n      \"logoUrl\": \"http://image.png\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{studio-api-baseUrl}}app",
+									"host": [
+										"{{studio-api-baseUrl}}app"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "empty appName",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "origin",
+												"value": "{{Origin}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"appName\":\"t\",\n    \"description\":\"This is a test description\",\n    \"whitelistedCors\":[\"http://localhost:3001\",\"*\"],\n      \"logoUrl\": \"http://image.png\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{studio-api-baseUrl}}app",
+											"host": [
+												"{{studio-api-baseUrl}}app"
+											]
+										}
+									},
+									"status": "Bad Request",
+									"code": 400,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "107"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"6b-l3cp1ELZZGZeH+lVSaV8ci9aStE\""
+										},
+										{
+											"key": "Date",
+											"value": "Tue, 14 Feb 2023 19:09:45 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"statusCode\": 400,\n    \"message\": [\n        \"appName must be longer than or equal to 5 characters\"\n    ],\n    \"error\": \"Bad Request\"\n}"
+								}
+							]
+						},
+						{
+							"name": "wrong url",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var responseBody = pm.response.json()",
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"pm.test('Response body should be an object', function () {",
+											"    pm.expect(typeof responseBody).to.equal(\"object\")",
+											"})",
+											"pm.test(\"Should be able to fail as whitelistedCors passed in request body has invalid url\", function () {",
+											"    pm.expect(responseBody.hasOwnProperty(\"statusCode\")).to.be.true;",
+											"    pm.expect(responseBody.statusCode).to.be.a('number')",
+											"    pm.expect(responseBody.statusCode).to.be.equal(400)",
+											"    pm.expect(responseBody.hasOwnProperty(\"message\")).to.be.true;",
+											"    pm.expect(responseBody.message).to.be.an(\"array\");",
+											"    pm.expect(responseBody.message[0]).to.be.equal(\"Whitelisted cors must be a valid url or *\")",
+											"    pm.expect(responseBody.hasOwnProperty(\"error\")).to.be.true;",
+											"    pm.expect(responseBody.error).to.be.equal(\"Bad Request\")",
+											"",
+											"});",
+											"",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{studio_API_auth}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "origin",
+										"value": "{{Origin}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"appName\":\"demo test5\",\n    \"description\":\"This is a test description\",\n    \"whitelistedCors\":[\"cbbnn\"],\n      \"logoUrl\": \"http://image.png\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{studio-api-baseUrl}}app",
+									"host": [
+										"{{studio-api-baseUrl}}app"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "wrong url",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "origin",
+												"value": "{{Origin}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"appName\":\"demo test5\",\n    \"description\":\"This is a test description\",\n    \"whitelistedCors\":[\"cbbnn\"],\n      \"logoUrl\": \"http://image.png\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{studio-api-baseUrl}}app",
+											"host": [
+												"{{studio-api-baseUrl}}app"
+											]
+										}
+									},
+									"status": "Bad Request",
+									"code": 400,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "96"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"60-RIqEfmO9wLXmpLC3xLB66TKCj7s\""
+										},
+										{
+											"key": "Date",
+											"value": "Tue, 14 Feb 2023 19:12:56 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"statusCode\": 400,\n    \"message\": [\n        \"Whitelisted cors must be a valid url or *\"\n    ],\n    \"error\": \"Bad Request\"\n}"
+								}
+							]
+						},
+						{
+							"name": "wrong logoUrl",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var responseBody = pm.response.json()",
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"pm.test('Response body should be an object', function () {",
+											"    pm.expect(typeof responseBody).to.equal(\"object\")",
+											"})",
+											"pm.test(\"Should be able to fail as logoUrl passed in request body is invalid url\", function () {",
+											"    pm.expect(responseBody.hasOwnProperty(\"statusCode\")).to.be.true;",
+											"    pm.expect(responseBody.statusCode).to.be.a('number')",
+											"    pm.expect(responseBody.statusCode).to.be.equal(400)",
+											"    pm.expect(responseBody.hasOwnProperty(\"message\")).to.be.true;",
+											"    pm.expect(responseBody.message).to.be.an(\"array\");",
+											"    pm.expect(responseBody.message[0]).to.be.equal(\"logoUrl is not a valid URL\")",
+											"    pm.expect(responseBody.hasOwnProperty(\"error\")).to.be.true;",
+											"    pm.expect(responseBody.error).to.be.equal(\"Bad Request\")",
+											"",
+											"});",
+											"",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{studio_API_auth}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "origin",
+										"value": "{{Origin}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"appName\":\"Demo test app\",\n    \"description\":\"This is a test description\",\n    \"whitelistedCors\":[\"http://localhost:3001\",\"*\"],\n      \"logoUrl\": \"xklvc\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{studio-api-baseUrl}}app",
+									"host": [
+										"{{studio-api-baseUrl}}app"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "empty appName",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "origin",
+												"value": "{{Origin}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"appName\":\"t\",\n    \"description\":\"This is a test description\",\n    \"whitelistedCors\":[\"http://localhost:3001\",\"*\"],\n      \"logoUrl\": \"http://image.png\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{studio-api-baseUrl}}app",
+											"host": [
+												"{{studio-api-baseUrl}}app"
+											]
+										}
+									},
+									"status": "Bad Request",
+									"code": 400,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "107"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"6b-l3cp1ELZZGZeH+lVSaV8ci9aStE\""
+										},
+										{
+											"key": "Date",
+											"value": "Tue, 14 Feb 2023 19:09:45 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"statusCode\": 400,\n    \"message\": [\n        \"appName must be longer than or equal to 5 characters\"\n    ],\n    \"error\": \"Bad Request\"\n}"
+								}
+							]
+						},
+						{
+							"name": "register app",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var responseBody = pm.response.json()",
+											"",
+											"pm.test(\"Status code is 201\", function () {",
+											"    pm.response.to.have.status(201);",
+											"});",
+											"pm.test('Response body should be an object', function () {",
+											"    pm.expect(typeof responseBody).to.equal(\"object\")",
+											"})",
+											"pm.test(\"Should be able to pass and have list of response body parameters\", function () {",
+											"    pm.expect(\"appId\" in responseBody).to.be.true;",
+											"    pm.expect(responseBody.hasOwnProperty(\"appName\")).to.be.true;",
+											"    pm.expect(responseBody.hasOwnProperty(\"apiKeySecret\")).to.be.true;",
+											"    pm.expect(responseBody.hasOwnProperty(\"edvId\")).to.be.true;",
+											"    pm.expect(responseBody.hasOwnProperty(\"walletAddress\")).to.be.true;",
+											"    console.log(responseBody.walletAddress)",
+											"    pm.expect(responseBody.hasOwnProperty(\"description\")).to.be.true;",
+											"    pm.expect(responseBody.hasOwnProperty(\"whitelistedCors\")).to.be.true;",
+											"    pm.expect(responseBody.whitelistedCors).to.be.an(\"array\");",
+											"",
+											"    pm.expect(\"logoUrl\" in responseBody).to.be.true",
+											"    pm.environment.set(\"appId\", responseBody.appId)",
+											"    pm.environment.set(\"X-Api-Secret-Key\", responseBody.apiKeySecret)",
+											"});",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{studio_API_auth}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "origin",
+										"value": "{{Origin}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"appName\":\"Demo test app\",\n    \"description\":\"This is a test description\",\n    \"whitelistedCors\":[\"http://localhost:3001\",\"*\"],\n      \"logoUrl\": \"http://image.png\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{studio-api-baseUrl}}app",
+									"host": [
+										"{{studio-api-baseUrl}}app"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "register app",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"appName\":\"Demo test app\",\n    \"description\":\"This is a test description\",\n    \"whitelistedCors\":[\"http://localhost:3001\",\"*\"],\n      \"logoUrl\": \"http://image.png\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{studio-api-baseUrl}}app",
+											"host": [
+												"{{studio-api-baseUrl}}app"
+											]
+										}
+									},
+									"status": "Created",
+									"code": 201,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "465"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"1d1-fwhc6zsAmONTd9g9sDm4okUmuRc\""
+										},
+										{
+											"key": "Date",
+											"value": "Mon, 13 Feb 2023 16:04:55 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"appName\": \"Demo test app\",\n    \"appId\": \"1680f6987fedcbdaec67274d0d5644eb20d9\",\n    \"apiKeySecret\": \"3b603dec1d6d7831c0ab104ef987a.75d79d22216bf13ca38cddf7bd05672dfaf8aefa2d485f92f770860af34515065fbcdaf5145ba07bbf028dbb1d79688b2\",\n    \"edvId\": \"hs:apiservice:edv:49538f61-aaed-43ee-be94-d2be5a1e4e8e\",\n    \"walletAddress\": \"hid18tzg64ur6t60denq4p0vyzvwt64ghuh8ck9rxx\",\n    \"description\": \"This is a test description\",\n    \"whitelistedCors\": [\n        \"http://localhost:3001\",\n        \"*\"\n    ],\n    \"logoUrl\": \"http://image.png\"\n}"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "get AppById",
+					"item": [
+						{
+							"name": "wrong appId",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var responseBody = pm.response.json()",
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"pm.test('Response body should be an object', function () {",
+											"    pm.expect(typeof responseBody).to.equal(\"object\")",
+											"})",
+											"pm.test(\"Should be able to fail as appId passed in request params is wrong\", function () {",
+											"    pm.expect(responseBody.hasOwnProperty(\"statusCode\")).to.be.true;",
+											"    pm.expect(responseBody.statusCode).to.be.a('number')",
+											"    pm.expect(responseBody.statusCode).to.be.equal(400)",
+											"    pm.expect(responseBody.hasOwnProperty(\"message\")).to.be.true;",
+											"    pm.expect(responseBody.message).to.be.an(\"array\");",
+											"    pm.expect(responseBody.message[0]).to.be.equal( \"Application Not Found\")",
+											"    pm.expect(responseBody.hasOwnProperty(\"error\")).to.be.true;",
+											"    pm.expect(responseBody.error).to.be.equal(\"Bad Request\")",
+											"",
+											"});",
+											"",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{studio_API_auth}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "origin",
+										"value": "{{Origin}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{studio-api-baseUrl}}app/xyz",
+									"host": [
+										"{{studio-api-baseUrl}}app"
+									],
+									"path": [
+										"xyz"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "wrong appId",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "origin",
+												"value": "{{Origin}}",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "{{studio-api-baseUrl}}app/xyz",
+											"host": [
+												"{{studio-api-baseUrl}}app"
+											],
+											"path": [
+												"xyz"
+											]
+										}
+									},
+									"status": "Bad Request",
+									"code": 400,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "76"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"4c-NO7lw8kkSNMmXa9I2zOR3gKFPz8\""
+										},
+										{
+											"key": "Date",
+											"value": "Tue, 14 Feb 2023 19:20:43 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"message\": [\n        \"Application Not Found\"\n    ],\n    \"statusCode\": 400,\n    \"error\": \"Bad Request\"\n}"
+								}
+							]
+						},
+						{
+							"name": "fetch app by id",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var responseBody = pm.response.json()",
+											"",
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"pm.test('Response body should be an object', function () {",
+											"    pm.expect(typeof responseBody).to.equal(\"object\")",
+											"})",
+											"pm.test(\"Should be able to pass and have list of response body parameters\", function () {",
+											"    pm.expect(\"appId\" in responseBody).to.be.true;",
+											"    pm.expect(responseBody.hasOwnProperty(\"appName\")).to.be.true;",
+											"    pm.expect(responseBody.hasOwnProperty(\"edvId\")).to.be.true;",
+											"    pm.expect(responseBody.hasOwnProperty(\"walletAddress\")).to.be.true;",
+											"    pm.expect(responseBody.hasOwnProperty(\"description\")).to.be.true;",
+											"    pm.expect(responseBody.hasOwnProperty(\"whitelistedCors\")).to.be.true;",
+											"    pm.expect(\"logoUrl\" in responseBody).to.be.true",
+											"    var appId = pm.environment.get('appId')",
+											"    pm.expect(responseBody.appId).to.eql(appId)",
+											"});",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{studio_API_auth}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "origin",
+										"value": "{{Origin}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{studio-api-baseUrl}}app/{{appId}}",
+									"host": [
+										"{{studio-api-baseUrl}}app"
+									],
+									"path": [
+										"{{appId}}"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "fetch app by id",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{studio-api-baseUrl}}app/{{appId}}",
+											"host": [
+												"{{studio-api-baseUrl}}app"
+											],
+											"path": [
+												"{{appId}}"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "320"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"140-kPY/GScSqDtvzM4VTtXtriBRi18\""
+										},
+										{
+											"key": "Date",
+											"value": "Mon, 13 Feb 2023 16:05:14 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"appName\": \"Demo test app\",\n    \"appId\": \"1680f6987fedcbdaec67274d0d5644eb20d9\",\n    \"edvId\": \"hs:apiservice:edv:49538f61-aaed-43ee-be94-d2be5a1e4e8e\",\n    \"walletAddress\": \"hid18tzg64ur6t60denq4p0vyzvwt64ghuh8ck9rxx\",\n    \"description\": \"This is a test description\",\n    \"whitelistedCors\": [\n        \"http://localhost:3001\",\n        \"*\"\n    ],\n    \"logoUrl\": \"http://image.png\"\n}"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "app list",
+					"item": [
+						{
+							"name": "negative limit",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var responseBody = pm.response.json()",
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"pm.test('Response body should be an object', function () {",
+											"    pm.expect(typeof responseBody).to.equal(\"object\")",
+											"})",
+											"pm.test(\"Should be able to fail limit is negative or 0\", function () {",
+											"    pm.expect(responseBody.hasOwnProperty(\"statusCode\")).to.be.true;",
+											"    pm.expect(responseBody.statusCode).to.be.a('number')",
+											"    pm.expect(responseBody.statusCode).to.be.equal(400)",
+											"    pm.expect(responseBody.hasOwnProperty(\"message\")).to.be.true;",
+											"    pm.expect(responseBody.message).to.be.an(\"array\");",
+											"    pm.expect(responseBody.message[0]).to.be.equal( \"limit must not be less than 1\")",
+											"    pm.expect(responseBody.hasOwnProperty(\"error\")).to.be.true;",
+											"    pm.expect(responseBody.error).to.be.equal(\"Bad Request\")",
+											"",
+											"});",
+											"",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{studio_API_auth}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "origin",
+										"value": "{{Origin}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{studio-api-baseUrl}}app?limit=-1",
+									"host": [
+										"{{studio-api-baseUrl}}app"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "2",
+											"disabled": true
+										},
+										{
+											"key": "limit",
+											"value": "20",
+											"disabled": true
+										},
+										{
+											"key": "limit",
+											"value": "-1"
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "negative limit",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{studio-api-baseUrl}}app?limit=-1",
+											"host": [
+												"{{studio-api-baseUrl}}app"
+											],
+											"query": [
+												{
+													"key": "page",
+													"value": "2",
+													"disabled": true
+												},
+												{
+													"key": "limit",
+													"value": "20",
+													"disabled": true
+												},
+												{
+													"key": "limit",
+													"value": "-1"
+												}
+											]
+										}
+									},
+									"status": "Bad Request",
+									"code": 400,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "84"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"54-JS1yHCty54pMtfB4VAZ/1jEtHHU\""
+										},
+										{
+											"key": "Date",
+											"value": "Tue, 14 Feb 2023 19:24:27 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"statusCode\": 400,\n    \"message\": [\n        \"limit must not be less than 1\"\n    ],\n    \"error\": \"Bad Request\"\n}"
+								}
+							]
+						},
+						{
+							"name": "negative page value",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var responseBody = pm.response.json()",
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"pm.test('Response body should be an object', function () {",
+											"    pm.expect(typeof responseBody).to.equal(\"object\")",
+											"})",
+											"pm.test(\"Should be able to fail page is negative or 0\", function () {",
+											"    pm.expect(responseBody.hasOwnProperty(\"statusCode\")).to.be.true;",
+											"    pm.expect(responseBody.statusCode).to.be.a('number')",
+											"    pm.expect(responseBody.statusCode).to.be.equal(400)",
+											"    pm.expect(responseBody.hasOwnProperty(\"message\")).to.be.true;",
+											"    pm.expect(responseBody.message).to.be.an(\"array\");",
+											"    pm.expect(responseBody.message[0]).to.be.equal( \"page must not be less than 1\")",
+											"    pm.expect(responseBody.hasOwnProperty(\"error\")).to.be.true;",
+											"    pm.expect(responseBody.error).to.be.equal(\"Bad Request\")",
+											"",
+											"});",
+											"",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{studio_API_auth}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "origin",
+										"value": "{{Origin}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{studio-api-baseUrl}}app?page=-1",
+									"host": [
+										"{{studio-api-baseUrl}}app"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "2",
+											"disabled": true
+										},
+										{
+											"key": "limit",
+											"value": "20",
+											"disabled": true
+										},
+										{
+											"key": "page",
+											"value": "-1"
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "negative page value",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{studio-api-baseUrl}}app?page=-1",
+											"host": [
+												"{{studio-api-baseUrl}}app"
+											],
+											"query": [
+												{
+													"key": "page",
+													"value": "2",
+													"disabled": true
+												},
+												{
+													"key": "limit",
+													"value": "20",
+													"disabled": true
+												},
+												{
+													"key": "page",
+													"value": "-1"
+												}
+											]
+										}
+									},
+									"status": "Bad Request",
+									"code": 400,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "83"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"53-rSgVu62K2+soCfxfUvVCPAJHgqI\""
+										},
+										{
+											"key": "Date",
+											"value": "Tue, 14 Feb 2023 19:27:06 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"statusCode\": 400,\n    \"message\": [\n        \"page must not be less than 1\"\n    ],\n    \"error\": \"Bad Request\"\n}"
+								}
+							]
+						},
+						{
+							"name": "fetch list of apps",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var responseBody = pm.response.json()",
+											"var page;",
+											"var limit;",
+											"var urlString = pm.request.url.toString();",
+											"",
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"pm.test('Response body should be an object', function () {",
+											"    pm.expect(typeof responseBody).to.equal(\"object\")",
+											"})",
+											"",
+											"pm.test(\"Should be able to pass and have list of apps in response body \", function () {",
+											"    try {",
+											"        page = urlString.match(/page=(\\d+)/)[1];",
+											"        page = (parseInt(page))",
+											"    } catch (e) {",
+											"        page = 1",
+											"    }",
+											"    try {",
+											"        limit = urlString.match(/limit=(\\d+)/)[1];",
+											"        limit = parseInt(limit)",
+											"    } catch (e) {",
+											"        limit = 10",
+											"    }",
+											"    pm.expect(responseBody.hasOwnProperty(\"totalCount\")).to.be.true;",
+											"    pm.expect(responseBody.totalCount).to.be.a('number')",
+											"    pm.expect(responseBody.hasOwnProperty(\"data\")).to.be.true;",
+											"    pm.expect(responseBody.data).to.be.an(\"array\");",
+											"    pm.expect(responseBody.data).to.have.length.of.at.most(limit);",
+											"",
+											"});",
+											"",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{studio_API_auth}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "origin",
+										"value": "{{Origin}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{studio-api-baseUrl}}app?limit=30",
+									"host": [
+										"{{studio-api-baseUrl}}app"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "2",
+											"disabled": true
+										},
+										{
+											"key": "limit",
+											"value": "20",
+											"disabled": true
+										},
+										{
+											"key": "limit",
+											"value": "30"
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "fetch list of apps",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{studio-api-baseUrl}}app",
+											"host": [
+												"{{studio-api-baseUrl}}app"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "3097"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"c19-I0W7vQRKezGkg8ueA6NCjsfrg1k\""
+										},
+										{
+											"key": "Date",
+											"value": "Tue, 14 Feb 2023 04:19:17 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"totalCount\": 42,\n    \"data\": [\n        {\n            \"appName\": \"demo app12\",\n            \"appId\": \"de32578af790ab423d3f832575fbc25d2934\",\n            \"edvId\": \"hs:apiservice:edv:eb93fa60-cd2a-4b36-895e-c82b6aa3015e\",\n            \"walletAddress\": \"hid1szzjun8yla2h4lsm3gqm0pxx7rh340lhwvv692\",\n            \"description\": \"Example description\",\n            \"whitelistedCors\": [\n                \"https://example.com\",\n                \"*\"\n            ],\n            \"logoUrl\": \"http://image.png\"\n        },\n        {\n            \"appName\": \"demo app\",\n            \"appId\": \"3e2fde0ec62f4b12ae9954bce8b5e811d010\",\n            \"edvId\": \"hs:apiservice:edv:a00388f9-ec45-4d29-b58d-0363bed230e5\",\n            \"walletAddress\": \"hid1sm2n6jer5lh9pyhq97fafzfpe2vxs4csnwg0ur\",\n            \"description\": \"Example description\",\n            \"whitelistedCors\": [\n                \"https://example.com\"\n            ],\n            \"logoUrl\": \"http://image.png\"\n        },\n        {\n            \"appName\": \"demo app\",\n            \"appId\": \"d875e07511decdf939ea0f618ad4071c213d\",\n            \"edvId\": \"hs:apiservice:edv:1112b351-74c2-4644-a285-ee029f95340f\",\n            \"walletAddress\": \"hid1pe5mx3dqr8wfh69mmx0nfx6vzfc7vlr2ztnyz7\",\n            \"description\": \"Example description\",\n            \"whitelistedCors\": [\n                \"https://example.com\"\n            ],\n            \"logoUrl\": \"http://image.png\"\n        },\n        {\n            \"appName\": \"demo app\",\n            \"appId\": \"ecea869c7c4f3c2493c6ae41dad7cb0a3f34\",\n            \"edvId\": \"hs:apiservice:edv:2d36d2b7-100b-48fe-8089-88e3e259ae0b\",\n            \"walletAddress\": \"hid1hdvg3qkz45t57jezjh9zf590wxwxk9dexhlw89\",\n            \"description\": \"Example description\",\n            \"whitelistedCors\": [],\n            \"logoUrl\": \"http://image.png\"\n        },\n        {\n            \"appName\": \"trim  testing\",\n            \"appId\": \"f9923ece9b572f46a34a8021b258095bc886\",\n            \"edvId\": \"hs:apiservice:edv:03a2d04a-0987-4340-968e-96e32771f7ee\",\n            \"walletAddress\": \"hid1h6hlwjqqhc657kkucscrflmr0fd39zdgak08sa\",\n            \"description\": \"Example description     \",\n            \"whitelistedCors\": [\n                \"https://example.com\"\n            ],\n            \"logoUrl\": \"http://image.png\"\n        },\n        {\n            \"appName\": \"trim  testing\",\n            \"appId\": \"a8718bc9cd5263a0639742cf5a0e86436761\",\n            \"edvId\": \"hs:apiservice:edv:e2bc5ad6-0eff-482a-baed-194d75b61dde\",\n            \"walletAddress\": \"hid1z55wustlzqqqwradleyxmdln7vmyaw0lllh97y\",\n            \"description\": \"Example description     \",\n            \"whitelistedCors\": [\n                \"https://example.com\"\n            ],\n            \"logoUrl\": \"http://image.png\"\n        },\n        {\n            \"appName\": \"trim  testing\",\n            \"appId\": \"9e58fd0a6d5ae9d0babb013de9b54ae7d9e6\",\n            \"edvId\": \"hs:apiservice:edv:132d4c8d-91c7-486c-b20d-fe5ded8a17e9\",\n            \"walletAddress\": \"hid1s7gttg5pewylaq7r8a02nyw8ad9z6rgc5d2rkf\",\n            \"description\": \"Example description     \",\n            \"whitelistedCors\": [\n                \"https://example.com\"\n            ],\n            \"logoUrl\": \"http://image.png\"\n        },\n        {\n            \"appName\": \"trim  testing\",\n            \"appId\": \"ceb5258eb17ac41553dd667322b53c42d3a8\",\n            \"edvId\": \"hs:apiservice:edv:7a2179c1-31e0-451d-b660-73802ec96f3c\",\n            \"walletAddress\": \"hid16q55ac3pm0u39ycutmv9zzwh7pa0aqg8nnvffn\",\n            \"description\": \"Example description     \",\n            \"whitelistedCors\": [\n                \"https://example.com\"\n            ],\n            \"logoUrl\": \"http://image.png\"\n        },\n        {\n            \"appName\": \"trim  testing\",\n            \"appId\": \"817691d33b455d5b7e28fa37d56fec77dee2\",\n            \"edvId\": \"hs:apiservice:edv:9169989e-4fe0-4e44-8c13-966bd3b676ee\",\n            \"walletAddress\": \"hid13p6x29f0hnpcqx56r6qh0cduaht0r8u0hf05js\",\n            \"description\": \"Example description     \",\n            \"whitelistedCors\": [\n                \"https://example.com\"\n            ],\n            \"logoUrl\": \"http://image.png\"\n        },\n        {\n            \"appName\": \"trim testing 1\",\n            \"appId\": \"643156c48d2a402fa3bff7966b0a48f1a804\",\n            \"edvId\": \"hs:apiservice:edv:8a78949c-2d30-424d-836f-22662872f7ff\",\n            \"walletAddress\": \"hid10j0fv80wrl65yhnjd6k43txfst6smnqnqwye8p\",\n            \"description\": \"Example description\",\n            \"whitelistedCors\": [\n                \"https://example.com\"\n            ],\n            \"logoUrl\": \"http://image.png\"\n        }\n    ]\n}"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "edit app",
+					"item": [
+						{
+							"name": "empty app name",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var responseBody = pm.response.json()",
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"pm.test('Response body should be an object', function () {",
+											"    pm.expect(typeof responseBody).to.equal(\"object\")",
+											"})",
+											"pm.test(\"Should not be able to update app as appName passed in request body is empty or less than 5 characters\", function () {",
+											"    pm.expect(responseBody.hasOwnProperty(\"statusCode\")).to.be.true;",
+											"    pm.expect(responseBody.statusCode).to.be.a('number')",
+											"    pm.expect(responseBody.statusCode).to.be.equal(400)",
+											"    pm.expect(responseBody.hasOwnProperty(\"message\")).to.be.true;",
+											"    pm.expect(responseBody.message).to.be.an(\"array\");",
+											"    pm.expect(responseBody.message[0]).to.be.equal(\"appName must be longer than or equal to 5 characters\")",
+											"    pm.expect(responseBody.hasOwnProperty(\"error\")).to.be.true;",
+											"    pm.expect(responseBody.error).to.be.equal(\"Bad Request\")",
+											"",
+											"});",
+											"",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{studio_API_auth}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [
+									{
+										"key": "origin",
+										"value": "{{Origin}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"appName\":\"\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{studio-api-baseUrl}}app/{{appId}}",
+									"host": [
+										"{{studio-api-baseUrl}}app"
+									],
+									"path": [
+										"{{appId}}"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "empty app name",
+									"originalRequest": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "origin",
+												"value": "{{Origin}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"appName\":\"\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{studio-api-baseUrl}}app/{{appId}}",
+											"host": [
+												"{{studio-api-baseUrl}}app"
+											],
+											"path": [
+												"{{appId}}"
+											]
+										}
+									},
+									"status": "Bad Request",
+									"code": 400,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "137"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"89-VRbmctkEKA1C5x/hoHoMRDWyMIA\""
+										},
+										{
+											"key": "Date",
+											"value": "Wed, 15 Feb 2023 04:20:26 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"statusCode\": 400,\n    \"message\": [\n        \"appName must be longer than or equal to 5 characters\",\n        \"appName should not be empty\"\n    ],\n    \"error\": \"Bad Request\"\n}"
+								}
+							]
+						},
+						{
+							"name": "wrong url in whitelistedCors",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var responseBody = pm.response.json()",
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"pm.test('Response body should be an object', function () {",
+											"    pm.expect(typeof responseBody).to.equal(\"object\")",
+											"})",
+											"pm.test(\"Should not be able to update app as whitelistedCors passed in request body has invalid url\", function () {",
+											"    pm.expect(responseBody.hasOwnProperty(\"statusCode\")).to.be.true;",
+											"    pm.expect(responseBody.statusCode).to.be.a('number')",
+											"    pm.expect(responseBody.statusCode).to.be.equal(400)",
+											"    pm.expect(responseBody.hasOwnProperty(\"message\")).to.be.true;",
+											"    pm.expect(responseBody.message).to.be.an(\"array\");",
+											"    pm.expect(responseBody.message[0]).to.be.equal(\"Whitelisted cors must be a valid url or *\")",
+											"    pm.expect(responseBody.hasOwnProperty(\"error\")).to.be.true;",
+											"    pm.expect(responseBody.error).to.be.equal(\"Bad Request\")",
+											"",
+											"});",
+											"",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{studio_API_auth}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [
+									{
+										"key": "origin",
+										"value": "{{Origin}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"appName\":\"demo test5\",\n    \"description\":\"This is a test description\",\n    \"whitelistedCors\":[\"cbbnn\"],\n      \"logoUrl\": \"http://image.png\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{studio-api-baseUrl}}app/{{appId}}",
+									"host": [
+										"{{studio-api-baseUrl}}app"
+									],
+									"path": [
+										"{{appId}}"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "wrong url in whitelistedCors",
+									"originalRequest": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "origin",
+												"value": "{{Origin}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"appName\":\"demo test5\",\n    \"description\":\"This is a test description\",\n    \"whitelistedCors\":[\"cbbnn\"],\n      \"logoUrl\": \"http://image.png\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{studio-api-baseUrl}}app/{{appId}}",
+											"host": [
+												"{{studio-api-baseUrl}}app"
+											],
+											"path": [
+												"{{appId}}"
+											]
+										}
+									},
+									"status": "Bad Request",
+									"code": 400,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "96"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"60-RIqEfmO9wLXmpLC3xLB66TKCj7s\""
+										},
+										{
+											"key": "Date",
+											"value": "Wed, 15 Feb 2023 04:24:15 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"statusCode\": 400,\n    \"message\": [\n        \"Whitelisted cors must be a valid url or *\"\n    ],\n    \"error\": \"Bad Request\"\n}"
+								}
+							]
+						},
+						{
+							"name": "wrong logoUrl",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var responseBody = pm.response.json()",
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"pm.test('Response body should be an object', function () {",
+											"    pm.expect(typeof responseBody).to.equal(\"object\")",
+											"})",
+											"pm.test(\"Should not be able to update app as logoUrl passed in request body has invalid url\", function () {",
+											"    pm.expect(responseBody.hasOwnProperty(\"statusCode\")).to.be.true;",
+											"    pm.expect(responseBody.statusCode).to.be.a('number')",
+											"    pm.expect(responseBody.statusCode).to.be.equal(400)",
+											"    pm.expect(responseBody.hasOwnProperty(\"message\")).to.be.true;",
+											"    pm.expect(responseBody.message).to.be.an(\"array\");",
+											"    pm.expect(responseBody.message[0]).to.be.equal(\"logoUrl is not a valid URL\")",
+											"    pm.expect(responseBody.hasOwnProperty(\"error\")).to.be.true;",
+											"    pm.expect(responseBody.error).to.be.equal(\"Bad Request\")",
+											"",
+											"});",
+											"",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{studio_API_auth}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [
+									{
+										"key": "origin",
+										"value": "{{Origin}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"appName\":\"Demo test app\",\n    \"description\":\"This is a test description\",\n    \"whitelistedCors\":[\"http://localhost:3001\",\"*\"],\n      \"logoUrl\": \"xklvc\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{studio-api-baseUrl}}app/xyb",
+									"host": [
+										"{{studio-api-baseUrl}}app"
+									],
+									"path": [
+										"xyb"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "wrong logoUrl",
+									"originalRequest": {
+										"method": "PUT",
+										"header": [
+											{
+												"key": "origin",
+												"value": "{{Origin}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"appName\":\"demo test5\",\n    \"description\":\"This is a test description\",\n    \"whitelistedCors\":[\"cbbnn\"],\n      \"logoUrl\": \"http://image.png\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{studio-api-baseUrl}}app/{{appId}}",
+											"host": [
+												"{{studio-api-baseUrl}}app"
+											],
+											"path": [
+												"{{appId}}"
+											]
+										}
+									},
+									"status": "Bad Request",
+									"code": 400,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "96"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"60-RIqEfmO9wLXmpLC3xLB66TKCj7s\""
+										},
+										{
+											"key": "Date",
+											"value": "Wed, 15 Feb 2023 04:27:06 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"statusCode\": 400,\n    \"message\": [\n        \"Whitelisted cors must be a valid url or *\"\n    ],\n    \"error\": \"Bad Request\"\n}"
+								}
+							]
+						},
+						{
+							"name": "edit app",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var responseBody = pm.response.json()",
+											"",
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"pm.test('Response body should be an object', function () {",
+											"    pm.expect(typeof responseBody).to.equal(\"object\")",
+											"})",
+											"pm.test(\"Should be able to pass and have list of response body parameters\", function () {",
+											"    pm.expect(\"appId\" in responseBody).to.be.true;",
+											"    pm.expect(responseBody.hasOwnProperty(\"appName\")).to.be.true;",
+											"    pm.expect(responseBody.hasOwnProperty(\"edvId\")).to.be.true;",
+											"     pm.expect(responseBody.hasOwnProperty(\"walletAddress\")).to.be.true;",
+											"    pm.expect(responseBody.hasOwnProperty(\"description\")).to.be.true;",
+											"    pm.expect(responseBody.hasOwnProperty(\"whitelistedCors\")).to.be.true;",
+											"    pm.expect(\"logoUrl\" in responseBody).to.be.true",
+											"var appId= pm.environment.get('appId')",
+											"pm.expect(responseBody.appId).to.eql(appId)",
+											"});",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{studio_API_auth}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [
+									{
+										"key": "origin",
+										"value": "{{Origin}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"appName\":\"testing api app\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{studio-api-baseUrl}}app/{{appId}}",
+									"host": [
+										"{{studio-api-baseUrl}}app"
+									],
+									"path": [
+										"{{appId}}"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "edit app",
+									"originalRequest": {
+										"method": "PUT",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"appName\":\"testing api app\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{studio-api-baseUrl}}app/{{appId}}",
+											"host": [
+												"{{studio-api-baseUrl}}app"
+											],
+											"path": [
+												"{{appId}}"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "322"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"142-iVj84c2VcYZq1q8nvW/6HLH46Jw\""
+										},
+										{
+											"key": "Date",
+											"value": "Tue, 14 Feb 2023 06:43:52 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"appName\": \"testing api app\",\n    \"appId\": \"1680f6987fedcbdaec67274d0d5644eb20d9\",\n    \"edvId\": \"hs:apiservice:edv:49538f61-aaed-43ee-be94-d2be5a1e4e8e\",\n    \"walletAddress\": \"hid18tzg64ur6t60denq4p0vyzvwt64ghuh8ck9rxx\",\n    \"description\": \"This is a test description\",\n    \"whitelistedCors\": [\n        \"http://localhost:3001\",\n        \"*\"\n    ],\n    \"logoUrl\": \"http://image.png\"\n}"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "generate new api secret",
+					"item": [
+						{
+							"name": "authorization issue",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var responseBody = pm.response.json()",
+											"pm.test(\"Status code is 401\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});",
+											"pm.test('Response body should be an object', function () {",
+											"    pm.expect(typeof responseBody).to.equal(\"object\")",
+											"})",
+											"pm.test(\"Should be able to fail as authorization token is not passed in header\", function () {",
+											"    pm.expect(responseBody.hasOwnProperty(\"statusCode\")).to.be.true;",
+											"    pm.expect(responseBody.statusCode).to.be.a('number')",
+											"    pm.expect(responseBody.statusCode).to.be.equal(401)",
+											"    pm.expect(responseBody.hasOwnProperty(\"message\")).to.be.true;",
+											"    pm.expect(responseBody.message).to.be.an(\"string\");",
+											"    pm.expect(responseBody.message).to.be.equal(\"Unauthorized\")",
+											"",
+											"});",
+											"",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "origin",
+										"value": "{{Origin}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{studio-api-baseUrl}}app/{{appId}}/secret/new",
+									"host": [
+										"{{studio-api-baseUrl}}app"
+									],
+									"path": [
+										"{{appId}}",
+										"secret",
+										"new"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "authorization issue",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "origin",
+												"value": "{{Origin}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{studio-api-baseUrl}}app/{{appId}}/secret/new",
+											"host": [
+												"{{studio-api-baseUrl}}app"
+											],
+											"path": [
+												"{{appId}}",
+												"secret",
+												"new"
+											]
+										}
+									},
+									"status": "Unauthorized",
+									"code": 401,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "43"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"2b-hGShxOkieaAVDloBubJVM+h58D8\""
+										},
+										{
+											"key": "Date",
+											"value": "Wed, 15 Feb 2023 05:01:47 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"statusCode\": 401,\n    \"message\": \"Unauthorized\"\n}"
+								}
+							]
+						},
+						{
+							"name": "origin not passed",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var responseBody = pm.response.json()",
+											"pm.test(\"Status code is 401\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});",
+											"pm.test('Response body should be an object', function () {",
+											"    pm.expect(typeof responseBody).to.equal(\"object\")",
+											"})",
+											"pm.test(\"Should be able to fail as origin is not passed in header\", function () {",
+											"    pm.expect(responseBody.hasOwnProperty(\"statusCode\")).to.be.true;",
+											"    pm.expect(responseBody.statusCode).to.be.a('number')",
+											"    pm.expect(responseBody.statusCode).to.be.equal(401)",
+											"    pm.expect(responseBody.hasOwnProperty(\"message\")).to.be.true;",
+											"    pm.expect(responseBody.message).to.be.an(\"array\");",
+											"    pm.expect(responseBody.message[0]).to.be.equal(\"This is CORS-enabled for a whitelisted domain.\")",
+											"    pm.expect(responseBody.hasOwnProperty(\"error\")).to.be.true;",
+											"    pm.expect(responseBody.error).to.be.equal(\"Unauthorized\")",
+											"",
+											"",
+											"});",
+											"",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{studio_API_auth}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "origin",
+										"value": "{{Origin}}",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{studio-api-baseUrl}}app/{{appId}}/secret/new",
+									"host": [
+										"{{studio-api-baseUrl}}app"
+									],
+									"path": [
+										"{{appId}}",
+										"secret",
+										"new"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "origin not passed",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "origin",
+												"value": "{{Origin}}",
+												"type": "text",
+												"disabled": true
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{studio-api-baseUrl}}app/{{appId}}/secret/new",
+											"host": [
+												"{{studio-api-baseUrl}}app"
+											],
+											"path": [
+												"{{appId}}",
+												"secret",
+												"new"
+											]
+										}
+									},
+									"status": "Unauthorized",
+									"code": 401,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "102"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"66-r2YWn0gLfxohQ3ljNDO/F2iqZDE\""
+										},
+										{
+											"key": "Date",
+											"value": "Wed, 15 Feb 2023 05:12:11 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"statusCode\": 401,\n    \"message\": [\n        \"This is CORS-enabled for a whitelisted domain.\"\n    ],\n    \"error\": \"Unauthorized\"\n}"
+								}
+							]
+						},
+						{
+							"name": "wrong appId",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var responseBody = pm.response.json()",
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"pm.test('Response body should be an object', function () {",
+											"    pm.expect(typeof responseBody).to.equal(\"object\")",
+											"})",
+											"pm.test(\"Should be able to fail as appId passed in request params is wrong\", function () {",
+											"    pm.expect(responseBody.hasOwnProperty(\"statusCode\")).to.be.true;",
+											"    pm.expect(responseBody.statusCode).to.be.a('number')",
+											"    pm.expect(responseBody.statusCode).to.be.equal(400)",
+											"    pm.expect(responseBody.hasOwnProperty(\"message\")).to.be.true;",
+											"    pm.expect(responseBody.message).to.be.an(\"array\");",
+											"    pm.expect(responseBody.message[0]).to.be.equal( \"Application Not Found\")",
+											"    pm.expect(responseBody.hasOwnProperty(\"error\")).to.be.true;",
+											"    pm.expect(responseBody.error).to.be.equal(\"Bad Request\")",
+											"",
+											"});",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{studio_API_auth}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "origin",
+										"value": "{{Origin}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{studio-api-baseUrl}}app/xyz/secret/new",
+									"host": [
+										"{{studio-api-baseUrl}}app"
+									],
+									"path": [
+										"xyz",
+										"secret",
+										"new"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "wrong appId",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "origin",
+												"value": "{{Origin}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{studio-api-baseUrl}}app/xyz/secret/new",
+											"host": [
+												"{{studio-api-baseUrl}}app"
+											],
+											"path": [
+												"xyz",
+												"secret",
+												"new"
+											]
+										}
+									},
+									"status": "Bad Request",
+									"code": 400,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "76"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"4c-NO7lw8kkSNMmXa9I2zOR3gKFPz8\""
+										},
+										{
+											"key": "Date",
+											"value": "Wed, 15 Feb 2023 04:43:33 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"message\": [\n        \"Application Not Found\"\n    ],\n    \"statusCode\": 400,\n    \"error\": \"Bad Request\"\n}"
+								}
+							]
+						},
+						{
+							"name": "generate new api secret",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var responseBody = pm.response.json()",
+											"",
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"pm.test('Response body should be an object', function () {",
+											"    pm.expect(typeof responseBody).to.equal(\"object\")",
+											"})",
+											"pm.test(\"Should be able to pass and have list of parameters in  response body \", function () {",
+											"    pm.expect(\"apiSecretKey\" in responseBody).to.be.true;",
+											"       pm.environment.set(\"X-Api-Secret-Key\", responseBody.apiSecretKey)",
+											"});",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{studio_API_auth}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "origin",
+										"value": "{{Origin}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{studio-api-baseUrl}}app/{{appId}}/secret/new",
+									"host": [
+										"{{studio-api-baseUrl}}app"
+									],
+									"path": [
+										"{{appId}}",
+										"secret",
+										"new"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "generate new api secret",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"url": {
+											"raw": "{{studio-api-baseUrl}}app/{{appId}}/secret/new",
+											"host": [
+												"{{studio-api-baseUrl}}app"
+											],
+											"path": [
+												"{{appId}}",
+												"secret",
+												"new"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "146"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"92-pktjZjssoz+W8rvLXdxRDgrqiq8\""
+										},
+										{
+											"key": "Date",
+											"value": "Tue, 14 Feb 2023 07:10:24 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"apiSecretKey\": \"9264949043918ba58a4feea73b347.0d0cffd85ca4660ea36797bcc53a879c915dd707594879437c0dbd67cf93c36c820caa811f3860045b359d243c8cec034\"\n}"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "get api token",
+					"item": [
+						{
+							"name": "get api token",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var responseBody = pm.response.json()",
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"pm.test('Response body should be an object', function () {",
+											"    pm.expect(typeof responseBody).to.equal(\"object\")",
+											"})",
+											"pm.test(\"Should be able to pass and have list of field in response body\", function () {",
+											"    pm.expect(\"access_token\" in responseBody).to.be.true;",
+											"    pm.expect(responseBody.hasOwnProperty(\"expiresIn\")).to.be.true;",
+											"    pm.expect(responseBody.hasOwnProperty(\"tokenType\")).to.be.true;",
+											"    pm.expect(responseBody.tokenType).to.eql(\"Bearer\")",
+											"    pm.environment.set(\"access_Token\", responseBody.access_token)",
+											"});",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{studio_API_auth}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-Api-Secret-Key",
+										"value": "{{X-Api-Secret-Key}}",
+										"type": "text"
+									},
+									{
+										"key": "origin",
+										"value": "{{Origin}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{studio-api-baseUrl}}app/oauth",
+									"host": [
+										"{{studio-api-baseUrl}}app"
+									],
+									"path": [
+										"oauth"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "get api token",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "X-Api-Secret-Key",
+												"value": "{{X-Api-Secret-Key}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{studio-api-baseUrl}}app/oauth",
+											"host": [
+												"{{studio-api-baseUrl}}app"
+											],
+											"path": [
+												"oauth"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "342"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"156-eO/8Vz/GdhYffFK5JPrep5zFECs\""
+										},
+										{
+											"key": "Date",
+											"value": "Tue, 14 Feb 2023 06:47:29 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"access_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHBJZCI6IjE2ODBmNjk4N2ZlZGNiZGFlYzY3Mjc0ZDBkNTY0NGViMjBkOSIsInVzZXJJZCI6InZhcnNoYWt1bWFyaTM3MEBnbWFpbC5jb20iLCJncmFudFR5cGUiOiJjbGllbnRfY3JlZGVudGlhbHMiLCJpYXQiOjE2NzYzNTcyNDksImV4cCI6MTY3NjM3MTY0OX0.wDiXnt_qDaja3ld24mxhJEmkv2eu1pJ-wnzCeARYjoo\",\n    \"expiresIn\": 14400,\n    \"tokenType\": \"Bearer\"\n}"
+								}
+							]
+						},
+						{
+							"name": "origin not passed",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var responseBody = pm.response.json()",
+											"pm.test(\"Status code is 401\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});",
+											"pm.test('Response body should be an object', function () {",
+											"    pm.expect(typeof responseBody).to.equal(\"object\")",
+											"})",
+											"pm.test(\"Should be able to fail as origin is not passed in header\", function () {",
+											"    pm.expect(responseBody.hasOwnProperty(\"statusCode\")).to.be.true;",
+											"    pm.expect(responseBody.statusCode).to.be.a('number')",
+											"    pm.expect(responseBody.statusCode).to.be.equal(401)",
+											"    pm.expect(responseBody.hasOwnProperty(\"message\")).to.be.true;",
+											"    pm.expect(responseBody.message).to.be.an(\"array\");",
+											"    pm.expect(responseBody.message[0]).to.be.equal(\"This is CORS-enabled for a whitelisted domain.\")",
+											"    pm.expect(responseBody.hasOwnProperty(\"error\")).to.be.true;",
+											"    pm.expect(responseBody.error).to.be.equal(\"Unauthorized\")",
+											"",
+											"",
+											"});",
+											"",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{studio_API_auth}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-Api-Secret-Key",
+										"value": "{{X-Api-Secret-Key}}",
+										"type": "text"
+									},
+									{
+										"key": "origin",
+										"value": "{{Origin}}",
+										"type": "text",
+										"disabled": true
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{studio-api-baseUrl}}app/oauth",
+									"host": [
+										"{{studio-api-baseUrl}}app"
+									],
+									"path": [
+										"oauth"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "origin not passed",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "X-Api-Secret-Key",
+												"value": "{{X-Api-Secret-Key}}",
+												"type": "text"
+											},
+											{
+												"key": "origin",
+												"value": "{{Origin}}",
+												"type": "text",
+												"disabled": true
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{studio-api-baseUrl}}app/oauth",
+											"host": [
+												"{{studio-api-baseUrl}}app"
+											],
+											"path": [
+												"oauth"
+											]
+										}
+									},
+									"status": "Unauthorized",
+									"code": 401,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "102"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"66-r2YWn0gLfxohQ3ljNDO/F2iqZDE\""
+										},
+										{
+											"key": "Date",
+											"value": "Wed, 15 Feb 2023 05:15:16 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"statusCode\": 401,\n    \"message\": [\n        \"This is CORS-enabled for a whitelisted domain.\"\n    ],\n    \"error\": \"Unauthorized\"\n}"
+								}
+							]
+						},
+						{
+							"name": "X-Api-secret-key not passed",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{studio_API_auth}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-Api-Secret-Key",
+										"value": "{{X-Api-Secret-Key}}",
+										"type": "text",
+										"disabled": true
+									},
+									{
+										"key": "origin",
+										"value": "{{Origin}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{studio-api-baseUrl}}app/oauth",
+									"host": [
+										"{{studio-api-baseUrl}}app"
+									],
+									"path": [
+										"oauth"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "origin not passed Copy",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "X-Api-Secret-Key",
+												"value": "{{X-Api-Secret-Key}}",
+												"type": "text",
+												"disabled": true
+											},
+											{
+												"key": "origin",
+												"value": "{{Origin}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{studio-api-baseUrl}}app/oauth",
+											"host": [
+												"{{studio-api-baseUrl}}app"
+											],
+											"path": [
+												"oauth"
+											]
+										}
+									},
+									"status": "Internal Server Error",
+									"code": 500,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "176"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"b0-oJrO/372TXfI9SXHP1RcSWMMCm8\""
+										},
+										{
+											"key": "Date",
+											"value": "Wed, 15 Feb 2023 05:16:02 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"statusCode\": 500,\n    \"timestamp\": \"2023-02-15T05:16:02.782Z\",\n    \"path\": \"/api/v1/app/oauth\",\n    \"message\": [\n        \"TypeError\",\n        \"Cannot read property 'split' of undefined\",\n        \"Internal server error\"\n    ]\n}"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "delete app",
+					"item": [
+						{
+							"name": "add new app to delete",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var responseBody = pm.response.json()",
+											"",
+											"pm.test(\"Status code is 201\", function () {",
+											"    pm.response.to.have.status(201);",
+											"});",
+											"pm.test('Response body should be an object', function () {",
+											"    pm.expect(typeof responseBody).to.equal(\"object\")",
+											"})",
+											"pm.test(\"Should be able to pass and have list of response body parameters\", function () {",
+											"    pm.expect(\"appId\" in responseBody).to.be.true;",
+											"    pm.expect(responseBody.hasOwnProperty(\"appName\")).to.be.true;",
+											"    pm.expect(responseBody.hasOwnProperty(\"apiKeySecret\")).to.be.true;",
+											"    pm.expect(responseBody.hasOwnProperty(\"edvId\")).to.be.true;",
+											"    pm.expect(responseBody.hasOwnProperty(\"walletAddress\")).to.be.true;",
+											"    pm.expect(responseBody.hasOwnProperty(\"description\")).to.be.true;",
+											"    pm.expect(responseBody.hasOwnProperty(\"whitelistedCors\")).to.be.true;",
+											"        pm.expect(responseBody.whitelistedCors).to.be.an(\"array\");",
+											"",
+											"    pm.expect(\"logoUrl\" in responseBody).to.be.true",
+											"    pm.environment.set(\"appId2\", responseBody.appId)",
+											"});",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{studio_API_auth}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "origin",
+										"value": "{{Origin}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"appName\":\"Demo test app2\",\n    \"description\":\"This is a test description for second app\",\n    \"whitelistedCors\":[\"http://localhost:3001\",\"*\"],\n      \"logoUrl\": \"http://image.png\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{studio-api-baseUrl}}app",
+									"host": [
+										"{{studio-api-baseUrl}}app"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "add new app to delete",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"appName\":\"Demo test app2\",\n    \"description\":\"This is a test description for second app\",\n    \"whitelistedCors\":[\"http://localhost:3001\",\"*\"],\n      \"logoUrl\": \"http://image.png\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{studio-api-baseUrl}}app",
+											"host": [
+												"{{studio-api-baseUrl}}app"
+											]
+										}
+									},
+									"status": "Created",
+									"code": 201,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "481"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"1e1-8QQUxi87um1iGG0N5xNeixdiSs8\""
+										},
+										{
+											"key": "Date",
+											"value": "Tue, 14 Feb 2023 07:13:36 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"appName\": \"Demo test app2\",\n    \"appId\": \"55b1b6eec52a40a30d82e867e229a02bdcbd\",\n    \"apiKeySecret\": \"afb9ee4e46433effea5f9fff781bf.46c72dc4ca0915aec2e6b112e7e3b6c8db01ca63435a341e70d2f6088c9a16e77f8e3785f8e7090e9763b2ba2910d41e4\",\n    \"edvId\": \"hs:apiservice:edv:2a89a40a-ab87-4778-9b97-92ae481a17fb\",\n    \"walletAddress\": \"hid15ujzdgqsvjf9hkv5kaxtee7lhucajdmhum2st7\",\n    \"description\": \"This is a test description for second app\",\n    \"whitelistedCors\": [\n        \"http://localhost:3001\",\n        \"*\"\n    ],\n    \"logoUrl\": \"http://image.png\"\n}"
+								}
+							]
+						},
+						{
+							"name": "wrong appid",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var responseBody = pm.response.json()",
+											"let pathValue= (pm.request.url.path).toString().split(',')",
+											"pathValue= pathValue[pathValue.length-1]",
+											"pm.test(\"Status code is 404\", function () {",
+											"    pm.response.to.have.status(404);",
+											"});",
+											"pm.test('Response body should be an object', function () {",
+											"    pm.expect(typeof responseBody).to.equal(\"object\")",
+											"})",
+											"pm.test(\"Should be able to fail as appId passed in request params is wrong\", function () {",
+											"    pm.expect(responseBody.hasOwnProperty(\"statusCode\")).to.be.true;",
+											"    pm.expect(responseBody.statusCode).to.be.a('number')",
+											"    pm.expect(responseBody.statusCode).to.be.equal(404)",
+											"    pm.expect(responseBody.hasOwnProperty(\"message\")).to.be.true;",
+											"    pm.expect(responseBody.message).to.be.an(\"array\");",
+											"    pm.expect(responseBody.message[0]).to.be.equal(`No App found for appId ${pathValue}`)",
+											"    pm.expect(responseBody.hasOwnProperty(\"error\")).to.be.true;",
+											"    pm.expect(responseBody.error).to.be.equal(\"Not Found\")",
+											"",
+											"});",
+											"",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{studio_API_auth}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "origin",
+										"value": "{{Origin}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{studio-api-baseUrl}}app/xyz",
+									"host": [
+										"{{studio-api-baseUrl}}app"
+									],
+									"path": [
+										"xyz"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "wrong appid",
+									"originalRequest": {
+										"method": "DELETE",
+										"header": [
+											{
+												"key": "origin",
+												"value": "{{Origin}}",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "{{studio-api-baseUrl}}app/xyz",
+											"host": [
+												"{{studio-api-baseUrl}}app"
+											],
+											"path": [
+												"xyz"
+											]
+										}
+									},
+									"status": "Not Found",
+									"code": 404,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "79"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"4f-hwej3sYGOSWDEueYS/NyDhdAXog\""
+										},
+										{
+											"key": "Date",
+											"value": "Wed, 15 Feb 2023 05:37:50 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"statusCode\": 404,\n    \"message\": [\n        \"No App found for appId xyz\"\n    ],\n    \"error\": \"Not Found\"\n}"
+								}
+							]
+						},
+						{
+							"name": "delete newly created app",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var responseBody = pm.response.json()",
+											"",
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"pm.test('Response body should be an object', function () {",
+											"    pm.expect(typeof responseBody).to.equal(\"object\")",
+											"})",
+											"pm.test(\"Should be able to pass and have list of response body parameters\", function () {",
+											"    pm.expect(\"appId\" in responseBody).to.be.true;",
+											"    pm.expect(responseBody.hasOwnProperty(\"appName\")).to.be.true;",
+											"    pm.expect(responseBody.hasOwnProperty(\"edvId\")).to.be.true;",
+											"    pm.expect(responseBody.hasOwnProperty(\"walletAddress\")).to.be.true;",
+											"    pm.expect(responseBody.hasOwnProperty(\"description\")).to.be.true;",
+											"    pm.expect(responseBody.hasOwnProperty(\"whitelistedCors\")).to.be.true;",
+											"    pm.expect(\"logoUrl\" in responseBody).to.be.true",
+											"    var appId2 = pm.environment.get('appId2')",
+											"    pm.expect(responseBody.appId).to.eql(appId2)",
+											"    pm.environment.unset(\"appId2\");",
+											"",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{studio_API_auth}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [
+									{
+										"key": "origin",
+										"value": "{{Origin}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{studio-api-baseUrl}}app/{{appId2}}",
+									"host": [
+										"{{studio-api-baseUrl}}app"
+									],
+									"path": [
+										"{{appId2}}"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "delete newly created app",
+									"originalRequest": {
+										"method": "DELETE",
+										"header": [],
+										"url": {
+											"raw": "{{studio-api-baseUrl}}app/{{appId2}}",
+											"host": [
+												"{{studio-api-baseUrl}}app"
+											],
+											"path": [
+												"{{appId2}}"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "336"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"150-kZ4nf4SHHY8LOpsH4iroi2ODs/4\""
+										},
+										{
+											"key": "Date",
+											"value": "Tue, 14 Feb 2023 07:14:50 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"appName\": \"Demo test app2\",\n    \"appId\": \"55b1b6eec52a40a30d82e867e229a02bdcbd\",\n    \"edvId\": \"hs:apiservice:edv:2a89a40a-ab87-4778-9b97-92ae481a17fb\",\n    \"walletAddress\": \"hid15ujzdgqsvjf9hkv5kaxtee7lhucajdmhum2st7\",\n    \"description\": \"This is a test description for second app\",\n    \"whitelistedCors\": [\n        \"http://localhost:3001\",\n        \"*\"\n    ],\n    \"logoUrl\": \"http://image.png\"\n}"
+								}
+							]
+						}
+					]
+				}
+			],
+			"auth": {
+				"type": "bearer",
+				"bearer": [
+					{
+						"key": "token",
+						"value": "{{studio_API_auth}}",
+						"type": "string"
+					}
+				]
+			},
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							"pm.environment.set(\"studio_API_auth\", \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiVmFyc2hhIGt1bWFyaSIsImVtYWlsIjoidmFyc2hha3VtYXJpMzcwQGdtYWlsLmNvbSIsImlkIjoiZGlkOmhpZDp0ZXN0bmV0Ono1bjM1YkJpTmhBRmVlZ1QyTUNUcmE0WEhSZkV1Mk5BNzlnaGFjZnRhZ3FZUyIsImlhdCI6MTY3NjQwMTM2MywiZXhwIjoxODg2NTIxMzYzfQ.zboCVCKejYdSZDHXDNYRJQWklVUi9WLx6ww6U2fCcsU\");"
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Dids",
+			"item": [
+				{
+					"name": "did list",
+					"item": [
+						{
+							"name": "failure case accesstoken not passed",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var responseBody = pm.response.json()",
+											"pm.test(\"Status code is 401\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});",
+											"pm.test('Response body should be an object', function () {",
+											"    pm.expect(typeof responseBody).to.equal(\"object\")",
+											"})",
+											"pm.test(\"Should be able to fail as access token is not passed in header \", function () {",
+											"    pm.expect(responseBody.hasOwnProperty(\"statusCode\")).to.be.true;",
+											"    pm.expect(responseBody.statusCode).to.be.a('number')",
+											"    pm.expect(responseBody.statusCode).to.be.equal(401)",
+											"    pm.expect(responseBody.hasOwnProperty(\"message\")).to.be.true;",
+											"    pm.expect(responseBody.message).to.be.an(\"array\");",
+											"    pm.expect(responseBody.message[0]).to.be.equal('Unauthorized')",
+											"    pm.expect(responseBody.message[1]).to.be.equal('Please pass access token')",
+											"    pm.expect(responseBody.hasOwnProperty(\"error\")).to.be.true;",
+											"    pm.expect(responseBody.error).to.be.equal(\"Unauthorized\")",
+											"",
+											"});",
+											"",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "origin",
+										"value": "{{Origin}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{studio-api-baseUrl}}did?page =1&limit=20",
+									"host": [
+										"{{studio-api-baseUrl}}did"
+									],
+									"query": [
+										{
+											"key": "page ",
+											"value": "1"
+										},
+										{
+											"key": "limit",
+											"value": "20"
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "failure case",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "origin",
+												"value": "{{Origin}}",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "{{studio-api-baseUrl}}did?page =1&limit=20",
+											"host": [
+												"{{studio-api-baseUrl}}did"
+											],
+											"query": [
+												{
+													"key": "page ",
+													"value": "1"
+												},
+												{
+													"key": "limit",
+													"value": "20"
+												}
+											]
+										}
+									},
+									"status": "Unauthorized",
+									"code": 401,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "95"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"5f-aJwKIlmGef0ljYKkUGy5EfswjQk\""
+										},
+										{
+											"key": "Date",
+											"value": "Tue, 14 Feb 2023 13:25:19 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"statusCode\": 401,\n    \"message\": [\n        \"Unauthorized\",\n        \"Please pass access token\"\n    ],\n    \"error\": \"Unauthorized\"\n}"
+								}
+							]
+						},
+						{
+							"name": "negative limit value",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var responseBody = pm.response.json()",
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"pm.test('Response body should be an object', function () {",
+											"    pm.expect(typeof responseBody).to.equal(\"object\")",
+											"})",
+											"pm.test(\"Should be able to fail limit is negative or 0\", function () {",
+											"    pm.expect(responseBody.hasOwnProperty(\"statusCode\")).to.be.true;",
+											"    pm.expect(responseBody.statusCode).to.be.a('number')",
+											"    pm.expect(responseBody.statusCode).to.be.equal(400)",
+											"    pm.expect(responseBody.hasOwnProperty(\"message\")).to.be.true;",
+											"    pm.expect(responseBody.message).to.be.an(\"array\");",
+											"    pm.expect(responseBody.message[0]).to.be.equal( \"limit must not be less than 1\")",
+											"    pm.expect(responseBody.hasOwnProperty(\"error\")).to.be.true;",
+											"    pm.expect(responseBody.error).to.be.equal(\"Bad Request\")",
+											"",
+											"});",
+											"",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_Token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "origin",
+										"value": "{{Origin}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{studio-api-baseUrl}}did?page =2&limit=-10",
+									"host": [
+										"{{studio-api-baseUrl}}did"
+									],
+									"query": [
+										{
+											"key": "page ",
+											"value": "2"
+										},
+										{
+											"key": "limit",
+											"value": "-10"
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "negative limit value",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "origin",
+												"value": "{{Origin}}",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "{{studio-api-baseUrl}}did?page =2&limit=-10",
+											"host": [
+												"{{studio-api-baseUrl}}did"
+											],
+											"query": [
+												{
+													"key": "page ",
+													"value": "2"
+												},
+												{
+													"key": "limit",
+													"value": "-10"
+												}
+											]
+										}
+									},
+									"status": "Bad Request",
+									"code": 400,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "84"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"54-JS1yHCty54pMtfB4VAZ/1jEtHHU\""
+										},
+										{
+											"key": "Date",
+											"value": "Wed, 15 Feb 2023 05:46:34 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"statusCode\": 400,\n    \"message\": [\n        \"limit must not be less than 1\"\n    ],\n    \"error\": \"Bad Request\"\n}"
+								}
+							]
+						},
+						{
+							"name": "negative page value",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var responseBody = pm.response.json()",
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"pm.test('Response body should be an object', function () {",
+											"    pm.expect(typeof responseBody).to.equal(\"object\")",
+											"})",
+											"pm.test(\"Should be able to fail page is negative or 0\", function () {",
+											"    pm.expect(responseBody.hasOwnProperty(\"statusCode\")).to.be.true;",
+											"    pm.expect(responseBody.statusCode).to.be.a('number')",
+											"    pm.expect(responseBody.statusCode).to.be.equal(400)",
+											"    pm.expect(responseBody.hasOwnProperty(\"message\")).to.be.true;",
+											"    pm.expect(responseBody.message).to.be.an(\"array\");",
+											"    pm.expect(responseBody.message[0]).to.be.equal( \"page must not be less than 1\")",
+											"    pm.expect(responseBody.hasOwnProperty(\"error\")).to.be.true;",
+											"    pm.expect(responseBody.error).to.be.equal(\"Bad Request\")",
+											"",
+											"});",
+											"",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_Token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "origin",
+										"value": "{{Origin}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{studio-api-baseUrl}}did?page=-1&limit=1",
+									"host": [
+										"{{studio-api-baseUrl}}did"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "-1"
+										},
+										{
+											"key": "limit",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "negative page value",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "origin",
+												"value": "{{Origin}}",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "{{studio-api-baseUrl}}did?page=-1&limit=1",
+											"host": [
+												"{{studio-api-baseUrl}}did"
+											],
+											"query": [
+												{
+													"key": "page",
+													"value": "-1"
+												},
+												{
+													"key": "limit",
+													"value": "1"
+												}
+											]
+										}
+									},
+									"status": "Bad Request",
+									"code": 400,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "83"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"53-rSgVu62K2+soCfxfUvVCPAJHgqI\""
+										},
+										{
+											"key": "Date",
+											"value": "Wed, 15 Feb 2023 05:55:46 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"statusCode\": 400,\n    \"message\": [\n        \"page must not be less than 1\"\n    ],\n    \"error\": \"Bad Request\"\n}"
+								}
+							]
+						},
+						{
+							"name": "get dids list",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var responseBody = pm.response.json()",
+											"var page;",
+											"var limit;",
+											"var urlString = pm.request.url.toString();",
+											"var did = pm.environment.get('did')",
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"pm.test('Response body should be an object', function () {",
+											"    pm.expect(typeof responseBody).to.equal(\"object\")",
+											"})",
+											"",
+											"pm.test(\"Should be able to pass and have list of apps in response body \", function () {",
+											"    try {",
+											"        page = urlString.match(/page=(\\d+)/)[1];",
+											"        page = (parseInt(page))",
+											"    } catch (e) {",
+											"        page = 1",
+											"    }",
+											"    try {",
+											"        limit = urlString.match(/limit=(\\d+)/)[1];",
+											"        limit = parseInt(limit)",
+											"    } catch (e) {",
+											"        limit = 10",
+											"    }",
+											"    pm.expect(responseBody.hasOwnProperty(\"totalCount\")).to.be.true;",
+											"    pm.expect(responseBody.totalCount).to.be.a('number')",
+											"    pm.expect(responseBody.hasOwnProperty(\"data\")).to.be.true;",
+											"    pm.expect(responseBody.data).to.be.an(\"array\");",
+											"    pm.expect(responseBody.data).to.have.length.of.at.most(limit);",
+											"",
+											"});",
+											"",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_Token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "origin",
+										"value": "{{Origin}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{studio-api-baseUrl}}did?page =1&limit=20",
+									"host": [
+										"{{studio-api-baseUrl}}did"
+									],
+									"query": [
+										{
+											"key": "page ",
+											"value": "1"
+										},
+										{
+											"key": "limit",
+											"value": "20"
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "get dids list",
+									"originalRequest": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{studio-api-baseUrl}}did",
+											"host": [
+												"{{studio-api-baseUrl}}did"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "26"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"1a-mD7rKsjGc7KBh+/NvDiYbunPMl4\""
+										},
+										{
+											"key": "Date",
+											"value": "Tue, 14 Feb 2023 07:26:40 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"totalCount\": 0,\n    \"data\": []\n}"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "create did",
+					"item": [
+						{
+							"name": "namespace empty",
+							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var responseBody = pm.response.json()",
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"pm.test('Response body should be an object', function () {",
+											"    pm.expect(typeof responseBody).to.equal(\"object\")",
+											"})",
+											"pm.test(\"Should be able to fail as namespace passed in request body is null or empty\", function () {",
+											"    pm.expect(responseBody.hasOwnProperty(\"statusCode\")).to.be.true;",
+											"    pm.expect(responseBody.statusCode).to.be.a('number')",
+											"    pm.expect(responseBody.statusCode).to.be.equal(400)",
+											"    pm.expect(responseBody.hasOwnProperty(\"message\")).to.be.true;",
+											"    pm.expect(responseBody.message).to.be.an(\"array\");",
+											"    pm.expect(responseBody.message[0]).to.be.equal(\"namespace should not be empty\")",
+											"    pm.expect(responseBody.hasOwnProperty(\"error\")).to.be.true;",
+											"    pm.expect(responseBody.error).to.be.equal(\"Bad Request\")",
+											"",
+											"});",
+											"",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_Token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "origin",
+										"value": "{{Origin}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"namespace\": \" \"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{studio-api-baseUrl}}did",
+									"host": [
+										"{{studio-api-baseUrl}}did"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "namespace empty",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "origin",
+												"value": "{{Origin}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"namespace\": \" \"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{studio-api-baseUrl}}did",
+											"host": [
+												"{{studio-api-baseUrl}}did"
+											]
+										}
+									},
+									"status": "Unauthorized",
+									"code": 401,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "145"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"91-wCPFUuDaJv8kSaV0xil3UeA9N1Q\""
+										},
+										{
+											"key": "Date",
+											"value": "Tue, 14 Feb 2023 18:04:41 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"statusCode\": 401,\n    \"message\": [\n        {\n            \"name\": \"TokenExpiredError\",\n            \"message\": \"jwt expired\",\n            \"expiredAt\": \"2023-02-14T16:21:49.000Z\"\n        }\n    ],\n    \"error\": \"Unauthorized\"\n}"
+								}
+							]
+						},
+						{
+							"name": "wrong options.keyType",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var responseBody = pm.response.json()",
+											"var methodSpecificId= JSON.parse(pm.request.body.raw).methodSpecificId",
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"pm.test('Response body should be an object', function () {",
+											"    pm.expect(typeof responseBody).to.equal(\"object\")",
+											"})",
+											"pm.test(\"Should be able to fail as namespace options.keyType is passed in request body but its value is empty or other than mentioned in enum\", function () {",
+											"    pm.expect(responseBody.hasOwnProperty(\"statusCode\")).to.be.true;",
+											"    pm.expect(responseBody.statusCode).to.be.a('number')",
+											"    pm.expect(responseBody.statusCode).to.be.equal(400)",
+											"    pm.expect(responseBody.hasOwnProperty(\"message\")).to.be.true;",
+											"    pm.expect(responseBody.message).to.be.an(\"array\");",
+											"    pm.expect(responseBody.message[0]).to.be.equal( \"options.keyType must be one of the following values: EcdsaSecp256k1RecoveryMethod2020, Ed25519VerificationKey2020\")",
+											"    pm.expect(responseBody.hasOwnProperty(\"error\")).to.be.true;",
+											"    pm.expect(responseBody.error).to.be.equal(\"Bad Request\")",
+											"",
+											"});",
+											"",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_Token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "origin",
+										"value": "{{Origin}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"namespace\": \"testnet\",\n    \"methodSpecificId\":\"0xe8E06659F296D7c0561f41250A8a2674E83e8B98\",\n    \"options\":{\"keyType\":\"\"}\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{studio-api-baseUrl}}did",
+									"host": [
+										"{{studio-api-baseUrl}}did"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "wrong methodSpecificId Copy",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "origin",
+												"value": "{{Origin}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"namespace\": \"testnet\",\n    \"methodSpecificId\":\"xyzertyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyygbbkkkjhglkjhv\",\n    \"options\":{\"keyType\":\"\"}\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{studio-api-baseUrl}}did",
+											"host": [
+												"{{studio-api-baseUrl}}did"
+											]
+										}
+									},
+									"status": "Bad Request",
+									"code": 400,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "168"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"a8-XQJLBpPBK+23bZHEZbM+zIdb57g\""
+										},
+										{
+											"key": "Date",
+											"value": "Tue, 14 Feb 2023 18:26:36 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"statusCode\": 400,\n    \"message\": [\n        \"options.keyType must be one of the following values: EcdsaSecp256k1RecoveryMethod2020, Ed25519VerificationKey2020\"\n    ],\n    \"error\": \"Bad Request\"\n}"
+								}
+							]
+						},
+						{
+							"name": "create did",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var responseBody = pm.response.json()",
+											"pm.test(\"Status code is 201\", function () {",
+											"    pm.response.to.have.status(201);",
+											"});",
+											"pm.test('Response body should be an object', function () {",
+											"    pm.expect(typeof responseBody).to.equal(\"object\")",
+											"})",
+											"pm.test(\"Should be able to pass and have list of response body parameters\", function () {",
+											"    pm.expect(\"did\" in responseBody).to.be.true;",
+											"    pm.expect(responseBody.hasOwnProperty(\"registrationStatus\")).to.be.true;",
+											"    pm.expect(responseBody.hasOwnProperty(\"transactionHash\")).to.be.true;",
+											"    pm.expect(responseBody.hasOwnProperty(\"metaData\")).to.be.true;",
+											"    pm.expect(responseBody.metaData).to.be.an(\"object\")",
+											"    pm.expect((responseBody.metaData).hasOwnProperty(\"didDocument\")).to.be.true;",
+											"    pm.expect((responseBody.metaData.didDocument).hasOwnProperty(\"@context\")).to.be.true;",
+											"    pm.expect(responseBody.metaData.didDocument[\"@context\"]).to.be.an('array');",
+											"    pm.expect((responseBody.metaData.didDocument).hasOwnProperty(\"id\")).to.be.true;",
+											"    pm.expect(responseBody.metaData.didDocument[\"id\"]).to.be.a('string');",
+											"    pm.expect((responseBody.metaData.didDocument).hasOwnProperty(\"controller\")).to.be.true;",
+											"    pm.expect(responseBody.metaData.didDocument[\"controller\"]).to.be.an('array');",
+											"    pm.expect((responseBody.metaData.didDocument).hasOwnProperty(\"alsoKnownAs\")).to.be.true;",
+											"    pm.expect(responseBody.metaData.didDocument[\"alsoKnownAs\"]).to.be.an('array');",
+											"    pm.expect((responseBody.metaData.didDocument).hasOwnProperty(\"verificationMethod\")).to.be.true;",
+											"    pm.expect(responseBody.metaData.didDocument[\"verificationMethod\"]).to.be.an('array');",
+											"    pm.expect((responseBody.metaData.didDocument[\"verificationMethod\"][0])).to.be.an('object')",
+											"    pm.expect((responseBody.metaData.didDocument.verificationMethod[0]).hasOwnProperty(\"id\")).to.be.true;",
+											"    pm.expect((responseBody.metaData.didDocument.verificationMethod[0]).hasOwnProperty(\"type\")).to.be.true;",
+											"    pm.expect((responseBody.metaData.didDocument.verificationMethod[0]).hasOwnProperty(\"controller\")).to.be.true;",
+											"    pm.expect((responseBody.metaData.didDocument.verificationMethod[0]).hasOwnProperty(\"publicKeyMultibase\")).to.be.true;",
+											"",
+											"    pm.expect((responseBody.metaData.didDocument).hasOwnProperty(\"authentication\")).to.be.true;",
+											"    pm.expect(responseBody.metaData.didDocument[\"authentication\"]).to.be.an('array');",
+											"    pm.expect((responseBody.metaData.didDocument).hasOwnProperty(\"assertionMethod\")).to.be.true;",
+											"    pm.expect(responseBody.metaData.didDocument[\"assertionMethod\"]).to.be.an('array');",
+											"    pm.expect((responseBody.metaData.didDocument).hasOwnProperty(\"keyAgreement\")).to.be.true;",
+											"    pm.expect(responseBody.metaData.didDocument[\"keyAgreement\"]).to.be.an('array');",
+											"    pm.expect((responseBody.metaData.didDocument).hasOwnProperty(\"capabilityInvocation\")).to.be.true;",
+											"    pm.expect(responseBody.metaData.didDocument[\"capabilityInvocation\"]).to.be.an('array');",
+											"    pm.expect((responseBody.metaData.didDocument).hasOwnProperty(\"capabilityDelegation\")).to.be.true;",
+											"    pm.expect(responseBody.metaData.didDocument[\"capabilityDelegation\"]).to.be.an('array');",
+											"    pm.expect((responseBody.metaData.didDocument).hasOwnProperty(\"service\")).to.be.true;",
+											"    pm.expect(responseBody.metaData.didDocument[\"service\"]).to.be.an('array');",
+											"    pm.environment.set(\"did\", responseBody.did)",
+											"    pm.environment.set(\"didDoc\", JSON.stringify(responseBody.metaData.didDocument))",
+											"});",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											"setTimeout(function() {",
+											"    console.log(\"Waited for 30 seconds\");",
+											"}, 30000);"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_Token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "origin",
+										"value": "{{Origin}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"namespace\": \"testnet\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{studio-api-baseUrl}}did",
+									"host": [
+										"{{studio-api-baseUrl}}did"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "create did",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "origin",
+												"value": "{{Origin}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"namespace\": \"testnet\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{studio-api-baseUrl}}did",
+											"host": [
+												"{{studio-api-baseUrl}}did"
+											]
+										}
+									},
+									"status": "Created",
+									"code": 201,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "1241"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"4d9-xp59QUl1+wuU1NI/MtUUjKpErYo\""
+										},
+										{
+											"key": "Date",
+											"value": "Tue, 14 Feb 2023 09:49:56 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"did\": \"did:hid:testnet:z8iDJSpsFtqxToAhRceRLzYfCGsUZdAknsaqZMeuFKRJ9\",\n    \"registrationStatus\": \"COMPLETED\",\n    \"transactionHash\": \"67F214C484D4867674890E7577AE22D5BCB4DFF650D0F11F0F96F762A61235DC\",\n    \"metaData\": {\n        \"didDocument\": {\n            \"@context\": [\n                \"https://www.w3.org/ns/did/v1\"\n            ],\n            \"id\": \"did:hid:testnet:z8iDJSpsFtqxToAhRceRLzYfCGsUZdAknsaqZMeuFKRJ9\",\n            \"controller\": [\n                \"did:hid:testnet:z8iDJSpsFtqxToAhRceRLzYfCGsUZdAknsaqZMeuFKRJ9\"\n            ],\n            \"alsoKnownAs\": [\n                \"did:hid:testnet:z8iDJSpsFtqxToAhRceRLzYfCGsUZdAknsaqZMeuFKRJ9\"\n            ],\n            \"verificationMethod\": [\n                {\n                    \"id\": \"did:hid:testnet:z8iDJSpsFtqxToAhRceRLzYfCGsUZdAknsaqZMeuFKRJ9#key-1\",\n                    \"type\": \"Ed25519VerificationKey2020\",\n                    \"controller\": \"did:hid:testnet:z8iDJSpsFtqxToAhRceRLzYfCGsUZdAknsaqZMeuFKRJ9\",\n                    \"publicKeyMultibase\": \"z8iDJSpsFtqxToAhRceRLzYfCGsUZdAknsaqZMeuFKRJ9\"\n                }\n            ],\n            \"authentication\": [\n                \"did:hid:testnet:z8iDJSpsFtqxToAhRceRLzYfCGsUZdAknsaqZMeuFKRJ9#key-1\"\n            ],\n            \"assertionMethod\": [\n                \"did:hid:testnet:z8iDJSpsFtqxToAhRceRLzYfCGsUZdAknsaqZMeuFKRJ9#key-1\"\n            ],\n            \"keyAgreement\": [\n                \"did:hid:testnet:z8iDJSpsFtqxToAhRceRLzYfCGsUZdAknsaqZMeuFKRJ9#key-1\"\n            ],\n            \"capabilityInvocation\": [\n                \"did:hid:testnet:z8iDJSpsFtqxToAhRceRLzYfCGsUZdAknsaqZMeuFKRJ9#key-1\"\n            ],\n            \"capabilityDelegation\": [\n                \"did:hid:testnet:z8iDJSpsFtqxToAhRceRLzYfCGsUZdAknsaqZMeuFKRJ9#key-1\"\n            ],\n            \"service\": []\n        }\n    }\n}"
+								}
+							]
+						},
+						{
+							"name": "wrong methodSpecificId",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var responseBody = pm.response.json()",
+											"var methodSpecificId= JSON.parse(pm.request.body.raw).methodSpecificId",
+											"let gasUsed = responseBody.message[0]",
+											"const regex = /gas used: '(\\d+)'/;",
+											"const match = gasUsed.match(regex);",
+											" gasUsed = match[1];",
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"pm.test('Response body should be an object', function () {",
+											"    pm.expect(typeof responseBody).to.equal(\"object\")",
+											"})",
+											"pm.test(\"Should be able to fail as methodSpecificId passed in request body length is less than 32 character\", function () {",
+											"    pm.expect(responseBody.hasOwnProperty(\"statusCode\")).to.be.true;",
+											"    pm.expect(responseBody.statusCode).to.be.a('number')",
+											"    pm.expect(responseBody.statusCode).to.be.equal(400)",
+											"    pm.expect(responseBody.hasOwnProperty(\"message\")).to.be.true;",
+											"    pm.expect(responseBody.message).to.be.an(\"array\");",
+											"    pm.expect(responseBody.message[0]).to.be.equal( `Query failed with (6): rpc error: code = Unknown desc = failed to execute message; message index: 0: method-specific-id should be an alphanumeric string with minimum 32 characters, recieved: ${methodSpecificId}: Invalid DID method specific Id [/home/arnab/code/research/hid-node/x/ssi/verification/common_document_checks.go:99] With gas wanted: '0' and gas used: '${gasUsed}' : unknown request`)",
+											"    pm.expect(responseBody.hasOwnProperty(\"error\")).to.be.true;",
+											"    pm.expect(responseBody.error).to.be.equal(\"Bad Request\")",
+											"",
+											"});",
+											"",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								},
+								{
+									"listen": "prerequest",
+									"script": {
+										"exec": [
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_Token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "origin",
+										"value": "{{Origin}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"namespace\": \"testnet\",\n    \"methodSpecificId\":\"xyz\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{studio-api-baseUrl}}did",
+									"host": [
+										"{{studio-api-baseUrl}}did"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "namespace empty Copy",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "origin",
+												"value": "{{Origin}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"namespace\": \"testnet\",\n    \"methodSpecificId\":\"xyz\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{studio-api-baseUrl}}did",
+											"host": [
+												"{{studio-api-baseUrl}}did"
+											]
+										}
+									},
+									"status": "Bad Request",
+									"code": 400,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "427"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"1ab-bqF4w3P28eLiMB3Vak2k97JbXqA\""
+										},
+										{
+											"key": "Date",
+											"value": "Tue, 14 Feb 2023 18:20:25 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"statusCode\": 400,\n    \"message\": [\n        \"Query failed with (6): rpc error: code = Unknown desc = failed to execute message; message index: 0: method-specific-id should be an alphanumeric string with minimum 32 characters, recieved: xyz: Invalid DID method specific Id [/home/arnab/code/research/hid-node/x/ssi/verification/common_document_checks.go:99] With gas wanted: '0' and gas used: '47967' : unknown request\"\n    ],\n    \"error\": \"Bad Request\"\n}"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "update did",
+					"item": [
+						{
+							"name": "didDoc is empty",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var responseBody = pm.response.json()",
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"pm.test('Response body should be an object', function () {",
+											"    pm.expect(typeof responseBody).to.equal(\"object\")",
+											"})",
+											"pm.test(\"Should be able to fail as didDocument passed in body is empty object\", function () {",
+											"    pm.expect(responseBody.hasOwnProperty(\"statusCode\")).to.be.true;",
+											"    pm.expect(responseBody.statusCode).to.be.a('number')",
+											"    pm.expect(responseBody.statusCode).to.be.equal(400)",
+											"    pm.expect(responseBody.hasOwnProperty(\"message\")).to.be.true;",
+											"    pm.expect(responseBody.message).to.be.an(\"array\");",
+											"    pm.expect(responseBody.message[0]).to.be.equal(\"didDocument.@context must be an array\")",
+											"    pm.expect(responseBody.message[1]).to.be.equal(\"didDocument.controller must be an array\")",
+											"",
+											"    pm.expect(responseBody.message[2]).to.be.equal(\"didDocument.alsoKnownAs must be an array\")",
+											"    pm.expect(responseBody.message[3]).to.be.equal(\"didDocument.authentication must be an array\")",
+											"    pm.expect(responseBody.message[4]).to.be.equal(\"didDocument.assertionMethod must be an array\")",
+											"    pm.expect(responseBody.message[5]).to.be.equal(\"didDocument.keyAgreement must be an array\")",
+											"    pm.expect(responseBody.message[6]).to.be.equal(\"didDocument.capabilityInvocation must be an array\")",
+											"    pm.expect(responseBody.message[7]).to.be.equal(\"didDocument.capabilityDelegation must be an array\")",
+											"    pm.expect(responseBody.message[8]).to.be.equal(\"didDocument.service must be an array\")",
+											"",
+											"    pm.expect(responseBody.hasOwnProperty(\"error\")).to.be.true;",
+											"    pm.expect(responseBody.error).to.be.equal(\"Bad Request\")",
+											"",
+											"});",
+											"",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_Token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "origin",
+										"value": "{{Origin}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"didDocument\": {},\n    \"deactivate\": false,\n    \"verificationMethodId\":\"{{did}}#key-1\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{studio-api-baseUrl}}did",
+									"host": [
+										"{{studio-api-baseUrl}}did"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "didDoc is empty",
+									"originalRequest": {
+										"method": "PATCH",
+										"header": [
+											{
+												"key": "origin",
+												"value": "{{Origin}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"didDocument\": {},\n    \"deactivate\": false,\n    \"verificationMethodId\":\"{{did}}#key-1\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{studio-api-baseUrl}}did",
+											"host": [
+												"{{studio-api-baseUrl}}did"
+											]
+										}
+									},
+									"status": "Bad Request",
+									"code": 400,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "457"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"1c9-cXdyXj5pdGxNTTL4WkmFb5Ow+qI\""
+										},
+										{
+											"key": "Date",
+											"value": "Tue, 14 Feb 2023 18:40:05 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"statusCode\": 400,\n    \"message\": [\n        \"didDocument.@context must be an array\",\n        \"didDocument.controller must be an array\",\n        \"didDocument.alsoKnownAs must be an array\",\n        \"didDocument.authentication must be an array\",\n        \"didDocument.assertionMethod must be an array\",\n        \"didDocument.keyAgreement must be an array\",\n        \"didDocument.capabilityInvocation must be an array\",\n        \"didDocument.capabilityDelegation must be an array\",\n        \"didDocument.service must be an array\"\n    ],\n    \"error\": \"Bad Request\"\n}"
+								}
+							]
+						},
+						{
+							"name": "empty verificationMethodId",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var responseBody = pm.response.json()",
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"pm.test('Response body should be an object', function () {",
+											"    pm.expect(typeof responseBody).to.equal(\"object\")",
+											"})",
+											"pm.test(\"Should be able to fail as verificationMethodId passed in body is empty\", function () {",
+											"    pm.expect(responseBody.hasOwnProperty(\"statusCode\")).to.be.true;",
+											"    pm.expect(responseBody.statusCode).to.be.a('number')",
+											"    pm.expect(responseBody.statusCode).to.be.equal(400)",
+											"    pm.expect(responseBody.hasOwnProperty(\"message\")).to.be.true;",
+											"    pm.expect(responseBody.message).to.be.an(\"array\");",
+											"    pm.expect(responseBody.message[0]).to.be.equal(\"verificationMethodId cannot be empty\")",
+											"    pm.expect(responseBody.hasOwnProperty(\"error\")).to.be.true;",
+											"    pm.expect(responseBody.error).to.be.equal(\"Bad Request\")",
+											"",
+											"});",
+											"",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_Token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "origin",
+										"value": "{{Origin}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"didDocument\": {{didDoc}},\n    \"deactivate\": false,\n    \"verificationMethodId\":\"\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{studio-api-baseUrl}}did",
+									"host": [
+										"{{studio-api-baseUrl}}did"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "empty verificationMethodId",
+									"originalRequest": {
+										"method": "PATCH",
+										"header": [
+											{
+												"key": "origin",
+												"value": "{{Origin}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"didDocument\": {{didDoc}},\n    \"deactivate\": false,\n    \"verificationMethodId\":\"\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{studio-api-baseUrl}}did",
+											"host": [
+												"{{studio-api-baseUrl}}did"
+											]
+										}
+									},
+									"status": "Bad Request",
+									"code": 400,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "91"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"5b-zP9LI+Oe9F8CDquWcPNgIxi8yfo\""
+										},
+										{
+											"key": "Date",
+											"value": "Tue, 14 Feb 2023 18:43:48 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"statusCode\": 400,\n    \"message\": [\n        \"verificationMethodId cannot be empty\"\n    ],\n    \"error\": \"Bad Request\"\n}"
+								}
+							]
+						},
+						{
+							"name": "updated did",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var responseBody = pm.response.json()",
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"pm.test('Response body should be an object', function () {",
+											"    pm.expect(typeof responseBody).to.equal(\"object\")",
+											"})",
+											"pm.test(\"Should be able to pass and have list of field in response body\", function () {",
+											"    pm.expect(\"transactionHash\" in responseBody).to.be.true;",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_Token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "origin",
+										"value": "{{Origin}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"didDocument\": {{didDoc}},\n    \"deactivate\": false,\n    \"verificationMethodId\":\"{{did}}#key-1\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{studio-api-baseUrl}}did",
+									"host": [
+										"{{studio-api-baseUrl}}did"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "updated did",
+									"originalRequest": {
+										"method": "PATCH",
+										"header": [
+											{
+												"key": "origin",
+												"value": "{{Origin}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"didDocument\": {{didDoc}},\n    \"deactivate\": false,\n    \"verificationMethodId\":\"{{did}}#key-1\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{studio-api-baseUrl}}did",
+											"host": [
+												"{{studio-api-baseUrl}}did"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "86"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"56-kFbJoYsQAiM379BDTDhabjYH7Sg\""
+										},
+										{
+											"key": "Date",
+											"value": "Tue, 14 Feb 2023 09:50:55 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"transactionHash\": \"BF6713D8A256E981B5E99FCE75D5DCBE0783DC1452A70E08C35F096CB11A0F79\"\n}"
+								}
+							]
+						},
+						{
+							"name": "resolve did",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var responseBody = pm.response.json()",
+											"pm.test(\"Status code is 200\", function () {",
+											"",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"pm.test('Response body should be an object', function () {",
+											"    pm.expect(typeof responseBody).to.equal(\"object\")",
+											"})",
+											"pm.test(\"Should be able to pass and have list of response body parameters\", function () {",
+											"    pm.expect(\"didDocument\" in responseBody).to.be.true;",
+											"    pm.expect(responseBody.didDocument).to.be.an(\"object\")",
+											"    pm.expect(responseBody.hasOwnProperty(\"didDocumentMetadata\")).to.be.true",
+											"    pm.expect(responseBody.didDocumentMetadata).to.be.an(\"object\")",
+											"",
+											"    pm.expect((responseBody.didDocumentMetadata).hasOwnProperty(\"created\")).to.be.true;",
+											"    pm.expect((responseBody.didDocumentMetadata).hasOwnProperty(\"updated\")).to.be.true;",
+											"    pm.expect((responseBody.didDocumentMetadata).hasOwnProperty(\"deactivated\")).to.be.true;",
+											"    pm.expect(responseBody.didDocumentMetadata.deactivated).to.be.a(\"boolean\")",
+											"    pm.expect((responseBody.didDocumentMetadata).hasOwnProperty(\"versionId\")).to.be.true;",
+											"    pm.expect((responseBody.didDocumentMetadata.deactivated)).to.be.equal(false)",
+											"    pm.expect((responseBody.didDocument).hasOwnProperty(\"@context\")).to.be.true;",
+											"    pm.expect(responseBody.didDocument[\"@context\"]).to.be.an('array');",
+											"    pm.expect((responseBody.didDocument).hasOwnProperty(\"id\")).to.be.true;",
+											"    pm.expect(responseBody.didDocument[\"id\"]).to.be.a('string');",
+											"    pm.expect((responseBody.didDocument).hasOwnProperty(\"controller\")).to.be.true;",
+											"    pm.expect(responseBody.didDocument[\"controller\"]).to.be.an('array');",
+											"    pm.expect((responseBody.didDocument).hasOwnProperty(\"alsoKnownAs\")).to.be.true;",
+											"    pm.expect(responseBody.didDocument[\"alsoKnownAs\"]).to.be.an('array');",
+											"    pm.expect((responseBody.didDocument).hasOwnProperty(\"verificationMethod\")).to.be.true;",
+											"    pm.expect(responseBody.didDocument[\"verificationMethod\"]).to.be.an('array');",
+											"    pm.expect((responseBody.didDocument[\"verificationMethod\"][0])).to.be.an('object')",
+											"    pm.expect((responseBody.didDocument.verificationMethod[0]).hasOwnProperty(\"id\")).to.be.true;",
+											"    pm.expect((responseBody.didDocument.verificationMethod[0]).hasOwnProperty(\"type\")).to.be.true;",
+											"    pm.expect((responseBody.didDocument.verificationMethod[0]).hasOwnProperty(\"controller\")).to.be.true;",
+											"    pm.expect((responseBody.didDocument.verificationMethod[0]).hasOwnProperty(\"publicKeyMultibase\")).to.be.true;",
+											"    pm.expect((responseBody.didDocument).hasOwnProperty(\"authentication\")).to.be.true;",
+											"    pm.expect(responseBody.didDocument[\"authentication\"]).to.be.an('array');",
+											"    pm.expect((responseBody.didDocument).hasOwnProperty(\"assertionMethod\")).to.be.true;",
+											"    pm.expect(responseBody.didDocument[\"assertionMethod\"]).to.be.an('array');",
+											"    pm.expect((responseBody.didDocument).hasOwnProperty(\"keyAgreement\")).to.be.true;",
+											"    pm.expect(responseBody.didDocument[\"keyAgreement\"]).to.be.an('array');",
+											"    pm.expect((responseBody.didDocument).hasOwnProperty(\"capabilityInvocation\")).to.be.true;",
+											"    pm.expect(responseBody.didDocument[\"capabilityInvocation\"]).to.be.an('array');",
+											"    pm.expect((responseBody.didDocument).hasOwnProperty(\"capabilityDelegation\")).to.be.true;",
+											"    pm.expect(responseBody.didDocument[\"capabilityDelegation\"]).to.be.an('array');",
+											"    pm.expect((responseBody.didDocument).hasOwnProperty(\"service\")).to.be.true;",
+											"    pm.expect(responseBody.didDocument[\"service\"]).to.be.an('array');",
+											"});",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_Token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "origin",
+										"value": "{{Origin}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{studio-api-baseUrl}}did/{{did}}",
+									"host": [
+										"{{studio-api-baseUrl}}did"
+									],
+									"path": [
+										"{{did}}"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "resolve did",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "origin",
+												"value": "{{Origin}}",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "{{studio-api-baseUrl}}did/{{did}}",
+											"host": [
+												"{{studio-api-baseUrl}}did"
+											],
+											"path": [
+												"{{did}}"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "1254"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"4e6-ek1YPHJEXb4do4IunlRX4Cxsq0g\""
+										},
+										{
+											"key": "Date",
+											"value": "Tue, 14 Feb 2023 09:50:12 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"didDocument\": {\n        \"@context\": [\n            \"https://www.w3.org/ns/did/v1\"\n        ],\n        \"id\": \"did:hid:testnet:z8iDJSpsFtqxToAhRceRLzYfCGsUZdAknsaqZMeuFKRJ9\",\n        \"controller\": [\n            \"did:hid:testnet:z8iDJSpsFtqxToAhRceRLzYfCGsUZdAknsaqZMeuFKRJ9\"\n        ],\n        \"alsoKnownAs\": [\n            \"did:hid:testnet:z8iDJSpsFtqxToAhRceRLzYfCGsUZdAknsaqZMeuFKRJ9\"\n        ],\n        \"verificationMethod\": [\n            {\n                \"id\": \"did:hid:testnet:z8iDJSpsFtqxToAhRceRLzYfCGsUZdAknsaqZMeuFKRJ9#key-1\",\n                \"type\": \"Ed25519VerificationKey2020\",\n                \"controller\": \"did:hid:testnet:z8iDJSpsFtqxToAhRceRLzYfCGsUZdAknsaqZMeuFKRJ9\",\n                \"publicKeyMultibase\": \"z8iDJSpsFtqxToAhRceRLzYfCGsUZdAknsaqZMeuFKRJ9\",\n                \"blockchainAccountId\": \"\"\n            }\n        ],\n        \"authentication\": [\n            \"did:hid:testnet:z8iDJSpsFtqxToAhRceRLzYfCGsUZdAknsaqZMeuFKRJ9#key-1\"\n        ],\n        \"assertionMethod\": [\n            \"did:hid:testnet:z8iDJSpsFtqxToAhRceRLzYfCGsUZdAknsaqZMeuFKRJ9#key-1\"\n        ],\n        \"keyAgreement\": [\n            \"did:hid:testnet:z8iDJSpsFtqxToAhRceRLzYfCGsUZdAknsaqZMeuFKRJ9#key-1\"\n        ],\n        \"capabilityInvocation\": [\n            \"did:hid:testnet:z8iDJSpsFtqxToAhRceRLzYfCGsUZdAknsaqZMeuFKRJ9#key-1\"\n        ],\n        \"capabilityDelegation\": [\n            \"did:hid:testnet:z8iDJSpsFtqxToAhRceRLzYfCGsUZdAknsaqZMeuFKRJ9#key-1\"\n        ],\n        \"service\": []\n    },\n    \"didDocumentMetadata\": {\n        \"created\": \"2023-02-14T09:49:47Z\",\n        \"updated\": \"2023-02-14T09:49:47Z\",\n        \"deactivated\": false,\n        \"versionId\": \"67F214C484D4867674890E7577AE22D5BCB4DFF650D0F11F0F96F762A61235DC\"\n    }\n}"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "diactivate did",
+					"item": [
+						{
+							"name": "new did to deactivate",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var responseBody = pm.response.json()",
+											"",
+											"pm.test(\"Status code is 201\", function () {",
+											"",
+											"    pm.response.to.have.status(201);",
+											"});",
+											"pm.test('Response body should be an object', function () {",
+											"    pm.expect(typeof responseBody).to.equal(\"object\")",
+											"})",
+											"pm.test(\"Should be able to pass and have list of response body parameters\", function () {",
+											"    pm.expect(\"did\" in responseBody).to.be.true;",
+											"    pm.expect(responseBody.hasOwnProperty(\"registrationStatus\")).to.be.true;",
+											"    pm.expect(responseBody.hasOwnProperty(\"transactionHash\")).to.be.true;",
+											"    pm.expect(responseBody.hasOwnProperty(\"metaData\")).to.be.true;",
+											"    pm.expect(responseBody.metaData).to.be.an(\"object\")",
+											"    pm.expect((responseBody.metaData).hasOwnProperty(\"didDocument\")).to.be.true;",
+											"    pm.expect((responseBody.metaData.didDocument).hasOwnProperty(\"@context\")).to.be.true;",
+											"    pm.expect(responseBody.metaData.didDocument[\"@context\"]).to.be.an('array');",
+											"    pm.expect((responseBody.metaData.didDocument).hasOwnProperty(\"id\")).to.be.true;",
+											"    pm.expect(responseBody.metaData.didDocument[\"id\"]).to.be.a('string');",
+											"    pm.expect((responseBody.metaData.didDocument).hasOwnProperty(\"controller\")).to.be.true;",
+											"    pm.expect(responseBody.metaData.didDocument[\"controller\"]).to.be.an('array');",
+											"    pm.expect((responseBody.metaData.didDocument).hasOwnProperty(\"alsoKnownAs\")).to.be.true;",
+											"    pm.expect(responseBody.metaData.didDocument[\"alsoKnownAs\"]).to.be.an('array');",
+											"    pm.expect((responseBody.metaData.didDocument).hasOwnProperty(\"verificationMethod\")).to.be.true;",
+											"    pm.expect(responseBody.metaData.didDocument[\"verificationMethod\"]).to.be.an('array');",
+											"    pm.expect((responseBody.metaData.didDocument[\"verificationMethod\"][0])).to.be.an('object')",
+											"    pm.expect((responseBody.metaData.didDocument.verificationMethod[0]).hasOwnProperty(\"id\")).to.be.true;",
+											"    pm.expect((responseBody.metaData.didDocument.verificationMethod[0]).hasOwnProperty(\"type\")).to.be.true;",
+											"    pm.expect((responseBody.metaData.didDocument.verificationMethod[0]).hasOwnProperty(\"controller\")).to.be.true;",
+											"    pm.expect((responseBody.metaData.didDocument.verificationMethod[0]).hasOwnProperty(\"publicKeyMultibase\")).to.be.true;",
+											"",
+											"    pm.expect((responseBody.metaData.didDocument).hasOwnProperty(\"authentication\")).to.be.true;",
+											"    pm.expect(responseBody.metaData.didDocument[\"authentication\"]).to.be.an('array');",
+											"    pm.expect((responseBody.metaData.didDocument).hasOwnProperty(\"assertionMethod\")).to.be.true;",
+											"    pm.expect(responseBody.metaData.didDocument[\"assertionMethod\"]).to.be.an('array');",
+											"    pm.expect((responseBody.metaData.didDocument).hasOwnProperty(\"keyAgreement\")).to.be.true;",
+											"    pm.expect(responseBody.metaData.didDocument[\"keyAgreement\"]).to.be.an('array');",
+											"    pm.expect((responseBody.metaData.didDocument).hasOwnProperty(\"capabilityInvocation\")).to.be.true;",
+											"    pm.expect(responseBody.metaData.didDocument[\"capabilityInvocation\"]).to.be.an('array');",
+											"    pm.expect((responseBody.metaData.didDocument).hasOwnProperty(\"capabilityDelegation\")).to.be.true;",
+											"    pm.expect(responseBody.metaData.didDocument[\"capabilityDelegation\"]).to.be.an('array');",
+											"    pm.expect((responseBody.metaData.didDocument).hasOwnProperty(\"service\")).to.be.true;",
+											"    pm.expect(responseBody.metaData.didDocument[\"service\"]).to.be.an('array');",
+											"    pm.environment.set(\"did2\", responseBody.did)",
+											"    pm.environment.set(\"didDoc2\",JSON.stringify( responseBody.metaData.didDocument))",
+											"});",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_Token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "origin",
+										"value": "{{Origin}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"namespace\": \"testnet\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{studio-api-baseUrl}}did",
+									"host": [
+										"{{studio-api-baseUrl}}did"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "new did to deactivate",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "origin",
+												"value": "{{Origin}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"namespace\": \"testnet\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{studio-api-baseUrl}}did",
+											"host": [
+												"{{studio-api-baseUrl}}did"
+											]
+										}
+									},
+									"status": "Created",
+									"code": 201,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "1241"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"4d9-IIcNboR/icAstrr91Iado0AGwAw\""
+										},
+										{
+											"key": "Date",
+											"value": "Tue, 14 Feb 2023 09:18:19 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"did\": \"did:hid:testnet:z6zAGs2zje6Niv7YSX9BmA9y5y2LYoSQrVoaZGfJuqRgC\",\n    \"registrationStatus\": \"COMPLETED\",\n    \"transactionHash\": \"254ED9C093CEF37453FCE02139F598FB98B77E1F363E8CA7A403C35632CFAA67\",\n    \"metaData\": {\n        \"didDocument\": {\n            \"@context\": [\n                \"https://www.w3.org/ns/did/v1\"\n            ],\n            \"id\": \"did:hid:testnet:z6zAGs2zje6Niv7YSX9BmA9y5y2LYoSQrVoaZGfJuqRgC\",\n            \"controller\": [\n                \"did:hid:testnet:z6zAGs2zje6Niv7YSX9BmA9y5y2LYoSQrVoaZGfJuqRgC\"\n            ],\n            \"alsoKnownAs\": [\n                \"did:hid:testnet:z6zAGs2zje6Niv7YSX9BmA9y5y2LYoSQrVoaZGfJuqRgC\"\n            ],\n            \"verificationMethod\": [\n                {\n                    \"id\": \"did:hid:testnet:z6zAGs2zje6Niv7YSX9BmA9y5y2LYoSQrVoaZGfJuqRgC#key-1\",\n                    \"type\": \"Ed25519VerificationKey2020\",\n                    \"controller\": \"did:hid:testnet:z6zAGs2zje6Niv7YSX9BmA9y5y2LYoSQrVoaZGfJuqRgC\",\n                    \"publicKeyMultibase\": \"z6zAGs2zje6Niv7YSX9BmA9y5y2LYoSQrVoaZGfJuqRgC\"\n                }\n            ],\n            \"authentication\": [\n                \"did:hid:testnet:z6zAGs2zje6Niv7YSX9BmA9y5y2LYoSQrVoaZGfJuqRgC#key-1\"\n            ],\n            \"assertionMethod\": [\n                \"did:hid:testnet:z6zAGs2zje6Niv7YSX9BmA9y5y2LYoSQrVoaZGfJuqRgC#key-1\"\n            ],\n            \"keyAgreement\": [\n                \"did:hid:testnet:z6zAGs2zje6Niv7YSX9BmA9y5y2LYoSQrVoaZGfJuqRgC#key-1\"\n            ],\n            \"capabilityInvocation\": [\n                \"did:hid:testnet:z6zAGs2zje6Niv7YSX9BmA9y5y2LYoSQrVoaZGfJuqRgC#key-1\"\n            ],\n            \"capabilityDelegation\": [\n                \"did:hid:testnet:z6zAGs2zje6Niv7YSX9BmA9y5y2LYoSQrVoaZGfJuqRgC#key-1\"\n            ],\n            \"service\": []\n        }\n    }\n}"
+								}
+							]
+						},
+						{
+							"name": "deactivate did",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var responseBody = pm.response.json()",
+											"",
+											"pm.test(\"Status code is 200\", function () {",
+											"",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"pm.test('Response body should be an object', function () {",
+											"    pm.expect(typeof responseBody).to.equal(\"object\")",
+											"})",
+											"pm.test(\"Should be able to pass and have list of field in response body\", function () {",
+											"    pm.expect(\"transactionHash\" in responseBody).to.be.true;",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_Token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "origin",
+										"value": "{{Origin}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"didDocument\": {{didDoc2}},\n    \"deactivate\": true,\n    \"verificationMethodId\":\"{{did2}}#key-1\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{studio-api-baseUrl}}did",
+									"host": [
+										"{{studio-api-baseUrl}}did"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "deactivate did",
+									"originalRequest": {
+										"method": "PATCH",
+										"header": [
+											{
+												"key": "origin",
+												"value": "{{Origin}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"didDocument\": {{didDoc2}},\n    \"deactivate\": true,\n    \"verificationMethodId\":\"{{did2}}#key-1\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{studio-api-baseUrl}}did",
+											"host": [
+												"{{studio-api-baseUrl}}did"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "86"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"56-4TojshaifBOgB5TcKL4R0CX9WIA\""
+										},
+										{
+											"key": "Date",
+											"value": "Tue, 14 Feb 2023 09:41:23 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"transactionHash\": \"D39DD7ADB100CCB83D61C918B8A627F89D9A8E06AB1C64C3E8E698EFB768833D\"\n}"
+								}
+							]
+						},
+						{
+							"name": "did already deactivated",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var responseBody = pm.response.json()",
+											"var did = pm.environment.get('did2')",
+											"let gasUsed = responseBody.message[0]//.split('gas used:')",
+											"const regex = /gas used: '(\\d+)'/;",
+											"const match = gasUsed.match(regex);",
+											" gasUsed = match[1];",
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"pm.test('Response body should be an object', function () {",
+											"    pm.expect(typeof responseBody).to.equal(\"object\")",
+											"})",
+											"pm.test(\"Should be able to fail as verificationMethodId passed in body is empty\", function () {",
+											"    pm.expect(responseBody.hasOwnProperty(\"statusCode\")).to.be.true;",
+											"    pm.expect(responseBody.statusCode).to.be.a('number')",
+											"    pm.expect(responseBody.statusCode).to.be.equal(400)",
+											"    pm.expect(responseBody.hasOwnProperty(\"message\")).to.be.true;",
+											"    pm.expect(responseBody.message).to.be.an(\"array\");",
+											"    pm.expect(responseBody.message[0]).to.be.equal(`Query failed with (6): rpc error: code = Unknown desc = failed to execute message; message index: 0: DidDoc ID: ${did}: DID Document is deactivated [/home/arnab/code/research/hid-node/x/ssi/verification/did_verification.go:109] With gas wanted: '0' and gas used: '${gasUsed}' : unknown request`)",
+											"    pm.expect(responseBody.hasOwnProperty(\"error\")).to.be.true;",
+											"    pm.expect(responseBody.error).to.be.equal(\"Bad Request\")",
+											"",
+											"});",
+											"",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_Token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "origin",
+										"value": "{{Origin}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"didDocument\": {{didDoc2}},\n    \"deactivate\": true,\n    \"verificationMethodId\":\"{{did2}}#key-1\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{studio-api-baseUrl}}did",
+									"host": [
+										"{{studio-api-baseUrl}}did"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "deactivate did",
+									"originalRequest": {
+										"method": "PATCH",
+										"header": [
+											{
+												"key": "origin",
+												"value": "{{Origin}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"didDocument\": {{didDoc2}},\n    \"deactivate\": true,\n    \"verificationMethodId\":\"{{did2}}#key-1\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{studio-api-baseUrl}}did",
+											"host": [
+												"{{studio-api-baseUrl}}did"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "86"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"56-4TojshaifBOgB5TcKL4R0CX9WIA\""
+										},
+										{
+											"key": "Date",
+											"value": "Tue, 14 Feb 2023 09:41:23 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"transactionHash\": \"D39DD7ADB100CCB83D61C918B8A627F89D9A8E06AB1C64C3E8E698EFB768833D\"\n}"
+								}
+							]
+						},
+						{
+							"name": "resolve deactivated did",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var responseBody = pm.response.json()",
+											"",
+											"pm.test(\"Status code is 200\", function () {",
+											"",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"pm.test('Response body should be an object', function () {",
+											"    pm.expect(typeof responseBody).to.equal(\"object\")",
+											"})",
+											"pm.test(\"Should be able to pass and have list of response body parameters\", function () {",
+											"    pm.expect(\"didDocument\" in responseBody).to.be.true;",
+											"    pm.expect(responseBody.didDocument).to.be.an(\"object\")",
+											"    pm.expect(responseBody.hasOwnProperty(\"didDocumentMetadata\")).to.be.true",
+											"    pm.expect(responseBody.didDocumentMetadata).to.be.an(\"object\")",
+											"",
+											"    pm.expect((responseBody.didDocumentMetadata).hasOwnProperty(\"created\")).to.be.true;",
+											"    pm.expect((responseBody.didDocumentMetadata).hasOwnProperty(\"updated\")).to.be.true;",
+											"    pm.expect((responseBody.didDocumentMetadata).hasOwnProperty(\"deactivated\")).to.be.true;",
+											"    pm.expect(responseBody.didDocumentMetadata.deactivated).to.be.a(\"boolean\")",
+											"    pm.expect((responseBody.didDocumentMetadata).hasOwnProperty(\"versionId\")).to.be.true;",
+											"    pm.expect((responseBody.didDocumentMetadata.deactivated)).to.be.equal(true)",
+											"",
+											"    pm.expect((responseBody.didDocument).hasOwnProperty(\"@context\")).to.be.true;",
+											"    pm.expect(responseBody.didDocument[\"@context\"]).to.be.an('array');",
+											"    pm.expect((responseBody.didDocument).hasOwnProperty(\"id\")).to.be.true;",
+											"    pm.expect(responseBody.didDocument[\"id\"]).to.be.a('string');",
+											"    pm.expect((responseBody.didDocument).hasOwnProperty(\"controller\")).to.be.true;",
+											"    pm.expect(responseBody.didDocument[\"controller\"]).to.be.an('array');",
+											"    pm.expect((responseBody.didDocument).hasOwnProperty(\"alsoKnownAs\")).to.be.true;",
+											"    pm.expect(responseBody.didDocument[\"alsoKnownAs\"]).to.be.an('array');",
+											"    pm.expect((responseBody.didDocument).hasOwnProperty(\"verificationMethod\")).to.be.true;",
+											"    pm.expect(responseBody.didDocument[\"verificationMethod\"]).to.be.an('array');",
+											"    pm.expect((responseBody.didDocument[\"verificationMethod\"][0])).to.be.an('object')",
+											"    pm.expect((responseBody.didDocument.verificationMethod[0]).hasOwnProperty(\"id\")).to.be.true;",
+											"    pm.expect((responseBody.didDocument.verificationMethod[0]).hasOwnProperty(\"type\")).to.be.true;",
+											"    pm.expect((responseBody.didDocument.verificationMethod[0]).hasOwnProperty(\"controller\")).to.be.true;",
+											"    pm.expect((responseBody.didDocument.verificationMethod[0]).hasOwnProperty(\"publicKeyMultibase\")).to.be.true;",
+											"",
+											"    pm.expect((responseBody.didDocument).hasOwnProperty(\"authentication\")).to.be.true;",
+											"    pm.expect(responseBody.didDocument[\"authentication\"]).to.be.an('array');",
+											"    pm.expect((responseBody.didDocument).hasOwnProperty(\"assertionMethod\")).to.be.true;",
+											"    pm.expect(responseBody.didDocument[\"assertionMethod\"]).to.be.an('array');",
+											"    pm.expect((responseBody.didDocument).hasOwnProperty(\"keyAgreement\")).to.be.true;",
+											"    pm.expect(responseBody.didDocument[\"keyAgreement\"]).to.be.an('array');",
+											"    pm.expect((responseBody.didDocument).hasOwnProperty(\"capabilityInvocation\")).to.be.true;",
+											"    pm.expect(responseBody.didDocument[\"capabilityInvocation\"]).to.be.an('array');",
+											"    pm.expect((responseBody.didDocument).hasOwnProperty(\"capabilityDelegation\")).to.be.true;",
+											"    pm.expect(responseBody.didDocument[\"capabilityDelegation\"]).to.be.an('array');",
+											"    pm.expect((responseBody.didDocument).hasOwnProperty(\"service\")).to.be.true;",
+											"    pm.expect(responseBody.didDocument[\"service\"]).to.be.an('array');",
+											"});",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_Token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "origin",
+										"value": "{{Origin}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{studio-api-baseUrl}}did/{{did2}}",
+									"host": [
+										"{{studio-api-baseUrl}}did"
+									],
+									"path": [
+										"{{did2}}"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "resolve did",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "origin",
+												"value": "{{Origin}}",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "{{studio-api-baseUrl}}did/{{did}}",
+											"host": [
+												"{{studio-api-baseUrl}}did"
+											],
+											"path": [
+												"{{did}}"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "1254"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"4e6-lzU1+f7/rVBoN+SpocjdUphUHEE\""
+										},
+										{
+											"key": "Date",
+											"value": "Tue, 14 Feb 2023 09:10:25 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"didDocument\": {\n        \"@context\": [\n            \"https://www.w3.org/ns/did/v1\"\n        ],\n        \"id\": \"did:hid:testnet:zE6eKL71wnL9cc6di3S8kThu6DHnPmZR2qnsJx143t1s5\",\n        \"controller\": [\n            \"did:hid:testnet:zE6eKL71wnL9cc6di3S8kThu6DHnPmZR2qnsJx143t1s5\"\n        ],\n        \"alsoKnownAs\": [\n            \"did:hid:testnet:zE6eKL71wnL9cc6di3S8kThu6DHnPmZR2qnsJx143t1s5\"\n        ],\n        \"verificationMethod\": [\n            {\n                \"id\": \"did:hid:testnet:zE6eKL71wnL9cc6di3S8kThu6DHnPmZR2qnsJx143t1s5#key-1\",\n                \"type\": \"Ed25519VerificationKey2020\",\n                \"controller\": \"did:hid:testnet:zE6eKL71wnL9cc6di3S8kThu6DHnPmZR2qnsJx143t1s5\",\n                \"publicKeyMultibase\": \"zE6eKL71wnL9cc6di3S8kThu6DHnPmZR2qnsJx143t1s5\",\n                \"blockchainAccountId\": \"\"\n            }\n        ],\n        \"authentication\": [\n            \"did:hid:testnet:zE6eKL71wnL9cc6di3S8kThu6DHnPmZR2qnsJx143t1s5#key-1\"\n        ],\n        \"assertionMethod\": [\n            \"did:hid:testnet:zE6eKL71wnL9cc6di3S8kThu6DHnPmZR2qnsJx143t1s5#key-1\"\n        ],\n        \"keyAgreement\": [\n            \"did:hid:testnet:zE6eKL71wnL9cc6di3S8kThu6DHnPmZR2qnsJx143t1s5#key-1\"\n        ],\n        \"capabilityInvocation\": [\n            \"did:hid:testnet:zE6eKL71wnL9cc6di3S8kThu6DHnPmZR2qnsJx143t1s5#key-1\"\n        ],\n        \"capabilityDelegation\": [\n            \"did:hid:testnet:zE6eKL71wnL9cc6di3S8kThu6DHnPmZR2qnsJx143t1s5#key-1\"\n        ],\n        \"service\": []\n    },\n    \"didDocumentMetadata\": {\n        \"created\": \"2023-02-14T08:42:42Z\",\n        \"updated\": \"2023-02-14T08:42:42Z\",\n        \"deactivated\": false,\n        \"versionId\": \"4FE50567BA917089EA51AF786E110B03D64DB0355398CE2DEA1E7D532348882D\"\n    }\n}"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "fail as token is expired",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"var responseBody = pm.response.json()",
+									"pm.test(\"Status code is 401\", function () {",
+									"    pm.response.to.have.status(401);",
+									"});",
+									"pm.test('Response body should be an object', function () {",
+									"    pm.expect(typeof responseBody).to.equal(\"object\")",
+									"})",
+									"pm.test(\"Should be able to fail as access token passed in header is expired\", function () {",
+									"    pm.expect(responseBody.hasOwnProperty(\"statusCode\")).to.be.true;",
+									"    pm.expect(responseBody.statusCode).to.be.a('number')",
+									"    pm.expect(responseBody.statusCode).to.be.equal(401)",
+									"    pm.expect(responseBody.hasOwnProperty(\"message\")).to.be.true;",
+									"    pm.expect(responseBody.message).to.be.an(\"array\");",
+									"    pm.expect(responseBody.message[0]).to.be.an('object')",
+									"    pm.expect(responseBody.message[0].name).to.be.equal('TokenExpiredError')",
+									"    pm.expect(responseBody.message[0].message).to.be.equal(\"jwt expired\")",
+									"    pm.expect(responseBody.message[0].expiredAt).to.be.equal(\"2023-02-14T23:56:50.000Z\")",
+									"    pm.expect(responseBody.hasOwnProperty(\"error\")).to.be.true;",
+									"    pm.expect(responseBody.error).to.be.equal(\"Unauthorized\")",
+									"",
+									"});",
+									"",
+									"",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHBJZCI6IjNhMzU0NjNjNzIzMzNkN2VjN2M1M2M5MzVlZWRiOGU3NTk2YiIsInVzZXJJZCI6InZhcnNoYWt1bWFyaTM3MEBnbWFpbC5jb20iLCJncmFudFR5cGUiOiJjbGllbnRfY3JlZGVudGlhbHMiLCJpYXQiOjE2NzY0MDQ2MTAsImV4cCI6MTY3NjQxOTAxMH0.SCHXhSjTShyQsZOrxfKFJINlhnk8u5F0JiDFo1ja6a4",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{studio-api-baseUrl}}did",
+							"host": [
+								"{{studio-api-baseUrl}}did"
+							]
+						}
+					},
+					"response": [
+						{
+							"name": "fail as token is expired",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{studio-api-baseUrl}}did",
+									"host": [
+										"{{studio-api-baseUrl}}did"
+									]
+								}
+							},
+							"status": "Unauthorized",
+							"code": 401,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "X-Powered-By",
+									"value": "Express"
+								},
+								{
+									"key": "Access-Control-Allow-Origin",
+									"value": "*"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Content-Length",
+									"value": "145"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"91-P7EmJ8YDx5fiOl6m6YaZCw3pf+U\""
+								},
+								{
+									"key": "Date",
+									"value": "Wed, 15 Feb 2023 04:55:25 GMT"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Keep-Alive",
+									"value": "timeout=5"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"statusCode\": 401,\n    \"message\": [\n        {\n            \"name\": \"TokenExpiredError\",\n            \"message\": \"jwt expired\",\n            \"expiredAt\": \"2023-02-14T23:56:50.000Z\"\n        }\n    ],\n    \"error\": \"Unauthorized\"\n}"
+						}
+					]
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "studio-api-baseUrl",
+			"value": "http://localhost:3001/api/v1/"
+		},
+		{
+			"key": "studio_API_auth",
+			"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiVmFyc2hhIGt1bWFyaSIsImVtYWlsIjoidmFyc2hha3VtYXJpMzcwQGdtYWlsLmNvbSIsImlkIjoiZGlkOmhpZDp0ZXN0bmV0Ono1bjM1YkJpTmhBRmVlZ1QyTUNUcmE0WEhSZkV1Mk5BNzlnaGFjZnRhZ3FZUyIsImlhdCI6MTY3NjQwMTM2MywiZXhwIjoxODg2NTIxMzYzfQ.zboCVCKejYdSZDHXDNYRJQWklVUi9WLx6ww6U2fCcsU"
+		},
+		{
+			"key": "Origin",
+			"value": "http://localhost:3001"
+		}
+	]
+}
