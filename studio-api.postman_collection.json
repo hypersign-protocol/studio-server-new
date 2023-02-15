@@ -1742,7 +1742,7 @@
 								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n    \"appName\":\"testing api app\"\n}",
+									"raw": "{\n    \"appName\":\"testing api app\",\n    \"whitelistedCors\":[\"http://localhost:3001\"]\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -2398,149 +2398,6 @@
 					"name": "get api token",
 					"item": [
 						{
-							"name": "get api token",
-							"event": [
-								{
-									"listen": "test",
-									"script": {
-										"exec": [
-											"var responseBody = pm.response.json()",
-											"pm.test(\"Status code is 200\", function () {",
-											"    pm.response.to.have.status(200);",
-											"});",
-											"pm.test('Response body should be an object', function () {",
-											"    pm.expect(typeof responseBody).to.equal(\"object\")",
-											"})",
-											"pm.test(\"Should be able to pass and have list of field in response body\", function () {",
-											"    pm.expect(\"access_token\" in responseBody).to.be.true;",
-											"    pm.expect(responseBody.hasOwnProperty(\"expiresIn\")).to.be.true;",
-											"    pm.expect(responseBody.hasOwnProperty(\"tokenType\")).to.be.true;",
-											"    pm.expect(responseBody.tokenType).to.eql(\"Bearer\")",
-											"    pm.environment.set(\"access_Token\", responseBody.access_token)",
-											"});",
-											""
-										],
-										"type": "text/javascript"
-									}
-								}
-							],
-							"request": {
-								"auth": {
-									"type": "bearer",
-									"bearer": [
-										{
-											"key": "token",
-											"value": "{{studio_API_auth}}",
-											"type": "string"
-										}
-									]
-								},
-								"method": "POST",
-								"header": [
-									{
-										"key": "X-Api-Secret-Key",
-										"value": "{{X-Api-Secret-Key}}",
-										"type": "text"
-									},
-									{
-										"key": "origin",
-										"value": "{{Origin}}",
-										"type": "text"
-									}
-								],
-								"body": {
-									"mode": "raw",
-									"raw": "",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "{{studio-api-baseUrl}}app/oauth",
-									"host": [
-										"{{studio-api-baseUrl}}app"
-									],
-									"path": [
-										"oauth"
-									]
-								}
-							},
-							"response": [
-								{
-									"name": "get api token",
-									"originalRequest": {
-										"method": "POST",
-										"header": [
-											{
-												"key": "X-Api-Secret-Key",
-												"value": "{{X-Api-Secret-Key}}",
-												"type": "text"
-											}
-										],
-										"body": {
-											"mode": "raw",
-											"raw": "",
-											"options": {
-												"raw": {
-													"language": "json"
-												}
-											}
-										},
-										"url": {
-											"raw": "{{studio-api-baseUrl}}app/oauth",
-											"host": [
-												"{{studio-api-baseUrl}}app"
-											],
-											"path": [
-												"oauth"
-											]
-										}
-									},
-									"status": "OK",
-									"code": 200,
-									"_postman_previewlanguage": "json",
-									"header": [
-										{
-											"key": "X-Powered-By",
-											"value": "Express"
-										},
-										{
-											"key": "Access-Control-Allow-Origin",
-											"value": "*"
-										},
-										{
-											"key": "Content-Type",
-											"value": "application/json; charset=utf-8"
-										},
-										{
-											"key": "Content-Length",
-											"value": "342"
-										},
-										{
-											"key": "ETag",
-											"value": "W/\"156-eO/8Vz/GdhYffFK5JPrep5zFECs\""
-										},
-										{
-											"key": "Date",
-											"value": "Tue, 14 Feb 2023 06:47:29 GMT"
-										},
-										{
-											"key": "Connection",
-											"value": "keep-alive"
-										},
-										{
-											"key": "Keep-Alive",
-											"value": "timeout=5"
-										}
-									],
-									"cookie": [],
-									"body": "{\n    \"access_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHBJZCI6IjE2ODBmNjk4N2ZlZGNiZGFlYzY3Mjc0ZDBkNTY0NGViMjBkOSIsInVzZXJJZCI6InZhcnNoYWt1bWFyaTM3MEBnbWFpbC5jb20iLCJncmFudFR5cGUiOiJjbGllbnRfY3JlZGVudGlhbHMiLCJpYXQiOjE2NzYzNTcyNDksImV4cCI6MTY3NjM3MTY0OX0.wDiXnt_qDaja3ld24mxhJEmkv2eu1pJ-wnzCeARYjoo\",\n    \"expiresIn\": 14400,\n    \"tokenType\": \"Bearer\"\n}"
-								}
-							]
-						},
-						{
 							"name": "origin not passed",
 							"event": [
 								{
@@ -2698,6 +2555,161 @@
 							]
 						},
 						{
+							"name": "X-Api-secret-key is empty",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var responseBody = pm.response.json()",
+											"pm.test(\"Status code is 401\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});",
+											"pm.test('Response body should be an object', function () {",
+											"    pm.expect(typeof responseBody).to.equal(\"object\")",
+											"})",
+											"pm.test(\"Should be able to fail as origin is not passed in header\", function () {",
+											"    pm.expect(responseBody.hasOwnProperty(\"statusCode\")).to.be.true;",
+											"    pm.expect(responseBody.statusCode).to.be.a('number')",
+											"    pm.expect(responseBody.statusCode).to.be.equal(401)",
+											"    pm.expect(responseBody.hasOwnProperty(\"message\")).to.be.true;",
+											"    pm.expect(responseBody.message).to.be.an(\"array\");",
+											"    pm.expect(responseBody.message[0]).to.be.equal(\"access_denied\")",
+											"    pm.expect(responseBody.hasOwnProperty(\"error\")).to.be.true;",
+											"    pm.expect(responseBody.error).to.be.equal(\"Unauthorized\")",
+											"",
+											"",
+											"});",
+											"",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{studio_API_auth}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-Api-Secret-Key",
+										"value": "",
+										"type": "text"
+									},
+									{
+										"key": "origin",
+										"value": "{{Origin}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{studio-api-baseUrl}}app/oauth",
+									"host": [
+										"{{studio-api-baseUrl}}app"
+									],
+									"path": [
+										"oauth"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "X-Api-secret-key is empty",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "X-Api-Secret-Key",
+												"value": "",
+												"type": "text"
+											},
+											{
+												"key": "origin",
+												"value": "{{Origin}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{studio-api-baseUrl}}app/oauth",
+											"host": [
+												"{{studio-api-baseUrl}}app"
+											],
+											"path": [
+												"oauth"
+											]
+										}
+									},
+									"status": "Unauthorized",
+									"code": 401,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "69"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"45-WJV85FxvXpxFwnsbpAq+QaztVHc\""
+										},
+										{
+											"key": "Date",
+											"value": "Wed, 15 Feb 2023 07:36:56 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"statusCode\": 401,\n    \"message\": [\n        \"access_denied\"\n    ],\n    \"error\": \"Unauthorized\"\n}"
+								}
+							]
+						},
+						{
 							"name": "X-Api-secret-key not passed",
 							"event": [
 								{
@@ -2830,6 +2842,149 @@
 									],
 									"cookie": [],
 									"body": "{\n    \"statusCode\": 500,\n    \"timestamp\": \"2023-02-15T05:16:02.782Z\",\n    \"path\": \"/api/v1/app/oauth\",\n    \"message\": [\n        \"TypeError\",\n        \"Cannot read property 'split' of undefined\",\n        \"Internal server error\"\n    ]\n}"
+								}
+							]
+						},
+						{
+							"name": "get api token",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var responseBody = pm.response.json()",
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"pm.test('Response body should be an object', function () {",
+											"    pm.expect(typeof responseBody).to.equal(\"object\")",
+											"})",
+											"pm.test(\"Should be able to pass and have list of field in response body\", function () {",
+											"    pm.expect(\"access_token\" in responseBody).to.be.true;",
+											"    pm.expect(responseBody.hasOwnProperty(\"expiresIn\")).to.be.true;",
+											"    pm.expect(responseBody.hasOwnProperty(\"tokenType\")).to.be.true;",
+											"    pm.expect(responseBody.tokenType).to.eql(\"Bearer\")",
+											"    pm.environment.set(\"access_Token\", responseBody.access_token)",
+											"});",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{studio_API_auth}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-Api-Secret-Key",
+										"value": "{{X-Api-Secret-Key}}",
+										"type": "text"
+									},
+									{
+										"key": "origin",
+										"value": "{{Origin}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{studio-api-baseUrl}}app/oauth",
+									"host": [
+										"{{studio-api-baseUrl}}app"
+									],
+									"path": [
+										"oauth"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "get api token",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "X-Api-Secret-Key",
+												"value": "{{X-Api-Secret-Key}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{studio-api-baseUrl}}app/oauth",
+											"host": [
+												"{{studio-api-baseUrl}}app"
+											],
+											"path": [
+												"oauth"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "342"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"156-eO/8Vz/GdhYffFK5JPrep5zFECs\""
+										},
+										{
+											"key": "Date",
+											"value": "Tue, 14 Feb 2023 06:47:29 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"access_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHBJZCI6IjE2ODBmNjk4N2ZlZGNiZGFlYzY3Mjc0ZDBkNTY0NGViMjBkOSIsInVzZXJJZCI6InZhcnNoYWt1bWFyaTM3MEBnbWFpbC5jb20iLCJncmFudFR5cGUiOiJjbGllbnRfY3JlZGVudGlhbHMiLCJpYXQiOjE2NzYzNTcyNDksImV4cCI6MTY3NjM3MTY0OX0.wDiXnt_qDaja3ld24mxhJEmkv2eu1pJ-wnzCeARYjoo\",\n    \"expiresIn\": 14400,\n    \"tokenType\": \"Bearer\"\n}"
 								}
 							]
 						}
@@ -4470,15 +4625,15 @@
 											"    pm.expect(responseBody.hasOwnProperty(\"message\")).to.be.true;",
 											"    pm.expect(responseBody.message).to.be.an(\"array\");",
 											"    pm.expect(responseBody.message[0]).to.be.equal(\"didDocument.@context must be an array\")",
-											"    pm.expect(responseBody.message[1]).to.be.equal(\"didDocument.controller must be an array\")",
-											"",
-											"    pm.expect(responseBody.message[2]).to.be.equal(\"didDocument.alsoKnownAs must be an array\")",
-											"    pm.expect(responseBody.message[3]).to.be.equal(\"didDocument.authentication must be an array\")",
-											"    pm.expect(responseBody.message[4]).to.be.equal(\"didDocument.assertionMethod must be an array\")",
-											"    pm.expect(responseBody.message[5]).to.be.equal(\"didDocument.keyAgreement must be an array\")",
-											"    pm.expect(responseBody.message[6]).to.be.equal(\"didDocument.capabilityInvocation must be an array\")",
-											"    pm.expect(responseBody.message[7]).to.be.equal(\"didDocument.capabilityDelegation must be an array\")",
-											"    pm.expect(responseBody.message[8]).to.be.equal(\"didDocument.service must be an array\")",
+											"    pm.expect(responseBody.message[1]).to.be.equal(\"didDocument.id must be a string\")",
+											"    pm.expect(responseBody.message[2]).to.be.equal(\"didDocument.controller must be an array\")",
+											"    pm.expect(responseBody.message[3]).to.be.equal(\"didDocument.alsoKnownAs must be an array\")",
+											"    pm.expect(responseBody.message[4]).to.be.equal(\"didDocument.authentication must be an array\")",
+											"    pm.expect(responseBody.message[5]).to.be.equal(\"didDocument.assertionMethod must be an array\")",
+											"    pm.expect(responseBody.message[6]).to.be.equal(\"didDocument.keyAgreement must be an array\")",
+											"    pm.expect(responseBody.message[7]).to.be.equal(\"didDocument.capabilityInvocation must be an array\")",
+											"    pm.expect(responseBody.message[8]).to.be.equal(\"didDocument.capabilityDelegation must be an array\")",
+											"    pm.expect(responseBody.message[9]).to.be.equal(\"didDocument.service must be an array\")",
 											"",
 											"    pm.expect(responseBody.hasOwnProperty(\"error\")).to.be.true;",
 											"    pm.expect(responseBody.error).to.be.equal(\"Bad Request\")",
@@ -5324,7 +5479,7 @@
 										"exec": [
 											"var responseBody = pm.response.json()",
 											"var did = pm.environment.get('did2')",
-											"let gasUsed = responseBody.message[0]//.split('gas used:')",
+											"let gasUsed = responseBody.message[0]",
 											"const regex = /gas used: '(\\d+)'/;",
 											"const match = gasUsed.match(regex);",
 											" gasUsed = match[1];",
@@ -5390,7 +5545,7 @@
 							},
 							"response": [
 								{
-									"name": "deactivate did",
+									"name": "did already deactivated",
 									"originalRequest": {
 										"method": "PATCH",
 										"header": [
@@ -5416,8 +5571,8 @@
 											]
 										}
 									},
-									"status": "OK",
-									"code": 200,
+									"status": "Bad Request",
+									"code": 400,
 									"_postman_previewlanguage": "json",
 									"header": [
 										{
@@ -5434,15 +5589,15 @@
 										},
 										{
 											"key": "Content-Length",
-											"value": "86"
+											"value": "398"
 										},
 										{
 											"key": "ETag",
-											"value": "W/\"56-4TojshaifBOgB5TcKL4R0CX9WIA\""
+											"value": "W/\"18e-TW4mgHbRCzmmpu9K0JJAgeq97r0\""
 										},
 										{
 											"key": "Date",
-											"value": "Tue, 14 Feb 2023 09:41:23 GMT"
+											"value": "Wed, 15 Feb 2023 07:18:20 GMT"
 										},
 										{
 											"key": "Connection",
@@ -5454,7 +5609,7 @@
 										}
 									],
 									"cookie": [],
-									"body": "{\n    \"transactionHash\": \"D39DD7ADB100CCB83D61C918B8A627F89D9A8E06AB1C64C3E8E698EFB768833D\"\n}"
+									"body": "{\n    \"statusCode\": 400,\n    \"message\": [\n        \"Query failed with (6): rpc error: code = Unknown desc = failed to execute message; message index: 0: DidDoc ID: did:hid:testnet:z6htthtRvsictMM17heknFSd1KUKcnBCXnJrFmFB4Ap2M: DID Document is deactivated [/home/arnab/code/research/hid-node/x/ssi/verification/did_verification.go:109] With gas wanted: '0' and gas used: '51053' : unknown request\"\n    ],\n    \"error\": \"Bad Request\"\n}"
 								}
 							]
 						},
@@ -5747,6 +5902,3628 @@
 							""
 						]
 					}
+				}
+			]
+		},
+		{
+			"name": "Schemas",
+			"item": [
+				{
+					"name": "create schema",
+					"item": [
+						{
+							"name": "authorization issue",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var responseBody = pm.response.json()",
+											"pm.test(\"Status code is 401\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});",
+											"pm.test('Response body should be an object', function () {",
+											"    pm.expect(typeof responseBody).to.equal(\"object\")",
+											"})",
+											"pm.test(\"Should be able to fail as access token is not passed in header \", function () {",
+											"    pm.expect(responseBody.hasOwnProperty(\"statusCode\")).to.be.true;",
+											"    pm.expect(responseBody.statusCode).to.be.a('number')",
+											"    pm.expect(responseBody.statusCode).to.be.equal(401)",
+											"    pm.expect(responseBody.hasOwnProperty(\"message\")).to.be.true;",
+											"    pm.expect(responseBody.message).to.be.an(\"array\");",
+											"    pm.expect(responseBody.message[0]).to.be.equal('Unauthorized')",
+											"    pm.expect(responseBody.message[1]).to.be.equal('Please pass access token')",
+											"    pm.expect(responseBody.hasOwnProperty(\"error\")).to.be.true;",
+											"    pm.expect(responseBody.error).to.be.equal(\"Unauthorized\")",
+											"",
+											"});",
+											"",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{studio-api-baseUrl}}schema",
+									"host": [
+										"{{studio-api-baseUrl}}schema"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "authorization issue",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{studio-api-baseUrl}}schema",
+											"host": [
+												"{{studio-api-baseUrl}}schema"
+											]
+										}
+									},
+									"status": "Unauthorized",
+									"code": 401,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "95"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"5f-aJwKIlmGef0ljYKkUGy5EfswjQk\""
+										},
+										{
+											"key": "Date",
+											"value": "Wed, 15 Feb 2023 07:55:54 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"statusCode\": 401,\n    \"message\": [\n        \"Unauthorized\",\n        \"Please pass access token\"\n    ],\n    \"error\": \"Unauthorized\"\n}"
+								}
+							]
+						},
+						{
+							"name": "origin not passed",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var responseBody = pm.response.json()",
+											"pm.test(\"Status code is 401\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});",
+											"pm.test('Response body should be an object', function () {",
+											"    pm.expect(typeof responseBody).to.equal(\"object\")",
+											"})",
+											"pm.test(\"Should be able to fail as origin is not matched with origin set in app \", function () {",
+											"    pm.expect(responseBody.hasOwnProperty(\"statusCode\")).to.be.true;",
+											"    pm.expect(responseBody.statusCode).to.be.a('number')",
+											"    pm.expect(responseBody.statusCode).to.be.equal(401)",
+											"    pm.expect(responseBody.hasOwnProperty(\"message\")).to.be.true;",
+											"    pm.expect(responseBody.message).to.be.an(\"array\");",
+											"    pm.expect(responseBody.message[0]).to.be.equal('Origin mismatch')",
+											"    pm.expect(responseBody.hasOwnProperty(\"error\")).to.be.true;",
+											"    pm.expect(responseBody.error).to.be.equal(\"Unauthorized\")",
+											"",
+											"});",
+											"",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_Token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{studio-api-baseUrl}}schema",
+									"host": [
+										"{{studio-api-baseUrl}}schema"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "origin not passed",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{studio-api-baseUrl}}schema",
+											"host": [
+												"{{studio-api-baseUrl}}schema"
+											]
+										}
+									},
+									"status": "Unauthorized",
+									"code": 401,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "71"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"47-Z/rvm+daBAjYJdCCZju2EE6gB8U\""
+										},
+										{
+											"key": "Date",
+											"value": "Wed, 15 Feb 2023 08:03:48 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"statusCode\": 401,\n    \"message\": [\n        \"Origin mismatch\"\n    ],\n    \"error\": \"Unauthorized\"\n}"
+								}
+							]
+						},
+						{
+							"name": "empty body in  schema",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var responseBody = pm.response.json()",
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"pm.test('Response body should be an object', function () {",
+											"    pm.expect(typeof responseBody).to.equal(\"object\")",
+											"})",
+											"pm.test(\"Should be able to fail as request body is empty\", function () {",
+											"    pm.expect(responseBody.hasOwnProperty(\"statusCode\")).to.be.true;",
+											"    pm.expect(responseBody.statusCode).to.be.a('number')",
+											"    pm.expect(responseBody.statusCode).to.be.equal(400)",
+											"    pm.expect(responseBody.hasOwnProperty(\"message\")).to.be.true;",
+											"    pm.expect(responseBody.message).to.be.an(\"array\");",
+											"    pm.expect(responseBody.message[0]).to.be.equal(\"schema must be a non-empty object\")",
+											"    pm.expect(responseBody.message[1]).to.be.equal(\"namespace should not be empty\")",
+											"    pm.expect(responseBody.message[2]).to.be.equal(\"namespace must be a string\")",
+											"    pm.expect(responseBody.message[3]).to.be.equal(\"verificationMethodId must be a string\")",
+											"    pm.expect(responseBody.hasOwnProperty(\"error\")).to.be.true;",
+											"    pm.expect(responseBody.error).to.be.equal(\"Bad Request\")",
+											"",
+											"});",
+											"",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_Token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "origin",
+										"value": "{{Origin}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{studio-api-baseUrl}}schema",
+									"host": [
+										"{{studio-api-baseUrl}}schema"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "empty body in  schema",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "origin",
+												"value": "{{Origin}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{studio-api-baseUrl}}schema",
+											"host": [
+												"{{studio-api-baseUrl}}schema"
+											]
+										}
+									},
+									"status": "Bad Request",
+									"code": 400,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "189"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"bd-4k7ej2J3Ur64phdmP/JbGXuS298\""
+										},
+										{
+											"key": "Date",
+											"value": "Wed, 15 Feb 2023 08:32:22 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"statusCode\": 400,\n    \"message\": [\n        \"schema must be a non-empty object\",\n        \"namespace should not be empty\",\n        \"namespace must be a string\",\n        \"verificationMethodId must be a string\"\n    ],\n    \"error\": \"Bad Request\"\n}"
+								}
+							]
+						},
+						{
+							"name": "empty schema field",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var responseBody = pm.response.json()",
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"pm.test('Response body should be an object', function () {",
+											"    pm.expect(typeof responseBody).to.equal(\"object\")",
+											"})",
+											"pm.test(\"Should be able to fail as only field schema is  passed in request body and it is empty\", function () {",
+											"    pm.expect(responseBody.hasOwnProperty(\"statusCode\")).to.be.true;",
+											"    pm.expect(responseBody.statusCode).to.be.a('number')",
+											"    pm.expect(responseBody.statusCode).to.be.equal(400)",
+											"    pm.expect(responseBody.hasOwnProperty(\"message\")).to.be.true;",
+											"    pm.expect(responseBody.message).to.be.an(\"array\");",
+											"    pm.expect(responseBody.message[0]).to.be.equal(\"schema.name should not be empty\")",
+											"    pm.expect(responseBody.message[1]).to.be.equal(\"schema.name must be a string\")",
+											"",
+											"    pm.expect(responseBody.message[2]).to.be.equal(\"schema.author should not be empty\")",
+											"    pm.expect(responseBody.message[3]).to.be.equal(\"schema.author must be a string\")",
+											"    pm.expect(responseBody.message[4]).to.be.equal(\"schema.additionalProperties must be a boolean value\")",
+											"    pm.expect(responseBody.message[5]).to.be.equal(\"namespace should not be empty\")",
+											"    pm.expect(responseBody.message[6]).to.be.equal(\"namespace must be a string\")",
+											"",
+											"    pm.expect(responseBody.message[7]).to.be.equal(\"verificationMethodId must be a string\")",
+											"    pm.expect(responseBody.hasOwnProperty(\"error\")).to.be.true;",
+											"    pm.expect(responseBody.error).to.be.equal(\"Bad Request\")",
+											"",
+											"});",
+											"",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_Token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "origin",
+										"value": "{{Origin}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"schema\": {}\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{studio-api-baseUrl}}schema",
+									"host": [
+										"{{studio-api-baseUrl}}schema"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "empty schema field",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "origin",
+												"value": "{{Origin}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"schema\": {}\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{studio-api-baseUrl}}schema",
+											"host": [
+												"{{studio-api-baseUrl}}schema"
+											]
+										}
+									},
+									"status": "Bad Request",
+									"code": 400,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "310"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"136-xkk30b/qKUK4MHRso1kW8hb1WLQ\""
+										},
+										{
+											"key": "Date",
+											"value": "Wed, 15 Feb 2023 08:56:27 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"statusCode\": 400,\n    \"message\": [\n        \"schema.name should not be empty\",\n        \"schema.author should not be empty\",\n        \"schema.author must be a string\",\n        \"schema.additionalProperties must be a boolean value\",\n        \"namespace should not be empty\",\n        \"namespace must be a string\",\n        \"verificationMethodId must be a string\"\n    ],\n    \"error\": \"Bad Request\"\n}"
+								}
+							]
+						},
+						{
+							"name": "empty schema.name field",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var responseBody = pm.response.json()",
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"pm.test('Response body should be an object', function () {",
+											"    pm.expect(typeof responseBody).to.equal(\"object\")",
+											"})",
+											"pm.test(\"Should be able to fail as only field schema is  passed in request body and it is has empty name fiekd\", function () {",
+											"    pm.expect(responseBody.hasOwnProperty(\"statusCode\")).to.be.true;",
+											"    pm.expect(responseBody.statusCode).to.be.a('number')",
+											"    pm.expect(responseBody.statusCode).to.be.equal(400)",
+											"    pm.expect(responseBody.hasOwnProperty(\"message\")).to.be.true;",
+											"    pm.expect(responseBody.message).to.be.an(\"array\");",
+											"    pm.expect(responseBody.message[0]).to.be.equal(\"schema.name should not be empty\")",
+											"    pm.expect(responseBody.message[1]).to.be.equal(\"schema.author should not be empty\")",
+											"    pm.expect(responseBody.message[2]).to.be.equal(\"schema.author must be a string\")",
+											"    pm.expect(responseBody.message[3]).to.be.equal(\"schema.additionalProperties must be a boolean value\")",
+											"    pm.expect(responseBody.message[4]).to.be.equal(\"namespace should not be empty\")",
+											"    pm.expect(responseBody.message[5]).to.be.equal(\"namespace must be a string\")",
+											"",
+											"    pm.expect(responseBody.message[6]).to.be.equal(\"verificationMethodId must be a string\")",
+											"    pm.expect(responseBody.hasOwnProperty(\"error\")).to.be.true;",
+											"    pm.expect(responseBody.error).to.be.equal(\"Bad Request\")",
+											"",
+											"});",
+											"",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_Token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "origin",
+										"value": "{{Origin}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"schema\": {\n        \"name\":\"\"\n    }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{studio-api-baseUrl}}schema",
+									"host": [
+										"{{studio-api-baseUrl}}schema"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "empty schema.name field",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "origin",
+												"value": "{{Origin}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"schema\": {\n        \"name\":\"\"\n    }\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{studio-api-baseUrl}}schema",
+											"host": [
+												"{{studio-api-baseUrl}}schema"
+											]
+										}
+									},
+									"status": "Bad Request",
+									"code": 400,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "310"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"136-xkk30b/qKUK4MHRso1kW8hb1WLQ\""
+										},
+										{
+											"key": "Date",
+											"value": "Wed, 15 Feb 2023 08:38:21 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"statusCode\": 400,\n    \"message\": [\n        \"schema.name should not be empty\",\n        \"schema.author should not be empty\",\n        \"schema.author must be a string\",\n        \"schema.additionalProperties must be a boolean value\",\n        \"namespace should not be empty\",\n        \"namespace must be a string\",\n        \"verificationMethodId must be a string\"\n    ],\n    \"error\": \"Bad Request\"\n}"
+								}
+							]
+						},
+						{
+							"name": "schema.author field not passed",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var responseBody = pm.response.json()",
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"pm.test('Response body should be an object', function () {",
+											"    pm.expect(typeof responseBody).to.equal(\"object\")",
+											"})",
+											"pm.test(\"Should be able to fail as only field schema.name is  passed in request body\", function () {",
+											"    pm.expect(responseBody.hasOwnProperty(\"statusCode\")).to.be.true;",
+											"    pm.expect(responseBody.statusCode).to.be.a('number')",
+											"    pm.expect(responseBody.statusCode).to.be.equal(400)",
+											"    pm.expect(responseBody.hasOwnProperty(\"message\")).to.be.true;",
+											"    pm.expect(responseBody.message).to.be.an(\"array\");",
+											"    pm.expect(responseBody.message[0]).to.be.equal(\"schema.author should not be empty\")",
+											"    pm.expect(responseBody.message[1]).to.be.equal(\"schema.author must be a string\")",
+											"    pm.expect(responseBody.message[2]).to.be.equal(\"schema.additionalProperties must be a boolean value\")",
+											"    pm.expect(responseBody.message[3]).to.be.equal(\"namespace should not be empty\")",
+											"    pm.expect(responseBody.message[4]).to.be.equal(\"namespace must be a string\")",
+											"",
+											"    pm.expect(responseBody.message[5]).to.be.equal(\"verificationMethodId must be a string\")",
+											"    pm.expect(responseBody.hasOwnProperty(\"error\")).to.be.true;",
+											"    pm.expect(responseBody.error).to.be.equal(\"Bad Request\")",
+											"",
+											"});",
+											"",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_Token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "origin",
+										"value": "{{Origin}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"schema\": {\n        \"name\":\"Ticket schema\"\n    }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{studio-api-baseUrl}}schema",
+									"host": [
+										"{{studio-api-baseUrl}}schema"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "schema.author field not passed",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "origin",
+												"value": "{{Origin}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"schema\": {\n        \"name\":\"Ticket schema\"\n    }\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{studio-api-baseUrl}}schema",
+											"host": [
+												"{{studio-api-baseUrl}}schema"
+											]
+										}
+									},
+									"status": "Bad Request",
+									"code": 400,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "276"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"114-bZlMkL+opEU0I2kPT23sHZBQ/wc\""
+										},
+										{
+											"key": "Date",
+											"value": "Wed, 15 Feb 2023 09:01:59 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"statusCode\": 400,\n    \"message\": [\n        \"schema.author should not be empty\",\n        \"schema.author must be a string\",\n        \"schema.additionalProperties must be a boolean value\",\n        \"namespace should not be empty\",\n        \"namespace must be a string\",\n        \"verificationMethodId must be a string\"\n    ],\n    \"error\": \"Bad Request\"\n}"
+								}
+							]
+						},
+						{
+							"name": "empty schema.author",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var responseBody = pm.response.json()",
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"pm.test('Response body should be an object', function () {",
+											"    pm.expect(typeof responseBody).to.equal(\"object\")",
+											"})",
+											"pm.test(\"Should be able to fail as only field schema.name is  passed in request body\", function () {",
+											"    pm.expect(responseBody.hasOwnProperty(\"statusCode\")).to.be.true;",
+											"    pm.expect(responseBody.statusCode).to.be.a('number')",
+											"    pm.expect(responseBody.statusCode).to.be.equal(400)",
+											"    pm.expect(responseBody.hasOwnProperty(\"message\")).to.be.true;",
+											"    pm.expect(responseBody.message).to.be.an(\"array\");",
+											"    pm.expect(responseBody.message[0]).to.be.equal(\"author cannot be empty\")",
+											"    pm.expect(responseBody.hasOwnProperty(\"error\")).to.be.true;",
+											"    pm.expect(responseBody.error).to.be.equal(\"Bad Request\")",
+											"",
+											"});",
+											"",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_Token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "origin",
+										"value": "{{Origin}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"schema\": {\n        \"name\":\"Ticket schema\",\n        \"author\":\"\"\n    }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{studio-api-baseUrl}}schema",
+									"host": [
+										"{{studio-api-baseUrl}}schema"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "empty schema.author",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "origin",
+												"value": "{{Origin}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"schema\": {\n        \"name\":\"Ticket schema\",\n        \"author\":\"\"\n    }\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{studio-api-baseUrl}}schema",
+											"host": [
+												"{{studio-api-baseUrl}}schema"
+											]
+										}
+									},
+									"status": "Bad Request",
+									"code": 400,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "77"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"4d-8l1NN7nhrwKzrS0BgtwgkQL4CGU\""
+										},
+										{
+											"key": "Date",
+											"value": "Wed, 15 Feb 2023 09:04:44 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"statusCode\": 400,\n    \"message\": [\n        \"author cannot be empty\"\n    ],\n    \"error\": \"Bad Request\"\n}"
+								}
+							]
+						},
+						{
+							"name": "invalid schema.author",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var responseBody = pm.response.json()",
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"pm.test('Response body should be an object', function () {",
+											"    pm.expect(typeof responseBody).to.equal(\"object\")",
+											"})",
+											"pm.test(\"Should be able to fail as only field schema.name is  passed in request body\", function () {",
+											"    pm.expect(responseBody.hasOwnProperty(\"statusCode\")).to.be.true;",
+											"    pm.expect(responseBody.statusCode).to.be.a('number')",
+											"    pm.expect(responseBody.statusCode).to.be.equal(400)",
+											"    pm.expect(responseBody.hasOwnProperty(\"message\")).to.be.true;",
+											"    pm.expect(responseBody.message).to.be.an(\"array\");",
+											"    pm.expect(responseBody.message[0]).to.be.equal(\"Invalid author\")",
+											"    pm.expect(responseBody.hasOwnProperty(\"error\")).to.be.true;",
+											"    pm.expect(responseBody.error).to.be.equal(\"Bad Request\")",
+											"",
+											"});",
+											"",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_Token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "origin",
+										"value": "{{Origin}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"schema\": {\n        \"name\":\"Ticket schema\",\n        \"author\":\"xyz\"\n    }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{studio-api-baseUrl}}schema",
+									"host": [
+										"{{studio-api-baseUrl}}schema"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "invalid schema.author",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "origin",
+												"value": "{{Origin}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"schema\": {\n        \"name\":\"Ticket schema\",\n        \"author\":\"xyz\"\n    }\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{studio-api-baseUrl}}schema",
+											"host": [
+												"{{studio-api-baseUrl}}schema"
+											]
+										}
+									},
+									"status": "Bad Request",
+									"code": 400,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "69"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"45-WbQcyl/Ldgkf8KUPadIyDjBkZ0Q\""
+										},
+										{
+											"key": "Date",
+											"value": "Wed, 15 Feb 2023 09:07:55 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"statusCode\": 400,\n    \"message\": [\n        \"Invalid author\"\n    ],\n    \"error\": \"Bad Request\"\n}"
+								}
+							]
+						},
+						{
+							"name": "schema.additionalProperties not passed",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var responseBody = pm.response.json()",
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"pm.test('Response body should be an object', function () {",
+											"    pm.expect(typeof responseBody).to.equal(\"object\")",
+											"})",
+											"pm.test(\"Should be able to fail as only field schema.additionalProperties is not passed.\", function () {",
+											"    pm.expect(responseBody.hasOwnProperty(\"statusCode\")).to.be.true;",
+											"    pm.expect(responseBody.statusCode).to.be.a('number')",
+											"    pm.expect(responseBody.statusCode).to.be.equal(400)",
+											"    pm.expect(responseBody.hasOwnProperty(\"message\")).to.be.true;",
+											"    pm.expect(responseBody.message).to.be.an(\"array\");",
+											"    pm.expect(responseBody.message[0]).to.be.equal(\"schema.additionalProperties must be a boolean value\")",
+											"    pm.expect(responseBody.message[1]).to.be.equal(\"namespace should not be empty\")",
+											"    pm.expect(responseBody.message[2]).to.be.equal(\"namespace must be a string\")",
+											"    pm.expect(responseBody.message[3]).to.be.equal(\"verificationMethodId must be a string\")",
+											"    pm.expect(responseBody.hasOwnProperty(\"error\")).to.be.true;",
+											"    pm.expect(responseBody.error).to.be.equal(\"Bad Request\")",
+											"",
+											"});",
+											"",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_Token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "origin",
+										"value": "{{Origin}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"schema\": {\n        \"name\":\"Ticket schema\",\n        \"author\":\"{{did}}\"\n    }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{studio-api-baseUrl}}schema",
+									"host": [
+										"{{studio-api-baseUrl}}schema"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "schema.additionalProperties not passed",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "origin",
+												"value": "{{Origin}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"schema\": {\n        \"name\":\"Ticket schema\",\n        \"author\":\"{{did}}\"\n    }\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{studio-api-baseUrl}}schema",
+											"host": [
+												"{{studio-api-baseUrl}}schema"
+											]
+										}
+									},
+									"status": "Bad Request",
+									"code": 400,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "207"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"cf-J0wFyOOOuKlZ4dYLhP0X5/RRbcc\""
+										},
+										{
+											"key": "Date",
+											"value": "Wed, 15 Feb 2023 09:14:08 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"statusCode\": 400,\n    \"message\": [\n        \"schema.additionalProperties must be a boolean value\",\n        \"namespace should not be empty\",\n        \"namespace must be a string\",\n        \"verificationMethodId must be a string\"\n    ],\n    \"error\": \"Bad Request\"\n}"
+								}
+							]
+						},
+						{
+							"name": "invalid schema.additionalProperties",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var responseBody = pm.response.json()",
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"pm.test('Response body should be an object', function () {",
+											"    pm.expect(typeof responseBody).to.equal(\"object\")",
+											"})",
+											"pm.test(\"Should be able to fail as only field schema.additionalProperties is not passed.\", function () {",
+											"    pm.expect(responseBody.hasOwnProperty(\"statusCode\")).to.be.true;",
+											"    pm.expect(responseBody.statusCode).to.be.a('number')",
+											"    pm.expect(responseBody.statusCode).to.be.equal(400)",
+											"    pm.expect(responseBody.hasOwnProperty(\"message\")).to.be.true;",
+											"    pm.expect(responseBody.message).to.be.an(\"array\");",
+											"    pm.expect(responseBody.message[0]).to.be.equal(\"schema.additionalProperties must be a boolean value\")",
+											"    pm.expect(responseBody.message[1]).to.be.equal(\"namespace should not be empty\")",
+											"    pm.expect(responseBody.message[2]).to.be.equal(\"namespace must be a string\")",
+											"    pm.expect(responseBody.message[3]).to.be.equal(\"verificationMethodId must be a string\")",
+											"    pm.expect(responseBody.hasOwnProperty(\"error\")).to.be.true;",
+											"    pm.expect(responseBody.error).to.be.equal(\"Bad Request\")",
+											"",
+											"});",
+											"",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_Token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "origin",
+										"value": "{{Origin}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"schema\": {\n        \"name\":\"Ticket schema\",\n        \"author\":\"{{did}}\",\n        \"additionalProperties\":\"\"\n    }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{studio-api-baseUrl}}schema",
+									"host": [
+										"{{studio-api-baseUrl}}schema"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "invalid schema.additionalProperties",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "origin",
+												"value": "{{Origin}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"schema\": {\n        \"name\":\"Ticket schema\",\n        \"author\":\"{{did}}\",\n        \"additionalProperties\":\"\"\n    }\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{studio-api-baseUrl}}schema",
+											"host": [
+												"{{studio-api-baseUrl}}schema"
+											]
+										}
+									},
+									"status": "Bad Request",
+									"code": 400,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "207"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"cf-J0wFyOOOuKlZ4dYLhP0X5/RRbcc\""
+										},
+										{
+											"key": "Date",
+											"value": "Wed, 15 Feb 2023 09:21:44 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"statusCode\": 400,\n    \"message\": [\n        \"schema.additionalProperties must be a boolean value\",\n        \"namespace should not be empty\",\n        \"namespace must be a string\",\n        \"verificationMethodId must be a string\"\n    ],\n    \"error\": \"Bad Request\"\n}"
+								}
+							]
+						},
+						{
+							"name": "namespace is not passed",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var responseBody = pm.response.json()",
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"pm.test('Response body should be an object', function () {",
+											"    pm.expect(typeof responseBody).to.equal(\"object\")",
+											"})",
+											"pm.test(\"Should be able to fail as only field namespace is not passed.\", function () {",
+											"    pm.expect(responseBody.hasOwnProperty(\"statusCode\")).to.be.true;",
+											"    pm.expect(responseBody.statusCode).to.be.a('number')",
+											"    pm.expect(responseBody.statusCode).to.be.equal(400)",
+											"    pm.expect(responseBody.hasOwnProperty(\"message\")).to.be.true;",
+											"    pm.expect(responseBody.message).to.be.an(\"array\");",
+											"    pm.expect(responseBody.message[0]).to.be.equal(\"namespace should not be empty\")",
+											"    pm.expect(responseBody.message[1]).to.be.equal(\"namespace must be a string\")",
+											"    pm.expect(responseBody.message[2]).to.be.equal(\"verificationMethodId must be a string\")",
+											"    pm.expect(responseBody.hasOwnProperty(\"error\")).to.be.true;",
+											"    pm.expect(responseBody.error).to.be.equal(\"Bad Request\")",
+											"",
+											"});",
+											"",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_Token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "origin",
+										"value": "{{Origin}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"schema\": {\n        \"name\": \"Ticket schema\",\n        \"author\": \"{{did}}\",\n        \"additionalProperties\": false\n    }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{studio-api-baseUrl}}schema",
+									"host": [
+										"{{studio-api-baseUrl}}schema"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "namespace is not passed",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "origin",
+												"value": "{{Origin}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"schema\": {\n        \"name\": \"Ticket schema\",\n        \"author\": \"{{did}}\",\n        \"additionalProperties\": false\n    }\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{studio-api-baseUrl}}schema",
+											"host": [
+												"{{studio-api-baseUrl}}schema"
+											]
+										}
+									},
+									"status": "Bad Request",
+									"code": 400,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "153"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"99-1NFEqxPQsq35ZT6YmUCh7vIqsBc\""
+										},
+										{
+											"key": "Date",
+											"value": "Wed, 15 Feb 2023 09:27:44 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"statusCode\": 400,\n    \"message\": [\n        \"namespace should not be empty\",\n        \"namespace must be a string\",\n        \"verificationMethodId must be a string\"\n    ],\n    \"error\": \"Bad Request\"\n}"
+								}
+							]
+						},
+						{
+							"name": "empty namespace",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var responseBody = pm.response.json()",
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"pm.test('Response body should be an object', function () {",
+											"    pm.expect(typeof responseBody).to.equal(\"object\")",
+											"})",
+											"pm.test(\"Should be able to fail as namespace is empty\", function () {",
+											"    pm.expect(responseBody.hasOwnProperty(\"statusCode\")).to.be.true;",
+											"    pm.expect(responseBody.statusCode).to.be.a('number')",
+											"    pm.expect(responseBody.statusCode).to.be.equal(400)",
+											"    pm.expect(responseBody.hasOwnProperty(\"message\")).to.be.true;",
+											"    pm.expect(responseBody.message).to.be.an(\"array\");",
+											"    pm.expect(responseBody.message[0]).to.be.equal(\"namespace should not be empty\")",
+											"    pm.expect(responseBody.message[1]).to.be.equal(\"verificationMethodId must be a string\")",
+											"    pm.expect(responseBody.hasOwnProperty(\"error\")).to.be.true;",
+											"    pm.expect(responseBody.error).to.be.equal(\"Bad Request\")",
+											"",
+											"});",
+											"",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_Token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "origin",
+										"value": "{{Origin}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"schema\": {\n        \"name\": \"Ticket schema\",\n        \"author\": \"{{did}}\",\n        \"additionalProperties\": false\n    },\n    \"namespace\": \"\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{studio-api-baseUrl}}schema",
+									"host": [
+										"{{studio-api-baseUrl}}schema"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "empty namespace",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "origin",
+												"value": "{{Origin}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"schema\": {\n        \"name\": \"Ticket schema\",\n        \"author\": \"{{did}}\",\n        \"additionalProperties\": false\n    },\n    \"namespace\": \"\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{studio-api-baseUrl}}schema",
+											"host": [
+												"{{studio-api-baseUrl}}schema"
+											]
+										}
+									},
+									"status": "Bad Request",
+									"code": 400,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "124"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"7c-CZah9l0mddolWA2sOGGMFOtD/wI\""
+										},
+										{
+											"key": "Date",
+											"value": "Wed, 15 Feb 2023 09:29:29 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"statusCode\": 400,\n    \"message\": [\n        \"namespace should not be empty\",\n        \"verificationMethodId must be a string\"\n    ],\n    \"error\": \"Bad Request\"\n}"
+								}
+							]
+						},
+						{
+							"name": "verificationMethodId not passed",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var responseBody = pm.response.json()",
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"pm.test('Response body should be an object', function () {",
+											"    pm.expect(typeof responseBody).to.equal(\"object\")",
+											"})",
+											"pm.test(\"Should be able to fail as verificationMethodId field is not passed in request body\", function () {",
+											"    pm.expect(responseBody.hasOwnProperty(\"statusCode\")).to.be.true;",
+											"    pm.expect(responseBody.statusCode).to.be.a('number')",
+											"    pm.expect(responseBody.statusCode).to.be.equal(400)",
+											"    pm.expect(responseBody.hasOwnProperty(\"message\")).to.be.true;",
+											"    pm.expect(responseBody.message).to.be.an(\"array\");",
+											"    pm.expect(responseBody.message[0]).to.be.equal(\"verificationMethodId must be a string\")",
+											"    pm.expect(responseBody.hasOwnProperty(\"error\")).to.be.true;",
+											"    pm.expect(responseBody.error).to.be.equal(\"Bad Request\")",
+											"",
+											"});",
+											"",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_Token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "origin",
+										"value": "{{Origin}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"schema\": {\n        \"name\": \"Ticket schema\",\n        \"author\": \"{{did}}\",\n        \"additionalProperties\": false\n    },\n    \"namespace\": \"testnet\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{studio-api-baseUrl}}schema",
+									"host": [
+										"{{studio-api-baseUrl}}schema"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "verificationMethodId not passed",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "origin",
+												"value": "{{Origin}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"schema\": {\n        \"name\": \"Ticket schema\",\n        \"author\": \"{{did}}\",\n        \"additionalProperties\": false\n    },\n    \"namespace\": \"testnet\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{studio-api-baseUrl}}schema",
+											"host": [
+												"{{studio-api-baseUrl}}schema"
+											]
+										}
+									},
+									"status": "Bad Request",
+									"code": 400,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "92"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"5c-ii60+QasIfPIWaDzGUPaCa22xIU\""
+										},
+										{
+											"key": "Date",
+											"value": "Wed, 15 Feb 2023 09:30:59 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"statusCode\": 400,\n    \"message\": [\n        \"verificationMethodId must be a string\"\n    ],\n    \"error\": \"Bad Request\"\n}"
+								}
+							]
+						},
+						{
+							"name": "empty  verificationMethodId",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var responseBody = pm.response.json()",
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"pm.test('Response body should be an object', function () {",
+											"    pm.expect(typeof responseBody).to.equal(\"object\")",
+											"})",
+											"pm.test(\"Should be able to fail as verificationMethodId passed in  request body is empty\", function () {",
+											"    pm.expect(responseBody.hasOwnProperty(\"statusCode\")).to.be.true;",
+											"    pm.expect(responseBody.statusCode).to.be.a('number')",
+											"    pm.expect(responseBody.statusCode).to.be.equal(400)",
+											"    pm.expect(responseBody.hasOwnProperty(\"message\")).to.be.true;",
+											"    pm.expect(responseBody.message).to.be.an(\"array\");",
+											"    pm.expect(responseBody.message[0]).to.be.equal(\"verificationMethodId cannot be empty\")",
+											"    pm.expect(responseBody.hasOwnProperty(\"error\")).to.be.true;",
+											"    pm.expect(responseBody.error).to.be.equal(\"Bad Request\")",
+											"",
+											"});",
+											"",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_Token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "origin",
+										"value": "{{Origin}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"schema\": {\n        \"name\": \"Ticket schema\",\n        \"author\": \"{{did}}\",\n        \"additionalProperties\": false\n    },\n    \"namespace\": \"testnet\",\n    \"verificationMethodId\": \"\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{studio-api-baseUrl}}schema",
+									"host": [
+										"{{studio-api-baseUrl}}schema"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "empty  verificationMethodId",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "origin",
+												"value": "{{Origin}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"schema\": {\n        \"name\": \"Ticket schema\",\n        \"author\": \"{{did}}\",\n        \"additionalProperties\": false\n    },\n    \"namespace\": \"testnet\",\n    \"verificationMethodId\": \"\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{studio-api-baseUrl}}schema",
+											"host": [
+												"{{studio-api-baseUrl}}schema"
+											]
+										}
+									},
+									"status": "Bad Request",
+									"code": 400,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "91"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"5b-zP9LI+Oe9F8CDquWcPNgIxi8yfo\""
+										},
+										{
+											"key": "Date",
+											"value": "Wed, 15 Feb 2023 09:34:18 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"statusCode\": 400,\n    \"message\": [\n        \"verificationMethodId cannot be empty\"\n    ],\n    \"error\": \"Bad Request\"\n}"
+								}
+							]
+						},
+						{
+							"name": "invalid verificationMethodId",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var responseBody = pm.response.json()",
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"pm.test('Response body should be an object', function () {",
+											"    pm.expect(typeof responseBody).to.equal(\"object\")",
+											"})",
+											"pm.test(\"Should be able to fail as verificationMethodId passed in request body is not of type verificationMethodId\", function () {",
+											"    pm.expect(responseBody.hasOwnProperty(\"statusCode\")).to.be.true;",
+											"    pm.expect(responseBody.statusCode).to.be.a('number')",
+											"    pm.expect(responseBody.statusCode).to.be.equal(400)",
+											"    pm.expect(responseBody.hasOwnProperty(\"message\")).to.be.true;",
+											"    pm.expect(responseBody.message).to.be.an(\"array\");",
+											"    pm.expect(responseBody.message[0]).to.be.equal(\"Invalid verificationMethodId\")",
+											"    pm.expect(responseBody.hasOwnProperty(\"error\")).to.be.true;",
+											"    pm.expect(responseBody.error).to.be.equal(\"Bad Request\")",
+											"",
+											"});",
+											"",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_Token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "origin",
+										"value": "{{Origin}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"schema\": {\n        \"name\": \"Ticket schema\",\n        \"author\": \"{{did}}\",\n        \"additionalProperties\": false\n    },\n    \"namespace\": \"testnet\",\n    \"verificationMethodId\": \"xyz\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{studio-api-baseUrl}}schema",
+									"host": [
+										"{{studio-api-baseUrl}}schema"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "invalid verificationMethodId",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "origin",
+												"value": "{{Origin}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"schema\": {\n        \"name\": \"Ticket schema\",\n        \"author\": \"{{did}}\",\n        \"additionalProperties\": false\n    },\n    \"namespace\": \"testnet\",\n    \"verificationMethodId\": \"xyz\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{studio-api-baseUrl}}schema",
+											"host": [
+												"{{studio-api-baseUrl}}schema"
+											]
+										}
+									},
+									"status": "Bad Request",
+									"code": 400,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "83"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"53-HmS+bQKLXOk9AJoxXx80grUQ77Q\""
+										},
+										{
+											"key": "Date",
+											"value": "Wed, 15 Feb 2023 09:34:57 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"statusCode\": 400,\n    \"message\": [\n        \"Invalid verificationMethodId\"\n    ],\n    \"error\": \"Bad Request\"\n}"
+								}
+							]
+						},
+						{
+							"name": "invalid namespace",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var responseBody = pm.response.json()",
+											"var namespace=JSON.parse( pm.request.body.raw).namespace",
+											"let gasUsed = responseBody.message[0]",
+											"const regex = /gas used: '(\\d+)'/;",
+											"const match = gasUsed.match(regex);",
+											" gasUsed = match[1];",
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"pm.test('Response body should be an object', function () {",
+											"    pm.expect(typeof responseBody).to.equal(\"object\")",
+											"})",
+											"pm.test(\"Should be able to fail as namespace passed in request body is not valid.It should be testnet but got some other\", function () {",
+											"    pm.expect(responseBody.hasOwnProperty(\"statusCode\")).to.be.true;",
+											"    pm.expect(responseBody.statusCode).to.be.a('number')",
+											"    pm.expect(responseBody.statusCode).to.be.equal(400)",
+											"    pm.expect(responseBody.hasOwnProperty(\"message\")).to.be.true;",
+											"    pm.expect(responseBody.message).to.be.an(\"array\");",
+											"    pm.expect(responseBody.message[0]).to.be.equal(`Query failed with (6): rpc error: code = Unknown desc = failed to execute message; message index: 0: expected did namespace testnet, got ${namespace}: Invalid schema Id [/home/arnab/code/research/hid-node/x/ssi/keeper/msg_server_schema.go:36] With gas wanted: '0' and gas used: '${gasUsed}' : unknown request`)",
+											"    pm.expect(responseBody.hasOwnProperty(\"error\")).to.be.true;",
+											"    pm.expect(responseBody.error).to.be.equal(\"Bad Request\")",
+											"",
+											"});",
+											"",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_Token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "origin",
+										"value": "{{Origin}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"schema\": {\n        \"name\": \"Ticket schema\",\n        \"author\": \"{{did}}\",\n        \"additionalProperties\": false\n    },\n    \"namespace\": \"fyre\",\n    \"verificationMethodId\": \"{{did}}#key-1\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{studio-api-baseUrl}}schema",
+									"host": [
+										"{{studio-api-baseUrl}}schema"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "invalid namespace",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "origin",
+												"value": "{{Origin}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"schema\": {\n        \"name\": \"Ticket schema\",\n        \"author\": \"{{did}}\",\n        \"additionalProperties\": false\n    },\n    \"namespace\": \"fyre\",\n    \"verificationMethodId\": \"{{did}}#key-1\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{studio-api-baseUrl}}schema",
+											"host": [
+												"{{studio-api-baseUrl}}schema"
+											]
+										}
+									},
+									"status": "Bad Request",
+									"code": 400,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "350"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"15e-M08Ywm3S0kox3D5P2aOv+JU6mM8\""
+										},
+										{
+											"key": "Date",
+											"value": "Wed, 15 Feb 2023 09:44:16 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"statusCode\": 400,\n    \"message\": [\n        \"Query failed with (6): rpc error: code = Unknown desc = failed to execute message; message index: 0: expected did namespace testnet, got fyre: Invalid schema Id [/home/arnab/code/research/hid-node/x/ssi/keeper/msg_server_schema.go:36] With gas wanted: '0' and gas used: '52197' : unknown request\"\n    ],\n    \"error\": \"Bad Request\"\n}"
+								}
+							]
+						},
+						{
+							"name": "create schema",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var responseBody = pm.response.json()",
+											"pm.test(\"Status code is 201\", function () {",
+											"    pm.response.to.have.status(201);",
+											"});",
+											"pm.test('Response body should be an object', function () {",
+											"    pm.expect(typeof responseBody).to.equal(\"object\")",
+											"})",
+											"pm.test(\"Should be able to pass and create new schema\", function () {",
+											"     pm.expect(responseBody.hasOwnProperty(\"schemaId\")).to.be.true;",
+											"    pm.expect(responseBody.schemaId).to.be.a('string')",
+											"    pm.expect(responseBody.hasOwnProperty(\"transactionHash\")).to.be.true;",
+											"    pm.expect(responseBody.transactionHash).to.be.an(\"string\");",
+											"    pm.environment.set(\"schemaId\", responseBody.schemaId)",
+											"});",
+											"",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_Token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [
+									{
+										"key": "origin",
+										"value": "{{Origin}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"schema\": {\n        \"name\": \"Ticket schema\",\n        \"author\": \"{{did}}\",\n        \"additionalProperties\": false\n    },\n    \"namespace\": \"testnet\",\n    \"verificationMethodId\": \"{{did}}#key-1\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{studio-api-baseUrl}}schema",
+									"host": [
+										"{{studio-api-baseUrl}}schema"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "create schema",
+									"originalRequest": {
+										"method": "POST",
+										"header": [
+											{
+												"key": "origin",
+												"value": "{{Origin}}",
+												"type": "text"
+											}
+										],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"schema\": {\n        \"name\": \"Ticket schema\",\n        \"author\": \"{{did}}\",\n        \"additionalProperties\": false\n    },\n    \"namespace\": \"testnet\",\n    \"verificationMethodId\": \"{{did}}#key-1\"\n}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{studio-api-baseUrl}}schema",
+											"host": [
+												"{{studio-api-baseUrl}}schema"
+											]
+										}
+									},
+									"status": "Created",
+									"code": 201,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "165"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"a5-j+sPjcbt3i4httdNgTWKTAMcReU\""
+										},
+										{
+											"key": "Date",
+											"value": "Wed, 15 Feb 2023 09:56:45 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"schemaId\": \"sch:hid:testnet:z3GrkvxjwNHc72y9YZ7sV8AZqhDo9eJJaYbuj1KTY8bBq:1.0\",\n    \"transactionHash\": \"1E90D0835C81EF6D016C2A38086ABF2EA01EC15EBA4C5468D1E0B61AD6D23A6E\"\n}"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "get schema list",
+					"item": [
+						{
+							"name": "authorization issue",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var responseBody = pm.response.json()",
+											"pm.test(\"Status code is 401\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});",
+											"pm.test('Response body should be an object', function () {",
+											"    pm.expect(typeof responseBody).to.equal(\"object\")",
+											"})",
+											"pm.test(\"Should not be able to fetch schema list as access token is not passed in header \", function () {",
+											"    pm.expect(responseBody.hasOwnProperty(\"statusCode\")).to.be.true;",
+											"    pm.expect(responseBody.statusCode).to.be.a('number')",
+											"    pm.expect(responseBody.statusCode).to.be.equal(401)",
+											"    pm.expect(responseBody.hasOwnProperty(\"message\")).to.be.true;",
+											"    pm.expect(responseBody.message).to.be.an(\"array\");",
+											"    pm.expect(responseBody.message[0]).to.be.equal('Unauthorized')",
+											"    pm.expect(responseBody.message[1]).to.be.equal('Please pass access token')",
+											"    pm.expect(responseBody.hasOwnProperty(\"error\")).to.be.true;",
+											"    pm.expect(responseBody.error).to.be.equal(\"Unauthorized\")",
+											"",
+											"});",
+											"",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{studio-api-baseUrl}}schema",
+									"host": [
+										"{{studio-api-baseUrl}}schema"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "authorization issue",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{studio-api-baseUrl}}schema",
+											"host": [
+												"{{studio-api-baseUrl}}schema"
+											]
+										}
+									},
+									"status": "Unauthorized",
+									"code": 401,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "95"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"5f-aJwKIlmGef0ljYKkUGy5EfswjQk\""
+										},
+										{
+											"key": "Date",
+											"value": "Wed, 15 Feb 2023 07:55:54 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"statusCode\": 401,\n    \"message\": [\n        \"Unauthorized\",\n        \"Please pass access token\"\n    ],\n    \"error\": \"Unauthorized\"\n}"
+								}
+							]
+						},
+						{
+							"name": "origin not passed",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var responseBody = pm.response.json()",
+											"pm.test(\"Status code is 401\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});",
+											"pm.test('Response body should be an object', function () {",
+											"    pm.expect(typeof responseBody).to.equal(\"object\")",
+											"})",
+											"pm.test(\"Should not be able to fetch schema list as origin passed in header  not matched with origin set in app \", function () {",
+											"    pm.expect(responseBody.hasOwnProperty(\"statusCode\")).to.be.true;",
+											"    pm.expect(responseBody.statusCode).to.be.a('number')",
+											"    pm.expect(responseBody.statusCode).to.be.equal(401)",
+											"    pm.expect(responseBody.hasOwnProperty(\"message\")).to.be.true;",
+											"    pm.expect(responseBody.message).to.be.an(\"array\");",
+											"    pm.expect(responseBody.message[0]).to.be.equal('Origin mismatch')",
+											"    pm.expect(responseBody.hasOwnProperty(\"error\")).to.be.true;",
+											"    pm.expect(responseBody.error).to.be.equal(\"Unauthorized\")",
+											"",
+											"});",
+											"",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_Token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{studio-api-baseUrl}}schema",
+									"host": [
+										"{{studio-api-baseUrl}}schema"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "origin not passed",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{studio-api-baseUrl}}schema",
+											"host": [
+												"{{studio-api-baseUrl}}schema"
+											]
+										}
+									},
+									"status": "Unauthorized",
+									"code": 401,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "71"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"47-Z/rvm+daBAjYJdCCZju2EE6gB8U\""
+										},
+										{
+											"key": "Date",
+											"value": "Wed, 15 Feb 2023 08:03:48 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"statusCode\": 401,\n    \"message\": [\n        \"Origin mismatch\"\n    ],\n    \"error\": \"Unauthorized\"\n}"
+								}
+							]
+						},
+						{
+							"name": "negative limit value",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var responseBody = pm.response.json()",
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"pm.test('Response body should be an object', function () {",
+											"    pm.expect(typeof responseBody).to.equal(\"object\")",
+											"})",
+											"pm.test(\"Should not be able to fetch schema list as  limit is negative or 0\", function () {",
+											"    pm.expect(responseBody.hasOwnProperty(\"statusCode\")).to.be.true;",
+											"    pm.expect(responseBody.statusCode).to.be.a('number')",
+											"    pm.expect(responseBody.statusCode).to.be.equal(400)",
+											"    pm.expect(responseBody.hasOwnProperty(\"message\")).to.be.true;",
+											"    pm.expect(responseBody.message).to.be.an(\"array\");",
+											"    pm.expect(responseBody.message[0]).to.be.equal( \"limit must not be less than 1\")",
+											"    pm.expect(responseBody.hasOwnProperty(\"error\")).to.be.true;",
+											"    pm.expect(responseBody.error).to.be.equal(\"Bad Request\")",
+											"",
+											"});",
+											"",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_Token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "origin",
+										"value": "{{Origin}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{studio-api-baseUrl}}schema?page =2&limit=-10",
+									"host": [
+										"{{studio-api-baseUrl}}schema"
+									],
+									"query": [
+										{
+											"key": "page ",
+											"value": "2"
+										},
+										{
+											"key": "limit",
+											"value": "-10"
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "negative limit value",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "origin",
+												"value": "{{Origin}}",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "{{studio-api-baseUrl}}schema?page =2&limit=-10",
+											"host": [
+												"{{studio-api-baseUrl}}schema"
+											],
+											"query": [
+												{
+													"key": "page ",
+													"value": "2"
+												},
+												{
+													"key": "limit",
+													"value": "-10"
+												}
+											]
+										}
+									},
+									"status": "Bad Request",
+									"code": 400,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "84"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"54-JS1yHCty54pMtfB4VAZ/1jEtHHU\""
+										},
+										{
+											"key": "Date",
+											"value": "Wed, 15 Feb 2023 11:11:45 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"statusCode\": 400,\n    \"message\": [\n        \"limit must not be less than 1\"\n    ],\n    \"error\": \"Bad Request\"\n}"
+								}
+							]
+						},
+						{
+							"name": "negative page value",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var responseBody = pm.response.json()",
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"pm.test('Response body should be an object', function () {",
+											"    pm.expect(typeof responseBody).to.equal(\"object\")",
+											"})",
+											"pm.test(\"Should not be able to feetch schema list as page is negative or 0\", function () {",
+											"    pm.expect(responseBody.hasOwnProperty(\"statusCode\")).to.be.true;",
+											"    pm.expect(responseBody.statusCode).to.be.a('number')",
+											"    pm.expect(responseBody.statusCode).to.be.equal(400)",
+											"    pm.expect(responseBody.hasOwnProperty(\"message\")).to.be.true;",
+											"    pm.expect(responseBody.message).to.be.an(\"array\");",
+											"    pm.expect(responseBody.message[0]).to.be.equal( \"page must not be less than 1\")",
+											"    pm.expect(responseBody.hasOwnProperty(\"error\")).to.be.true;",
+											"    pm.expect(responseBody.error).to.be.equal(\"Bad Request\")",
+											"",
+											"});",
+											"",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_Token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "origin",
+										"value": "{{Origin}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{studio-api-baseUrl}}schema?page=-1&limit=1",
+									"host": [
+										"{{studio-api-baseUrl}}schema"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "-1"
+										},
+										{
+											"key": "limit",
+											"value": "1"
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "negative page value",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "origin",
+												"value": "{{Origin}}",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "{{studio-api-baseUrl}}schema?page=-1&limit=1",
+											"host": [
+												"{{studio-api-baseUrl}}schema"
+											],
+											"query": [
+												{
+													"key": "page",
+													"value": "-1"
+												},
+												{
+													"key": "limit",
+													"value": "1"
+												}
+											]
+										}
+									},
+									"status": "Bad Request",
+									"code": 400,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "83"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"53-rSgVu62K2+soCfxfUvVCPAJHgqI\""
+										},
+										{
+											"key": "Date",
+											"value": "Wed, 15 Feb 2023 11:12:53 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"statusCode\": 400,\n    \"message\": [\n        \"page must not be less than 1\"\n    ],\n    \"error\": \"Bad Request\"\n}"
+								}
+							]
+						},
+						{
+							"name": "get schema list",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var responseBody = pm.response.json()",
+											"var page;",
+											"var limit;",
+											"var urlString = pm.request.url.toString();",
+											"var did = pm.environment.get('did')",
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"pm.test('Response body should be an object', function () {",
+											"    pm.expect(typeof responseBody).to.equal(\"object\")",
+											"})",
+											"",
+											"pm.test(\"Should be able to pass and have list of apps in response body \", function () {",
+											"    try {",
+											"        page = urlString.match(/page=(\\d+)/)[1];",
+											"        page = (parseInt(page))",
+											"    } catch (e) {",
+											"        page = 1",
+											"    }",
+											"    try {",
+											"        limit = urlString.match(/limit=(\\d+)/)[1];",
+											"        limit = parseInt(limit)",
+											"    } catch (e) {",
+											"        limit = 10",
+											"    }",
+											"    pm.expect(responseBody.hasOwnProperty(\"totalCount\")).to.be.true;",
+											"    pm.expect(responseBody.totalCount).to.be.a('number')",
+											"    pm.expect(responseBody.hasOwnProperty(\"data\")).to.be.true;",
+											"    pm.expect(responseBody.data).to.be.an(\"array\");",
+											"    pm.expect(responseBody.data).to.have.length.of.at.most(limit);",
+											"",
+											"});",
+											"",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_Token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "origin",
+										"value": "{{Origin}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{studio-api-baseUrl}}schema?page=1&limit=20",
+									"host": [
+										"{{studio-api-baseUrl}}schema"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "1"
+										},
+										{
+											"key": "limit",
+											"value": "20"
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "get schema list",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "origin",
+												"value": "{{Origin}}",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "{{studio-api-baseUrl}}schema?page=1&limit=20",
+											"host": [
+												"{{studio-api-baseUrl}}schema"
+											],
+											"query": [
+												{
+													"key": "page",
+													"value": "1"
+												},
+												{
+													"key": "limit",
+													"value": "20"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "229"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"e5-UL6nLKgS9iA449LQtWw4NblFPMY\""
+										},
+										{
+											"key": "Date",
+											"value": "Wed, 15 Feb 2023 11:15:52 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"totalCount\": 3,\n    \"data\": [\n        \"sch:hid:testnet:z2qzw2qTqP68vrZTe5tCBpC3E88ARxvGruVmLtZxsu5Mz:1.0\",\n        \"sch:hid:testnet:z3GrkvxjwNHc72y9YZ7sV8AZqhDo9eJJaYbuj1KTY8bBq:1.0\",\n        \"sch:hid:testnet:z77YDLPSyXRSLwgKrbVTP2RbFTRNrzUn3sqDiStu9RWcG:1.0\"\n    ]\n}"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "resolve schema",
+					"item": [
+						{
+							"name": "resolve schema",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var responseBody = pm.responseBody",
+											"var responseBody = pm.response.json()",
+											"var schemaId = pm.environment.get('schemaId')",
+											"var author = pm.environment.get('did')",
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"pm.test('Response body should be an object', function () {",
+											"    pm.expect(typeof responseBody).to.equal(\"object\")",
+											"})",
+											"pm.test(\"Should be able to resolve newly created schema and hve list of properties in it\", function () {",
+											"    pm.expect(responseBody.hasOwnProperty(\"type\")).to.be.true;",
+											"    pm.expect(responseBody.type).to.be.a('string')",
+											"    pm.expect(responseBody.hasOwnProperty(\"modelVersion\")).to.be.true;",
+											"    pm.expect(responseBody.modelVersion).to.be.a('string')",
+											"    pm.expect(responseBody.hasOwnProperty(\"id\")).to.be.true;",
+											"    pm.expect(responseBody.id).to.be.a('string')",
+											"    pm.expect(responseBody.id).to.be.equal(schemaId)",
+											"    pm.expect(responseBody.hasOwnProperty(\"name\")).to.be.true;",
+											"    pm.expect(responseBody.name).to.be.a('string')",
+											"    pm.expect(responseBody.hasOwnProperty(\"author\")).to.be.true;",
+											"    pm.expect(responseBody.author).to.be.a('string')",
+											"    pm.expect(responseBody.author).to.be.eql(author)",
+											"    pm.expect(responseBody.hasOwnProperty(\"authored\")).to.be.true;",
+											"    pm.expect(responseBody.authored).to.be.a('string')",
+											"    pm.expect(responseBody.hasOwnProperty(\"schema\")).to.be.true;",
+											"    pm.expect(responseBody.schema).to.be.a('object')",
+											"    pm.expect(responseBody.schema.hasOwnProperty(\"schema\")).to.be.true;",
+											"    pm.expect(responseBody.schema.schema).to.be.a('string')",
+											"    pm.expect(responseBody.schema.hasOwnProperty(\"description\")).to.be.true;",
+											"    pm.expect(responseBody.schema.description).to.be.a('string')",
+											"    pm.expect(responseBody.schema.hasOwnProperty(\"type\")).to.be.true;",
+											"    pm.expect(responseBody.schema.type).to.be.a('string')",
+											"    pm.expect(responseBody.schema.type).to.be.equal('object')",
+											"    pm.expect(responseBody.schema.hasOwnProperty(\"properties\")).to.be.true;",
+											"    pm.expect(responseBody.schema.properties).to.be.a('string')",
+											"    pm.expect(responseBody.schema.hasOwnProperty(\"required\")).to.be.true;",
+											"    pm.expect(responseBody.schema.required).to.be.a('array')",
+											"    pm.expect(responseBody.schema.hasOwnProperty(\"additionalProperties\")).to.be.true;",
+											"    pm.expect(responseBody.schema.additionalProperties).to.be.a('boolean')",
+											"    pm.expect(responseBody.hasOwnProperty(\"proof\")).to.be.true;",
+											"    pm.expect(responseBody.proof).to.be.a('object')",
+											"    pm.expect(responseBody.proof.hasOwnProperty(\"type\")).to.be.true;",
+											"    pm.expect(responseBody.proof.type).to.be.a('string')",
+											"    pm.expect(responseBody.proof.hasOwnProperty(\"created\")).to.be.true;",
+											"    pm.expect(responseBody.proof.created).to.be.a('string')",
+											"    pm.expect(responseBody.proof.hasOwnProperty(\"verificationMethod\")).to.be.true;",
+											"    pm.expect(responseBody.proof.verificationMethod).to.be.a('string')",
+											"    pm.expect(responseBody.proof.verificationMethod).to.be.eql(`${author}` + '#key-1')",
+											"    pm.expect(responseBody.proof.hasOwnProperty(\"proofPurpose\")).to.be.true;",
+											"    pm.expect(responseBody.proof.proofPurpose).to.be.a('string')",
+											"    pm.expect(responseBody.proof.proofPurpose).to.be.eql('assertion')",
+											"    pm.expect(responseBody.proof.hasOwnProperty(\"proofValue\")).to.be.true;",
+											"    pm.expect(responseBody.proof.proofValue).to.be.a('string')",
+											"",
+											"})"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_Token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "origin",
+										"value": "{{Origin}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{studio-api-baseUrl}}schema/{{schemaId}}",
+									"host": [
+										"{{studio-api-baseUrl}}schema"
+									],
+									"path": [
+										"{{schemaId}}"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "resolve schema",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "origin",
+												"value": "{{Origin}}",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "{{studio-api-baseUrl}}schema/{{schemaId}}",
+											"host": [
+												"{{studio-api-baseUrl}}schema"
+											],
+											"path": [
+												"{{schemaId}}"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "749"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"2ed-Lr5Zazfqtiz3XkrxUpiJ/2nRcMc\""
+										},
+										{
+											"key": "Date",
+											"value": "Wed, 15 Feb 2023 10:39:16 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"type\": \"https://w3c-ccg.github.io/vc-json-schemas/v1/schema/1.0/schema.json\",\n    \"modelVersion\": \"1.0\",\n    \"id\": \"sch:hid:testnet:z3GrkvxjwNHc72y9YZ7sV8AZqhDo9eJJaYbuj1KTY8bBq:1.0\",\n    \"name\": \"TicketSchema\",\n    \"author\": \"did:hid:testnet:z12cYPtkuzG33qNwP6ZL7LcSaNeTrkLX1eLtkTwCb42ES\",\n    \"authored\": \"2023-02-15T09:54:56Z\",\n    \"schema\": {\n        \"schema\": \"http://json-schema.org/draft-07/schema\",\n        \"description\": \"\",\n        \"type\": \"object\",\n        \"properties\": \"\",\n        \"required\": [],\n        \"additionalProperties\": false\n    },\n    \"proof\": {\n        \"type\": \"Ed25519Signature2020\",\n        \"created\": \"2023-02-15T09:54:56Z\",\n        \"verificationMethod\": \"did:hid:testnet:z12cYPtkuzG33qNwP6ZL7LcSaNeTrkLX1eLtkTwCb42ES#key-1\",\n        \"proofPurpose\": \"assertion\",\n        \"proofValue\": \"6t0B1PuD/E80Lr0zpwTC0zWeSe/+0oTT7TsfTLJTmTvYqwMw4CICEETKTL+754PcTZ8zumzbnV1+l9f7KzLUAQ==\"\n    }\n}"
+								}
+							]
+						},
+						{
+							"name": "wrong schemaId",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var responseBody = pm.response.json()",
+											"let schemaId= (pm.request.url.path).toString().split(',')",
+											"schemaId= schemaId[schemaId.length-1]",
+											"var appId= pm.environment.get('appId')",
+											"pm.test(\"Status code is 404\", function () {",
+											"    pm.response.to.have.status(404);",
+											"});",
+											"pm.test('Response body should be an object', function () {",
+											"    pm.expect(typeof responseBody).to.equal(\"object\")",
+											"})",
+											"pm.test(\"Should be able to fail as schemaId passed in request params is wrong\", function () {",
+											"    pm.expect(responseBody.hasOwnProperty(\"statusCode\")).to.be.true;",
+											"    pm.expect(responseBody.statusCode).to.be.a('number')",
+											"    pm.expect(responseBody.statusCode).to.be.equal(404)",
+											"    pm.expect(responseBody.hasOwnProperty(\"message\")).to.be.true;",
+											"    pm.expect(responseBody.message).to.be.an(\"array\");",
+											"    pm.expect(responseBody.message[0]).to.be.equal( `${schemaId} is not found`)",
+											"    pm.expect(responseBody.message[1]).to.be.equal( `${schemaId} does not belongs to the App id: ${appId}`)",
+											"",
+											"    pm.expect(responseBody.hasOwnProperty(\"error\")).to.be.true;",
+											"    pm.expect(responseBody.error).to.be.equal(\"Not Found\")",
+											"",
+											"});",
+											"",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_Token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [
+									{
+										"key": "origin",
+										"value": "{{Origin}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{studio-api-baseUrl}}schema/xyz",
+									"host": [
+										"{{studio-api-baseUrl}}schema"
+									],
+									"path": [
+										"xyz"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "wrong schemaId",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "origin",
+												"value": "{{Origin}}",
+												"type": "text"
+											}
+										],
+										"url": {
+											"raw": "{{studio-api-baseUrl}}schema/xyz",
+											"host": [
+												"{{studio-api-baseUrl}}schema"
+											],
+											"path": [
+												"xyz"
+											]
+										}
+									},
+									"status": "Not Found",
+									"code": 404,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "144"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"90-wu4/61os9CbEE9DGOE/HwfxE2no\""
+										},
+										{
+											"key": "Date",
+											"value": "Wed, 15 Feb 2023 10:59:09 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"statusCode\": 404,\n    \"message\": [\n        \"xyz is not found\",\n        \"xyz does not belongs to the App id: 139d3a871ad2849781ed930a88429b50f9df\"\n    ],\n    \"error\": \"Not Found\"\n}"
+								}
+							]
+						},
+						{
+							"name": "authorization issue",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var responseBody = pm.response.json()",
+											"pm.test(\"Status code is 401\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});",
+											"pm.test('Response body should be an object', function () {",
+											"    pm.expect(typeof responseBody).to.equal(\"object\")",
+											"})",
+											"pm.test(\"Should be able to fail as access token is not passed in header \", function () {",
+											"    pm.expect(responseBody.hasOwnProperty(\"statusCode\")).to.be.true;",
+											"    pm.expect(responseBody.statusCode).to.be.a('number')",
+											"    pm.expect(responseBody.statusCode).to.be.equal(401)",
+											"    pm.expect(responseBody.hasOwnProperty(\"message\")).to.be.true;",
+											"    pm.expect(responseBody.message).to.be.an(\"array\");",
+											"    pm.expect(responseBody.message[0]).to.be.equal('Unauthorized')",
+											"    pm.expect(responseBody.message[1]).to.be.equal('Please pass access token')",
+											"    pm.expect(responseBody.hasOwnProperty(\"error\")).to.be.true;",
+											"    pm.expect(responseBody.error).to.be.equal(\"Unauthorized\")",
+											"",
+											"});",
+											"",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{studio-api-baseUrl}}schema",
+									"host": [
+										"{{studio-api-baseUrl}}schema"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "authorization issue",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{studio-api-baseUrl}}schema",
+											"host": [
+												"{{studio-api-baseUrl}}schema"
+											]
+										}
+									},
+									"status": "Unauthorized",
+									"code": 401,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "95"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"5f-aJwKIlmGef0ljYKkUGy5EfswjQk\""
+										},
+										{
+											"key": "Date",
+											"value": "Wed, 15 Feb 2023 07:55:54 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"statusCode\": 401,\n    \"message\": [\n        \"Unauthorized\",\n        \"Please pass access token\"\n    ],\n    \"error\": \"Unauthorized\"\n}"
+								}
+							]
+						},
+						{
+							"name": "origin not passed",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"var responseBody = pm.response.json()",
+											"pm.test(\"Status code is 401\", function () {",
+											"    pm.response.to.have.status(401);",
+											"});",
+											"pm.test('Response body should be an object', function () {",
+											"    pm.expect(typeof responseBody).to.equal(\"object\")",
+											"})",
+											"pm.test(\"Should be able to fail as origin is not matched with origin set in app \", function () {",
+											"    pm.expect(responseBody.hasOwnProperty(\"statusCode\")).to.be.true;",
+											"    pm.expect(responseBody.statusCode).to.be.a('number')",
+											"    pm.expect(responseBody.statusCode).to.be.equal(401)",
+											"    pm.expect(responseBody.hasOwnProperty(\"message\")).to.be.true;",
+											"    pm.expect(responseBody.message).to.be.an(\"array\");",
+											"    pm.expect(responseBody.message[0]).to.be.equal('Origin mismatch')",
+											"    pm.expect(responseBody.hasOwnProperty(\"error\")).to.be.true;",
+											"    pm.expect(responseBody.error).to.be.equal(\"Unauthorized\")",
+											"",
+											"});",
+											"",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{access_Token}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{studio-api-baseUrl}}schema",
+									"host": [
+										"{{studio-api-baseUrl}}schema"
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "origin not passed",
+									"originalRequest": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{}",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{studio-api-baseUrl}}schema",
+											"host": [
+												"{{studio-api-baseUrl}}schema"
+											]
+										}
+									},
+									"status": "Unauthorized",
+									"code": 401,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "X-Powered-By",
+											"value": "Express"
+										},
+										{
+											"key": "Access-Control-Allow-Origin",
+											"value": "*"
+										},
+										{
+											"key": "Content-Type",
+											"value": "application/json; charset=utf-8"
+										},
+										{
+											"key": "Content-Length",
+											"value": "71"
+										},
+										{
+											"key": "ETag",
+											"value": "W/\"47-Z/rvm+daBAjYJdCCZju2EE6gB8U\""
+										},
+										{
+											"key": "Date",
+											"value": "Wed, 15 Feb 2023 08:03:48 GMT"
+										},
+										{
+											"key": "Connection",
+											"value": "keep-alive"
+										},
+										{
+											"key": "Keep-Alive",
+											"value": "timeout=5"
+										}
+									],
+									"cookie": [],
+									"body": "{\n    \"statusCode\": 401,\n    \"message\": [\n        \"Origin mismatch\"\n    ],\n    \"error\": \"Unauthorized\"\n}"
+								}
+							]
+						}
+					]
 				}
 			]
 		}
