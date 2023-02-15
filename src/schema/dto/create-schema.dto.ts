@@ -3,6 +3,7 @@ import {
   IsBoolean,
   IsEnum,
   IsNotEmpty,
+  IsNotEmptyObject,
   IsOptional,
   IsString,
   ValidateNested,
@@ -106,6 +107,7 @@ export class CreateSchemaDto {
     description: 'Schema body',
     type: SchemaBody,
   })
+  @IsNotEmptyObject()
   @ValidateNested({ each: true })
   @Type(() => SchemaBody)
   schema: SchemaBody;
