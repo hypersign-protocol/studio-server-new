@@ -26,6 +26,7 @@ import {
   ApiBadRequestResponse,
   ApiBearerAuth,
   ApiCreatedResponse,
+  ApiExcludeController,
   ApiHeader,
   ApiNotFoundResponse,
   ApiQuery,
@@ -45,8 +46,8 @@ import { AuthGuard } from '@nestjs/passport';
 import { TransformResponseInterceptor } from '../interceptors/transformResponse.interseptor';
 
 @UseFilters(AllExceptionsFilter)
-@ApiTags('App')
 @Controller('app')
+@ApiExcludeController()
 @ApiBearerAuth('Authorization')
 @UseGuards(AuthGuard('jwtApp'))
 export class AppAuthController {
