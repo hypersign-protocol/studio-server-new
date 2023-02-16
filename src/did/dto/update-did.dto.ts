@@ -1,9 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsArray, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { IsArray, IsEnum, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { IsDid } from 'src/utils/customDecorator/did.decorator';
 import { ValidateVerificationMethodId } from 'src/utils/customDecorator/vmId.decorator';
-
+export enum IClientSpec {
+  'eth-personalSign' = 'eth-personalSign',
+  'cosmos-ADR036' = 'cosmos-ADR036',
+}
 class verificationMethod {
   @ApiProperty({
     description: 'Verification Method id',
@@ -70,9 +73,13 @@ export class DidDoc {
     description: 'Context',
     example: ['https://www.w3.org/ns/did/v1'],
   })
+  @IsOptional()
   @IsArray()
   '@context': Array<string>;
 
+  @IsOptional()
+  @IsArray()
+  'context': Array<string>;
   @ApiProperty({
     description: 'id',
     example: 'did:hid:method:......',
@@ -136,6 +143,7 @@ export class DidDoc {
     type: Service,
     isArray: true,
   })
+  @IsOptional()
   @Type(() => Array<Service>)
   @ValidateNested()
   @IsArray()
@@ -201,4 +209,26 @@ export class UpdateDidDto {
   @ValidateVerificationMethodId()
   @IsString()
   verificationMethodId: string;
+  @ApiProperty({
+    description:
+        "IClientSpec  'eth-personalSign' or      'cosmos-ADR036'",
+    example: 'eth-personalSign',
+    name: 'clientSpec',
+})
+@IsOptional()
+@IsEnum(IClientSpec)
+clientSpec: IClientSpec;
+
+
+@ApiProperty({
+  description:
+      "Signature for clientSpec",
+  example: 'afafljagahgp9agjagknaglkj/kagka=',
+  name: 'signature',
+})
+@IsOptional()
+@IsString()
+signature: string;
+
+
 }

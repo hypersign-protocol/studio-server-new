@@ -49,6 +49,7 @@ export class DidService {
       chainId,
       keyType
     })
+
     return {
       did: didDoc.id,
       registrationStatus: RegistrationStatus.UNREGISTRED,
@@ -97,9 +98,7 @@ export class DidService {
         methodSpecificId,
         publicKeyMultibase,
       });
-      console.log(privateKeyMultibase);
-      console.log(didDoc);
-      
+
 
       const params = {
         didDocument: didDoc,
@@ -161,7 +160,7 @@ export class DidService {
     await this.edvService.init(edvId);
     const docs = await this.edvService.getDecryptedDocument(edvDocId);
     const mnemonic: string = docs.mnemonic;
-    const namespace = registerDidDto.didDocument.id.split(":")[2] // Todo Remove this worst way of doing it      
+    const namespace = registerDidDto.didDocument['id'].split(":")[2] // Todo Remove this worst way of doing it      
     const hypersignDid = await this.didSSIService.initiateHypersignDid(
       mnemonic,
       namespace,
@@ -169,16 +168,17 @@ export class DidService {
 
     switch (registerDidDto.clientSpec) {
       case IClientSpec['eth-personalSign']: {
-        const { didDocument, verificationMethodId ,clientSpec,signature} = registerDidDto
+        const { didDocument, verificationMethodId, clientSpec, signature } = registerDidDto
 
-        registerDidDoc=await hypersignDid.registerByClientSpec({
-          didDocument,clientSpec,verificationMethodId,signature
+
+        registerDidDoc = await hypersignDid.registerByClientSpec({
+          didDocument, clientSpec, verificationMethodId, signature
         })
-        this.didRepositiory.findOneAndUpdate({ did: didDocument.id }, {
-          did: didDocument.id,
+        this.didRepositiory.create({
+          did: didDocument['id'],
           appId: appDetail.appId,
-          slipPathKeys:null,
-          hdPathIndex:null,
+          slipPathKeys: null,
+          hdPathIndex: null,
           transactionHash:
             registerDidDoc && registerDidDoc?.transactionHash
               ? registerDidDoc.transactionHash
@@ -202,11 +202,11 @@ export class DidService {
       default:
         const { didDocument, verificationMethodId } = registerDidDto
         const didData = await this.didRepositiory.findOne({
-          did: didDocument.id
+          did: didDocument['id']
         })
 
         if (!didData) {
-          throw new NotFoundException([didDocument.id + " not found"])
+          throw new NotFoundException([didDocument['id'] + " not found"])
 
         }
 
@@ -218,16 +218,16 @@ export class DidService {
           slipPathKeys,
         );
         const { publicKeyMultibase, privateKeyMultibase } =
-        await hypersignDid.generateKeys({ seed });
+          await hypersignDid.generateKeys({ seed });
         const params = {
           didDocument: registerDidDto.didDocument,
           privateKeyMultibase,
           verificationMethodId: verificationMethodId,
         };
-       
-        registerDidDoc = await hypersignDid.register(params);        
-        this.didRepositiory.findOneAndUpdate({ did: didDocument.id }, {
-          did: didDocument.id,
+
+        registerDidDoc = await hypersignDid.register(params);
+        this.didRepositiory.findOneAndUpdate({ did: didDocument['id'] }, {
+          did: didDocument['id'],
           appId: appDetail.appId,
           slipPathKeys,
           hdPathIndex,
@@ -330,35 +330,70 @@ export class DidService {
     if (updatedDidDocMetaData === null) {
       throw new NotFoundException([`${did} is not registered on the chain`]);
     }
-
-    const slipPathKeys = this.hidWallet.makeSSIWalletPath(didInfo.hdPathIndex);
-
-    const seed = await this.hidWallet.generateMemonicToSeedFromSlip10RawIndex(
-      slipPathKeys,
-    );
-
-    const { privateKeyMultibase } = await hypersignDid.generateKeys({ seed });
     let updatedDid;
-    try {
-      if (!updateDidDto.deactivate) {
-        updatedDid = await hypersignDid.update({
-          didDocument: updateDidDto.didDocument,
-          privateKeyMultibase,
-          verificationMethodId: resolvedDid['verificationMethod'][0].id,
-          versionId: updatedDidDocMetaData.versionId,
-        });
-      } else {
-        updatedDid = await hypersignDid.deactivate({
-          didDocument: updateDidDto.didDocument,
-          privateKeyMultibase,
-          verificationMethodId: resolvedDid['verificationMethod'][0].id,
-          versionId: updatedDidDocMetaData.versionId,
-        });
-      }
-    } catch (error) {
-      throw new BadRequestException([error.message]);
-    }
 
+    switch (updateDidDto.clientSpec) {
+      case IClientSpec['eth-personalSign']:
+        const { clientSpec, signature } = updateDidDto
+        try {
+          if (!updateDidDto.deactivate) {
+            updatedDid = await hypersignDid.updateByClientSpec({
+              didDocument: updateDidDto.didDocument,
+              clientSpec,
+              signature,
+              verificationMethodId: resolvedDid['verificationMethod'][0].id,
+              versionId: updatedDidDocMetaData.versionId,
+            });
+          } else {
+            updatedDid = await hypersignDid.deactivateByClientSpec({
+              didDocument: updateDidDto.didDocument,
+              clientSpec,
+              signature,
+              verificationMethodId: resolvedDid['verificationMethod'][0].id,
+              versionId: updatedDidDocMetaData.versionId,
+            });
+          }
+        } catch (error) {
+          throw new BadRequestException([error.message]);
+        }
+
+        break;
+      case IClientSpec['cosmos-ADR036']: {
+        throw new BadRequestException(["Not Supported"])
+        break
+      }
+
+      default: {
+
+
+        const slipPathKeys = this.hidWallet.makeSSIWalletPath(didInfo.hdPathIndex);
+
+        const seed = await this.hidWallet.generateMemonicToSeedFromSlip10RawIndex(
+          slipPathKeys,
+        );
+
+        const { privateKeyMultibase } = await hypersignDid.generateKeys({ seed });
+        try {
+          if (!updateDidDto.deactivate) {
+            updatedDid = await hypersignDid.update({
+              didDocument: updateDidDto.didDocument,
+              privateKeyMultibase,
+              verificationMethodId: resolvedDid['verificationMethod'][0].id,
+              versionId: updatedDidDocMetaData.versionId,
+            });
+          } else {
+            updatedDid = await hypersignDid.deactivate({
+              didDocument: updateDidDto.didDocument,
+              privateKeyMultibase,
+              verificationMethodId: resolvedDid['verificationMethod'][0].id,
+              versionId: updatedDidDocMetaData.versionId,
+            });
+          }
+        } catch (error) {
+          throw new BadRequestException([error.message]);
+        }
+      }
+    }
     return { transactionHash: updatedDid.transactionHash };
   }
 }
