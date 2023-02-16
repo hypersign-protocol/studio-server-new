@@ -122,7 +122,7 @@ export class CredentialController {
   }
 
   @UsePipes(new ValidationPipe({ transform: true }))
-  @Post()
+  @Post('/issue')
   @ApiCreatedResponse({
     description: 'Credential Created',
     type: CreateCredentialResponse,
