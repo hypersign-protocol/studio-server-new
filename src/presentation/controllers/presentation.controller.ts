@@ -53,7 +53,7 @@ import {
 import { TemplateResponseInterceptor } from '../interceptors/transformResponse.interseptor';
 import { GetPresentationTemplateListList } from '../dto/fetch-presentationTemp.dto';
 
-@ApiTags('Presentation')
+@ApiTags('Presentation Template')
 @UseGuards(AuthGuard('jwt'))
 @ApiBearerAuth('Authorization')
 @UseFilters(AllExceptionsFilter)
@@ -204,6 +204,16 @@ export class PresentationTempleteController {
       req.user,
     );
   }
+}
+@ApiTags('Presentation')
+@Controller('presentation')
+@UseGuards(AuthGuard('jwt'))
+@ApiBearerAuth('Authorization')
+@UseFilters(AllExceptionsFilter)
+export class PresentationController {
+  constructor(
+    private readonly presentationRequestService: PresentationRequestService,
+  ) {}
   @UsePipes(ValidationPipe)
   @Post()
   @HttpCode(200)
