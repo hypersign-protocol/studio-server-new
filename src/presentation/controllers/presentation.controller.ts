@@ -14,6 +14,7 @@ import {
   Query,
   HttpCode,
   UseInterceptors,
+  Headers,
 } from '@nestjs/common';
 import {
   PresentationRequestService,
@@ -25,6 +26,7 @@ import {
   ApiBadRequestResponse,
   ApiBearerAuth,
   ApiCreatedResponse,
+  ApiHeader,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiQuery,
@@ -72,6 +74,11 @@ export class PresentationTempleteController {
     description: 'name must be unique for an app',
     type: PTemplateError,
   })
+  @ApiHeader({
+    name: 'Authorization',
+    description: 'Bearer <access_token>',
+    required: false,
+  })
   createPresentationTemplate(
     @Body() createPresentationTemplateDto: CreatePresentationTemplateDto,
     @Req() req: any,
@@ -102,8 +109,14 @@ export class PresentationTempleteController {
     description: 'Fetch limited list of data',
     required: false,
   })
+  @ApiHeader({
+    name: 'Authorization',
+    description: 'Bearer <access_token>',
+    required: false,
+  })
   @UseInterceptors(TemplateResponseInterceptor)
   fetchListOfPresentationTemplate(
+    @Headers('Authorization') authorization: string,
     @Req() req: any,
     @Query() pageOption: PaginationDto,
   ): Promise<PresentationTemplate[]> {
@@ -123,7 +136,13 @@ export class PresentationTempleteController {
     description: 'Resource not found',
     type: PTemplateNotFoundError,
   })
+  @ApiHeader({
+    name: 'Authorization',
+    description: 'Bearer <access_token>',
+    required: false,
+  })
   fetchAPresentationTemplate(
+    @Headers('Authorization') authorization: string,
     @Req() req: any,
     @Param('templateId') templateId: string,
   ): Promise<PresentationTemplate> {
@@ -143,7 +162,13 @@ export class PresentationTempleteController {
     description: 'Error occured at the time of updating',
     type: PTemplateError,
   })
+  @ApiHeader({
+    name: 'Authorization',
+    description: 'Bearer <access_token>',
+    required: false,
+  })
   updatePresentationTemplate(
+    @Headers('Authorization') authorization: string,
     @Req() req: any,
     @Param('templateId') templateId: string,
     @Body() updatePresentationDto: UpdatePresentationDto,
@@ -164,7 +189,16 @@ export class PresentationTempleteController {
     description: `No resource found for templateId 63d7c558743fea9d22aab...`,
     type: PTemplateNotFoundError,
   })
-  remove(@Param('templateId') templateId: string, @Req() req: any) {
+  @ApiHeader({
+    name: 'Authorization',
+    description: 'Bearer <access_token>',
+    required: false,
+  })
+  remove(
+    @Headers('Authorization') authorization: string,
+    @Param('templateId') templateId: string,
+    @Req() req: any,
+  ) {
     return this.presentationService.deletePresentationTemplate(
       templateId,
       req.user,
@@ -180,6 +214,11 @@ export class PresentationTempleteController {
   @ApiNotFoundResponse({
     description: 'did:hid:testnet:......#key-${id} not found',
     type: PTemplateNotFoundError,
+  })
+  @ApiHeader({
+    name: 'Authorization',
+    description: 'Bearer <access_token>',
+    required: false,
   })
   create(@Body() presentation: CreatePresentationDto, @Req() req) {
     return this.presentationRequestService.createPresentation(
@@ -197,6 +236,11 @@ export class PresentationTempleteController {
     description: 'templeteId :62874356...  not found',
     type: PTemplateError,
   })
+  @ApiHeader({
+    name: 'Authorization',
+    description: 'Bearer <access_token>',
+    required: false,
+  })
   createPresentationRequest(
     @Body() createPresentationRequestDto: CreatePresentationRequestDto,
     @Req() req,
@@ -211,6 +255,11 @@ export class PresentationTempleteController {
   @ApiOkResponse({
     description: 'presentation verification done successfully',
     type: VerifyPresentationResponse,
+  })
+  @ApiHeader({
+    name: 'Authorization',
+    description: 'Bearer <access_token>',
+    required: false,
   })
   verify(@Body() presentation: VerifyPresentationDto, @Req() req) {
     return this.presentationRequestService.verifyPresentation(
