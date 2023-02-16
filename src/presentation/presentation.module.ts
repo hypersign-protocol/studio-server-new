@@ -1,4 +1,9 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+} from '@nestjs/common';
 import {
   PresentationRequestService,
   PresentationService,
@@ -18,6 +23,7 @@ import { EdvService } from 'src/edv/services/edv.service';
 import { DidModule } from 'src/did/did.module';
 import { AppAuthModule } from 'src/app-auth/app-auth.module';
 import { WhitelistMiddleware } from 'src/utils/middleware/cors.middleware';
+import { TrimMiddleware } from 'src/utils/middleware/trim.middleware';
 @Module({
   imports: [
     DidModule,
@@ -43,5 +49,16 @@ export class PresentationModule implements NestModule {
     consumer
       .apply(WhitelistMiddleware)
       .forRoutes(PresentationTempleteController, PresentationController);
+    consumer
+      .apply(TrimMiddleware)
+      .exclude(
+        { path: 'presentation/template', method: RequestMethod.GET },
+        {
+          path: 'presentation/template/:templateId',
+          method: RequestMethod.GET,
+        },
+        { path: 'presentation/template', method: RequestMethod.DELETE },
+      )
+      .forRoutes(PresentationTempleteController,PresentationController);
   }
 }

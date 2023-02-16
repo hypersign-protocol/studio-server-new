@@ -161,4 +161,8 @@ export class EdvService {
     });
     return decryptedDoc;
   }
+  public async deleteDoc(id: string) {
+    const { edvClient } = this;
+    return await edvClient.deleteDoc({ documentId: id });
+  }
 }

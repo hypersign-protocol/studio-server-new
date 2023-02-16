@@ -9,7 +9,6 @@ import {
   IsArray,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { IsEmptyTrim, Trim } from 'src/utils/customDecorator/trim.decorator';
 import { ValidateVerificationMethodId } from 'src/utils/customDecorator/vmId.decorator';
 import { IsDid } from 'src/utils/customDecorator/did.decorator';
 import { IsSchemaId } from 'src/utils/customDecorator/schemaId.deceorator';
@@ -22,7 +21,7 @@ export class CreateCredentialDto {
   })
   @IsOptional()
   @IsString()
-  @IsEmptyTrim()
+  @IsNotEmpty()
   schemaId: string;
 
   @ApiProperty({
@@ -30,6 +29,7 @@ export class CreateCredentialDto {
     description: 'holder did of the credential',
   })
   @IsString()
+  @IsNotEmpty()
   @IsDid()
   subjectDid: string;
   @ApiProperty({
@@ -37,6 +37,7 @@ export class CreateCredentialDto {
     description: 'issuerDid of the credential',
   })
   @IsString()
+  @IsNotEmpty()
   @IsDid()
   issuerDid: string;
 
@@ -76,7 +77,7 @@ export class CreateCredentialDto {
     example: 'testnet',
   })
   @IsString()
-  @Trim()
+  @IsNotEmpty()
   namespace: string;
 
   @ApiProperty({
@@ -85,6 +86,7 @@ export class CreateCredentialDto {
   })
   @ValidateVerificationMethodId()
   @IsString()
+  @IsNotEmpty()
   verificationMethodId: string;
 
   @ApiProperty({
@@ -111,6 +113,7 @@ export class CredentialSchema {
     example: 'sch:hid:testnet:...............',
   })
   @IsString()
+  @IsNotEmpty()
   @IsSchemaId()
   id: string;
   @ApiProperty({

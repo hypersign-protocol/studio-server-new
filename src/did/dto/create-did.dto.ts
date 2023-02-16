@@ -1,7 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsEmpty, IsEnum, IsIn, IsObject, IsOptional, IsString, Validate, ValidateIf, ValidateNested } from 'class-validator';
-import { Trim } from 'src/utils/customDecorator/trim.decorator';
+import {
+  IsEnum,
+  IsNotEmpty,
+  IsObject,
+  IsOptional,
+  IsString,
+  ValidateIf,
+  ValidateNested,
+} from 'class-validator';
 import { RegistrationStatus } from '../schemas/did.schema';
 import { DidDoc } from '../dto/update-did.dto';
 import { IsDid } from 'src/utils/customDecorator/did.decorator';
@@ -30,7 +37,7 @@ export class CreateDidDto {
     example: 'testnet',
   })
   @IsString()
-  @Trim()
+  @IsNotEmpty()
   namespace: string;
   @IsOptional()
   @IsString()
@@ -49,7 +56,6 @@ export class CreateDidDto {
       keyType: 'Ed25519VerificationKey2020',
     },
   })
-
   @IsOptional()
   @IsObject()
   @Type(() => Options)

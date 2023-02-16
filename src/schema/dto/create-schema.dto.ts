@@ -3,6 +3,7 @@ import {
   IsBoolean,
   IsEnum,
   IsNotEmpty,
+  IsNotEmptyObject,
   IsOptional,
   IsString,
   ValidateNested,
@@ -28,7 +29,7 @@ export class Fields {
     example: 'name',
   })
   @IsString()
-  @Trim()
+  @IsNotEmpty()
   name: string;
   @ApiProperty({
     name: 'format',
@@ -44,7 +45,7 @@ export class Fields {
     description: 'type of properties',
     example: 'string',
   })
-  @Trim()
+  @IsNotEmpty()
   @IsEnum(DataType)
   type: DataType;
   @ApiProperty({
@@ -53,6 +54,7 @@ export class Fields {
     example: false,
   })
   @IsBoolean()
+  @IsOptional()
   isRequired: boolean;
 }
 export class SchemaBody {
@@ -61,6 +63,7 @@ export class SchemaBody {
     example: 'Railway ticket schema',
   })
   @IsString()
+  @IsNotEmpty()
   @ToPascalCase()
   name: string;
 
@@ -76,7 +79,7 @@ export class SchemaBody {
   @IsOptional()
   @ApiProperty({
     description: 'description for the schema',
-    example: 'Student schema',
+    example: 'Railway ticket schema"',
   })
   @IsString()
   description: string;
@@ -104,6 +107,7 @@ export class CreateSchemaDto {
     description: 'Schema body',
     type: SchemaBody,
   })
+  @IsNotEmptyObject()
   @ValidateNested({ each: true })
   @Type(() => SchemaBody)
   schema: SchemaBody;
@@ -114,7 +118,7 @@ export class CreateSchemaDto {
     example: 'testnet',
   })
   @IsString()
-  @Trim()
+  @IsNotEmpty()
   namespace: string;
   @ApiProperty({
     description: 'Verification Method id for did updation',

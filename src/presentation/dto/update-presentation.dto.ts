@@ -37,35 +37,8 @@ export class UpdatePresentationDto extends PartialType(
   @ApiProperty({
     name: 'query',
     description: 'query parameter for requesting presentation',
-    example: [
-      {
-        type: 'QueryByExample',
-        credentialQuery: [
-          {
-            required: true,
-            reason: 'We need you to prove your eligibility to work.',
-            example: {
-              '@context': ['https://www.w3.org/2018/credentials/v1'],
-              type: 'AlumniCredential',
-              credentialSubject: {
-                name: 'Random name',
-                id: 'did:hid:testnet:.............................',
-              },
-              credentialSchema: {
-                id: 'sch:hid:testnet:...............',
-                type: 'JsonSchemaValidator2018',
-              },
-              trustedIssuer: [
-                {
-                  required: true,
-                  issuer: 'did:hid:testnet:................',
-                },
-              ],
-            },
-          },
-        ],
-      },
-    ],
+    type: Query,
+    isArray: true,
   })
   @IsArray()
   @ValidateNested()

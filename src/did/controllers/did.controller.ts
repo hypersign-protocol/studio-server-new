@@ -133,7 +133,6 @@ export class DidController {
   })
   create(@Body() createDidDto: CreateDidDto, @Req() req: any) {
     const { options } = createDidDto;
-
     if (options?.keyType === 'EcdsaSecp256k1RecoveryMethod2020') {
       throw new NotFoundException({
         message: [`${options.keyType} is not supported`, `Feature coming soon`],

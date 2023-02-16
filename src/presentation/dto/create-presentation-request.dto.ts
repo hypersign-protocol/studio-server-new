@@ -7,7 +7,6 @@ import {
   IsString,
   IsUrl,
   Min,
-  MinDate,
   ValidateNested,
   IsArray,
 } from 'class-validator';
@@ -24,7 +23,6 @@ export class CreatePresentationRequestDto {
     example: 'skfdhldklgjh-gaghkdhgaskda-aisgkjheyi',
   })
   @IsString()
-  @Trim()
   @IsNotEmpty()
   challenge: string;
 
@@ -46,7 +44,6 @@ export class CreatePresentationRequestDto {
     example: '6392854982......',
   })
   @IsString()
-  @Trim()
   @IsNotEmpty()
   templateId: string;
 
@@ -66,7 +63,6 @@ export class CreatePresentationRequestDto {
     example: 'https://example.com/verify/callback',
   })
   @IsUrl()
-  @Trim()
   @IsNotEmpty()
   callbackUrl: string;
 }
@@ -150,6 +146,7 @@ export class CreatePresentationDto {
     example: 'did:hid:testnet:............',
   })
   @IsString()
+  @IsNotEmpty()
   @IsDid()
   holderDid: string;
 
@@ -159,7 +156,6 @@ export class CreatePresentationDto {
     example: 'skfdhldklgjh-gaghkdhgaskda-aisgkjheyi',
   })
   @IsString()
-  @Trim()
   @IsNotEmpty()
   challenge: string;
   @ApiProperty({
@@ -167,7 +163,6 @@ export class CreatePresentationDto {
     description: 'domain that will receive verifiable presentation',
     example: 'example.com',
   })
-  @Trim()
   @IsNotEmpty()
   domain: string;
 }
