@@ -18,6 +18,7 @@ import { DidService } from '../services/did.service';
 import {
   CreateDidDto,
   CreateDidResponse,
+  IKeyType,
   TxnHash,
 } from '../dto/create-did.dto';
 import { UpdateDidDto, ResolvedDid } from '../dto/update-did.dto';
@@ -38,6 +39,7 @@ import { PaginationDto } from 'src/utils/pagination.dto';
 import { Did } from '../schemas/did.schema';
 import { DidResponseInterceptor } from '../interceptors/transformResponse.interseptor';
 import { GetDidList } from '../dto/fetch-did.dto';
+import { IClientSpec, RegisterDidDto } from '../dto/register-did.dto';
 @UseFilters(AllExceptionsFilter)
 @ApiTags('Did')
 @Controller('did')
@@ -110,16 +112,37 @@ export class DidController {
   })
   create(@Body() createDidDto: CreateDidDto, @Req() req: any) {
     const { options } = createDidDto;
-    if (options?.keyType === 'EcdsaSecp256k1RecoveryMethod2020') {
-      throw new NotFoundException({
-        message: [`${options.keyType} is not supported`, `Feature coming soon`],
-        error: 'Not Supported',
-        status: 404,
-      });
-    }
     const appDetail = req.user;
-    return this.didService.create(createDidDto, appDetail);
+    switch (options?.keyType) {
+      case IKeyType.EcdsaSecp256k1RecoveryMethod2020:{
+        return this.didService.createByClientSpec(createDidDto, appDetail);
+
+        break;
+      }
+        
+      case IKeyType.EcdsaSecp256k1VerificationKey2019:
+        {
+
+          throw new NotFoundException({
+            message: [`${options.keyType} is not supported`, `Feature coming soon`],
+            error: 'Not Supported',
+            status: 404,
+          });
+        }
+    
+      default:
+        return this.didService.create(createDidDto, appDetail);
+
+    }
+   
   }
+  @Post('/register')
+  @UsePipes(ValidationPipe)
+  register(@Body() registerDidDto: RegisterDidDto,@Req() req:any){
+    const appDetail = req.user;
+    return this.didService.register(registerDidDto,appDetail)
+  }
+
   @UsePipes(ValidationPipe)
   @Patch()
   @ApiOkResponse({

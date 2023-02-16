@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsArray, IsString, ValidateNested } from 'class-validator';
+import { IsArray, IsOptional, IsString, ValidateNested } from 'class-validator';
 import { IsDid } from 'src/utils/customDecorator/did.decorator';
 import { ValidateVerificationMethodId } from 'src/utils/customDecorator/vmId.decorator';
 
@@ -10,6 +10,7 @@ class verificationMethod {
     example:
       'did:hid:testnet:z28ScfSszr2zi2Bd7qmNE4mfHX5j8nCwx4DBF6nAUHu4p#key-1',
   })
+  
   @IsString()
   @ValidateVerificationMethodId()
   id: string;
@@ -30,8 +31,16 @@ class verificationMethod {
     description: 'publicKeyMultibase',
     example: 'z28ScfSszr2zi2Bd7qmNE4mfHX5j8nCwx4DBF6nAUHu4p',
   })
+  @IsOptional()
   @IsString()
   publicKeyMultibase: string;
+  @ApiProperty({
+    description: 'blockchainAccountId',
+    example: 'eip155:1:0x19d73aeeBcc6FEf2d0342375090401301Fe9663F',
+  })
+  @IsOptional()
+  @IsString()
+  blockchainAccountId: string;
 }
 class Service {
   @ApiProperty({
@@ -89,7 +98,7 @@ export class DidDoc {
     isArray: true,
   })
   @Type(() => verificationMethod)
-  @ValidateNested()
+  @ValidateNested({each:true})
   verificationMethod: Array<verificationMethod>;
   @ApiProperty({
     description: 'authentication',

@@ -1,6 +1,8 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
+  IsArray,
+  IsBoolean,
   IsEnum,
   IsNotEmpty,
   IsObject,
@@ -14,10 +16,12 @@ import { DidDoc } from '../dto/update-did.dto';
 import { IsDid } from 'src/utils/customDecorator/did.decorator';
 import { Optional } from '@nestjs/common';
 
-export enum KeyType {
-  EcdsaSecp256k1RecoveryMethod2020 = 'EcdsaSecp256k1RecoveryMethod2020',
+export enum IKeyType {
   Ed25519VerificationKey2020 = 'Ed25519VerificationKey2020',
+  EcdsaSecp256k1VerificationKey2019 = 'EcdsaSecp256k1VerificationKey2019',
+  EcdsaSecp256k1RecoveryMethod2020 = 'EcdsaSecp256k1RecoveryMethod2020',
 }
+
 
 export class Options {
   @ApiProperty({
@@ -27,8 +31,39 @@ export class Options {
     name: 'keyType',
   })
   @ValidateIf((o) => o.keyType !== undefined)
-  @IsEnum(KeyType)
-  keyType: KeyType;
+  @IsEnum(IKeyType)
+  keyType: IKeyType;
+
+
+  @ApiProperty({
+    name:'chainId',
+    example:'0x1',
+    description:"Chain Id"
+  })
+  @IsOptional()
+  @IsString()
+  chainId:string;
+
+  @ApiProperty({
+    name:'publicKey',
+    example:`[
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0
+    ]`,
+    description:"Public Key extracted from keplr"
+  })
+
+  @IsOptional()
+  @IsArray()
+  @Type(()=>Uint8Array)
+  publicKey?:Uint8Array;
+
+
+  @IsOptional()
+  @IsBoolean()
+  register:boolean
 }
 export class CreateDidDto {
   @ApiProperty({
@@ -54,6 +89,10 @@ export class CreateDidDto {
     description: ' keyType used for verification',
     example: {
       keyType: 'Ed25519VerificationKey2020',
+      chainId:'0x1',
+      publicKey:new Uint8Array(Array.from({length: 33}, () => Math.floor(Math.random() * 33))      ),
+      register:false
+
     },
   })
   @IsOptional()

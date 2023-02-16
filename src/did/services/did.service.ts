@@ -17,6 +17,7 @@ import { Slip10RawIndex } from '@cosmjs/crypto';
 import { HidWalletService } from '../../hid-wallet/services/hid-wallet.service';
 import { DidSSIService } from './did.ssi.service';
 import { Did, RegistrationStatus } from '../schemas/did.schema';
+import { IClientSpec, RegisterDidDto } from '../dto/register-did.dto';
 
 @Injectable({ scope: Scope.REQUEST })
 export class DidService {
@@ -26,7 +27,38 @@ export class DidService {
     private readonly edvService: EdvService,
     private readonly hidWallet: HidWalletService,
     private readonly didSSIService: DidSSIService,
-  ) {}
+  ) { }
+
+
+  async createByClientSpec(createDidDto: CreateDidDto, appDetail) {
+    const methodSpecificId = createDidDto.methodSpecificId;
+    const publicKey = createDidDto.options?.publicKey
+    const chainId = createDidDto.options.chainId
+    const keyType = createDidDto.options.keyType
+    const { edvId, edvDocId } = appDetail;
+    await this.edvService.init(edvId);
+    const docs = await this.edvService.getDecryptedDocument(edvDocId);
+    const mnemonic: string = docs.mnemonic;
+    const hypersignDid = await this.didSSIService.initiateHypersignDid(
+      mnemonic,
+      createDidDto.namespace,
+    );
+    const didDoc = await hypersignDid.createByClientSpec({
+      methodSpecificId,
+      publicKey,
+      chainId,
+      keyType
+    })
+    return {
+      did: didDoc.id,
+      registrationStatus: RegistrationStatus.UNREGISTRED,
+      transactionHash: '',
+      metaData: {
+        didDocument: didDoc,
+      }
+
+    }
+  }
 
   async create(
     createDidDto: CreateDidDto,
@@ -65,13 +97,19 @@ export class DidService {
         methodSpecificId,
         publicKeyMultibase,
       });
+      console.log(privateKeyMultibase);
+      console.log(didDoc);
+      
 
       const params = {
         didDocument: didDoc,
         privateKeyMultibase,
         verificationMethodId: didDoc.verificationMethod[0].id,
       };
-      const registerDidDoc = await hypersignDid.register(params);
+      let registerDidDoc;
+      if (createDidDto.options?.register === true) {
+        registerDidDoc = await hypersignDid.register(params);
+      }
       this.didMetadataRepository.findAndReplace(
         { appId: appDetail.appId },
         {
@@ -88,22 +126,22 @@ export class DidService {
         slipPathKeys,
         hdPathIndex,
         transactionHash:
-          registerDidDoc && registerDidDoc.transactionHash
+          registerDidDoc && registerDidDoc?.transactionHash
             ? registerDidDoc.transactionHash
             : '',
         registrationStatus:
-          registerDidDoc && registerDidDoc.transactionHash
+          registerDidDoc && registerDidDoc?.transactionHash
             ? RegistrationStatus.COMPLETED
-            : RegistrationStatus.PROCESSING,
+            : RegistrationStatus.UNREGISTRED,
       });
       return {
         did: didDoc.id,
         registrationStatus:
-          registerDidDoc && registerDidDoc.transactionHash
+          registerDidDoc && registerDidDoc?.transactionHash
             ? RegistrationStatus.COMPLETED
-            : RegistrationStatus.PROCESSING,
+            : RegistrationStatus.UNREGISTRED,
         transactionHash:
-          registerDidDoc && registerDidDoc.transactionHash
+          registerDidDoc && registerDidDoc?.transactionHash
             ? registerDidDoc.transactionHash
             : '',
         metaData: {
@@ -113,6 +151,99 @@ export class DidService {
     } catch (e) {
       throw new BadRequestException([e.message]);
     }
+  }
+
+
+  async register(registerDidDto: RegisterDidDto,
+    appDetail): Promise<CreateDidResponse> {
+    let registerDidDoc;
+    const { edvId, edvDocId } = appDetail;
+    await this.edvService.init(edvId);
+    const docs = await this.edvService.getDecryptedDocument(edvDocId);
+    const mnemonic: string = docs.mnemonic;
+    const namespace = registerDidDto.didDocument.id.split(":")[2] // Todo Remove this worst way of doing it      
+    const hypersignDid = await this.didSSIService.initiateHypersignDid(
+      mnemonic,
+      namespace,
+    );
+
+    switch (registerDidDto.clientSpec) {
+      case IClientSpec['eth-personalSign']: {
+        const { didDocument, verificationMethodId ,clientSpec,signature} = registerDidDto
+
+        registerDidDoc=await hypersignDid.registerByClientSpec({
+          didDocument,clientSpec,verificationMethodId,signature
+        })
+        this.didRepositiory.findOneAndUpdate({ did: didDocument.id }, {
+          did: didDocument.id,
+          appId: appDetail.appId,
+          slipPathKeys:null,
+          hdPathIndex:null,
+          transactionHash:
+            registerDidDoc && registerDidDoc?.transactionHash
+              ? registerDidDoc.transactionHash
+              : '',
+          registrationStatus:
+            registerDidDoc && registerDidDoc?.transactionHash
+              ? RegistrationStatus.COMPLETED
+              : RegistrationStatus.UNREGISTRED,
+        });
+
+        break;
+
+      }
+
+      case IClientSpec['cosmos-ADR036']: {
+        throw new BadRequestException([
+          'Not Supported'
+        ])
+
+      }
+      default:
+        const { didDocument, verificationMethodId } = registerDidDto
+        const didData = await this.didRepositiory.findOne({
+          did: didDocument.id
+        })
+
+        if (!didData) {
+          throw new NotFoundException([didDocument.id + " not found"])
+
+        }
+
+        const hdPathIndex = didData.hdPathIndex
+
+        const slipPathKeys: Array<Slip10RawIndex> =
+          this.hidWallet.makeSSIWalletPath(hdPathIndex);
+        const seed = await this.hidWallet.generateMemonicToSeedFromSlip10RawIndex(
+          slipPathKeys,
+        );
+        const { publicKeyMultibase, privateKeyMultibase } =
+        await hypersignDid.generateKeys({ seed });
+        const params = {
+          didDocument: registerDidDto.didDocument,
+          privateKeyMultibase,
+          verificationMethodId: verificationMethodId,
+        };
+       
+        registerDidDoc = await hypersignDid.register(params);        
+        this.didRepositiory.findOneAndUpdate({ did: didDocument.id }, {
+          did: didDocument.id,
+          appId: appDetail.appId,
+          slipPathKeys,
+          hdPathIndex,
+          transactionHash:
+            registerDidDoc && registerDidDoc?.transactionHash
+              ? registerDidDoc.transactionHash
+              : '',
+          registrationStatus:
+            registerDidDoc && registerDidDoc?.transactionHash
+              ? RegistrationStatus.COMPLETED
+              : RegistrationStatus.UNREGISTRED,
+        });
+        break;
+    }
+
+    return registerDidDoc
   }
 
   async getDidList(appDetail, option): Promise<Did[]> {
