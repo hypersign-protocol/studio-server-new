@@ -18,6 +18,12 @@ Added basic project st. with following features
 - [Mongo Database connection](https://github.com/hypersign-protocol/studio-api/commit/357436181e4a525fe50b2c8cc4a50c016a437489)
 - [environment var](https://github.com/hypersign-protocol/studio-api/commit/2d119e6898a772dcf6ff54e477eb5d354e9b4e18)
 
+
+## Architecture
+
+![img](https://camo.githubusercontent.com/c26967122228485ff75c80f03d4c9816759bc8fd0dd1a9477edb9a150f92479e/68747470733a2f2f6d656469612e646973636f72646170702e6e65742f6174746163686d656e74732f313032363338323037363937363537343532342f313034393932323436383531303434393636342f696d6167652e706e673f77696474683d31313535266865696768743d363631)
+
+
 ## Pre-requisites
 
 Node version `v14.20.1`
@@ -81,6 +87,7 @@ $ yarn run start:prod
 - http://localhost:3001/api
 - http://localhost:3001/api-json
 
+
 ## Support
 
 Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
@@ -94,3 +101,4 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 ## License
 
 Nest is [MIT licensed](LICENSE).
+
