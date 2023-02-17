@@ -1,4 +1,4 @@
-name: Studio API Release Worflow
+name: Studio API Release Workflow
 
 on:
   push:
