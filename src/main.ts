@@ -17,7 +17,7 @@ async function bootstrap() {
   };
   const hidWalletInstance = new hidWallet(walletOptions);
   await hidWalletInstance.generateWallet({
-    mnemonic: process.env.HID_WALLET_MNEMONIC,
+    mnemonic: process.env.MNEMONIC,
   });
   const offlineSigner = hidWalletInstance.offlineSigner;
   const nodeRpcEndpoint = walletOptions.hidNodeRPCUrl;
@@ -31,7 +31,7 @@ async function bootstrap() {
   });
   await hsSSIdkInstance.init();
   const mnemonic_EnglishMnemonic: EnglishMnemonic = process.env
-    .HID_WALLET_MNEMONIC as unknown as EnglishMnemonic;
+    .MNEMONIC as unknown as EnglishMnemonic;
   const seedEntropy = Bip39.decode(mnemonic_EnglishMnemonic);
   const keys = await hsSSIdkInstance.did.generateKeys({ seed: seedEntropy });
   const edvDid = await hsSSIdkInstance.did.generate({
