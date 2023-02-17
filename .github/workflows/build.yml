@@ -19,7 +19,7 @@ jobs:
           node-version: 14
 
       - name: Install packages
-        run: yarn install
+        run: yarn install --network-concurrency 1
 
       - name: Build studio-api
         run: yarn build
