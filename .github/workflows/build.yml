@@ -1,0 +1,23 @@
+name: Studio API Build Worflow
+
+on:
+  pull_request:
+    branches: [develop, master]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout into repo
+        uses: actions/checkout@v2
+
+      - name: Setup NodeJS
+        uses: actions/setup-node@v3
+        with:
+          node-version: 14
+
+      - name: Install packages
+        run: yarn install
+
+      - name: Build studio-api
+        run: yarn build
