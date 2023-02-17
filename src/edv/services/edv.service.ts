@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
 import { HypersignEdvClient, HypersignCipher } from 'hypersign-edv-client';
-import { uuid } from 'uuidv4';
 import { X25519KeyAgreementKey2020 } from '@digitalbazaar/x25519-key-agreement-key-2020';
 import { Ed25519VerificationKey2020 } from '@digitalbazaar/ed25519-verification-key-2020';
 import * as fs from 'fs';
