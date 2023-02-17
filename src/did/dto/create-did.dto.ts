@@ -8,6 +8,7 @@ import {
   IsObject,
   IsOptional,
   IsString,
+  Min,
   ValidateIf,
   ValidateNested,
 } from 'class-validator';
@@ -78,6 +79,7 @@ export class CreateDidDto {
   namespace: string;
   @IsOptional()
   @IsString()
+  @Min(32)
   @ApiProperty({
     name: 'methodSpecificId',
     description: 'MethodSpecificId to be added in did',
