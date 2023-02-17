@@ -234,6 +234,7 @@ export class AppOAuthController {
   @ApiHeader({
     name: 'X-Api-Secret-Key',
     description: 'Provide Api Secret  key to get access token',
+    required: true,
   })
   @Post('oauth')
   @HttpCode(200)

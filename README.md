@@ -45,7 +45,7 @@ nest g middleware <module-name/middlewares/middleware-name>
 ## Installation
 
 ```bash
-$ yarn install
+$ yarn
 ```
 
 ## Building the app
