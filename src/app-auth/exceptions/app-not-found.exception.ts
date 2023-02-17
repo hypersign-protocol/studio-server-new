@@ -1,7 +1,21 @@
-import { HttpException, HttpStatus } from '@nestjs/common';
+import {
+  ExceptionFilter,
+  Catch,
+  HttpException,
+  ArgumentsHost,
+  HttpStatus,
+  HttpExceptionOptions,
+} from '@nestjs/common';
 
 export class AppNotFoundException extends HttpException {
-  constructor(msg?: string, status?: HttpStatus) {
-    super(msg || 'Application Not found', status || HttpStatus.NOT_FOUND);
+  constructor(/*status?: number, options?: HttpExceptionOptions, response?: string | Record<string, any>*/) {
+    super(
+      {
+        message: ['Application Not Found'],
+        statusCode: HttpStatus.BAD_REQUEST,
+        error: 'Bad Request',
+      },
+      HttpStatus.BAD_REQUEST,
+    );
   }
 }
