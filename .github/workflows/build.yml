@@ -10,6 +10,8 @@ jobs:
     steps:
       - name: Checkout into repo
         uses: actions/checkout@v2
+        with:
+          persist-credentials: false
 
       - name: Setup NodeJS
         uses: actions/setup-node@v3
