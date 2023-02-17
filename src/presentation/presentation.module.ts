@@ -8,7 +8,10 @@ import {
   PresentationRequestService,
   PresentationService,
 } from './services/presentation.service';
-import { PresentationTempleteController } from './controllers/presentation.controller';
+import {
+  PresentationTempleteController,
+  PresentationController,
+} from './controllers/presentation.controller';
 import {
   PresentationTemplate,
   PresentationTemplateSchema,
@@ -21,10 +24,12 @@ import { DidModule } from 'src/did/did.module';
 import { AppAuthModule } from 'src/app-auth/app-auth.module';
 import { WhitelistMiddleware } from 'src/utils/middleware/cors.middleware';
 import { TrimMiddleware } from 'src/utils/middleware/trim.middleware';
+import { AppAuthApiKeyService } from 'src/app-auth/services/app-auth-apikey.service';
 @Module({
   imports: [
     DidModule,
     AppAuthModule,
+    
     MongooseModule.forFeature([
       {
         name: PresentationTemplate.name,
@@ -32,20 +37,21 @@ import { TrimMiddleware } from 'src/utils/middleware/trim.middleware';
       },
     ]),
   ],
-  controllers: [PresentationTempleteController],
+  controllers: [PresentationTempleteController, PresentationController],
   providers: [
     PresentationService,
     PresentationTemplateRepository,
     PresentationRequestService,
     HidWalletService,
     EdvService,
+    
   ],
 })
 export class PresentationModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(WhitelistMiddleware)
-      .forRoutes(PresentationTempleteController);
+      .forRoutes(PresentationTempleteController, PresentationController);
     consumer
       .apply(TrimMiddleware)
       .exclude(
@@ -56,6 +62,6 @@ export class PresentationModule implements NestModule {
         },
         { path: 'presentation/template', method: RequestMethod.DELETE },
       )
-      .forRoutes(PresentationTempleteController);
+      .forRoutes(PresentationTempleteController, PresentationController);
   }
 }

@@ -11,6 +11,7 @@ export type DidDocumentMetaData = DidMetaData & Document;
 export enum RegistrationStatus {
   PROCESSING = 'PROCESSING',
   COMPLETED = 'COMPLETED',
+  UNREGISTRED='UNREGISTRED'
 }
 @Schema()
 export class Did {

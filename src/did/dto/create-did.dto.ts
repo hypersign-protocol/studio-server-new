@@ -1,11 +1,14 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
+  IsArray,
+  IsBoolean,
   IsEnum,
   IsNotEmpty,
   IsObject,
   IsOptional,
   IsString,
+  MinLength,
   ValidateIf,
   ValidateNested,
 } from 'class-validator';
@@ -14,10 +17,12 @@ import { DidDoc } from '../dto/update-did.dto';
 import { IsDid } from 'src/utils/customDecorator/did.decorator';
 import { Optional } from '@nestjs/common';
 
-export enum KeyType {
-  EcdsaSecp256k1RecoveryMethod2020 = 'EcdsaSecp256k1RecoveryMethod2020',
+export enum IKeyType {
   Ed25519VerificationKey2020 = 'Ed25519VerificationKey2020',
+  EcdsaSecp256k1VerificationKey2019 = 'EcdsaSecp256k1VerificationKey2019',
+  EcdsaSecp256k1RecoveryMethod2020 = 'EcdsaSecp256k1RecoveryMethod2020',
 }
+
 
 export class Options {
   @ApiProperty({
@@ -27,8 +32,41 @@ export class Options {
     name: 'keyType',
   })
   @ValidateIf((o) => o.keyType !== undefined)
-  @IsEnum(KeyType)
-  keyType: KeyType;
+  @IsEnum(IKeyType)
+  keyType: IKeyType;
+
+
+  @ApiProperty({
+    name:'chainId',
+    example:'0x1',
+    description:"Chain Id"
+  })
+  @IsOptional()
+  @IsString()
+  chainId:string;
+
+  @ApiProperty({
+    name:'publicKey',
+    example:`z76tzt4XCb6FNqC3CPZvsxRfEDX5HHQc2VPux4DeZYndW`,
+    description:"Public Key extracted from keplr"
+  })
+
+  @IsOptional()
+  @Type(()=>Uint8Array || String)
+  publicKey?:Uint8Array | string;
+
+  @ApiProperty({
+    name:'address',
+    example:`0x01978e553Df0C54A63e2E063DFFe71c688d91C76`,
+    description:"Checksum address from web3 wallet"
+  })
+  @IsOptional()
+  @IsString()
+  address:string
+
+  @IsOptional()
+  @IsBoolean()
+  register:boolean
 }
 export class CreateDidDto {
   @ApiProperty({
@@ -41,6 +79,7 @@ export class CreateDidDto {
   namespace: string;
   @IsOptional()
   @IsString()
+  @MinLength(32)
   @ApiProperty({
     name: 'methodSpecificId',
     description: 'MethodSpecificId to be added in did',
@@ -54,6 +93,11 @@ export class CreateDidDto {
     description: ' keyType used for verification',
     example: {
       keyType: 'Ed25519VerificationKey2020',
+      chainId:'0x1',
+      publicKey:'z76tzt4XCb6FNqC3CPZvsxRfEDX5HHQc2VPux4DeZYndW',
+      address:'0x01978e553Df0C54A63e2E063DFFe71c688d91C76',
+      register:false
+
     },
   })
   @IsOptional()
@@ -96,9 +140,8 @@ export class CreateDidResponse {
     description: 'Transaction Has',
     example: 'XYAIFLKFLKHSLFHKLAOHFOAIHG..........',
   })
-  @ValidateNested()
-  @Type(() => TxnHash)
-  transactionHash: TxnHash;
+ @IsString()
+  transactionHash: string;
 
   @ApiProperty({
     name: 'metaData',

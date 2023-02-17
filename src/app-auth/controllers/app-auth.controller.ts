@@ -27,6 +27,7 @@ import {
   ApiBadRequestResponse,
   ApiBearerAuth,
   ApiCreatedResponse,
+  ApiExcludeController,
   ApiHeader,
   ApiNotFoundResponse,
   ApiQuery,
@@ -42,14 +43,14 @@ import { AllExceptionsFilter } from '../../utils/utils';
 import { AppError, GetAppList } from '../dtos/fetch-app.dto';
 import { PaginationDto } from 'src/utils/pagination.dto';
 import { AppSecretHeader } from '../decorator/app-sercret.decorator';
-import { AuthGuard } from '@nestjs/passport';
 import { TransformResponseInterceptor } from '../interceptors/transformResponse.interseptor';
+import { JwtGuard } from '../guard/jwt.guard';
 
 @UseFilters(AllExceptionsFilter)
-@ApiTags('App')
 @Controller('app')
+@ApiExcludeController()
 @ApiBearerAuth('Authorization')
-@UseGuards(AuthGuard('jwtApp'))
+@UseGuards(JwtGuard)
 export class AppAuthController {
   constructor(private readonly appAuthService: AppAuthService) {}
   @UseInterceptors(
@@ -225,6 +226,7 @@ export class AppAuthController {
   }
 }
 
+@UseFilters(AllExceptionsFilter)
 @ApiTags('App')
 @Controller('app')
 export class AppOAuthController {
@@ -233,6 +235,12 @@ export class AppOAuthController {
   @ApiHeader({
     name: 'X-Api-Secret-Key',
     description: 'Provide Api Secret  key to get access token',
+    required: true,
+  })
+  @ApiBadRequestResponse({
+    status: 400,
+    description: 'Error occured at the time of generating access token',
+    type: AppError,
   })
   @Post('oauth')
   @HttpCode(200)

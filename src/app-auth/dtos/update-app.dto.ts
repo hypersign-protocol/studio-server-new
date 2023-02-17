@@ -30,7 +30,10 @@ export class UpdateAppDto {
   })
   @IsOptional()
   @IsArray()
-  @Matches(/^(https?:\/\/[^ ]+|\*)$/, { each: true ,message: 'Whitelisted cors must be a valid url or *'})
+  @Matches(/^(https?:\/\/[^ ]+|\*)$/, {
+    each: true,
+    message: 'Whitelisted cors must be a valid url or *',
+  })
   whitelistedCors: Array<string>;
   @ApiProperty({
     description: 'description',

@@ -1,5 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
+  ArrayMinSize,
   IsBoolean,
   IsEnum,
   IsNotEmpty,
@@ -53,8 +54,8 @@ export class Fields {
     description: 'State wheter field is required',
     example: false,
   })
-  @IsBoolean()
   @IsOptional()
+  @IsBoolean()
   isRequired: boolean;
 }
 export class SchemaBody {
@@ -95,7 +96,9 @@ export class SchemaBody {
     description: 'Schema configuration',
     type: Fields,
     isArray: true,
+    required: true,
   })
+  @ArrayMinSize(1)
   @ValidateNested({ each: true })
   @Type(() => Array<Fields>)
   fields: Array<Fields>;

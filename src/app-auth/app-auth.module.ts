@@ -29,6 +29,7 @@ import { TrimMiddleware } from 'src/utils/middleware/trim.middleware';
     MongooseModule.forFeature([{ name: App.name, schema: AppSchema }]),
     HidWalletModule,
     EdvModule,
+    
     JwtModule.register({}),
   ],
   providers: [
@@ -40,10 +41,11 @@ import { TrimMiddleware } from 'src/utils/middleware/trim.middleware';
     JwtStrategy,
     JwtStrategyApp,
     AppAuthApiKeyService,
+    
   ],
   controllers: [AppAuthController, AppOAuthController],
 
-  exports: [AppAuthService, AppRepository],
+  exports: [AppAuthService, AppRepository,AppAuthApiKeyService],
 })
 export class AppAuthModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

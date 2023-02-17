@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { existDir, createDir, store, deleteFile } from './utils/utils';
 import { HypersignSSISdk } from 'hs-ssi-sdk';
+// eslint-disable-next-line
 const hidWallet = require('hid-hd-wallet');
 import { Bip39, EnglishMnemonic } from '@cosmjs/crypto';
 //import { Header } from '@nestjs/common';
@@ -17,7 +18,7 @@ async function bootstrap() {
   };
   const hidWalletInstance = new hidWallet(walletOptions);
   await hidWalletInstance.generateWallet({
-    mnemonic: process.env.HID_WALLET_MNEMONIC,
+    mnemonic: process.env.MNEMONIC,
   });
   const offlineSigner = hidWalletInstance.offlineSigner;
   const nodeRpcEndpoint = walletOptions.hidNodeRPCUrl;
@@ -31,7 +32,7 @@ async function bootstrap() {
   });
   await hsSSIdkInstance.init();
   const mnemonic_EnglishMnemonic: EnglishMnemonic = process.env
-    .HID_WALLET_MNEMONIC as unknown as EnglishMnemonic;
+    .MNEMONIC as unknown as EnglishMnemonic;
   const seedEntropy = Bip39.decode(mnemonic_EnglishMnemonic);
   const keys = await hsSSIdkInstance.did.generateKeys({ seed: seedEntropy });
   const edvDid = await hsSSIdkInstance.did.generate({
@@ -48,7 +49,7 @@ async function bootstrap() {
     store(keys, process.env.EDV_KEY_FILE_PATH);
   }
   const config = new DocumentBuilder()
-    .setTitle('Entity Studio API Documentation')
+    .setTitle('Entity Studio SSI API Playground')
     .setDescription('Open API Documentation of the Entity Studio')
     .addBearerAuth(
       {

@@ -1,12 +1,12 @@
 {
   "name": "studio-api",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "",
   "author": "",
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "build": "nest build",
+    "build": "yarn format && yarn lint && nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
     "start:dev": "nest start --watch",
@@ -14,6 +14,7 @@
     "start:prod": "node dist/main",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
+    "test:newman": "newman run studio-api.postman_collection.json",
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
@@ -36,15 +37,14 @@
     "class-validator": "^0.14.0",
     "fs": "^0.0.1-security",
     "hid-hd-wallet": "git+https://github.com/hypersign-protocol/hid-hd-wallet.git#ssi-integration",
-    "hs-ssi-sdk": "https://github.com/hypersign-protocol/hid-ssi-js-sdk.git#studio-api",
+    "hs-ssi-sdk": "https://github.com/hypersign-protocol/hid-ssi-js-sdk.git#HID-117",
     "hypersign-edv-client": "git+https://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@github.com/hypersign-protocol/hypersign-edv-client.git#master",
     "mongoose": "^6.8.3",
     "passport": "^0.6.0",
     "passport-jwt": "^4.0.1",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.2.0",
-    "swagger-ui-express": "^4.6.0",
-    "uuidv4": "^6.2.13"
+    "swagger-ui-express": "^4.6.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^9.0.0",
@@ -61,6 +61,7 @@
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^4.0.0",
     "jest": "29.3.1",
+    "newman": "^5.3.2",
     "prettier": "^2.3.2",
     "source-map-support": "^0.5.20",
     "supertest": "^6.1.3",
