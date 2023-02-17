@@ -46,20 +46,22 @@ export class Options {
 
   @ApiProperty({
     name:'publicKey',
-    example:`[
-      0, 0, 0, 0, 0, 0, 0, 0, 0,
-      0, 0, 0, 0, 0, 0, 0, 0, 0,
-      0, 0, 0, 0, 0, 0, 0, 0, 0,
-      0, 0, 0, 0, 0, 0
-    ]`,
+    example:`z76tzt4XCb6FNqC3CPZvsxRfEDX5HHQc2VPux4DeZYndW`,
     description:"Public Key extracted from keplr"
   })
 
   @IsOptional()
-  @IsArray()
-  @Type(()=>Uint8Array)
-  publicKey?:Uint8Array;
+  @Type(()=>Uint8Array || String)
+  publicKey?:Uint8Array | string;
 
+  @ApiProperty({
+    name:'address',
+    example:`0x01978e553Df0C54A63e2E063DFFe71c688d91C76`,
+    description:"Checksum address from web3 wallet"
+  })
+  @IsOptional()
+  @IsString()
+  address:string
 
   @IsOptional()
   @IsBoolean()
@@ -90,7 +92,8 @@ export class CreateDidDto {
     example: {
       keyType: 'Ed25519VerificationKey2020',
       chainId:'0x1',
-      publicKey:new Uint8Array(Array.from({length: 33}, () => Math.floor(Math.random() * 33))      ),
+      publicKey:'z76tzt4XCb6FNqC3CPZvsxRfEDX5HHQc2VPux4DeZYndW',
+      address:'0x01978e553Df0C54A63e2E063DFFe71c688d91C76',
       register:false
 
     },
@@ -135,9 +138,8 @@ export class CreateDidResponse {
     description: 'Transaction Has',
     example: 'XYAIFLKFLKHSLFHKLAOHFOAIHG..........',
   })
-  @ValidateNested()
-  @Type(() => TxnHash)
-  transactionHash: TxnHash;
+ @IsString()
+  transactionHash: string;
 
   @ApiProperty({
     name: 'metaData',

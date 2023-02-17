@@ -7,6 +7,7 @@ import {
 import {
   CreateDidDto,
   CreateDidResponse,
+  IKeyType,
   TxnHash,
 } from '../dto/create-did.dto';
 import { UpdateDidDto } from '../dto/update-did.dto';
@@ -31,10 +32,31 @@ export class DidService {
 
 
   async createByClientSpec(createDidDto: CreateDidDto, appDetail) {
-    const methodSpecificId = createDidDto.methodSpecificId;
+
+    let methodSpecificId = createDidDto.methodSpecificId;
+      
     const publicKey = createDidDto.options?.publicKey
     const chainId = createDidDto.options.chainId
     const keyType = createDidDto.options.keyType
+    const address=createDidDto.options.address
+    const register=createDidDto.options?.register
+    if(!methodSpecificId){
+    methodSpecificId=address      
+    }
+    if(!address){
+      throw new BadRequestException(["options.address is not passed , required for keyType "+IKeyType.EcdsaSecp256k1RecoveryMethod2020])
+
+    }
+    if(!chainId){
+      throw new BadRequestException(["options.chainId is not passed , required for keyType "+IKeyType.EcdsaSecp256k1RecoveryMethod2020])
+
+    }
+
+    if(register===true){
+      throw new BadRequestException(["options.register is true for keyType "+ IKeyType.EcdsaSecp256k1RecoveryMethod2020,IKeyType.EcdsaSecp256k1RecoveryMethod2020 +" doesnot support register without signature being passed","options.register:false is strongly recomended"])
+
+    }
+
     const { edvId, edvDocId } = appDetail;
     await this.edvService.init(edvId);
     const docs = await this.edvService.getDecryptedDocument(edvDocId);
@@ -47,7 +69,8 @@ export class DidService {
       methodSpecificId,
       publicKey,
       chainId,
-      keyType
+      keyType,
+      address
     })
 
     return {
@@ -174,7 +197,7 @@ export class DidService {
         registerDidDoc = await hypersignDid.registerByClientSpec({
           didDocument, clientSpec, verificationMethodId, signature
         })
-        this.didRepositiory.create({
+       const data=await this.didRepositiory.create({
           did: didDocument['id'],
           appId: appDetail.appId,
           slipPathKeys: null,
@@ -188,6 +211,7 @@ export class DidService {
               ? RegistrationStatus.COMPLETED
               : RegistrationStatus.UNREGISTRED,
         });
+        
 
         break;
 
@@ -242,8 +266,15 @@ export class DidService {
         });
         break;
     }
-
-    return registerDidDoc
+    const data=await this.didRepositiory.findOne({did:registerDidDto.didDocument.id})    
+     return {
+      did: data.did,
+      registrationStatus:data.registrationStatus,
+      transactionHash:data.transactionHash,
+      metaData: {
+        didDocument: registerDidDto.didDocument,
+      },
+    }
   }
 
   async getDidList(appDetail, option): Promise<Did[]> {

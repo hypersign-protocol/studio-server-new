@@ -107,14 +107,15 @@ export class DidController {
   })
   @ApiBadRequestResponse({
     status: 400,
-    description: 'Error occured at the time of creating schema',
+    description: 'Error occured at the time of creating did',
     type: DidError,
   })
   create(@Body() createDidDto: CreateDidDto, @Req() req: any) {
-    const { options } = createDidDto;
+    const { options } = createDidDto;    
     const appDetail = req.user;
     switch (options?.keyType) {
       case IKeyType.EcdsaSecp256k1RecoveryMethod2020:{
+        
         return this.didService.createByClientSpec(createDidDto, appDetail);
 
         break;
@@ -136,6 +137,16 @@ export class DidController {
     }
    
   }
+
+  @ApiCreatedResponse({
+    description: 'DID Registred',
+    type: CreateDidResponse,
+  })
+  @ApiBadRequestResponse({
+    status: 400,
+    description: 'Error occured at the time of creating did',
+    type: DidError,
+  })
   @Post('/register')
   @UsePipes(ValidationPipe)
   register(@Body() registerDidDto: RegisterDidDto,@Req() req:any){
