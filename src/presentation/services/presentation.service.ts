@@ -11,13 +11,13 @@ import {
   CreatePresentationDto,
   CreatePresentationRequestDto,
 } from '../dto/create-presentation-request.dto';
-import { uuid } from 'uuidv4';
 import { HypersignVerifiablePresentation, HypersignDID } from 'hs-ssi-sdk';
 import { ConfigService } from '@nestjs/config';
 import { EdvService } from 'src/edv/services/edv.service';
 import { HidWalletService } from 'src/hid-wallet/services/hid-wallet.service';
 import { DidRepository } from 'src/did/repository/did.repository';
 import { VerifyPresentationDto } from '../dto/verify-presentation.dto';
+import { AppAuthApiKeyService } from 'src/app-auth/services/app-auth-apikey.service';
 
 @Injectable()
 export class PresentationService {
@@ -143,6 +143,8 @@ export class PresentationRequestService {
     private readonly config: ConfigService,
     private readonly edvService: EdvService,
     private readonly hidWallet: HidWalletService,
+    private readonly keyService:AppAuthApiKeyService
+
   ) {}
 
   async createPresentationRequest(
@@ -165,7 +167,7 @@ export class PresentationRequestService {
     body.challenge = challenge;
 
     const response = {
-      id: uuid(),
+      id: this.keyService.generateAppId(),
       from: did,
       created_time: Number(new Date()),
       expires_time: expiresTime,
