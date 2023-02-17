@@ -136,13 +136,13 @@ export class EdvService {
     return data;
   }
 
-  public async createDocument(doc: Object) {
+  public async createDocument(doc: object) {
     const { edvClient, edvId } = this;
     const resp = await edvClient.insertDoc({ document: doc, edvId });
     return resp;
   }
 
-  public async updateDocument(doc: Object, id: string) {
+  public async updateDocument(doc: object, id: string) {
     const { edvClient, edvId } = this;
     return await edvClient.updateDoc({ document: doc, edvId, documentId: id });
   }

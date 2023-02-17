@@ -20,7 +20,7 @@ Added basic project st. with following features
 
 ## Pre-requisites
 
-Node version `v14.20.0`
+Node version `v14.20.1`
 
 ```bash
 npm i -g @nestjs/cli
@@ -48,6 +48,14 @@ nest g middleware <module-name/middlewares/middleware-name>
 $ yarn install
 ```
 
+## Building the app
+
+```bash
+
+  yarn build
+
+```
+
 ## Running the app
 
 ```bash
@@ -64,15 +72,6 @@ $ yarn run start:prod
 ## Test
 
 ```bash
-# unit tests
-$ yarn run test
-
-# e2e tests
-$ yarn run test:e2e
-
-# test coverage
-$ yarn run test:cov
-
 #Test using postman collection
  yarn test:newman
 ```

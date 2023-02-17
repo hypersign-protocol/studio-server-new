@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { existDir, createDir, store, deleteFile } from './utils/utils';
 import { HypersignSSISdk } from 'hs-ssi-sdk';
+// eslint-disable-next-line
 const hidWallet = require('hid-hd-wallet');
 import { Bip39, EnglishMnemonic } from '@cosmjs/crypto';
 //import { Header } from '@nestjs/common';
