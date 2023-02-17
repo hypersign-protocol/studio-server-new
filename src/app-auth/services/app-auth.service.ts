@@ -7,7 +7,6 @@ import { CreateAppDto } from '../dtos/create-app.dto';
 
 import { App, createAppResponse } from 'src/app-auth/schemas/app.schema';
 import { AppRepository } from '../repositories/app.repository';
-import { uuid } from 'uuidv4';
 import { UpdateAppDto } from '../dtos/update-app.dto';
 import { HidWalletService } from '../../hid-wallet/services/hid-wallet.service';
 import { EdvService } from '../../edv/services/edv.service';
@@ -35,7 +34,8 @@ export class AppAuthService {
     userId: string,
   ): Promise<createAppResponse> {
     const { mnemonic, address } = await this.hidWalletService.generateWallet();
-    const edvId = 'hs:apiservice:edv:' + uuid();
+    const appId=await this.appAuthApiKeyService.generateAppId()
+    const edvId = 'hs:apiservice:edv:' + appId;
     await this.edvService.init(edvId);
     const document: EdvDocsDto = {
       mnemonic,
@@ -48,7 +48,7 @@ export class AppAuthService {
     const appData = await this.appRepository.create({
       ...createAppDto,
       userId,
-      appId: await this.appAuthApiKeyService.generateAppId(), // generate app id
+      appId: appId, // generate app id
       apiKeySecret: apiSecret, // TODO: generate app secret and should be handled like password by hashing and all...
       edvId, // generate edvId  by called hypersign edv service
       kmsId: 'demo-kms-1',
