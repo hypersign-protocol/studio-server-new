@@ -7,6 +7,7 @@ import {
 import {
   CreateDidDto,
   CreateDidResponse,
+  IKeyType,
   TxnHash,
 } from '../dto/create-did.dto';
 import { UpdateDidDto } from '../dto/update-did.dto';
@@ -17,6 +18,7 @@ import { Slip10RawIndex } from '@cosmjs/crypto';
 import { HidWalletService } from '../../hid-wallet/services/hid-wallet.service';
 import { DidSSIService } from './did.ssi.service';
 import { Did, RegistrationStatus } from '../schemas/did.schema';
+import { IClientSpec, RegisterDidDto } from '../dto/register-did.dto';
 
 @Injectable({ scope: Scope.REQUEST })
 export class DidService {
@@ -26,7 +28,61 @@ export class DidService {
     private readonly edvService: EdvService,
     private readonly hidWallet: HidWalletService,
     private readonly didSSIService: DidSSIService,
-  ) {}
+  ) { }
+
+
+  async createByClientSpec(createDidDto: CreateDidDto, appDetail) {
+
+    let methodSpecificId = createDidDto.methodSpecificId;
+      
+    const publicKey = createDidDto.options?.publicKey
+    const chainId = createDidDto.options.chainId
+    const keyType = createDidDto.options.keyType
+    const address=createDidDto.options.address
+    const register=createDidDto.options?.register
+    if(!methodSpecificId){
+    methodSpecificId=address      
+    }
+    if(!address){
+      throw new BadRequestException(["options.address is not passed , required for keyType "+IKeyType.EcdsaSecp256k1RecoveryMethod2020])
+
+    }
+    if(!chainId){
+      throw new BadRequestException(["options.chainId is not passed , required for keyType "+IKeyType.EcdsaSecp256k1RecoveryMethod2020])
+
+    }
+
+    if(register===true){
+      throw new BadRequestException(["options.register is true for keyType "+ IKeyType.EcdsaSecp256k1RecoveryMethod2020,IKeyType.EcdsaSecp256k1RecoveryMethod2020 +" doesnot support register without signature being passed","options.register:false is strongly recomended"])
+
+    }
+
+    const { edvId, edvDocId } = appDetail;
+    await this.edvService.init(edvId);
+    const docs = await this.edvService.getDecryptedDocument(edvDocId);
+    const mnemonic: string = docs.mnemonic;
+    const hypersignDid = await this.didSSIService.initiateHypersignDid(
+      mnemonic,
+      createDidDto.namespace,
+    );
+    const didDoc = await hypersignDid.createByClientSpec({
+      methodSpecificId,
+      publicKey,
+      chainId,
+      keyType,
+      address
+    })
+
+    return {
+      did: didDoc.id,
+      registrationStatus: RegistrationStatus.UNREGISTRED,
+      transactionHash: '',
+      metaData: {
+        didDocument: didDoc,
+      }
+
+    }
+  }
 
   async create(
     createDidDto: CreateDidDto,
@@ -66,12 +122,16 @@ export class DidService {
         publicKeyMultibase,
       });
 
+
       const params = {
         didDocument: didDoc,
         privateKeyMultibase,
         verificationMethodId: didDoc.verificationMethod[0].id,
       };
-      const registerDidDoc = await hypersignDid.register(params);
+      let registerDidDoc;
+      if (createDidDto.options?.register === true) {
+        registerDidDoc = await hypersignDid.register(params);
+      }
       this.didMetadataRepository.findAndReplace(
         { appId: appDetail.appId },
         {
@@ -88,22 +148,22 @@ export class DidService {
         slipPathKeys,
         hdPathIndex,
         transactionHash:
-          registerDidDoc && registerDidDoc.transactionHash
+          registerDidDoc && registerDidDoc?.transactionHash
             ? registerDidDoc.transactionHash
             : '',
         registrationStatus:
-          registerDidDoc && registerDidDoc.transactionHash
+          registerDidDoc && registerDidDoc?.transactionHash
             ? RegistrationStatus.COMPLETED
-            : RegistrationStatus.PROCESSING,
+            : RegistrationStatus.UNREGISTRED,
       });
       return {
         did: didDoc.id,
         registrationStatus:
-          registerDidDoc && registerDidDoc.transactionHash
+          registerDidDoc && registerDidDoc?.transactionHash
             ? RegistrationStatus.COMPLETED
-            : RegistrationStatus.PROCESSING,
+            : RegistrationStatus.UNREGISTRED,
         transactionHash:
-          registerDidDoc && registerDidDoc.transactionHash
+          registerDidDoc && registerDidDoc?.transactionHash
             ? registerDidDoc.transactionHash
             : '',
         metaData: {
@@ -112,6 +172,108 @@ export class DidService {
       };
     } catch (e) {
       throw new BadRequestException([e.message]);
+    }
+  }
+
+
+  async register(registerDidDto: RegisterDidDto,
+    appDetail): Promise<CreateDidResponse> {
+    let registerDidDoc;
+    const { edvId, edvDocId } = appDetail;
+    await this.edvService.init(edvId);
+    const docs = await this.edvService.getDecryptedDocument(edvDocId);
+    const mnemonic: string = docs.mnemonic;
+    const namespace = registerDidDto.didDocument['id'].split(":")[2] // Todo Remove this worst way of doing it      
+    const hypersignDid = await this.didSSIService.initiateHypersignDid(
+      mnemonic,
+      namespace,
+    );
+
+    switch (registerDidDto.clientSpec) {
+      case IClientSpec['eth-personalSign']: {
+        const { didDocument, verificationMethodId, clientSpec, signature } = registerDidDto
+
+
+        registerDidDoc = await hypersignDid.registerByClientSpec({
+          didDocument, clientSpec, verificationMethodId, signature
+        })
+       const data=await this.didRepositiory.create({
+          did: didDocument['id'],
+          appId: appDetail.appId,
+          slipPathKeys: null,
+          hdPathIndex: null,
+          transactionHash:
+            registerDidDoc && registerDidDoc?.transactionHash
+              ? registerDidDoc.transactionHash
+              : '',
+          registrationStatus:
+            registerDidDoc && registerDidDoc?.transactionHash
+              ? RegistrationStatus.COMPLETED
+              : RegistrationStatus.UNREGISTRED,
+        });
+        
+
+        break;
+
+      }
+
+      case IClientSpec['cosmos-ADR036']: {
+        throw new BadRequestException([
+          'Not Supported'
+        ])
+
+      }
+      default:
+        const { didDocument, verificationMethodId } = registerDidDto
+        const didData = await this.didRepositiory.findOne({
+          did: didDocument['id']
+        })
+
+        if (!didData) {
+          throw new NotFoundException([didDocument['id'] + " not found"])
+
+        }
+
+        const hdPathIndex = didData.hdPathIndex
+
+        const slipPathKeys: Array<Slip10RawIndex> =
+          this.hidWallet.makeSSIWalletPath(hdPathIndex);
+        const seed = await this.hidWallet.generateMemonicToSeedFromSlip10RawIndex(
+          slipPathKeys,
+        );
+        const { publicKeyMultibase, privateKeyMultibase } =
+          await hypersignDid.generateKeys({ seed });
+        const params = {
+          didDocument: registerDidDto.didDocument,
+          privateKeyMultibase,
+          verificationMethodId: verificationMethodId,
+        };
+
+        registerDidDoc = await hypersignDid.register(params);
+        this.didRepositiory.findOneAndUpdate({ did: didDocument['id'] }, {
+          did: didDocument['id'],
+          appId: appDetail.appId,
+          slipPathKeys,
+          hdPathIndex,
+          transactionHash:
+            registerDidDoc && registerDidDoc?.transactionHash
+              ? registerDidDoc.transactionHash
+              : '',
+          registrationStatus:
+            registerDidDoc && registerDidDoc?.transactionHash
+              ? RegistrationStatus.COMPLETED
+              : RegistrationStatus.UNREGISTRED,
+        });
+        break;
+    }
+    const data=await this.didRepositiory.findOne({did:registerDidDto.didDocument.id})    
+     return {
+      did: data.did,
+      registrationStatus:data.registrationStatus,
+      transactionHash:data.transactionHash,
+      metaData: {
+        didDocument: registerDidDto.didDocument,
+      },
     }
   }
 
@@ -199,35 +361,70 @@ export class DidService {
     if (updatedDidDocMetaData === null) {
       throw new NotFoundException([`${did} is not registered on the chain`]);
     }
-
-    const slipPathKeys = this.hidWallet.makeSSIWalletPath(didInfo.hdPathIndex);
-
-    const seed = await this.hidWallet.generateMemonicToSeedFromSlip10RawIndex(
-      slipPathKeys,
-    );
-
-    const { privateKeyMultibase } = await hypersignDid.generateKeys({ seed });
     let updatedDid;
-    try {
-      if (!updateDidDto.deactivate) {
-        updatedDid = await hypersignDid.update({
-          didDocument: updateDidDto.didDocument,
-          privateKeyMultibase,
-          verificationMethodId: resolvedDid['verificationMethod'][0].id,
-          versionId: updatedDidDocMetaData.versionId,
-        });
-      } else {
-        updatedDid = await hypersignDid.deactivate({
-          didDocument: updateDidDto.didDocument,
-          privateKeyMultibase,
-          verificationMethodId: resolvedDid['verificationMethod'][0].id,
-          versionId: updatedDidDocMetaData.versionId,
-        });
-      }
-    } catch (error) {
-      throw new BadRequestException([error.message]);
-    }
 
+    switch (updateDidDto.clientSpec) {
+      case IClientSpec['eth-personalSign']:
+        const { clientSpec, signature } = updateDidDto
+        try {
+          if (!updateDidDto.deactivate) {
+            updatedDid = await hypersignDid.updateByClientSpec({
+              didDocument: updateDidDto.didDocument,
+              clientSpec,
+              signature,
+              verificationMethodId: resolvedDid['verificationMethod'][0].id,
+              versionId: updatedDidDocMetaData.versionId,
+            });
+          } else {
+            updatedDid = await hypersignDid.deactivateByClientSpec({
+              didDocument: updateDidDto.didDocument,
+              clientSpec,
+              signature,
+              verificationMethodId: resolvedDid['verificationMethod'][0].id,
+              versionId: updatedDidDocMetaData.versionId,
+            });
+          }
+        } catch (error) {
+          throw new BadRequestException([error.message]);
+        }
+
+        break;
+      case IClientSpec['cosmos-ADR036']: {
+        throw new BadRequestException(["Not Supported"])
+        break
+      }
+
+      default: {
+
+
+        const slipPathKeys = this.hidWallet.makeSSIWalletPath(didInfo.hdPathIndex);
+
+        const seed = await this.hidWallet.generateMemonicToSeedFromSlip10RawIndex(
+          slipPathKeys,
+        );
+
+        const { privateKeyMultibase } = await hypersignDid.generateKeys({ seed });
+        try {
+          if (!updateDidDto.deactivate) {
+            updatedDid = await hypersignDid.update({
+              didDocument: updateDidDto.didDocument,
+              privateKeyMultibase,
+              verificationMethodId: resolvedDid['verificationMethod'][0].id,
+              versionId: updatedDidDocMetaData.versionId,
+            });
+          } else {
+            updatedDid = await hypersignDid.deactivate({
+              didDocument: updateDidDto.didDocument,
+              privateKeyMultibase,
+              verificationMethodId: resolvedDid['verificationMethod'][0].id,
+              versionId: updatedDidDocMetaData.versionId,
+            });
+          }
+        } catch (error) {
+          throw new BadRequestException([error.message]);
+        }
+      }
+    }
     return { transactionHash: updatedDid.transactionHash };
   }
 }

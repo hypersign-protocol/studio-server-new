@@ -24,10 +24,12 @@ import { DidModule } from 'src/did/did.module';
 import { AppAuthModule } from 'src/app-auth/app-auth.module';
 import { WhitelistMiddleware } from 'src/utils/middleware/cors.middleware';
 import { TrimMiddleware } from 'src/utils/middleware/trim.middleware';
+import { AppAuthApiKeyService } from 'src/app-auth/services/app-auth-apikey.service';
 @Module({
   imports: [
     DidModule,
     AppAuthModule,
+    
     MongooseModule.forFeature([
       {
         name: PresentationTemplate.name,
@@ -42,6 +44,7 @@ import { TrimMiddleware } from 'src/utils/middleware/trim.middleware';
     PresentationRequestService,
     HidWalletService,
     EdvService,
+    
   ],
 })
 export class PresentationModule implements NestModule {
