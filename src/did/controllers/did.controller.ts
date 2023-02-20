@@ -168,6 +168,11 @@ export class DidController {
     description: 'Error occured at the time of creating did',
     type: DidError,
   })
+  @ApiHeader({
+    name: 'Authorization',
+    description: 'Bearer <access_token>',
+    required: false,
+  })
   @Post('/register')
   @UsePipes(ValidationPipe)
   register(@Body() registerDidDto: RegisterDidDto, @Req() req: any) {
