@@ -29,7 +29,7 @@ import { AppAuthApiKeyService } from 'src/app-auth/services/app-auth-apikey.serv
   imports: [
     DidModule,
     AppAuthModule,
-    
+
     MongooseModule.forFeature([
       {
         name: PresentationTemplate.name,
@@ -44,7 +44,6 @@ import { AppAuthApiKeyService } from 'src/app-auth/services/app-auth-apikey.serv
     PresentationRequestService,
     HidWalletService,
     EdvService,
-    
   ],
 })
 export class PresentationModule implements NestModule {
