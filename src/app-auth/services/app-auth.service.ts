@@ -34,7 +34,7 @@ export class AppAuthService {
     userId: string,
   ): Promise<createAppResponse> {
     const { mnemonic, address } = await this.hidWalletService.generateWallet();
-    const appId=await this.appAuthApiKeyService.generateAppId()
+    const appId = await this.appAuthApiKeyService.generateAppId();
     const edvId = 'hs:apiservice:edv:' + appId;
     await this.edvService.init(edvId);
     const document: EdvDocsDto = {
