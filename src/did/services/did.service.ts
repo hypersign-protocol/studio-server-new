@@ -134,6 +134,8 @@ export class DidService {
         verificationMethodId: didDoc.verificationMethod[0].id,
       };
       let registerDidDoc;
+      //we aree not registering did at the time of creating it
+      // Will remove this code later
       if (createDidDto.options?.register === true) {
         registerDidDoc = await hypersignDid.register(params);
       }

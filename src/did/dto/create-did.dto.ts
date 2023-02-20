@@ -21,7 +21,10 @@ export enum IKeyType {
   EcdsaSecp256k1VerificationKey2019 = 'EcdsaSecp256k1VerificationKey2019',
   EcdsaSecp256k1RecoveryMethod2020 = 'EcdsaSecp256k1RecoveryMethod2020',
 }
-
+export enum Namespace {
+  testnet = 'testnet',
+  mainnet = '',
+}
 export class Options {
   @ApiProperty({
     description:
@@ -63,15 +66,9 @@ export class Options {
   @IsOptional()
   @IsString()
   walletAddress?: string;
-  @ApiProperty({
-    name: 'register',
-    example: true,
-    description: 'If set to true did will be registerd on blockchain',
-    required: false,
-  })
   @IsOptional()
   @IsBoolean()
-  register?: boolean;
+  register?: boolean = false; // keeping it for time being will remove it later
 }
 export class CreateDidDto {
   @ApiProperty({
@@ -79,8 +76,7 @@ export class CreateDidDto {
     description: 'Namespace to be added in did.',
     example: 'testnet',
   })
-  @IsString()
-  @IsNotEmpty()
+  @IsEnum(Namespace)
   namespace: string;
   @IsOptional()
   @IsString()
@@ -102,7 +98,6 @@ export class CreateDidDto {
       chainId: '0x1',
       publicKey: 'z76tzt4XCb6FNqC3CPZvsxRfEDX5HHQc2VPux4DeZYndW',
       walletAddress: '0x01978e553Df0C54A63e2E063DFFe71c688d91C76',
-      register: false,
     },
   })
   @IsOptional()
