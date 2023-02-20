@@ -118,7 +118,7 @@ export class DidController {
       forbidNonWhitelisted: true,
     }),
   )
-  @Post()
+  @Post('create')
   @ApiCreatedResponse({
     description: 'DID Created',
     type: CreateDidResponse,
