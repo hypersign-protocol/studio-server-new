@@ -45,6 +45,7 @@ import { PaginationDto } from 'src/utils/pagination.dto';
 import { AppSecretHeader } from '../decorator/app-sercret.decorator';
 import { TransformResponseInterceptor } from '../interceptors/transformResponse.interseptor';
 import { JwtGuard } from '../guard/jwt.guard';
+import { SanitizeUrl } from 'src/utils/customDecorator/urlSanitiser.decorator';
 
 @UseFilters(AllExceptionsFilter)
 @Controller('app')
@@ -124,6 +125,7 @@ export class AppAuthController {
   }
 
   @Post()
+  @SanitizeUrl()
   @UseInterceptors(
     MongooseClassSerializerInterceptor(createAppResponse, {
       excludePrefixes: ['apiKeyPrefix', '_', '__'],
@@ -153,6 +155,7 @@ export class AppAuthController {
     }),
   )
   @Put(':appId')
+  @SanitizeUrl()
   @ApiResponse({
     status: 200,
     description: 'App updated',
