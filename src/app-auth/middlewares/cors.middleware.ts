@@ -6,7 +6,7 @@ import {
 import { NextFunction, Request, Response } from 'express';
 import { AppRepository } from 'src/app-auth/repositories/app.repository';
 @Injectable()
-export class WhitelistCorsMiddleware implements NestMiddleware {
+export class WhitelistAppCorsMiddleware implements NestMiddleware {
   constructor(private readonly appRepositiory: AppRepository) {}
   async use(req: Request, res: Response, next: NextFunction) {
     const whitelistedOrigins = process.env.WHITELISTED_CORS;
@@ -15,7 +15,7 @@ export class WhitelistCorsMiddleware implements NestMiddleware {
     if (whitelistedOrigins.includes(origin)) {
       return next();
     } else if (apiSecretKey !== '' && apiSecretKey != undefined) {
-      const apikeyIndex = apiSecretKey.split('.')[0];
+      const apikeyIndex = apiSecretKey?.split('.')[0];
       const appDetail = await this.appRepositiory.findOne({
         apiKeyPrefix: apikeyIndex,
       });

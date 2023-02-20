@@ -8,7 +8,7 @@ import * as jwt from 'jsonwebtoken';
 import { NextFunction, Request, Response } from 'express';
 import { AppRepository } from 'src/app-auth/repositories/app.repository';
 @Injectable()
-export class WhitelistMiddleware implements NestMiddleware {
+export class WhitelistSSICorsMiddleware implements NestMiddleware {
   constructor(private readonly appRepositiory: AppRepository) {}
   async use(req: Request, res: Response, next: NextFunction) {
     const origin = req.header('Origin') || req.header('Referer');
