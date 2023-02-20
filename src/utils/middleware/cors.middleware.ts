@@ -11,8 +11,17 @@ import { AppRepository } from 'src/app-auth/repositories/app.repository';
 export class WhitelistMiddleware implements NestMiddleware {
   constructor(private readonly appRepositiory: AppRepository) {}
   async use(req: Request, res: Response, next: NextFunction) {
-    const origin = req.header('Origin');
-    if (req.header('authorization') == undefined) {
+    const origin = req.header('Origin') || req.header('Referer');
+    let matchOrigin;
+    if (origin) {
+      // regex to check if url consists of some path or not
+      const originRegx = /^https?:\/\/[^\/]+/i;
+      matchOrigin = origin.match(originRegx);
+    }
+    if (
+      req.header('authorization') == undefined ||
+      req.header('authorization') == ''
+    ) {
       throw new UnauthorizedException([
         'Unauthorized',
         'Please pass access token',
@@ -24,6 +33,10 @@ export class WhitelistMiddleware implements NestMiddleware {
         decoded = jwt.verify(token, process.env.JWT_SECRET);
       } catch (e) {
         throw new UnauthorizedException([e]);
+      }
+      const whitelistedOrigins = process.env.WHITELISTED_CORS;
+      if (matchOrigin && whitelistedOrigins.includes(matchOrigin[0])) {
+        return next();
       }
       const appInfo = await this.appRepositiory.findOne({
         appId: decoded['appId'],
