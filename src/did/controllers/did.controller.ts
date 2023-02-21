@@ -150,7 +150,7 @@ export class DidController {
             `Feature coming soon`,
           ],
           error: 'Not Supported',
-          status: 404,
+          statusCode: 404,
         });
       }
 

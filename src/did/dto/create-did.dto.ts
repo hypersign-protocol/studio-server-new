@@ -65,6 +65,7 @@ export class Options {
   })
   @IsOptional()
   @IsString()
+  @MinLength(32)
   walletAddress?: string;
   @IsOptional()
   @IsBoolean()
