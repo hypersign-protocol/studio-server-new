@@ -1,6 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsArray, IsEnum, IsOptional, IsString, ValidateNested } from 'class-validator';
+import {
+  IsArray,
+  IsEnum,
+  IsNotEmptyObject,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
 import { IsDid } from 'src/utils/customDecorator/did.decorator';
 import { ValidateVerificationMethodId } from 'src/utils/customDecorator/vmId.decorator';
 export enum IClientSpec {
@@ -13,7 +20,6 @@ class verificationMethod {
     example:
       'did:hid:testnet:z28ScfSszr2zi2Bd7qmNE4mfHX5j8nCwx4DBF6nAUHu4p#key-1',
   })
-  
   @IsString()
   @ValidateVerificationMethodId()
   id: string;
@@ -33,17 +39,19 @@ class verificationMethod {
   @ApiProperty({
     description: 'publicKeyMultibase',
     example: 'z28ScfSszr2zi2Bd7qmNE4mfHX5j8nCwx4DBF6nAUHu4p',
+    required: false,
   })
   @IsOptional()
   @IsString()
-  publicKeyMultibase: string;
+  publicKeyMultibase?: string;
   @ApiProperty({
     description: 'blockchainAccountId',
     example: 'eip155:1:0x19d73aeeBcc6FEf2d0342375090401301Fe9663F',
+    required: false,
   })
   @IsOptional()
   @IsString()
-  blockchainAccountId: string;
+  blockchainAccountId?: string;
 }
 class Service {
   @ApiProperty({
@@ -105,7 +113,7 @@ export class DidDoc {
     isArray: true,
   })
   @Type(() => verificationMethod)
-  @ValidateNested({each:true})
+  @ValidateNested({ each: true })
   verificationMethod: Array<verificationMethod>;
   @ApiProperty({
     description: 'authentication',
@@ -142,6 +150,7 @@ export class DidDoc {
     description: 'service',
     type: Service,
     isArray: true,
+    required: false,
   })
   @IsOptional()
   @Type(() => Array<Service>)
@@ -193,6 +202,7 @@ export class UpdateDidDto {
     description: 'Did doc to be updated',
     type: DidDoc,
   })
+  @IsNotEmptyObject()
   @Type(() => DidDoc)
   @ValidateNested()
   didDocument: DidDoc;
@@ -210,25 +220,22 @@ export class UpdateDidDto {
   @IsString()
   verificationMethodId: string;
   @ApiProperty({
-    description:
-        "IClientSpec  'eth-personalSign' or      'cosmos-ADR036'",
+    description: "IClientSpec  'eth-personalSign' or      'cosmos-ADR036'",
     example: 'eth-personalSign',
     name: 'clientSpec',
-})
-@IsOptional()
-@IsEnum(IClientSpec)
-clientSpec: IClientSpec;
+    required: false,
+  })
+  @IsOptional()
+  @IsEnum(IClientSpec)
+  clientSpec?: IClientSpec;
 
-
-@ApiProperty({
-  description:
-      "Signature for clientSpec",
-  example: 'afafljagahgp9agjagknaglkj/kagka=',
-  name: 'signature',
-})
-@IsOptional()
-@IsString()
-signature: string;
-
-
+  @ApiProperty({
+    description: 'Signature for clientSpec',
+    example: 'afafljagahgp9agjagknaglkj/kagka=',
+    name: 'signature',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  signature?: string;
 }

@@ -118,7 +118,7 @@ export class DidController {
       forbidNonWhitelisted: true,
     }),
   )
-  @Post()
+  @Post('create')
   @ApiCreatedResponse({
     description: 'DID Created',
     type: CreateDidResponse,
@@ -134,31 +134,29 @@ export class DidController {
     required: false,
   })
   create(@Body() createDidDto: CreateDidDto, @Req() req: any) {
-    const { options } = createDidDto;    
+    const { options } = createDidDto;
     const appDetail = req.user;
     switch (options?.keyType) {
-      case IKeyType.EcdsaSecp256k1RecoveryMethod2020:{
-        
+      case IKeyType.EcdsaSecp256k1RecoveryMethod2020: {
         return this.didService.createByClientSpec(createDidDto, appDetail);
 
         break;
       }
-        
-      case IKeyType.EcdsaSecp256k1VerificationKey2019:
-        {
 
-          throw new NotFoundException({
-            message: [`${options.keyType} is not supported`, `Feature coming soon`],
-            error: 'Not Supported',
-            status: 404,
-          });
-        }
-    
+      case IKeyType.EcdsaSecp256k1VerificationKey2019: {
+        throw new NotFoundException({
+          message: [
+            `${options.keyType} is not supported`,
+            `Feature coming soon`,
+          ],
+          error: 'Not Supported',
+          statusCode: 404,
+        });
+      }
+
       default:
         return this.didService.create(createDidDto, appDetail);
-
     }
-   
   }
 
   @ApiCreatedResponse({
@@ -170,11 +168,16 @@ export class DidController {
     description: 'Error occured at the time of creating did',
     type: DidError,
   })
+  @ApiHeader({
+    name: 'Authorization',
+    description: 'Bearer <access_token>',
+    required: false,
+  })
   @Post('/register')
   @UsePipes(ValidationPipe)
-  register(@Body() registerDidDto: RegisterDidDto,@Req() req:any){
+  register(@Body() registerDidDto: RegisterDidDto, @Req() req: any) {
     const appDetail = req.user;
-    return this.didService.register(registerDidDto,appDetail)
+    return this.didService.register(registerDidDto, appDetail);
   }
 
   @UsePipes(ValidationPipe)
