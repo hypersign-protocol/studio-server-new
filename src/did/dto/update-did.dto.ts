@@ -3,6 +3,7 @@ import { Type } from 'class-transformer';
 import {
   IsArray,
   IsEnum,
+  IsNotEmptyObject,
   IsOptional,
   IsString,
   ValidateNested,
@@ -201,6 +202,7 @@ export class UpdateDidDto {
     description: 'Did doc to be updated',
     type: DidDoc,
   })
+  @IsNotEmptyObject()
   @Type(() => DidDoc)
   @ValidateNested()
   didDocument: DidDoc;

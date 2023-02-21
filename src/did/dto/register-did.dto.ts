@@ -1,6 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { DidDoc } from './update-did.dto';
-import { IsEnum, IsOptional, IsString, ValidateNested } from 'class-validator';
+import {
+  IsEnum,
+  IsNotEmptyObject,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 import { ValidateVerificationMethodId } from 'src/utils/customDecorator/vmId.decorator';
 
@@ -12,7 +18,9 @@ export class RegisterDidDto {
   @ApiProperty({
     description: 'Did doc to be updated',
     type: DidDoc,
+    required: true,
   })
+  @IsNotEmptyObject()
   @Type(() => DidDoc)
   @ValidateNested({ each: true })
   didDocument: DidDoc;
@@ -45,13 +53,13 @@ export class RegisterDidDto {
   @IsOptional()
   @IsString()
   signature?: string;
-  @ApiProperty({
-    description: 'Checksum address from web3 wallet',
-    example: 'hid148273582',
-    name: 'address',
-    required: false,
-  })
-  @IsOptional()
-  @IsString()
-  address?: string;
+  // @ApiProperty({
+  //   description: 'Checksum address from web3 wallet',
+  //   example: 'hid148273582',
+  //   name: 'address',
+  //   required: false,
+  // })
+  // @IsOptional()
+  // @IsString()
+  // address?: string;
 }
