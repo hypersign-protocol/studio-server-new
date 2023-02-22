@@ -2,9 +2,11 @@ import { ApiProperty } from '@nestjs/swagger';
 import { DidDoc } from './update-did.dto';
 import {
   IsEnum,
+  IsNotEmpty,
   IsNotEmptyObject,
   IsOptional,
   IsString,
+  ValidateIf,
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
@@ -50,7 +52,8 @@ export class RegisterDidDto {
     name: 'signature',
     required: false,
   })
-  @IsOptional()
+  @ValidateIf((o, value) => o.clientSpec !== undefined)
+  @IsNotEmpty()
   @IsString()
   signature?: string;
   // @ApiProperty({
