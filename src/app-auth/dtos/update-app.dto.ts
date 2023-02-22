@@ -6,11 +6,13 @@ import {
   Length,
   Matches,
   MaxLength,
+  Validate,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsUrlEmpty } from 'src/utils/customDecorator/isUrl.decorator';
 import { Transform } from 'class-transformer';
 import validator from 'validator';
+import { SanitizeUrlValidator } from 'src/utils/sanitizeUrl.validator';
 
 export class UpdateAppDto {
   @ApiProperty({
@@ -34,6 +36,7 @@ export class UpdateAppDto {
     each: true,
     message: 'Whitelisted cors must be a valid url or *',
   })
+  @Validate(SanitizeUrlValidator)
   whitelistedCors: Array<string>;
   @ApiProperty({
     description: 'description',
