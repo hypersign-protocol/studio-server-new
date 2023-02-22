@@ -311,18 +311,40 @@ export class DidService {
         `${did} does not belongs to the App id: ${appDetail.appId}`,
       ]);
     }
-    const hypersignDid = new HypersignDID();
-    const resolvedDid = await hypersignDid.resolve({ did });
-    if (resolvedDid.didDocumentMetadata === null) {
-      throw new NotFoundException([`${did} does not exists on chain`]);
+    let resolvedDid;
+    if (didInfo.registrationStatus !== 'COMPLETED') {
+      const { edvId, edvDocId } = appDetail;
+      await this.edvService.init(edvId);
+      const docs = await this.edvService.getDecryptedDocument(edvDocId);
+      const mnemonic: string = docs.mnemonic;
+      const namespace = did.split(':')[2]; // Todo Remove this worst way of doing it
+      const hypersignDid = await this.didSSIService.initiateHypersignDid(
+        mnemonic,
+        namespace,
+      );
+      const hdPathIndex = didInfo.hdPathIndex;
+      const slipPathKeys: Array<Slip10RawIndex> =
+        this.hidWallet.makeSSIWalletPath(hdPathIndex);
+      const seed = await this.hidWallet.generateMemonicToSeedFromSlip10RawIndex(
+        slipPathKeys,
+      );
+      const { publicKeyMultibase } = await hypersignDid.generateKeys({ seed });
+      resolvedDid = await hypersignDid.generate({
+        publicKeyMultibase,
+      });
+      const tempResolvedDid = {
+        didDocument: resolvedDid,
+        didDocumentMetadata: {},
+      };
+      resolvedDid = tempResolvedDid;
+    } else {
+      const hypersignDid = new HypersignDID();
+      resolvedDid = await hypersignDid.resolve({ did });
     }
     return resolvedDid;
   }
 
   async updateDid(updateDidDto: UpdateDidDto, appDetail): Promise<TxnHash> {
-    // To Do :- how to validate didDoc is valid didDoc
-    // To Do :- should be only update those did that are generated on studio?
-
     const { verificationMethodId } = updateDidDto;
     const didOfVmId = verificationMethodId.split('#')[0];
     if (
