@@ -15,58 +15,61 @@ import {
 import { RegistrationStatus } from '../schemas/did.schema';
 import { DidDoc } from '../dto/update-did.dto';
 import { IsDid } from 'src/utils/customDecorator/did.decorator';
-import { Optional } from '@nestjs/common';
 
 export enum IKeyType {
   Ed25519VerificationKey2020 = 'Ed25519VerificationKey2020',
   EcdsaSecp256k1VerificationKey2019 = 'EcdsaSecp256k1VerificationKey2019',
   EcdsaSecp256k1RecoveryMethod2020 = 'EcdsaSecp256k1RecoveryMethod2020',
 }
-
-
+export enum Namespace {
+  testnet = 'testnet',
+  mainnet = '',
+}
 export class Options {
   @ApiProperty({
     description:
       'Verification Method Keytype Ed25519VerificationKey2020 or EcdsaSecp256k1RecoveryMethod2020',
     example: 'keyType:EcdsaSecp256k1RecoveryMethod2020',
     name: 'keyType',
+    required: false,
   })
   @ValidateIf((o) => o.keyType !== undefined)
   @IsEnum(IKeyType)
   keyType: IKeyType;
 
-
   @ApiProperty({
-    name:'chainId',
-    example:'0x1',
-    description:"Chain Id"
+    name: 'chainId',
+    example: '0x1',
+    description: 'Chain Id',
+    required: false,
   })
   @IsOptional()
   @IsString()
-  chainId:string;
+  chainId?: string;
 
   @ApiProperty({
-    name:'publicKey',
-    example:`z76tzt4XCb6FNqC3CPZvsxRfEDX5HHQc2VPux4DeZYndW`,
-    description:"Public Key extracted from keplr"
+    name: 'publicKey',
+    example: `z76tzt4XCb6FNqC3CPZvsxRfEDX5HHQc2VPux4DeZYndW`,
+    description: 'Public Key extracted from keplr',
+    required: false,
   })
-
   @IsOptional()
-  @Type(()=>Uint8Array || String)
-  publicKey?:Uint8Array | string;
+  @Type(() => Uint8Array || String)
+  publicKey?: Uint8Array | string;
 
   @ApiProperty({
-    name:'address',
-    example:`0x01978e553Df0C54A63e2E063DFFe71c688d91C76`,
-    description:"Checksum address from web3 wallet"
+    name: 'walletAddress',
+    example: `0x01978e553Df0C54A63e2E063DFFe71c688d91C76`,
+    description: 'Checksum address from web3 wallet',
+    required: false,
   })
   @IsOptional()
   @IsString()
-  address:string
-
+  @MinLength(32)
+  walletAddress?: string;
   @IsOptional()
   @IsBoolean()
-  register:boolean
+  register?: boolean = false; // keeping it for time being will remove it later
 }
 export class CreateDidDto {
   @ApiProperty({
@@ -74,8 +77,7 @@ export class CreateDidDto {
     description: 'Namespace to be added in did.',
     example: 'testnet',
   })
-  @IsString()
-  @IsNotEmpty()
+  @IsEnum(Namespace)
   namespace: string;
   @IsOptional()
   @IsString()
@@ -91,13 +93,12 @@ export class CreateDidDto {
   @ApiProperty({
     name: 'options',
     description: ' keyType used for verification',
+    required: false,
     example: {
       keyType: 'Ed25519VerificationKey2020',
-      chainId:'0x1',
-      publicKey:'z76tzt4XCb6FNqC3CPZvsxRfEDX5HHQc2VPux4DeZYndW',
-      address:'0x01978e553Df0C54A63e2E063DFFe71c688d91C76',
-      register:false
-
+      chainId: '0x1',
+      publicKey: 'z76tzt4XCb6FNqC3CPZvsxRfEDX5HHQc2VPux4DeZYndW',
+      walletAddress: '0x01978e553Df0C54A63e2E063DFFe71c688d91C76',
     },
   })
   @IsOptional()
@@ -106,7 +107,7 @@ export class CreateDidDto {
   @ValidateNested({
     each: true,
   })
-  options: Options;
+  options?: Options;
 }
 
 export class TxnHash {
@@ -140,7 +141,7 @@ export class CreateDidResponse {
     description: 'Transaction Has',
     example: 'XYAIFLKFLKHSLFHKLAOHFOAIHG..........',
   })
- @IsString()
+  @IsString()
   transactionHash: string;
 
   @ApiProperty({

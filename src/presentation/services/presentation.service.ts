@@ -143,8 +143,7 @@ export class PresentationRequestService {
     private readonly config: ConfigService,
     private readonly edvService: EdvService,
     private readonly hidWallet: HidWalletService,
-    private readonly keyService:AppAuthApiKeyService
-
+    private readonly keyService: AppAuthApiKeyService,
   ) {}
 
   async createPresentationRequest(
