@@ -87,7 +87,7 @@ export class DidController {
     return this.didService.getDidList(appDetail, pageOption);
   }
 
-  @Get(':did')
+  @Get('resolve/:did')
   @ApiOkResponse({
     description: 'DID Resolved',
     type: ResolvedDid,
