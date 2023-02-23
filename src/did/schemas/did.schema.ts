@@ -35,7 +35,7 @@ export class Did {
     description: 'Did of user',
     example: 'did:hid:testnet:1234',
   })
-  @Prop({ unique: true })
+  @Prop({ unique: true, index: true })
   @IsString()
   @IsDid()
   did: string;

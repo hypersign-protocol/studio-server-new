@@ -34,8 +34,13 @@ import {
   ApiQuery,
   ApiOkResponse,
   ApiHeader,
+  ApiConflictResponse,
 } from '@nestjs/swagger';
-import { DidError, DidNotFoundError } from '../dto/error-did.dto';
+import {
+  DidConflictError,
+  DidError,
+  DidNotFoundError,
+} from '../dto/error-did.dto';
 import { AllExceptionsFilter } from '../../utils/utils';
 import { PaginationDto } from 'src/utils/pagination.dto';
 import { Did } from '../schemas/did.schema';
@@ -127,6 +132,11 @@ export class DidController {
     status: 400,
     description: 'Error occured at the time of creating did',
     type: DidError,
+  })
+  @ApiConflictResponse({
+    status: 409,
+    description: 'Duplicate key error',
+    type: DidConflictError,
   })
   @ApiHeader({
     name: 'Authorization',

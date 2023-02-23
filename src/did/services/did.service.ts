@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   Injectable,
   NotFoundException,
   Scope,
@@ -149,7 +150,7 @@ export class DidService {
         },
       );
 
-      this.didRepositiory.create({
+      await this.didRepositiory.create({
         did: didDoc.id,
         appId: appDetail.appId,
         slipPathKeys,
@@ -178,6 +179,9 @@ export class DidService {
         },
       };
     } catch (e) {
+      if (e.code === 11000) {
+        throw new ConflictException(['Duplicate key error']);
+      }
       throw new BadRequestException([e.message]);
     }
   }
@@ -307,6 +311,7 @@ export class DidService {
     });
     if (!didInfo || didInfo == null) {
       throw new NotFoundException([
+        `${did} not found`,
         `${did} may have been created using EcdsaSecp256k1RecoveryMethod2020 keyType, we can not resolve unless its registered `,
       ]);
     }
