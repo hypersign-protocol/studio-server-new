@@ -7,6 +7,8 @@ import {
   IsString,
   ValidateNested,
   IsArray,
+  ValidateIf,
+  ArrayNotEmpty,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ValidateVerificationMethodId } from 'src/utils/customDecorator/vmId.decorator';
@@ -22,8 +24,7 @@ export class CreateCredentialDto {
   })
   @IsOptional()
   @IsString()
-  schemaId: string;
-
+  schemaId?: string;
   @ApiProperty({
     name: 'subjectDid',
     description: 'holder did of the credential',
@@ -46,11 +47,15 @@ export class CreateCredentialDto {
   subjectDidDocSigned?: JSON;
 
   @ApiHideProperty()
-  @IsOptional()
-  schemaContext: Array<string>;
+  @ValidateIf((o) => o.schemaId === undefined)
+  @IsArray()
+  @ArrayNotEmpty()
+  schemaContext?: Array<string>;
   @ApiHideProperty()
-  @IsOptional()
-  type: Array<string>;
+  @ValidateIf((o) => o.schemaId === undefined)
+  @IsArray()
+  @ArrayNotEmpty()
+  type?: Array<string>;
 
   @ApiProperty({
     name: 'expirationDate',
