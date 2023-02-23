@@ -307,8 +307,7 @@ export class DidService {
     });
     if (!didInfo || didInfo == null) {
       throw new NotFoundException([
-        `${did} is not found`,
-        `${did} does not belongs to the App id: ${appDetail.appId}`,
+        `${did} may have been created using EcdsaSecp256k1RecoveryMethod2020 keyType, we can not resolve unless its registered `,
       ]);
     }
     let resolvedDid;
@@ -317,7 +316,9 @@ export class DidService {
       await this.edvService.init(edvId);
       const docs = await this.edvService.getDecryptedDocument(edvDocId);
       const mnemonic: string = docs.mnemonic;
-      const namespace = did.split(':')[2]; // Todo Remove this worst way of doing it
+      const didSplitedArray = did.split(':'); // Todo Remove this worst way of doing it
+      const namespace = didSplitedArray[2];
+      const methodSpecificId = didSplitedArray[3];
       const hypersignDid = await this.didSSIService.initiateHypersignDid(
         mnemonic,
         namespace,
@@ -330,6 +331,7 @@ export class DidService {
       );
       const { publicKeyMultibase } = await hypersignDid.generateKeys({ seed });
       resolvedDid = await hypersignDid.generate({
+        methodSpecificId,
         publicKeyMultibase,
       });
       const tempResolvedDid = {
