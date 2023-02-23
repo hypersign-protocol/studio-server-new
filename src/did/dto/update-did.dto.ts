@@ -25,7 +25,7 @@ class verificationMethod {
   id: string;
   @ApiProperty({
     description: 'Verification Method type',
-    example: 'Ed25519VerificationKey2020',
+    example: 'EcdsaSecp256k1RecoveryMethod2020',
   })
   @IsString()
   type: string;
@@ -36,11 +36,11 @@ class verificationMethod {
   @IsDid()
   @IsString()
   controller: string;
-  @ApiProperty({
-    description: 'publicKeyMultibase',
-    example: 'z28ScfSszr2zi2Bd7qmNE4mfHX5j8nCwx4DBF6nAUHu4p',
-    required: false,
-  })
+  // @ApiProperty({
+  //   description: 'publicKeyMultibase',
+  //   example: 'z28ScfSszr2zi2Bd7qmNE4mfHX5j8nCwx4DBF6nAUHu4p',
+  //   required: false,
+  // })
   @IsOptional()
   @IsString()
   publicKeyMultibase?: string;
