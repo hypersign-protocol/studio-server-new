@@ -199,7 +199,7 @@ export class PresentationRequestService {
       holderDid: holderDid,
     });
 
-    const { didDocument, didDocumentMetadata } = await hypersignDID.resolve({
+    const { didDocument } = await hypersignDID.resolve({
       did: holderDid,
     });
 
@@ -241,7 +241,7 @@ export class PresentationRequestService {
     return { presentation: signedVerifiablePresentation };
   }
 
-  async verifyPresentation(presentations: VerifyPresentationDto, appDetail) {
+  async verifyPresentation(presentations: VerifyPresentationDto) {
     const hypersignVP = new HypersignVerifiablePresentation({
       nodeRestEndpoint: this.config.get('HID_NETWORK_API'),
       nodeRpcEndpoint: this.config.get('HID_NETWORK_RPC'),
@@ -252,7 +252,7 @@ export class PresentationRequestService {
     const holderDid = presentation['holder'];
     const issuerDid = presentation['verifiableCredential'][0]['issuer'];
 
-    const domain = presentation['proof']['domain'];
+    // const domain = presentation['proof']['domain'];
     const challenge = presentation['proof']['challenge'];
     const verifiedPresentationDetail = await hypersignVP.verify({
       signedPresentation: presentation,

@@ -15,7 +15,6 @@ import {
   Req,
   Delete,
 } from '@nestjs/common';
-import { User } from '../decorator/user.decorator';
 import { CreateAppDto } from 'src/app-auth/dtos/create-app.dto';
 import {
   GenerateTokenError,

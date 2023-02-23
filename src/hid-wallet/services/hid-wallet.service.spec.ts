@@ -21,7 +21,7 @@ describe('HidWalletService', () => {
     const mnemonictest =
       'swift leader primary gun tool furnace gasp bless kid ceiling maid disagree bike tube enemy wish affair water faith blouse meadow traffic oval stay';
     const accountAddr = 'hid1g05260ny2c486274qtwey3sr2pl3kwjve4tfh4';
-    const { mnemonic, address } = await service.generateWallet(mnemonictest);
+    const { address } = await service.generateWallet(mnemonictest);
     expect(accountAddr).toBe(address);
   });
 });

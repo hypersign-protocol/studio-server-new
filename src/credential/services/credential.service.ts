@@ -27,7 +27,6 @@ export class CredentialService {
     const {
       schemaId,
       subjectDid,
-      subjectDidDocSigned,
       schemaContext,
       type,
       issuerDid,
@@ -100,7 +99,6 @@ export class CredentialService {
       const {
         signedCredential,
         credentialStatus,
-        credentialStatusProof,
         credentialStatusRegistrationResult,
       } = await hypersignVC.issue({
         credential,
