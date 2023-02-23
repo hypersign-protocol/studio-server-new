@@ -24,7 +24,6 @@ import { DidModule } from 'src/did/did.module';
 import { AppAuthModule } from 'src/app-auth/app-auth.module';
 import { WhitelistSSICorsMiddleware } from 'src/utils/middleware/cors.middleware';
 import { TrimMiddleware } from 'src/utils/middleware/trim.middleware';
-import { AppAuthApiKeyService } from 'src/app-auth/services/app-auth-apikey.service';
 @Module({
   imports: [
     DidModule,

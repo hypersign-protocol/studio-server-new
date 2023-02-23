@@ -25,7 +25,6 @@ import {
 import { UpdateDidDto, ResolvedDid } from '../dto/update-did.dto';
 import { AuthGuard } from '@nestjs/passport';
 import {
-  ApiResponse,
   ApiNotFoundResponse,
   ApiBadRequestResponse,
   ApiCreatedResponse,
@@ -34,14 +33,19 @@ import {
   ApiQuery,
   ApiOkResponse,
   ApiHeader,
+  ApiConflictResponse,
 } from '@nestjs/swagger';
-import { DidError, DidNotFoundError } from '../dto/error-did.dto';
+import {
+  DidConflictError,
+  DidError,
+  DidNotFoundError,
+} from '../dto/error-did.dto';
 import { AllExceptionsFilter } from '../../utils/utils';
 import { PaginationDto } from 'src/utils/pagination.dto';
 import { Did } from '../schemas/did.schema';
 import { DidResponseInterceptor } from '../interceptors/transformResponse.interseptor';
 import { GetDidList } from '../dto/fetch-did.dto';
-import { IClientSpec, RegisterDidDto } from '../dto/register-did.dto';
+import { RegisterDidDto } from '../dto/register-did.dto';
 @UseFilters(AllExceptionsFilter)
 @ApiTags('Did')
 @Controller('did')
@@ -87,7 +91,7 @@ export class DidController {
     return this.didService.getDidList(appDetail, pageOption);
   }
 
-  @Get(':did')
+  @Get('resolve/:did')
   @ApiOkResponse({
     description: 'DID Resolved',
     type: ResolvedDid,
@@ -127,6 +131,11 @@ export class DidController {
     status: 400,
     description: 'Error occured at the time of creating did',
     type: DidError,
+  })
+  @ApiConflictResponse({
+    status: 409,
+    description: 'Duplicate key error',
+    type: DidConflictError,
   })
   @ApiHeader({
     name: 'Authorization',

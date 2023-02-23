@@ -10,7 +10,6 @@ import { AppRepository } from '../repositories/app.repository';
 import { UpdateAppDto } from '../dtos/update-app.dto';
 import { HidWalletService } from '../../hid-wallet/services/hid-wallet.service';
 import { EdvService } from '../../edv/services/edv.service';
-import * as fs from 'fs';
 import { ConfigService } from '@nestjs/config';
 import { EdvDocsDto } from 'src/edv/dtos/create-edv.dto';
 import { AppAuthSecretService } from './app-auth-passord.service';
@@ -64,7 +63,7 @@ export class AppAuthService {
     const { apiSecretKey, apiSecret } =
       await this.appAuthApiKeyService.generateApiKey();
 
-    const appData = await this.appRepository.findOneAndUpdate(
+    await this.appRepository.findOneAndUpdate(
       { appId: app.appId, userId },
       { apiKeyPrefix: apiSecretKey.split('.')[0], apiKeySecret: apiSecret },
     );

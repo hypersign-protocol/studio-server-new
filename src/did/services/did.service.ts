@@ -1,5 +1,6 @@
 import {
   BadRequestException,
+  ConflictException,
   Injectable,
   NotFoundException,
   Scope,
@@ -149,7 +150,7 @@ export class DidService {
         },
       );
 
-      this.didRepositiory.create({
+      await this.didRepositiory.create({
         did: didDoc.id,
         appId: appDetail.appId,
         slipPathKeys,
@@ -178,6 +179,9 @@ export class DidService {
         },
       };
     } catch (e) {
+      if (e.code === 11000) {
+        throw new ConflictException(['Duplicate key error']);
+      }
       throw new BadRequestException([e.message]);
     }
   }
@@ -247,8 +251,9 @@ export class DidService {
           await this.hidWallet.generateMemonicToSeedFromSlip10RawIndex(
             slipPathKeys,
           );
-        const { publicKeyMultibase, privateKeyMultibase } =
-          await hypersignDid.generateKeys({ seed });
+        const { privateKeyMultibase } = await hypersignDid.generateKeys({
+          seed,
+        });
         const params = {
           didDocument: registerDidDto.didDocument,
           privateKeyMultibase,
@@ -307,22 +312,47 @@ export class DidService {
     });
     if (!didInfo || didInfo == null) {
       throw new NotFoundException([
-        `${did} is not found`,
-        `${did} does not belongs to the App id: ${appDetail.appId}`,
+        `${did} not found`,
+        `${did} may have been created using EcdsaSecp256k1RecoveryMethod2020 keyType, we can not resolve unless its registered `,
       ]);
     }
-    const hypersignDid = new HypersignDID();
-    const resolvedDid = await hypersignDid.resolve({ did });
-    if (resolvedDid.didDocumentMetadata === null) {
-      throw new NotFoundException([`${did} does not exists on chain`]);
+    let resolvedDid;
+    if (didInfo.registrationStatus !== 'COMPLETED') {
+      const { edvId, edvDocId } = appDetail;
+      await this.edvService.init(edvId);
+      const docs = await this.edvService.getDecryptedDocument(edvDocId);
+      const mnemonic: string = docs.mnemonic;
+      const didSplitedArray = did.split(':'); // Todo Remove this worst way of doing it
+      const namespace = didSplitedArray[2];
+      const methodSpecificId = didSplitedArray[3];
+      const hypersignDid = await this.didSSIService.initiateHypersignDid(
+        mnemonic,
+        namespace,
+      );
+      const hdPathIndex = didInfo.hdPathIndex;
+      const slipPathKeys: Array<Slip10RawIndex> =
+        this.hidWallet.makeSSIWalletPath(hdPathIndex);
+      const seed = await this.hidWallet.generateMemonicToSeedFromSlip10RawIndex(
+        slipPathKeys,
+      );
+      const { publicKeyMultibase } = await hypersignDid.generateKeys({ seed });
+      resolvedDid = await hypersignDid.generate({
+        methodSpecificId,
+        publicKeyMultibase,
+      });
+      const tempResolvedDid = {
+        didDocument: resolvedDid,
+        didDocumentMetadata: {},
+      };
+      resolvedDid = tempResolvedDid;
+    } else {
+      const hypersignDid = new HypersignDID();
+      resolvedDid = await hypersignDid.resolve({ did });
     }
     return resolvedDid;
   }
 
   async updateDid(updateDidDto: UpdateDidDto, appDetail): Promise<TxnHash> {
-    // To Do :- how to validate didDoc is valid didDoc
-    // To Do :- should be only update those did that are generated on studio?
-
     const { verificationMethodId } = updateDidDto;
     const didOfVmId = verificationMethodId.split('#')[0];
     if (

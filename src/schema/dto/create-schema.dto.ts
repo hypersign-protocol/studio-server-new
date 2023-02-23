@@ -9,7 +9,6 @@ import {
   IsString,
   ValidateNested,
 } from 'class-validator';
-import { Trim } from '../../utils/customDecorator/trim.decorator';
 import { Type } from 'class-transformer';
 import { ValidateVerificationMethodId } from 'src/utils/customDecorator/vmId.decorator';
 import { ToPascalCase } from 'src/utils/customDecorator/case.decorator';
