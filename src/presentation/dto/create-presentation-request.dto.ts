@@ -12,7 +12,6 @@ import {
 } from 'class-validator';
 import { CredDoc } from 'src/credential/dto/create-credential.dto';
 import { IsDid } from 'src/utils/customDecorator/did.decorator';
-import { Trim } from 'src/utils/customDecorator/trim.decorator';
 import { ValidateVerificationMethodId } from 'src/utils/customDecorator/vmId.decorator';
 import { PresentationTemplate } from '../schemas/presentation-template.schema';
 

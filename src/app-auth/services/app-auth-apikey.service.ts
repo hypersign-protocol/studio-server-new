@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
 import * as crypto from 'crypto';
 import { AppAuthSecretService } from './app-auth-passord.service';
 

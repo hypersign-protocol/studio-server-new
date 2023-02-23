@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
-import { existDir, createDir, store, deleteFile } from './utils/utils';
+import { existDir, createDir, store } from './utils/utils';
 import { HypersignSSISdk } from 'hs-ssi-sdk';
 // eslint-disable-next-line
 const hidWallet = require('hid-hd-wallet');

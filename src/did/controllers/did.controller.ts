@@ -25,7 +25,6 @@ import {
 import { UpdateDidDto, ResolvedDid } from '../dto/update-did.dto';
 import { AuthGuard } from '@nestjs/passport';
 import {
-  ApiResponse,
   ApiNotFoundResponse,
   ApiBadRequestResponse,
   ApiCreatedResponse,
@@ -46,7 +45,7 @@ import { PaginationDto } from 'src/utils/pagination.dto';
 import { Did } from '../schemas/did.schema';
 import { DidResponseInterceptor } from '../interceptors/transformResponse.interseptor';
 import { GetDidList } from '../dto/fetch-did.dto';
-import { IClientSpec, RegisterDidDto } from '../dto/register-did.dto';
+import { RegisterDidDto } from '../dto/register-did.dto';
 @UseFilters(AllExceptionsFilter)
 @ApiTags('Did')
 @Controller('did')

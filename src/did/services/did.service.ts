@@ -251,8 +251,9 @@ export class DidService {
           await this.hidWallet.generateMemonicToSeedFromSlip10RawIndex(
             slipPathKeys,
           );
-        const { publicKeyMultibase, privateKeyMultibase } =
-          await hypersignDid.generateKeys({ seed });
+        const { privateKeyMultibase } = await hypersignDid.generateKeys({
+          seed,
+        });
         const params = {
           didDocument: registerDidDto.didDocument,
           privateKeyMultibase,
