@@ -9,6 +9,7 @@ import {
   IsArray,
   ValidateIf,
   ArrayNotEmpty,
+  IsEnum,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ValidateVerificationMethodId } from 'src/utils/customDecorator/vmId.decorator';
@@ -16,6 +17,10 @@ import { IsDid } from 'src/utils/customDecorator/did.decorator';
 import { IsSchemaId } from 'src/utils/customDecorator/schemaId.deceorator';
 import { IsVcId } from 'src/utils/customDecorator/vc.decorator';
 
+export enum Namespace {
+  testnet = 'testnet',
+  // mainnet = '',
+}
 export class CreateCredentialDto {
   @ApiProperty({
     name: 'schemaId',
@@ -78,11 +83,13 @@ export class CreateCredentialDto {
 
   @ApiProperty({
     name: 'namespace',
-    description: 'Namespace to be added in did.',
+    description: 'Namespace to be added in vcId.',
     example: 'testnet',
   })
   @IsString()
-  @IsNotEmpty()
+  @IsEnum(Namespace, {
+    message: "namespace must be one of the following values: 'testnet'",
+  })
   namespace: string;
 
   @ApiProperty({
