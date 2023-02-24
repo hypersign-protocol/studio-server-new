@@ -173,7 +173,7 @@ export class CredentialService {
       throw new BadRequestException([e.message]);
     }
     return {
-      credential: credential ? credential : undefined,
+      credentialDocument: credential ? credential : undefined,
       credentialStatus,
       persist: credentialDetail.persist,
       retrieveCredential,

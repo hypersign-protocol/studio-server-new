@@ -196,6 +196,15 @@ export class DidService {
     const docs = await this.edvService.getDecryptedDocument(edvDocId);
     const mnemonic: string = docs.mnemonic;
     const namespace = registerDidDto.didDocument['id'].split(':')[2]; // Todo Remove this worst way of doing it
+    const DidInfo = await this.didRepositiory.findOne({
+      appId: appDetail.appId,
+      did: registerDidDto.didDocument['id'],
+    });
+    if (DidInfo !== null && DidInfo.registrationStatus === 'COMPLETED') {
+      throw new BadRequestException([
+        `${registerDidDto.didDocument['id']} already registered`,
+      ]);
+    }
     const hypersignDid = await this.didSSIService.initiateHypersignDid(
       mnemonic,
       namespace,

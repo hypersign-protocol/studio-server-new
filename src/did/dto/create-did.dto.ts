@@ -75,9 +75,7 @@ export class CreateDidDto {
     description: 'Namespace to be added in did.',
     example: 'testnet',
   })
-  @IsEnum(Namespace, {
-    message: "namespace must be one of the following values: 'testnet', '' ",
-  })
+  @IsEnum(Namespace)
   namespace: string;
   @IsOptional()
   @IsString()
