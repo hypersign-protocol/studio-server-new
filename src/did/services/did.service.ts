@@ -7,9 +7,10 @@ import {
 } from '@nestjs/common';
 import {
   CreateDidDto,
-  CreateDidResponse,
+  RegisterDidResponse,
   IKeyType,
   TxnHash,
+  CreateDidResponse,
 } from '../dto/create-did.dto';
 import { UpdateDidDto } from '../dto/update-did.dto';
 import { HypersignDID } from 'hs-ssi-sdk';
@@ -189,7 +190,7 @@ export class DidService {
   async register(
     registerDidDto: RegisterDidDto,
     appDetail,
-  ): Promise<CreateDidResponse> {
+  ): Promise<RegisterDidResponse> {
     let registerDidDoc;
     const { edvId, edvDocId } = appDetail;
     await this.edvService.init(edvId);
