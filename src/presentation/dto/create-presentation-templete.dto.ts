@@ -3,6 +3,7 @@ import { Type } from 'class-transformer';
 import {
   IsArray,
   IsBoolean,
+  IsEnum,
   IsNotEmpty,
   IsString,
   IsUrl,
@@ -137,6 +138,7 @@ export class Query {
     example: 'QueryByExample / DIDAuthentication',
   })
   @IsString()
+  @IsEnum(queryType)
   type: queryType;
 
   @ApiProperty({
