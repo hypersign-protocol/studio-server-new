@@ -18,7 +18,7 @@ export enum IClientSpec {
 }
 export class RegisterDidDto {
   @ApiProperty({
-    description: 'Did doc to be updated',
+    description: 'Did doc to be registered',
     type: DidDoc,
     required: true,
   })
@@ -28,7 +28,7 @@ export class RegisterDidDto {
   didDocument: DidDoc;
 
   @ApiProperty({
-    description: 'Verification Method id for did updation',
+    description: 'Verification Method id for did registration',
     example: 'did:hid:testnet:........#key-${idx}',
     required: true,
   })
@@ -37,7 +37,7 @@ export class RegisterDidDto {
   verificationMethodId: string;
 
   @ApiProperty({
-    description: "IClientSpec  'eth-personalSign' or      'cosmos-ADR036'",
+    description: "IClientSpec  'eth-personalSign' or  'cosmos-ADR036'",
     example: 'eth-personalSign',
     name: 'clientSpec',
     required: false,

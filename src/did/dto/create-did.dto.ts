@@ -1,5 +1,5 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { Type } from 'class-transformer';
+import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
+import { Exclude, Type } from 'class-transformer';
 import {
   IsBoolean,
   IsEnum,
@@ -118,7 +118,16 @@ export class TxnHash {
   })
   transactionHash: string;
 }
-
+class MetaData {
+  @ApiProperty({
+    description: 'Did document',
+    name: 'didDocument',
+    type: DidDoc,
+  })
+  @ValidateNested()
+  @Type(() => DidDoc)
+  didDocument: DidDoc;
+}
 export class CreateDidResponse {
   @ApiProperty({
     name: 'did',
@@ -135,7 +144,20 @@ export class CreateDidResponse {
     example: 'COMPLETED/PROCESSING',
   })
   registrationStatus: RegistrationStatus;
-
+  @ApiHideProperty()
+  @Exclude()
+  @IsString()
+  transactionHash: string;
+  @ApiProperty({
+    name: 'metaData',
+    description: 'metaData contaning initial didDocument',
+    type: MetaData,
+  })
+  @ValidateNested()
+  @Type(() => MetaData)
+  metaData: MetaData;
+}
+export class RegisterDidResponse extends CreateDidResponse {
   @ApiProperty({
     name: 'transactionHash',
     description: 'Transaction Has',
@@ -143,13 +165,4 @@ export class CreateDidResponse {
   })
   @IsString()
   transactionHash: string;
-
-  @ApiProperty({
-    name: 'metaData',
-    description: 'metaData constaing initial didDocument',
-    type: DidDoc,
-  })
-  @ValidateNested()
-  @Type(() => DidDoc)
-  metaData: { didDocument: DidDoc };
 }
