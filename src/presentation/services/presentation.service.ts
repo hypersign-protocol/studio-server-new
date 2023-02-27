@@ -129,7 +129,10 @@ export class PresentationService {
       ]);
     }
     templateDetail = await this.presentationtempleteReopsitory.findOneAndDelete(
-      { appId: appDetail.appId, _id: templateId },
+      {
+        appId: appDetail.appId,
+        _id: templateId,
+      },
     );
     return templateDetail;
   }
@@ -166,7 +169,7 @@ export class PresentationRequestService {
     body.challenge = challenge;
 
     const response = {
-      id: this.keyService.generateAppId(),
+      id: await this.keyService.generateAppId(),
       from: did,
       created_time: Number(new Date()),
       expires_time: expiresTime,
@@ -174,7 +177,6 @@ export class PresentationRequestService {
       reply_to: [did],
       body,
     };
-
     return response;
   }
 

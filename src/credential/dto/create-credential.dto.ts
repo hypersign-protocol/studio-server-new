@@ -265,6 +265,8 @@ export class CredDoc {
       'https://w3id.org/security/suites/ed25519-2020/v1',
     ],
   })
+  @IsArray()
+  @ArrayNotEmpty()
   '@context': Array<string>;
   @ApiProperty({
     description: 'id',
@@ -279,16 +281,21 @@ export class CredDoc {
     isArray: true,
   })
   @IsArray()
+  @ArrayNotEmpty()
   type: Array<string>;
   @ApiProperty({
     description: 'Expiry date of credential',
     example: '2027-12-10T18:30:00Z',
   })
+  @IsNotEmpty()
+  @IsString()
   expirationDate: Date;
   @ApiProperty({
     description: 'Credential issuance date',
     example: '2027-12-10T18:30:00Z',
   })
+  @IsNotEmpty()
+  @IsString()
   issuanceDate: Date;
 
   @ApiProperty({
@@ -304,6 +311,7 @@ export class CredDoc {
     description: 'Field value based on schema',
     type: CredentialSubject,
   })
+  @IsNotEmptyObject()
   @Type(() => CredentialSubject)
   @ValidateNested({ each: true })
   credentialSubject: CredentialSubject;
@@ -313,17 +321,20 @@ export class CredDoc {
     description: 'Schema detail based on which credential has issued',
     type: CredentialSchema,
   })
-  @Type(() => CredentialSchema)
+  @IsOptional()
+  @IsNotEmptyObject()
   @ValidateNested({ each: true })
-  credentialSchema: CredentialSchema;
+  @Type(() => CredentialSchema)
+  credentialSchema?: CredentialSchema;
 
   @ApiProperty({
     name: 'credentialStatus',
     description: 'Information of credential status',
     type: CredentialStatus,
   })
+  @IsNotEmptyObject()
+  @ValidateNested({ each: true })
   @Type(() => CredentialStatus)
-  @ValidateNested()
   credentialStatus: CredentialStatus;
 
   @ApiProperty({
@@ -331,8 +342,9 @@ export class CredDoc {
     description: 'Proof of credential',
     type: CredentialProof,
   })
-  @Type(() => CredentialProof)
+  @IsNotEmptyObject()
   @ValidateNested({ each: true })
+  @Type(() => CredentialProof)
   proof: CredentialProof;
 }
 export class CreateCredentialResponse {
