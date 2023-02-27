@@ -11,6 +11,7 @@ import {
   IKeyType,
   TxnHash,
   CreateDidResponse,
+  VerificationRelationships,
 } from '../dto/create-did.dto';
 import { UpdateDidDto } from '../dto/update-did.dto';
 import { HypersignDID } from 'hs-ssi-sdk';
@@ -40,6 +41,9 @@ export class DidService {
     const keyType = createDidDto.options.keyType;
     const address = createDidDto.options.walletAddress;
     const register = createDidDto.options?.register;
+    const verificationRelationShip: Array<VerificationRelationships> =
+      createDidDto.options?.verificationRelationships;
+    //To Do:- pass this verificationRelationShip at the time of creating did from sdk
     if (!methodSpecificId) {
       methodSpecificId = address;
     }
@@ -98,6 +102,9 @@ export class DidService {
   ): Promise<CreateDidResponse> {
     try {
       const methodSpecificId = createDidDto.methodSpecificId;
+      const verificationRelationShip =
+        createDidDto.options?.verificationRelationships;
+      //To Do:- use verificationRelationShip at the time of calling generate()
       const { edvId, edvDocId } = appDetail;
       await this.edvService.init(edvId);
       const docs = await this.edvService.getDecryptedDocument(edvDocId);
