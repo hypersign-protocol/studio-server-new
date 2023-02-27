@@ -118,7 +118,16 @@ export class TxnHash {
   })
   transactionHash: string;
 }
-
+class MetaData {
+  @ApiProperty({
+    description: 'Did document',
+    name: 'didDocument',
+    type: DidDoc,
+  })
+  @ValidateNested()
+  @Type(() => DidDoc)
+  didDocument: DidDoc;
+}
 export class CreateDidResponse {
   @ApiProperty({
     name: 'did',
