@@ -18,9 +18,10 @@ import {
 import { DidService } from '../services/did.service';
 import {
   CreateDidDto,
-  CreateDidResponse,
+  RegisterDidResponse,
   IKeyType,
   TxnHash,
+  CreateDidResponse,
 } from '../dto/create-did.dto';
 import { UpdateDidDto, ResolvedDid } from '../dto/update-did.dto';
 import { AuthGuard } from '@nestjs/passport';
@@ -35,6 +36,7 @@ import {
   ApiHeader,
   ApiConflictResponse,
 } from '@nestjs/swagger';
+import { classToPlain } from 'class-transformer';
 import {
   DidConflictError,
   DidError,
@@ -96,11 +98,6 @@ export class DidController {
     description: 'DID Resolved',
     type: ResolvedDid,
   })
-  @ApiNotFoundResponse({
-    status: 404,
-    description: 'did:hid:testnet:....... does not exists on chain',
-    type: DidNotFoundError,
-  })
   @ApiHeader({
     name: 'Authorization',
     description: 'Bearer <access_token>',
@@ -114,7 +111,6 @@ export class DidController {
     const appDetail = req.user;
     return this.didService.resolveDid(appDetail, did);
   }
-
   @UsePipes(
     new ValidationPipe({
       whitelist: true,
@@ -147,9 +143,11 @@ export class DidController {
     const appDetail = req.user;
     switch (options?.keyType) {
       case IKeyType.EcdsaSecp256k1RecoveryMethod2020: {
-        return this.didService.createByClientSpec(createDidDto, appDetail);
-
-        break;
+        const response = this.didService.createByClientSpec(
+          createDidDto,
+          appDetail,
+        );
+        return classToPlain(response, { excludePrefixes: ['transactionHash'] });
       }
 
       case IKeyType.EcdsaSecp256k1VerificationKey2019: {
@@ -164,13 +162,14 @@ export class DidController {
       }
 
       default:
-        return this.didService.create(createDidDto, appDetail);
+        const response = this.didService.create(createDidDto, appDetail);
+        return classToPlain(response, { excludePrefixes: ['transactionHash'] });
     }
   }
 
   @ApiCreatedResponse({
     description: 'DID Registred',
-    type: CreateDidResponse,
+    type: RegisterDidResponse,
   })
   @ApiBadRequestResponse({
     status: 400,

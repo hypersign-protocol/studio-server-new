@@ -18,7 +18,10 @@
     "test:watch": "jest --watch",
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-    "test:e2e": "jest --config ./test/jest-e2e.json"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "bumpVersion": "npm version --tag-version-prefix ''",
+    "pushTag": "git push origin --tag",
+    "prepare": "husky install"
   },
   "dependencies": {
     "@cosmjs/crypto": "^0.29.5",
@@ -69,7 +72,8 @@
     "ts-loader": "^9.2.3",
     "ts-node": "^10.0.0",
     "tsconfig-paths": "4.1.1",
-    "typescript": "^4.7.4"
+    "typescript": "^4.7.4",
+    "husky": "^8.0.0"
   },
   "jest": {
     "moduleFileExtensions": [

@@ -9,6 +9,7 @@ import {
   Min,
   ValidateNested,
   IsArray,
+  ArrayNotEmpty,
 } from 'class-validator';
 import { CredDoc } from 'src/credential/dto/create-credential.dto';
 import { IsDid } from 'src/utils/customDecorator/did.decorator';
@@ -135,6 +136,7 @@ export class CreatePresentationDto {
     type: CredDoc,
     isArray: true,
   })
+  @ArrayNotEmpty()
   @ValidateNested({ each: true })
   @Type(() => Array<CredDoc>)
   credentialDocuments: Array<CredDoc>;
@@ -163,6 +165,7 @@ export class CreatePresentationDto {
     example: 'example.com',
   })
   @IsNotEmpty()
+  @IsUrl()
   domain: string;
 }
 
