@@ -98,11 +98,6 @@ export class DidController {
     description: 'DID Resolved',
     type: ResolvedDid,
   })
-  @ApiNotFoundResponse({
-    status: 404,
-    description: 'did:hid:testnet:....... does not exists on chain',
-    type: DidNotFoundError,
-  })
   @ApiHeader({
     name: 'Authorization',
     description: 'Bearer <access_token>',
