@@ -380,7 +380,8 @@ class CredProof extends CredentialProof {
   @IsString()
   updated: Date;
 }
-export class ResolveCredential extends CredStatus {
+
+class ResolvedCredentialStatus extends CredStatus {
   @ApiProperty({
     name: 'proof',
     description: 'proof of credential',
@@ -389,4 +390,25 @@ export class ResolveCredential extends CredStatus {
   @Type(() => CredProof)
   @ValidateNested({ each: true })
   proof: CredProof;
+}
+export class ResolveCredential {
+  @ApiProperty({
+    name: 'credentialStatus',
+    description: 'status of the credential',
+    type: ResolvedCredentialStatus,
+  })
+  @Type(() => ResolvedCredentialStatus)
+  @ValidateNested({ each: true })
+  credentialStatus: ResolvedCredentialStatus;
+  @ApiProperty({
+    name: 'persist',
+    example: false,
+  })
+  persist: boolean;
+  @ApiProperty({
+    description: 'If set true then return credential also',
+    name: 'retrieveCredential',
+    example: false,
+  })
+  retrieveCredential: boolean;
 }

@@ -7,9 +7,10 @@ import {
 } from '@nestjs/common';
 import {
   CreateDidDto,
-  CreateDidResponse,
+  RegisterDidResponse,
   IKeyType,
   TxnHash,
+  CreateDidResponse,
 } from '../dto/create-did.dto';
 import { UpdateDidDto } from '../dto/update-did.dto';
 import { HypersignDID } from 'hs-ssi-sdk';
@@ -189,7 +190,7 @@ export class DidService {
   async register(
     registerDidDto: RegisterDidDto,
     appDetail,
-  ): Promise<CreateDidResponse> {
+  ): Promise<RegisterDidResponse> {
     let registerDidDoc;
     const { edvId, edvDocId } = appDetail;
     await this.edvService.init(edvId);
@@ -316,17 +317,10 @@ export class DidService {
 
   async resolveDid(appDetail, did: string) {
     const didInfo = await this.didRepositiory.findOne({
-      appId: appDetail.appId,
       did,
     });
-    if (!didInfo || didInfo == null) {
-      throw new NotFoundException([
-        `${did} not found`,
-        `${did} may have been created using EcdsaSecp256k1RecoveryMethod2020 keyType, we can not resolve unless its registered `,
-      ]);
-    }
     let resolvedDid;
-    if (didInfo.registrationStatus !== 'COMPLETED') {
+    if (didInfo !== null && didInfo.registrationStatus !== 'COMPLETED') {
       const { edvId, edvDocId } = appDetail;
       await this.edvService.init(edvId);
       const docs = await this.edvService.getDecryptedDocument(edvDocId);
