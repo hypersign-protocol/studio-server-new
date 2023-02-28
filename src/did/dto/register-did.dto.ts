@@ -6,6 +6,7 @@ import {
   IsNotEmptyObject,
   IsOptional,
   IsString,
+  Matches,
   ValidateIf,
   ValidateNested,
 } from 'class-validator';
@@ -34,6 +35,9 @@ export class RegisterDidDto {
   })
   @ValidateVerificationMethodId()
   @IsString()
+  @Matches(/^[a-zA-Z0-9\:]*testnet[a-zA-Z0-9\-:#]*$/, {
+    message: "Did's namespace should be testnet",
+  }) // this is to validate if did is generated using empty namespace
   verificationMethodId: string;
 
   @ApiProperty({
