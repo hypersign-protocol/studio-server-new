@@ -115,7 +115,7 @@ export class SchemaController {
   })
   @ApiNotFoundResponse({
     status: 404,
-    description: 'schema with id sch:hid:testnet:...... not found',
+    description: 'sch:hid:testnet:...... not on chain',
     type: SchemaNotFoundError,
   })
   @ApiHeader({
@@ -126,9 +126,7 @@ export class SchemaController {
   resolveSchema(
     @Headers('Authorization') authorization: string,
     @Param('schemaId') schemaId: string,
-    @Req() req: any,
   ): Promise<ResolveSchema> {
-    const appDetail = req.user;
-    return this.schemaService.resolveSchema(schemaId, appDetail);
+    return this.schemaService.resolveSchema(schemaId);
   }
 }
