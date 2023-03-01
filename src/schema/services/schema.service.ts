@@ -111,7 +111,7 @@ export class SchemaService {
   async resolveSchema(schemaId: string) {
     const hypersignSchema = new HypersignSchema();
     const resolvedSchema = await hypersignSchema.resolve({ schemaId });
-    if (resolvedSchema) {
+    if (resolvedSchema == undefined) {
       throw new NotFoundException([`${schemaId} is not chain`]);
     }
     return resolvedSchema;
