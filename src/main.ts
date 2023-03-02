@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { existDir, createDir, store } from './utils/utils';
 import { HypersignSSISdk } from 'hs-ssi-sdk';
+import { json, urlencoded } from 'express';
 // eslint-disable-next-line
 const hidWallet = require('hid-hd-wallet');
 import { Bip39, EnglishMnemonic } from '@cosmjs/crypto';
@@ -10,6 +11,8 @@ import { Bip39, EnglishMnemonic } from '@cosmjs/crypto';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { cors: true });
+  app.use(json({ limit: '10mb' }));
+  app.use(urlencoded({ extended: true, limit: '10mb' }));
   // Adding prefix to our api
 
   const walletOptions = {
@@ -68,6 +71,6 @@ async function bootstrap() {
   SwaggerModule.setup('api', app, document, {
     swaggerOptions: { defaultModelsExpandDepth: -1 },
   });
-  await app.listen(3001);
+  await app.listen(process.env.PORT || 3001);
 }
 bootstrap();
