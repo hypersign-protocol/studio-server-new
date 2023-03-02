@@ -11,6 +11,7 @@ import {
   IKeyType,
   TxnHash,
   CreateDidResponse,
+  VerificationRelationships,
 } from '../dto/create-did.dto';
 import { UpdateDidDto } from '../dto/update-did.dto';
 import { HypersignDID } from 'hs-ssi-sdk';
