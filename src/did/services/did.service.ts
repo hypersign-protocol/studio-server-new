@@ -35,15 +35,13 @@ export class DidService {
 
   async createByClientSpec(createDidDto: CreateDidDto, appDetail) {
     let methodSpecificId = createDidDto.methodSpecificId;
-
     const publicKey = createDidDto.options?.publicKey;
     const chainId = createDidDto.options.chainId;
     const keyType = createDidDto.options.keyType;
     const address = createDidDto.options.walletAddress;
     const register = createDidDto.options?.register;
-    const verificationRelationShip: Array<VerificationRelationships> =
+    const verificationRelationships: Array<VerificationRelationships> =
       createDidDto.options?.verificationRelationships;
-    //To Do:- pass this verificationRelationShip at the time of creating did from sdk
     if (!methodSpecificId) {
       methodSpecificId = address;
     }
@@ -84,6 +82,7 @@ export class DidService {
       chainId,
       keyType,
       address,
+      verificationRelationships,
     });
 
     return {
@@ -102,9 +101,8 @@ export class DidService {
   ): Promise<CreateDidResponse> {
     try {
       const methodSpecificId = createDidDto.methodSpecificId;
-      const verificationRelationShip =
+      const verificationRelationships =
         createDidDto.options?.verificationRelationships;
-      //To Do:- use verificationRelationShip at the time of calling generate()
       const { edvId, edvDocId } = appDetail;
       await this.edvService.init(edvId);
       const docs = await this.edvService.getDecryptedDocument(edvDocId);
@@ -135,6 +133,7 @@ export class DidService {
       const didDoc = await hypersignDid.generate({
         methodSpecificId,
         publicKeyMultibase,
+        verificationRelationships,
       });
 
       const params = {
