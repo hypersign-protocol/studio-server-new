@@ -64,8 +64,17 @@ export class SchemaController {
     description: 'Bearer <access_token>',
     required: false,
   })
+  @ApiHeader({
+    name: 'Origin',
+    description: 'Origin as you set in application cors',
+    required: false,
+  })
   @UsePipes(new ValidationPipe({ transform: true }))
-  create(@Body() createSchemaDto: CreateSchemaDto, @Req() req: any) {
+  create(
+    @Headers('Authorization') authorization: string,
+    @Body() createSchemaDto: CreateSchemaDto,
+    @Req() req: any,
+  ) {
     const appDetail = req.user;
     return this.schemaService.create(createSchemaDto, appDetail);
   }
@@ -85,6 +94,11 @@ export class SchemaController {
   @ApiHeader({
     name: 'Authorization',
     description: 'Bearer <access_token>',
+    required: false,
+  })
+  @ApiHeader({
+    name: 'Origin',
+    description: 'Origin as you set in application cors',
     required: false,
   })
   @ApiQuery({
@@ -121,6 +135,11 @@ export class SchemaController {
   @ApiHeader({
     name: 'Authorization',
     description: 'Bearer <access_token>',
+    required: false,
+  })
+  @ApiHeader({
+    name: 'Origin',
+    description: 'Origin as you set in application cors',
     required: false,
   })
   resolveSchema(

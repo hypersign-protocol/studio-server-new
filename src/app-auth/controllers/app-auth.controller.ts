@@ -14,6 +14,7 @@ import {
   UseGuards,
   Req,
   Delete,
+  Headers,
 } from '@nestjs/common';
 import { CreateAppDto } from 'src/app-auth/dtos/create-app.dto';
 import {
@@ -236,6 +237,11 @@ export class AppOAuthController {
     description: 'Provide Api Secret  key to get access token',
     required: true,
   })
+  @ApiHeader({
+    name: 'Origin',
+    description: 'Origin as you set in application cors',
+    required: false,
+  })
   @ApiBadRequestResponse({
     status: 400,
     description: 'Error occured at the time of generating access token',
@@ -254,6 +260,7 @@ export class AppOAuthController {
   })
   @UsePipes(ValidationPipe)
   generateAccessToken(
+    @Headers('X-Api-Secret-Key') apiSectretKey: string,
     @AppSecretHeader() appSecreatKey,
   ): Promise<{ access_token; expiresIn; tokenType }> {
     return this.appAuthService.generateAccessToken(appSecreatKey);

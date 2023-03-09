@@ -68,6 +68,11 @@ export class CredentialController {
     description: 'Bearer <access_token>',
     required: false,
   })
+  @ApiHeader({
+    name: 'Origin',
+    description: 'Origin as you set in application cors',
+    required: false,
+  })
   @ApiQuery({
     name: 'page',
     description: 'Page value',
@@ -100,6 +105,11 @@ export class CredentialController {
   @ApiHeader({
     name: 'Authorization',
     description: 'Bearer <access_token>',
+    required: false,
+  })
+  @ApiHeader({
+    name: 'Origin',
+    description: 'Origin as you set in application cors',
     required: false,
   })
   @ApiQuery({
@@ -142,7 +152,16 @@ export class CredentialController {
     description: 'Bearer <access_token>',
     required: false,
   })
-  create(@Body() createCredentialDto: CreateCredentialDto, @Req() req) {
+  @ApiHeader({
+    name: 'Origin',
+    description: 'Origin as you set in application cors',
+    required: false,
+  })
+  create(
+    @Headers('Authorization') authorization: string,
+    @Body() createCredentialDto: CreateCredentialDto,
+    @Req() req,
+  ) {
     return this.credentialService.create(createCredentialDto, req.user);
   }
 
@@ -168,7 +187,16 @@ export class CredentialController {
     description: 'Bearer <access_token>',
     required: false,
   })
-  verify(@Body() verifyCredentialDto: VerifyCredentialDto, @Req() req) {
+  @ApiHeader({
+    name: 'Origin',
+    description: 'Origin as you set in application cors',
+    required: false,
+  })
+  verify(
+    @Headers('Authorization') authorization: string,
+    @Body() verifyCredentialDto: VerifyCredentialDto,
+    @Req() req,
+  ) {
     return this.credentialService.verfiyCredential(
       verifyCredentialDto,
       req.user,
@@ -194,6 +222,11 @@ export class CredentialController {
   @ApiHeader({
     name: 'Authorization',
     description: 'Bearer <access_token>',
+    required: false,
+  })
+  @ApiHeader({
+    name: 'Origin',
+    description: 'Origin as you set in application cors',
     required: false,
   })
   update(

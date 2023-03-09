@@ -72,6 +72,11 @@ export class DidController {
     description: 'Bearer <access_token>',
     required: false,
   })
+  @ApiHeader({
+    name: 'Origin',
+    description: 'Origin as you set in application cors',
+    required: false,
+  })
   @ApiQuery({
     name: 'page',
     description: 'Page value',
@@ -101,6 +106,11 @@ export class DidController {
   @ApiHeader({
     name: 'Authorization',
     description: 'Bearer <access_token>',
+    required: false,
+  })
+  @ApiHeader({
+    name: 'Origin',
+    description: 'Origin as you set in application cors',
     required: false,
   })
   resolveDid(
@@ -138,7 +148,16 @@ export class DidController {
     description: 'Bearer <access_token>',
     required: false,
   })
-  create(@Body() createDidDto: CreateDidDto, @Req() req: any) {
+  @ApiHeader({
+    name: 'Origin',
+    description: 'Origin as you set in application cors',
+    required: false,
+  })
+  create(
+    @Headers('Authorization') authorization: string,
+    @Body() createDidDto: CreateDidDto,
+    @Req() req: any,
+  ) {
     const { options } = createDidDto;
     const appDetail = req.user;
     switch (options?.keyType) {
@@ -181,9 +200,18 @@ export class DidController {
     description: 'Bearer <access_token>',
     required: false,
   })
+  @ApiHeader({
+    name: 'Origin',
+    description: 'Origin as you set in application cors',
+    required: false,
+  })
   @Post('/register')
   @UsePipes(ValidationPipe)
-  register(@Body() registerDidDto: RegisterDidDto, @Req() req: any) {
+  register(
+    @Headers('Authorization') authorization: string,
+    @Body() registerDidDto: RegisterDidDto,
+    @Req() req: any,
+  ) {
     const appDetail = req.user;
     return this.didService.register(registerDidDto, appDetail);
   }
@@ -209,7 +237,16 @@ export class DidController {
     description: 'Bearer <access_token>',
     required: false,
   })
-  updateDid(@Req() req: any, @Body() updateDidDto: UpdateDidDto) {
+  @ApiHeader({
+    name: 'Origin',
+    description: 'Origin as you set in application cors',
+    required: false,
+  })
+  updateDid(
+    @Headers('Authorization') authorization: string,
+    @Req() req: any,
+    @Body() updateDidDto: UpdateDidDto,
+  ) {
     const appDetail = req.user;
     return this.didService.updateDid(updateDidDto, appDetail);
   }

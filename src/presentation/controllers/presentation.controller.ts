@@ -79,7 +79,13 @@ export class PresentationTempleteController {
     description: 'Bearer <access_token>',
     required: false,
   })
+  @ApiHeader({
+    name: 'Origin',
+    description: 'Origin as you set in application cors',
+    required: false,
+  })
   createPresentationTemplate(
+    @Headers('Authorization') authorization: string,
     @Body() createPresentationTemplateDto: CreatePresentationTemplateDto,
     @Req() req: any,
   ): Promise<PresentationTemplate> {
@@ -114,6 +120,11 @@ export class PresentationTempleteController {
     description: 'Bearer <access_token>',
     required: false,
   })
+  @ApiHeader({
+    name: 'Origin',
+    description: 'Origin as you set in application cors',
+    required: false,
+  })
   @UseInterceptors(TemplateResponseInterceptor)
   fetchListOfPresentationTemplate(
     @Headers('Authorization') authorization: string,
@@ -139,6 +150,11 @@ export class PresentationTempleteController {
   @ApiHeader({
     name: 'Authorization',
     description: 'Bearer <access_token>',
+    required: false,
+  })
+  @ApiHeader({
+    name: 'Origin',
+    description: 'Origin as you set in application cors',
     required: false,
   })
   fetchAPresentationTemplate(
@@ -167,6 +183,11 @@ export class PresentationTempleteController {
     description: 'Bearer <access_token>',
     required: false,
   })
+  @ApiHeader({
+    name: 'Origin',
+    description: 'Origin as you set in application cors',
+    required: false,
+  })
   updatePresentationTemplate(
     @Headers('Authorization') authorization: string,
     @Req() req: any,
@@ -192,6 +213,11 @@ export class PresentationTempleteController {
   @ApiHeader({
     name: 'Authorization',
     description: 'Bearer <access_token>',
+    required: false,
+  })
+  @ApiHeader({
+    name: 'Origin',
+    description: 'Origin as you set in application cors',
     required: false,
   })
   remove(
@@ -230,7 +256,16 @@ export class PresentationController {
     description: 'Bearer <access_token>',
     required: false,
   })
-  create(@Body() presentation: CreatePresentationDto, @Req() req) {
+  @ApiHeader({
+    name: 'Origin',
+    description: 'Origin as you set in application cors',
+    required: false,
+  })
+  create(
+    @Headers('Authorization') authorization: string,
+    @Body() presentation: CreatePresentationDto,
+    @Req() req,
+  ) {
     return this.presentationRequestService.createPresentation(
       presentation,
       req.user,
@@ -251,7 +286,13 @@ export class PresentationController {
     description: 'Bearer <access_token>',
     required: false,
   })
+  @ApiHeader({
+    name: 'Origin',
+    description: 'Origin as you set in application cors',
+    required: false,
+  })
   createPresentationRequest(
+    @Headers('Authorization') authorization: string,
     @Body() createPresentationRequestDto: CreatePresentationRequestDto,
     @Req() req,
   ) {
@@ -271,7 +312,15 @@ export class PresentationController {
     description: 'Bearer <access_token>',
     required: false,
   })
-  verify(@Body() presentation: VerifyPresentationDto) {
+  @ApiHeader({
+    name: 'Origin',
+    description: 'Origin as you set in application cors',
+    required: false,
+  })
+  verify(
+    @Headers('Authorization') authorization: string,
+    @Body() presentation: VerifyPresentationDto,
+  ) {
     return this.presentationRequestService.verifyPresentation(presentation);
   }
 }
