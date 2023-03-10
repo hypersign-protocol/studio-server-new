@@ -4,6 +4,8 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { existDir, createDir, store } from './utils/utils';
 import { HypersignSSISdk } from 'hs-ssi-sdk';
 import { json, urlencoded } from 'express';
+import * as path from 'path';
+import * as express from 'express';
 // eslint-disable-next-line
 const hidWallet = require('hid-hd-wallet');
 import { Bip39, EnglishMnemonic } from '@cosmjs/crypto';
@@ -13,6 +15,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, { cors: true });
   app.use(json({ limit: '10mb' }));
   app.use(urlencoded({ extended: true, limit: '10mb' }));
+  app.use(express.static(path.join(__dirname, '../public')));
   // Adding prefix to our api
 
   const walletOptions = {
@@ -67,10 +70,16 @@ async function bootstrap() {
     .build();
 
   const document = SwaggerModule.createDocument(app, config);
-
-  SwaggerModule.setup('api', app, document, {
-    swaggerOptions: { defaultModelsExpandDepth: -1 },
-  });
+  const options = {
+    swaggerOptions: {
+      defaultModelsExpandDepth: -1,
+    },
+    customfavIcon: '/Entity_favicon.png',
+    customSiteTitle: 'API-Playground',
+    customCss: ` .topbar-wrapper img {content:url(\'./Entity_full.png\'); width:135px; height:auto;margin-left: -150px;}
+    .swagger-ui .topbar { background-color: #fff; }`,
+  };
+  SwaggerModule.setup('api', app, document, options);
   await app.listen(process.env.PORT || 3001);
 }
 bootstrap();
