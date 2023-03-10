@@ -1,6 +1,7 @@
 import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
 import { Exclude, Type } from 'class-transformer';
 import {
+  IsArray,
   IsBoolean,
   IsEnum,
   IsObject,
@@ -18,6 +19,13 @@ export enum IKeyType {
   Ed25519VerificationKey2020 = 'Ed25519VerificationKey2020',
   EcdsaSecp256k1VerificationKey2019 = 'EcdsaSecp256k1VerificationKey2019',
   EcdsaSecp256k1RecoveryMethod2020 = 'EcdsaSecp256k1RecoveryMethod2020',
+}
+export enum VerificationRelationships {
+  authentication = 'authentication',
+  assertionMethod = 'assertionMethod',
+  keyAgreement = 'keyAgreement',
+  capabilityInvocation = 'capabilityInvocation',
+  capabilityDelegation = 'capabilityDelegation',
 }
 export enum Namespace {
   testnet = 'testnet',
@@ -68,6 +76,18 @@ export class Options {
   @IsOptional()
   @IsBoolean()
   register?: boolean = false; // keeping it for time being will remove it later
+  @ApiProperty({
+    description:
+      'verificationRelationships defines  verification methods to be used for which purposes',
+    example: 'authentication/ assertionMethod',
+    name: 'verificationRelationships',
+    required: false,
+    isArray: true,
+  })
+  @IsOptional()
+  @IsArray()
+  @IsEnum(VerificationRelationships, { each: true })
+  verificationRelationships?: VerificationRelationships[];
 }
 export class CreateDidDto {
   @ApiProperty({
@@ -99,6 +119,7 @@ export class CreateDidDto {
       chainId: '0x1',
       publicKey: 'z76tzt4XCb6FNqC3CPZvsxRfEDX5HHQc2VPux4DeZYndW',
       walletAddress: '0x01978e553Df0C54A63e2E063DFFe71c688d91C76',
+      verificationRelationships: ['assertionMethod', 'authentication'],
     },
   })
   @IsOptional()

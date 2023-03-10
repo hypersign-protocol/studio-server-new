@@ -108,19 +108,12 @@ export class SchemaService {
     return schemaList;
   }
 
-  async resolveSchema(schemaId: string, appDetail) {
-    const schemaDetail = await this.schemaRepository.findOne({
-      appId: appDetail.appId,
-      schemaId,
-    });
-    if (!schemaDetail || schemaDetail == null) {
-      throw new NotFoundException([
-        `${schemaId} is not found`,
-        `${schemaId} does not belongs to the App id: ${appDetail.appId}`,
-      ]);
-    }
+  async resolveSchema(schemaId: string) {
     const hypersignSchema = new HypersignSchema();
     const resolvedSchema = await hypersignSchema.resolve({ schemaId });
+    if (resolvedSchema == undefined) {
+      throw new NotFoundException([`${schemaId} is not chain`]);
+    }
     return resolvedSchema;
   }
 }

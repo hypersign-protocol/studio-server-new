@@ -393,6 +393,15 @@ class ResolvedCredentialStatus extends CredStatus {
 }
 export class ResolveCredential {
   @ApiProperty({
+    name: 'credentialDocument',
+    description: 'credential document ',
+    required: false,
+    type: CredDoc,
+  })
+  @Type(() => CredDoc)
+  @ValidateNested({ each: true })
+  credentialDocument: CredDoc;
+  @ApiProperty({
     name: 'credentialStatus',
     description: 'status of the credential',
     type: ResolvedCredentialStatus,
@@ -402,13 +411,15 @@ export class ResolveCredential {
   credentialStatus: ResolvedCredentialStatus;
   @ApiProperty({
     name: 'persist',
-    example: false,
+    description:
+      'return credentialDocument if persist is set to true at the time of issuing credential',
+    example: true,
   })
   persist: boolean;
   @ApiProperty({
-    description: 'If set true then return credential also',
+    description: 'If set true then return credential Document also',
     name: 'retrieveCredential',
-    example: false,
+    example: true,
   })
   retrieveCredential: boolean;
 }

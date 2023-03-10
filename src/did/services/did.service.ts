@@ -11,6 +11,7 @@ import {
   IKeyType,
   TxnHash,
   CreateDidResponse,
+  VerificationRelationships,
 } from '../dto/create-did.dto';
 import { UpdateDidDto } from '../dto/update-did.dto';
 import { HypersignDID } from 'hs-ssi-sdk';
@@ -34,12 +35,13 @@ export class DidService {
 
   async createByClientSpec(createDidDto: CreateDidDto, appDetail) {
     let methodSpecificId = createDidDto.methodSpecificId;
-
     const publicKey = createDidDto.options?.publicKey;
     const chainId = createDidDto.options.chainId;
     const keyType = createDidDto.options.keyType;
     const address = createDidDto.options.walletAddress;
     const register = createDidDto.options?.register;
+    const verificationRelationships: Array<VerificationRelationships> =
+      createDidDto.options?.verificationRelationships;
     if (!methodSpecificId) {
       methodSpecificId = address;
     }
@@ -80,6 +82,7 @@ export class DidService {
       chainId,
       keyType,
       address,
+      verificationRelationships,
     });
 
     return {
@@ -98,6 +101,8 @@ export class DidService {
   ): Promise<CreateDidResponse> {
     try {
       const methodSpecificId = createDidDto.methodSpecificId;
+      const verificationRelationships =
+        createDidDto.options?.verificationRelationships;
       const { edvId, edvDocId } = appDetail;
       await this.edvService.init(edvId);
       const docs = await this.edvService.getDecryptedDocument(edvDocId);
@@ -128,6 +133,7 @@ export class DidService {
       const didDoc = await hypersignDid.generate({
         methodSpecificId,
         publicKeyMultibase,
+        verificationRelationships,
       });
 
       const params = {
