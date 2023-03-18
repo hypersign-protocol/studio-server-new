@@ -1,5 +1,5 @@
 import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
-import { Exclude, Type } from 'class-transformer';
+import { Exclude, Transform, Type } from 'class-transformer';
 import {
   IsArray,
   IsBoolean,
@@ -60,6 +60,9 @@ export class Options {
     required: false,
   })
   @IsOptional()
+  @Transform((value)=> {
+    
+    return new Uint8Array(Object.values(value.obj.publicKey))})
   @Type(() => Uint8Array || String)
   publicKey?: Uint8Array | string;
 

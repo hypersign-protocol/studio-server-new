@@ -169,15 +169,13 @@ export class DidController {
         return classToPlain(response, { excludePrefixes: ['transactionHash'] });
       }
 
-      case IKeyType.EcdsaSecp256k1VerificationKey2019: {
-        throw new NotFoundException({
-          message: [
-            `${options.keyType} is not supported`,
-            `Feature coming soon`,
-          ],
-          error: 'Not Supported',
-          statusCode: 404,
-        });
+      case IKeyType.EcdsaSecp256k1VerificationKey2019: {        
+        const response = this.didService.createByClientSpec(
+          createDidDto,
+          appDetail,
+        );
+
+        return classToPlain(response, { excludePrefixes: ['transactionHash'] });
       }
 
       default:
@@ -216,8 +214,9 @@ export class DidController {
     return this.didService.register(registerDidDto, appDetail);
   }
 
-  @UsePipes(ValidationPipe)
   @Patch()
+  @UsePipes(ValidationPipe)
+
   @ApiOkResponse({
     description: 'DID Updated',
     type: TxnHash,
@@ -247,6 +246,7 @@ export class DidController {
     @Req() req: any,
     @Body() updateDidDto: UpdateDidDto,
   ) {
+    
     const appDetail = req.user;
     return this.didService.updateDid(updateDidDto, appDetail);
   }
