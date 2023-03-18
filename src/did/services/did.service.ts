@@ -31,7 +31,7 @@ export class DidService {
     private readonly edvService: EdvService,
     private readonly hidWallet: HidWalletService,
     private readonly didSSIService: DidSSIService,
-  ) { }
+  ) {}
 
   async createByClientSpec(createDidDto: CreateDidDto, appDetail) {
     let methodSpecificId = createDidDto.methodSpecificId;
@@ -48,22 +48,22 @@ export class DidService {
     if (!address) {
       throw new BadRequestException([
         'options.walletAddress is not passed , required for keyType ' +
-        IKeyType.EcdsaSecp256k1RecoveryMethod2020,
+          IKeyType.EcdsaSecp256k1RecoveryMethod2020,
       ]);
     }
     if (!chainId) {
       throw new BadRequestException([
         'options.chainId is not passed , required for keyType ' +
-        IKeyType.EcdsaSecp256k1RecoveryMethod2020,
+          IKeyType.EcdsaSecp256k1RecoveryMethod2020,
       ]);
     }
 
     if (register === true) {
       throw new BadRequestException([
         'options.register is true for keyType ' +
-        IKeyType.EcdsaSecp256k1RecoveryMethod2020,
+          IKeyType.EcdsaSecp256k1RecoveryMethod2020,
         IKeyType.EcdsaSecp256k1RecoveryMethod2020 +
-        ' doesnot support register without signature being passed',
+          ' doesnot support register without signature being passed',
         'options.register:false is strongly recomended',
       ]);
     }
@@ -219,13 +219,11 @@ export class DidService {
       namespace,
     );
     let data;
-    const { didDocument, signInfos, verificationMethodId } =
-      registerDidDto;
+    const { didDocument, signInfos, verificationMethodId } = registerDidDto;
     if (!verificationMethodId) {
-
       registerDidDoc = await hypersignDid.registerByClientSpec({
         didDocument,
-        signInfos
+        signInfos,
       });
       data = await this.didRepositiory.create({
         did: didDocument['id'],
@@ -241,12 +239,10 @@ export class DidService {
             ? RegistrationStatus.COMPLETED
             : RegistrationStatus.UNREGISTRED,
       });
-    }
-    else {
+    } else {
       const didData = await this.didRepositiory.findOne({
         did: didDocument['id'],
       });
-
 
       if (!didData) {
         throw new NotFoundException([didDocument['id'] + ' not found']);
@@ -257,12 +253,11 @@ export class DidService {
       const slipPathKeys: Array<Slip10RawIndex> =
         this.hidWallet.makeSSIWalletPath(hdPathIndex);
 
-      const seed =
-        await this.hidWallet.generateMemonicToSeedFromSlip10RawIndex(
-          slipPathKeys,
-        );
+      const seed = await this.hidWallet.generateMemonicToSeedFromSlip10RawIndex(
+        slipPathKeys,
+      );
       const { privateKeyMultibase } = await hypersignDid.generateKeys({
-        seed: seed
+        seed: seed,
       });
       const params = {
         didDocument: registerDidDto.didDocument,
@@ -355,7 +350,6 @@ export class DidService {
   }
 
   async updateDid(updateDidDto: UpdateDidDto, appDetail): Promise<TxnHash> {
-
     if (
       updateDidDto.didDocument['id'] == undefined ||
       updateDidDto.didDocument['id'] == ''
@@ -363,15 +357,9 @@ export class DidService {
       throw new BadRequestException('Invalid didDoc');
     }
 
-
-
     let updatedDid;
 
-
-
-
     if (!updateDidDto.verificationMethodId) {
-
       const did = updateDidDto.didDocument['id'];
       const { edvId, edvDocId } = appDetail;
       await this.edvService.init(edvId);
@@ -402,7 +390,6 @@ export class DidService {
       const { signInfos } = updateDidDto;
       try {
         if (!updateDidDto.deactivate) {
-          
           updatedDid = await hypersignDid.updateByClientSpec({
             didDocument: updateDidDto.didDocument,
             signInfos,
@@ -418,10 +405,7 @@ export class DidService {
       } catch (error) {
         throw new BadRequestException([error.message]);
       }
-
-    }
-    else {
-
+    } else {
       const { verificationMethodId } = updateDidDto;
       const didOfVmId = verificationMethodId?.split('#')[0];
       if (
@@ -472,10 +456,9 @@ export class DidService {
         didInfo.hdPathIndex,
       );
 
-      const seed =
-        await this.hidWallet.generateMemonicToSeedFromSlip10RawIndex(
-          slipPathKeys,
-        );
+      const seed = await this.hidWallet.generateMemonicToSeedFromSlip10RawIndex(
+        slipPathKeys,
+      );
 
       const { privateKeyMultibase } = await hypersignDid.generateKeys({
         seed,
@@ -500,10 +483,6 @@ export class DidService {
         throw new BadRequestException([error.message]);
       }
     }
-
-
-
-
 
     return { transactionHash: updatedDid.transactionHash };
   }

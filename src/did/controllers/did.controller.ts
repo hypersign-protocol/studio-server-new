@@ -169,7 +169,7 @@ export class DidController {
         return classToPlain(response, { excludePrefixes: ['transactionHash'] });
       }
 
-      case IKeyType.EcdsaSecp256k1VerificationKey2019: {        
+      case IKeyType.EcdsaSecp256k1VerificationKey2019: {
         const response = this.didService.createByClientSpec(
           createDidDto,
           appDetail,
@@ -216,7 +216,6 @@ export class DidController {
 
   @Patch()
   @UsePipes(ValidationPipe)
-
   @ApiOkResponse({
     description: 'DID Updated',
     type: TxnHash,
@@ -246,7 +245,6 @@ export class DidController {
     @Req() req: any,
     @Body() updateDidDto: UpdateDidDto,
   ) {
-    
     const appDetail = req.user;
     return this.didService.updateDid(updateDidDto, appDetail);
   }
