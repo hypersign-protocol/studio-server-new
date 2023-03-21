@@ -204,7 +204,6 @@ export class DidDoc {
   })
   @IsArray()
   @IsOptional()
-
   capabilityInvocation: Array<string>;
   @ApiProperty({
     description: 'capabilityDelegation',
@@ -212,7 +211,6 @@ export class DidDoc {
   })
   @IsArray()
   @IsOptional()
-
   capabilityDelegation: Array<string>;
   @ApiProperty({
     description: 'service',
