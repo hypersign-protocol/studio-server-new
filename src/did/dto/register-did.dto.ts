@@ -91,11 +91,12 @@ export class RegisterDidDto {
     example: 'did:hid:testnet:........#key-${idx}',
     required: false,
   })
-  // @ValidateVerificationMethodId()
-  // @IsString()
-  // @Matches(/^[a-zA-Z0-9\:]*testnet[a-zA-Z0-9\-:#]*$/, {
-  //   message: "Did's namespace should be testnet",
-  // }) // this is to validate if did is generated using empty namespace
+  @IsOptional()
+  @ValidateVerificationMethodId()
+  @IsString()
+  @Matches(/^[a-zA-Z0-9\:]*testnet[a-zA-Z0-9\-:#]*$/, {
+    message: "Did's namespace should be testnet",
+  }) // this is to validate if did is generated using empty namespace
   verificationMethodId?: string;
 
   // @ApiProperty({

@@ -168,6 +168,7 @@ export class DidDoc {
     example: ['did:hid:method:......'],
   })
   @IsArray()
+  @IsOptional()
   alsoKnownAs: Array<string>;
   @ApiProperty({
     description: 'verificationMethod',
@@ -195,18 +196,23 @@ export class DidDoc {
     example: ['did:hid:method:......'],
   })
   @IsArray()
+  @IsOptional()
   keyAgreement: Array<string>;
   @ApiProperty({
     description: 'capabilityInvocation',
     example: ['did:hid:method:......'],
   })
   @IsArray()
+  @IsOptional()
+
   capabilityInvocation: Array<string>;
   @ApiProperty({
     description: 'capabilityDelegation',
     example: ['did:hid:method:......'],
   })
   @IsArray()
+  @IsOptional()
+
   capabilityDelegation: Array<string>;
   @ApiProperty({
     description: 'service',
@@ -273,6 +279,12 @@ export class UpdateDidDto {
     description: 'Verification Method id for did registration',
     example: 'did:hid:testnet:........#key-${idx}',
     required: false,
+  })
+  @IsOptional()
+  @ValidateVerificationMethodId()
+  @IsString()
+  @Matches(/^[a-zA-Z0-9\:]*testnet[a-zA-Z0-9\-:#]*$/, {
+    message: "Did's namespace should be testnet",
   })
   verificationMethodId?: string;
   // @ApiProperty({
