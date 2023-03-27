@@ -2,10 +2,14 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
   IsArray,
+  IsEmpty,
   IsEnum,
+  IsNotEmpty,
   IsNotEmptyObject,
   IsOptional,
   IsString,
+  Matches,
+  ValidateIf,
   ValidateNested,
 } from 'class-validator';
 import { IsDid } from 'src/utils/customDecorator/did.decorator';
@@ -13,6 +17,64 @@ import { ValidateVerificationMethodId } from 'src/utils/customDecorator/vmId.dec
 export enum IClientSpec {
   'eth-personalSign' = 'eth-personalSign',
   'cosmos-ADR036' = 'cosmos-ADR036',
+}
+
+export class ClientSpec {
+  @ApiProperty({
+    description: "IClientSpec  'eth-personalSign' or  'cosmos-ADR036'",
+    example: 'eth-personalSign',
+    name: 'type',
+    required: false,
+    enum: IClientSpec,
+  })
+  @IsEnum(IClientSpec)
+  type: IClientSpec;
+  @ApiProperty({
+    description: 'bech32Address',
+    example: 'hid334XFEAYYAGLKA....',
+    name: 'adr036SignerAddress',
+    required: false,
+    type: String,
+  })
+  adr036SignerAddress: string;
+}
+
+export class SignInfo {
+  @ApiProperty({
+    description: 'Verification Method id for did registration',
+    example: 'did:hid:testnet:........#key-${idx}',
+    required: true,
+  })
+  @ValidateVerificationMethodId()
+  @IsString()
+  @Matches(/^[a-zA-Z0-9\:]*testnet[a-zA-Z0-9\-:#]*$/, {
+    message: "Did's namespace should be testnet",
+  })
+  verification_method_id: string;
+
+  @ApiProperty({
+    description: 'Signature for clientSpec',
+    example: 'afafljagahgp9agjagknaglkj/kagka=',
+    name: 'signature',
+    required: true,
+  })
+  @ValidateIf((o, value) => o.clientSpec !== undefined)
+  @IsNotEmpty()
+  @IsString()
+  signature: string;
+
+  @ApiProperty({
+    description: 'ClienSpec ',
+    example: {
+      type: IClientSpec['cosmos-ADR036'],
+      adr036SignerAddress: 'bech32address',
+    },
+    type: ClientSpec,
+    name: 'clinetSpec',
+  })
+  @Type(() => ClientSpec)
+  @ValidateNested({ each: true })
+  clientSpec: ClientSpec;
 }
 class verificationMethod {
   @ApiProperty({
@@ -36,11 +98,11 @@ class verificationMethod {
   @IsDid()
   @IsString()
   controller: string;
-  // @ApiProperty({
-  //   description: 'publicKeyMultibase',
-  //   example: 'z28ScfSszr2zi2Bd7qmNE4mfHX5j8nCwx4DBF6nAUHu4p',
-  //   required: false,
-  // })
+  @ApiProperty({
+    description: 'publicKeyMultibase',
+    example: 'z28ScfSszr2zi2Bd7qmNE4mfHX5j8nCwx4DBF6nAUHu4p',
+    required: false,
+  })
   @IsOptional()
   @IsString()
   publicKeyMultibase?: string;
@@ -106,6 +168,7 @@ export class DidDoc {
     example: ['did:hid:method:......'],
   })
   @IsArray()
+  @IsOptional()
   alsoKnownAs: Array<string>;
   @ApiProperty({
     description: 'verificationMethod',
@@ -133,18 +196,21 @@ export class DidDoc {
     example: ['did:hid:method:......'],
   })
   @IsArray()
+  @IsOptional()
   keyAgreement: Array<string>;
   @ApiProperty({
     description: 'capabilityInvocation',
     example: ['did:hid:method:......'],
   })
   @IsArray()
+  @IsOptional()
   capabilityInvocation: Array<string>;
   @ApiProperty({
     description: 'capabilityDelegation',
     example: ['did:hid:method:......'],
   })
   @IsArray()
+  @IsOptional()
   capabilityDelegation: Array<string>;
   @ApiProperty({
     description: 'service',
@@ -208,34 +274,60 @@ export class UpdateDidDto {
   didDocument: DidDoc;
 
   @ApiProperty({
+    description: 'Verification Method id for did registration',
+    example: 'did:hid:testnet:........#key-${idx}',
+    required: false,
+  })
+  @IsOptional()
+  @ValidateVerificationMethodId()
+  @IsString()
+  @Matches(/^[a-zA-Z0-9\:]*testnet[a-zA-Z0-9\-:#]*$/, {
+    message: "Did's namespace should be testnet",
+  })
+  verificationMethodId?: string;
+  // @ApiProperty({
+  //   description: "IClientSpec  'eth-personalSign' or      'cosmos-ADR036'",
+  //   example: 'eth-personalSign',
+  //   name: 'clientSpec',
+  //   required: false,
+  // })
+  // @IsOptional()
+  // @IsEnum(IClientSpec)
+  // clientSpec?: IClientSpec;
+
+  // @ApiProperty({
+  //   description: 'Signature for clientSpec',
+  //   example: 'afafljagahgp9agjagknaglkj/kagka=',
+  //   name: 'signature',
+  //   required: false,
+  // })
+  // @IsOptional()
+  // @IsString()
+  // signature?: string;
+
+  @ApiProperty({
+    description: 'Sign Info',
+    example: [
+      {
+        verification_method_id: 'did:hid:testnet:........#key-${idx}',
+        signature: 'signature',
+        clientSpec: {
+          type: IClientSpec['cosmos-ADR036'],
+          adr036SignerAddress: 'Bech32address',
+        },
+      },
+    ],
+    isArray: true,
+    required: false,
+    type: SignInfo,
+  })
+  @Type(() => SignInfo)
+  @ValidateNested({ each: true })
+  signInfos?: Array<SignInfo>;
+
+  @ApiProperty({
     description: 'Field to check if to deactivate did or to update it ',
     example: false,
   })
   deactivate: boolean;
-  @ApiProperty({
-    description: 'Verification Method id for did updation',
-    example: 'did:hid:testnet:........#key-${idx}',
-  })
-  @ValidateVerificationMethodId()
-  @IsString()
-  verificationMethodId: string;
-  @ApiProperty({
-    description: "IClientSpec  'eth-personalSign' or      'cosmos-ADR036'",
-    example: 'eth-personalSign',
-    name: 'clientSpec',
-    required: false,
-  })
-  @IsOptional()
-  @IsEnum(IClientSpec)
-  clientSpec?: IClientSpec;
-
-  @ApiProperty({
-    description: 'Signature for clientSpec',
-    example: 'afafljagahgp9agjagknaglkj/kagka=',
-    name: 'signature',
-    required: false,
-  })
-  @IsOptional()
-  @IsString()
-  signature?: string;
 }
