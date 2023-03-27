@@ -1,5 +1,5 @@
 import { ApiHideProperty, ApiProperty } from '@nestjs/swagger';
-import { Exclude, Type } from 'class-transformer';
+import { Exclude, Transform, Type } from 'class-transformer';
 import {
   IsArray,
   IsBoolean,
@@ -14,6 +14,7 @@ import {
 import { RegistrationStatus } from '../schemas/did.schema';
 import { DidDoc } from '../dto/update-did.dto';
 import { IsDid } from 'src/utils/customDecorator/did.decorator';
+import { ValidatePublicKeyMultibase } from 'src/utils/customDecorator/pubKeyMultibase.decorator';
 
 export enum IKeyType {
   Ed25519VerificationKey2020 = 'Ed25519VerificationKey2020',
@@ -60,8 +61,8 @@ export class Options {
     required: false,
   })
   @IsOptional()
-  @Type(() => Uint8Array || String)
-  publicKey?: Uint8Array | string;
+  @ValidatePublicKeyMultibase()
+  publicKey?: string;
 
   @ApiProperty({
     name: 'walletAddress',
