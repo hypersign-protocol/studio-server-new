@@ -98,11 +98,11 @@ class verificationMethod {
   @IsDid()
   @IsString()
   controller: string;
-  // @ApiProperty({
-  //   description: 'publicKeyMultibase',
-  //   example: 'z28ScfSszr2zi2Bd7qmNE4mfHX5j8nCwx4DBF6nAUHu4p',
-  //   required: false,
-  // })
+  @ApiProperty({
+    description: 'publicKeyMultibase',
+    example: 'z28ScfSszr2zi2Bd7qmNE4mfHX5j8nCwx4DBF6nAUHu4p',
+    required: false,
+  })
   @IsOptional()
   @IsString()
   publicKeyMultibase?: string;
