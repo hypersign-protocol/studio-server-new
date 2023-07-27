@@ -193,14 +193,14 @@ export class DidDoc {
 
   @ApiProperty({
     description: 'keyAgreement',
-    example: ['did:hid:method:......'],
+    example: [],
   })
   @IsArray()
   @IsOptional()
   keyAgreement: Array<string>;
   @ApiProperty({
     description: 'capabilityInvocation',
-    example: ['did:hid:method:......'],
+    example: [],
   })
   @IsArray()
   @IsOptional()
