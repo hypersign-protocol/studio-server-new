@@ -43,7 +43,7 @@ export class DidService {
     const verificationRelationships: Array<VerificationRelationships> =
       createDidDto.options?.verificationRelationships ?? [
         VerificationRelationships.authentication,
-        VerificationRelationships.authentication,
+        VerificationRelationships.assertionMethod,
         VerificationRelationships.capabilityDelegation,
         VerificationRelationships.capabilityInvocation,
       ];
@@ -110,7 +110,7 @@ export class DidService {
       const verificationRelationships: Array<VerificationRelationships> =
         createDidDto.options?.verificationRelationships ?? [
           VerificationRelationships.authentication,
-          VerificationRelationships.authentication,
+          VerificationRelationships.assertionMethod,
           VerificationRelationships.capabilityDelegation,
           VerificationRelationships.capabilityInvocation,
         ];
