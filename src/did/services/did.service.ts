@@ -41,7 +41,12 @@ export class DidService {
     const address = createDidDto.options.walletAddress;
     const register = createDidDto.options?.register;
     const verificationRelationships: Array<VerificationRelationships> =
-      createDidDto.options?.verificationRelationships;
+      createDidDto.options?.verificationRelationships ?? [
+        VerificationRelationships.authentication,
+        VerificationRelationships.assertionMethod,
+        VerificationRelationships.capabilityDelegation,
+        VerificationRelationships.capabilityInvocation,
+      ];
     if (!methodSpecificId) {
       methodSpecificId = address;
     }
@@ -101,8 +106,14 @@ export class DidService {
   ): Promise<CreateDidResponse> {
     try {
       const methodSpecificId = createDidDto.methodSpecificId;
-      const verificationRelationships =
-        createDidDto.options?.verificationRelationships;
+
+      const verificationRelationships: Array<VerificationRelationships> =
+        createDidDto.options?.verificationRelationships ?? [
+          VerificationRelationships.authentication,
+          VerificationRelationships.assertionMethod,
+          VerificationRelationships.capabilityDelegation,
+          VerificationRelationships.capabilityInvocation,
+        ];
       const { edvId, edvDocId } = appDetail;
       await this.edvService.init(edvId);
       const docs = await this.edvService.getDecryptedDocument(edvDocId);

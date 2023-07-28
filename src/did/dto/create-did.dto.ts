@@ -24,7 +24,6 @@ export enum IKeyType {
 export enum VerificationRelationships {
   authentication = 'authentication',
   assertionMethod = 'assertionMethod',
-  keyAgreement = 'keyAgreement',
   capabilityInvocation = 'capabilityInvocation',
   capabilityDelegation = 'capabilityDelegation',
 }
