@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IsBoolean } from 'class-validator';
 
 class Proof {
   @ApiProperty({
@@ -60,16 +61,17 @@ class schemaDetail {
   properties: string;
   @ApiProperty({
     name: 'required',
-    description: 'name of the schema ',
-    example: 'object',
+    description: 'list of required attributes',
+    example: [],
   })
-  required: string;
+  required: string[];
   @ApiProperty({
-    name: 'require',
-    description: 'To defien field is required or not',
-    example: [true],
+    name: 'additionalProperties',
+    description: 'If set to true then we can add extra properties',
+    example: true,
   })
-  additionalProperties: string;
+  @IsBoolean()
+  additionalProperties: boolean;
 }
 export class ResolveSchema {
   @ApiProperty({

@@ -11,13 +11,19 @@ import {
   CreatePresentationDto,
   CreatePresentationRequestDto,
 } from '../dto/create-presentation-request.dto';
-import { HypersignVerifiablePresentation, HypersignDID } from 'hs-ssi-sdk';
+import {
+  HypersignVerifiablePresentation,
+  HypersignDID,
+  IVerifiableCredential,
+} from 'hs-ssi-sdk';
 import { ConfigService } from '@nestjs/config';
 import { EdvService } from 'src/edv/services/edv.service';
 import { HidWalletService } from 'src/hid-wallet/services/hid-wallet.service';
 import { DidRepository } from 'src/did/repository/did.repository';
 import { VerifyPresentationDto } from '../dto/verify-presentation.dto';
 import { AppAuthApiKeyService } from 'src/app-auth/services/app-auth-apikey.service';
+import { ldToJsonConvertor } from 'src/utils/utils';
+import { IVerifiablePresentation } from 'hs-ssi-sdk/build/src/presentation/IPresentation';
 
 @Injectable()
 export class PresentationService {
@@ -195,12 +201,17 @@ export class PresentationRequestService {
 
     const { credentialDocuments, holderDid, challenge, domain } =
       credentialsDto;
-
+    const ldCredDocument: IVerifiableCredential[] = [];
+    credentialDocuments.forEach((credential) => {
+      const tempCredDoc = ldToJsonConvertor({
+        ...credential,
+      }) as IVerifiableCredential;
+      ldCredDocument.push(tempCredDoc);
+    });
     const unsignedverifiablePresentation = await hypersignVP.generate({
-      verifiableCredentials: credentialDocuments,
+      verifiableCredentials: ldCredDocument,
       holderDid: holderDid,
     });
-
     const { didDocument } = await hypersignDID.resolve({
       did: holderDid,
     });
@@ -233,12 +244,11 @@ export class PresentationRequestService {
     const { privateKeyMultibase } = await hypersignDID.generateKeys({ seed });
 
     const signedVerifiablePresentation = await hypersignVP.sign({
-      presentation: unsignedverifiablePresentation,
+      presentation: unsignedverifiablePresentation as IVerifiablePresentation,
       holderDid,
       verificationMethodId: verificationMethodIdforAssert,
       challenge,
       privateKeyMultibase,
-      domain,
     });
     return { presentation: signedVerifiablePresentation };
   }
@@ -250,14 +260,24 @@ export class PresentationRequestService {
       namespace: 'testnet',
     });
     const { presentation } = presentations;
+    const { verifiableCredential } = presentation;
+    let ldCredDocument: IVerifiableCredential[];
 
+    verifiableCredential.forEach((credential) => {
+      const tempCred = ldToJsonConvertor({
+        credential,
+      }) as IVerifiableCredential;
+      ldCredDocument.push(tempCred);
+    });
+    const tempPresentation: any = presentation;
+    tempPresentation['verifiableCredential'] = ldCredDocument;
     const holderDid = presentation['holder'];
     const issuerDid = presentation['verifiableCredential'][0]['issuer'];
 
     // const domain = presentation['proof']['domain'];
     const challenge = presentation['proof']['challenge'];
     const verifiedPresentationDetail = await hypersignVP.verify({
-      signedPresentation: presentation,
+      signedPresentation: tempPresentation,
       issuerDid,
       holderDid,
       holderVerificationMethodId: holderDid + '#key-1',

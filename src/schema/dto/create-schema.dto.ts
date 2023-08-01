@@ -82,7 +82,7 @@ export class SchemaBody {
     example: 'Railway ticket schema"',
   })
   @IsString()
-  description: string;
+  description?: string;
 
   @ApiProperty({
     description: 'additionalProperties',
