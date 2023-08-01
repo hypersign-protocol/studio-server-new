@@ -22,7 +22,6 @@ import { HidWalletService } from 'src/hid-wallet/services/hid-wallet.service';
 import { DidRepository } from 'src/did/repository/did.repository';
 import { VerifyPresentationDto } from '../dto/verify-presentation.dto';
 import { AppAuthApiKeyService } from 'src/app-auth/services/app-auth-apikey.service';
-import { ldToJsonConvertor } from 'src/utils/utils';
 import { IVerifiablePresentation } from 'hs-ssi-sdk/build/src/presentation/IPresentation';
 
 @Injectable()
@@ -201,15 +200,8 @@ export class PresentationRequestService {
 
     const { credentialDocuments, holderDid, challenge, domain } =
       credentialsDto;
-    const ldCredDocument: IVerifiableCredential[] = [];
-    credentialDocuments.forEach((credential) => {
-      const tempCredDoc = ldToJsonConvertor({
-        ...credential,
-      }) as IVerifiableCredential;
-      ldCredDocument.push(tempCredDoc);
-    });
     const unsignedverifiablePresentation = await hypersignVP.generate({
-      verifiableCredentials: ldCredDocument,
+      verifiableCredentials: credentialDocuments as any,
       holderDid: holderDid,
     });
     const { didDocument } = await hypersignDID.resolve({
@@ -260,24 +252,14 @@ export class PresentationRequestService {
       namespace: 'testnet',
     });
     const { presentation } = presentations;
-    const { verifiableCredential } = presentation;
-    let ldCredDocument: IVerifiableCredential[];
 
-    verifiableCredential.forEach((credential) => {
-      const tempCred = ldToJsonConvertor({
-        credential,
-      }) as IVerifiableCredential;
-      ldCredDocument.push(tempCred);
-    });
-    const tempPresentation: any = presentation;
-    tempPresentation['verifiableCredential'] = ldCredDocument;
     const holderDid = presentation['holder'];
     const issuerDid = presentation['verifiableCredential'][0]['issuer'];
 
     // const domain = presentation['proof']['domain'];
     const challenge = presentation['proof']['challenge'];
     const verifiedPresentationDetail = await hypersignVP.verify({
-      signedPresentation: tempPresentation,
+      signedPresentation: presentation as any,
       issuerDid,
       holderDid,
       holderVerificationMethodId: holderDid + '#key-1',

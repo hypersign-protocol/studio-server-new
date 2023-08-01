@@ -164,7 +164,6 @@ export class CredentialController {
   ) {
     return this.credentialService.create(createCredentialDto, req.user);
   }
-
   @UsePipes(ValidationPipe)
   @HttpCode(200)
   @Post('/verify')

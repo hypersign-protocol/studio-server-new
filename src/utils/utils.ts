@@ -106,14 +106,3 @@ export class AllExceptionsFilter implements ExceptionFilter {
     response.status(status).json(message);
   }
 }
-export function ldToJsonConvertor(ld: any) {
-  const json = {};
-  for (const key in ld) {
-    if (key === '@context') {
-      json['context'] = ld[key];
-    } else {
-      json[key] = ld[key];
-    }
-  }
-  return json;
-}
