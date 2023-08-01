@@ -12,11 +12,7 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import { ValidateVerificationMethodId } from 'src/utils/customDecorator/vmId.decorator';
-
-export enum IClientSpec {
-  'eth-personalSign' = 'eth-personalSign',
-  'cosmos-ADR036' = 'cosmos-ADR036',
-}
+import { IClientSpec } from 'hs-ssi-sdk';
 
 export class ClientSpec {
   @ApiProperty({
@@ -63,13 +59,13 @@ export class SignInfo {
   signature: string;
 
   @ApiProperty({
-    description: 'ClienSpec ',
+    description: 'ClientSpec ',
     example: {
       type: IClientSpec['cosmos-ADR036'],
       adr036SignerAddress: 'bech32address',
     },
     type: ClientSpec,
-    name: 'clinetSpec',
+    name: 'clientSpec',
   })
   @Type(() => ClientSpec)
   @ValidateNested({ each: true })

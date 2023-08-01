@@ -240,7 +240,7 @@ export class Presentation {
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => CredDoc)
-  verifiableCredential: CredDoc;
+  verifiableCredential: CredDoc[];
 
   @ApiProperty({
     name: 'id',

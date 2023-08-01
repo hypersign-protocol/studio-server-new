@@ -11,8 +11,13 @@ import { HidWalletService } from 'src/hid-wallet/services/hid-wallet.service';
 import { CredentialRepository } from '../repository/credential.repository';
 import { EdvService } from 'src/edv/services/edv.service';
 import { DidRepository } from 'src/did/repository/did.repository';
-import { HypersignDID, HypersignVerifiableCredential } from 'hs-ssi-sdk';
+import {
+  HypersignDID,
+  HypersignVerifiableCredential,
+  IVerifiableCredential,
+} from 'hs-ssi-sdk';
 import { VerifyCredentialDto } from '../dto/verify-credential.dto';
+import { ldToJsonConvertor } from 'src/utils/utils';
 @Injectable()
 export class CredentialService {
   constructor(
@@ -275,9 +280,15 @@ export class CredentialService {
     }
     const hypersignCredential = new HypersignVerifiableCredential();
     let verificationResult;
+    const { credentialDocument } = verifyCredentialDto;
+    credentialDocument.issuanceDate.toString();
+    credentialDocument.expirationDate.toString();
+    const convrtedCredaDoc = ldToJsonConvertor({
+      ...credentialDocument,
+    }) as IVerifiableCredential;
     try {
       verificationResult = await hypersignCredential.verify({
-        credential: verifyCredentialDto.credentialDocument,
+        credential: convrtedCredaDoc,
         issuerDid: issuer,
         verificationMethodId:
           verifyCredentialDto.credentialDocument.proof.verificationMethod,

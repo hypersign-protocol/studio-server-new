@@ -19,7 +19,6 @@ import { DidService } from '../services/did.service';
 import {
   CreateDidDto,
   RegisterDidResponse,
-  IKeyType,
   TxnHash,
   CreateDidResponse,
 } from '../dto/create-did.dto';
@@ -48,6 +47,7 @@ import { Did } from '../schemas/did.schema';
 import { DidResponseInterceptor } from '../interceptors/transformResponse.interseptor';
 import { GetDidList } from '../dto/fetch-did.dto';
 import { RegisterDidDto } from '../dto/register-did.dto';
+import { IKeyType } from 'hs-ssi-sdk';
 @UseFilters(AllExceptionsFilter)
 @ApiTags('Did')
 @Controller('did')
