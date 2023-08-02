@@ -124,7 +124,7 @@ export class CreateDidDto {
 export class TxnHash {
   @ApiProperty({
     name: 'transactionHash',
-    description: 'Transaction Has',
+    description: 'Transaction Hash',
     example: 'XYAIFLKFLKHSLFHKLAOHFOAIHG..........',
   })
   transactionHash: string;
