@@ -265,7 +265,7 @@ export class DidService {
     );
     let data;
     const { didDocument, signInfos, verificationMethodId } = registerDidDto;
-    if (!verificationMethodId) {
+    if (!verificationMethodId && signInfos) {
       registerDidDoc = await hypersignDid.registerByClientSpec({
         didDocument,
         signInfos,
@@ -404,14 +404,12 @@ export class DidService {
     }
 
     let updatedDid;
-
     if (!updateDidDto.verificationMethodId) {
       const did = updateDidDto.didDocument['id'];
       const { edvId, edvDocId } = appDetail;
       await this.edvService.init(edvId);
       const docs = await this.edvService.getDecryptedDocument(edvDocId);
       const mnemonic: string = docs.mnemonic;
-
       const hypersignDid = await this.didSSIService.initiateHypersignDid(
         mnemonic,
         'testnet',
@@ -421,7 +419,9 @@ export class DidService {
         appId: appDetail.appId,
         did,
       });
-      if (!didInfo || didInfo == null) {
+      const { signInfos } = updateDidDto;
+      // If signature is passed then no need to check if it is present in db or not
+      if (!signInfos && (!didInfo || didInfo == null)) {
         throw new NotFoundException([
           `${did} not found`,
           `${did} is not owned by the appId ${appDetail.appId}`,
@@ -433,7 +433,6 @@ export class DidService {
       if (updatedDidDocMetaData === null) {
         throw new NotFoundException([`${did} is not registered on the chain`]);
       }
-      const { signInfos } = updateDidDto;
       try {
         if (!updateDidDto.deactivate) {
           updatedDid = await hypersignDid.updateByClientSpec({
