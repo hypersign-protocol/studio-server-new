@@ -8,20 +8,25 @@ import {
 import {
   CreateDidDto,
   RegisterDidResponse,
-  IKeyType,
   TxnHash,
   CreateDidResponse,
-  VerificationRelationships,
 } from '../dto/create-did.dto';
 import { UpdateDidDto } from '../dto/update-did.dto';
-import { HypersignDID } from 'hs-ssi-sdk';
+import {
+  HypersignDID,
+  IVerificationRelationships,
+  IKeyType,
+  IClientSpec,
+  Did,
+} from 'hs-ssi-sdk';
 import { DidRepository, DidMetaDataRepo } from '../repository/did.repository';
 import { EdvService } from 'src/edv/services/edv.service';
 import { Slip10RawIndex } from '@cosmjs/crypto';
 import { HidWalletService } from '../../hid-wallet/services/hid-wallet.service';
 import { DidSSIService } from './did.ssi.service';
-import { Did, RegistrationStatus } from '../schemas/did.schema';
-import { IClientSpec, RegisterDidDto } from '../dto/register-did.dto';
+import { RegistrationStatus } from '../schemas/did.schema';
+import { RegisterDidDto } from '../dto/register-did.dto';
+import { Did as IDidDto } from '../schemas/did.schema';
 
 @Injectable({ scope: Scope.REQUEST })
 export class DidService {
@@ -37,16 +42,26 @@ export class DidService {
     let methodSpecificId = createDidDto.methodSpecificId;
     const publicKey = createDidDto.options?.publicKey;
     const chainId = createDidDto.options.chainId;
-    const keyType = createDidDto.options.keyType;
+    const keyType: IKeyType = createDidDto.options.keyType;
     const address = createDidDto.options.walletAddress;
     const register = createDidDto.options?.register;
-    const verificationRelationships: Array<VerificationRelationships> =
-      createDidDto.options?.verificationRelationships ?? [
-        VerificationRelationships.authentication,
-        VerificationRelationships.assertionMethod,
-        VerificationRelationships.capabilityDelegation,
-        VerificationRelationships.capabilityInvocation,
-      ];
+    let verificationRelationships: IVerificationRelationships[];
+    if (
+      createDidDto.options?.verificationRelationships &&
+      createDidDto.options?.verificationRelationships.length > 0
+    ) {
+      verificationRelationships =
+        createDidDto.options.verificationRelationships;
+      if (
+        verificationRelationships.includes(
+          IVerificationRelationships.keyAgreement,
+        )
+      ) {
+        throw new BadRequestException([
+          'verificationRelationships.keyAgreement is not allowed at the time of creating a did',
+        ]);
+      }
+    }
     if (!methodSpecificId) {
       methodSpecificId = address;
     }
@@ -81,11 +96,21 @@ export class DidService {
       mnemonic,
       createDidDto.namespace,
     );
+    let clientSpec: IClientSpec;
+    if (keyType) {
+      if (keyType === IKeyType.EcdsaSecp256k1RecoveryMethod2020) {
+        clientSpec = IClientSpec['eth-personalSign'];
+      } else if (keyType === IKeyType.EcdsaSecp256k1VerificationKey2019) {
+        clientSpec = IClientSpec['cosmos-ADR036'];
+      } else {
+        throw new BadRequestException([`Invalid KeyType ${keyType}`]);
+      }
+    }
     const didDoc = await hypersignDid.createByClientSpec({
       methodSpecificId,
       publicKey,
       chainId,
-      keyType,
+      clientSpec,
       address,
       verificationRelationships,
     });
@@ -106,14 +131,23 @@ export class DidService {
   ): Promise<CreateDidResponse> {
     try {
       const methodSpecificId = createDidDto.methodSpecificId;
-
-      const verificationRelationships: Array<VerificationRelationships> =
-        createDidDto.options?.verificationRelationships ?? [
-          VerificationRelationships.authentication,
-          VerificationRelationships.assertionMethod,
-          VerificationRelationships.capabilityDelegation,
-          VerificationRelationships.capabilityInvocation,
-        ];
+      let verificationRelationships: IVerificationRelationships[];
+      if (
+        createDidDto.options?.verificationRelationships &&
+        createDidDto.options?.verificationRelationships.length > 0
+      ) {
+        verificationRelationships =
+          createDidDto.options.verificationRelationships;
+        if (
+          verificationRelationships.includes(
+            IVerificationRelationships.keyAgreement,
+          )
+        ) {
+          throw new BadRequestException([
+            'verificationRelationships.keyAgreement is not allowed at the time of creating a did',
+          ]);
+        }
+      }
       const { edvId, edvDocId } = appDetail;
       await this.edvService.init(edvId);
       const docs = await this.edvService.getDecryptedDocument(edvDocId);
@@ -150,7 +184,7 @@ export class DidService {
       const params = {
         didDocument: didDoc,
         privateKeyMultibase,
-        verificationMethodId: didDoc.verificationMethod[0].id,
+        verificationMethodId: didDoc['verificationMethod'][0].id,
       };
       let registerDidDoc;
       //we aree not registering did at the time of creating it
@@ -231,7 +265,7 @@ export class DidService {
     );
     let data;
     const { didDocument, signInfos, verificationMethodId } = registerDidDto;
-    if (!verificationMethodId) {
+    if (!verificationMethodId && signInfos) {
       registerDidDoc = await hypersignDid.registerByClientSpec({
         didDocument,
         signInfos,
@@ -270,8 +304,9 @@ export class DidService {
       const { privateKeyMultibase } = await hypersignDid.generateKeys({
         seed: seed,
       });
+      const regDidDocument = registerDidDto.didDocument as Did;
       const params = {
-        didDocument: registerDidDto.didDocument,
+        didDocument: regDidDocument,
         privateKeyMultibase,
         verificationMethodId: verificationMethodId,
       };
@@ -305,7 +340,7 @@ export class DidService {
     };
   }
 
-  async getDidList(appDetail, option): Promise<Did[]> {
+  async getDidList(appDetail, option): Promise<IDidDto[]> {
     const skip = (option.page - 1) * option.limit;
     option['skip'] = skip;
     const didList = await this.didRepositiory.find({
@@ -369,14 +404,12 @@ export class DidService {
     }
 
     let updatedDid;
-
     if (!updateDidDto.verificationMethodId) {
       const did = updateDidDto.didDocument['id'];
       const { edvId, edvDocId } = appDetail;
       await this.edvService.init(edvId);
       const docs = await this.edvService.getDecryptedDocument(edvDocId);
       const mnemonic: string = docs.mnemonic;
-
       const hypersignDid = await this.didSSIService.initiateHypersignDid(
         mnemonic,
         'testnet',
@@ -386,7 +419,9 @@ export class DidService {
         appId: appDetail.appId,
         did,
       });
-      if (!didInfo || didInfo == null) {
+      const { signInfos } = updateDidDto;
+      // If signature is passed then no need to check if it is present in db or not
+      if (!signInfos && (!didInfo || didInfo == null)) {
         throw new NotFoundException([
           `${did} not found`,
           `${did} is not owned by the appId ${appDetail.appId}`,
@@ -398,17 +433,16 @@ export class DidService {
       if (updatedDidDocMetaData === null) {
         throw new NotFoundException([`${did} is not registered on the chain`]);
       }
-      const { signInfos } = updateDidDto;
       try {
         if (!updateDidDto.deactivate) {
           updatedDid = await hypersignDid.updateByClientSpec({
-            didDocument: updateDidDto.didDocument,
+            didDocument: updateDidDto.didDocument as Did,
             signInfos,
             versionId: updatedDidDocMetaData.versionId,
           });
         } else {
           updatedDid = await hypersignDid.deactivateByClientSpec({
-            didDocument: updateDidDto.didDocument,
+            didDocument: updateDidDto.didDocument as Did,
             signInfos,
             versionId: updatedDidDocMetaData.versionId,
           });
@@ -477,14 +511,14 @@ export class DidService {
       try {
         if (!updateDidDto.deactivate) {
           updatedDid = await hypersignDid.update({
-            didDocument: updateDidDto.didDocument,
+            didDocument: updateDidDto.didDocument as Did,
             privateKeyMultibase,
             verificationMethodId: resolvedDid['verificationMethod'][0].id,
             versionId: updatedDidDocMetaData.versionId,
           });
         } else {
           updatedDid = await hypersignDid.deactivate({
-            didDocument: updateDidDto.didDocument,
+            didDocument: updateDidDto.didDocument as Did,
             privateKeyMultibase,
             verificationMethodId: resolvedDid['verificationMethod'][0].id,
             versionId: updatedDidDocMetaData.versionId,

@@ -32,7 +32,7 @@ export class SchemaService {
     createSchemaDto: CreateSchemaDto,
     appDetail,
   ): Promise<createSchemaResponse> {
-    let { schema } = createSchemaDto;
+    const { schema } = createSchemaDto;
     const { namespace, verificationMethodId } = createSchemaDto;
     const { author } = schema;
     const { edvId, edvDocId } = appDetail;
@@ -65,12 +65,10 @@ export class SchemaService {
       );
       const hypersignDid = new HypersignDID();
       const { privateKeyMultibase } = await hypersignDid.generateKeys({ seed });
-
-      schema = await hypersignSchema.generate(schema);
-
+      const generatedSchema = await hypersignSchema.generate(schema);
       const signedSchema = await hypersignSchema.sign({
         privateKeyMultibase,
-        schema,
+        schema: generatedSchema,
         verificationMethodId: verificationMethodId,
       });
       const registeredSchema = await hypersignSchema.register({
@@ -81,12 +79,12 @@ export class SchemaService {
         schemaId: signedSchema.id,
         appId: appDetail.appId,
         authorDid: author,
-        transactionHash: registeredSchema.transactionHash,
+        transactionHash: registeredSchema['transactionHash'],
       });
 
       return {
         schemaId: signedSchema.id,
-        transactionHash: registeredSchema.transactionHash,
+        transactionHash: registeredSchema['transactionHash'],
       };
     } catch (error) {
       throw new BadRequestException([error.message]);

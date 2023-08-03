@@ -277,7 +277,7 @@ export class CredentialService {
     let verificationResult;
     try {
       verificationResult = await hypersignCredential.verify({
-        credential: verifyCredentialDto.credentialDocument,
+        credential: verifyCredentialDto.credentialDocument as any, // will fix it latter
         issuerDid: issuer,
         verificationMethodId:
           verifyCredentialDto.credentialDocument.proof.verificationMethod,
