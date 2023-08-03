@@ -167,7 +167,7 @@ export class CredentialProof {
     example: '2023-01-25T17:01:02Z',
   })
   @IsString()
-  created: Date;
+  created: string;
   @ApiProperty({
     name: 'verificationMethod',
     description: 'Verification id using which credential has signed',
@@ -182,7 +182,7 @@ export class CredentialProof {
     example: 'assertionMethod',
   })
   @IsString()
-  proofPurpose: Date;
+  proofPurpose: string;
   @ApiProperty({
     name: 'proofValue',
     description: '',
@@ -214,13 +214,13 @@ class Claim {
   })
   statusReason: string;
 }
-class CredStatus {
+export class CredStatus {
   @ApiProperty({
     name: 'claim',
     description: ' ',
     type: Claim,
   })
-  claim: Claim;
+  claim: Claim | undefined;
   @ApiProperty({
     name: 'issuer',
     description: 'did of the one who issue the credential',
@@ -235,14 +235,14 @@ class CredStatus {
     example: '2023-01-25T16:59:21Z',
   })
   @IsString()
-  issuanceDate: Date;
+  issuanceDate: string;
   @ApiProperty({
     name: 'expirationDate',
     description: 'Date on which credential will expire',
     example: '2023-01-25T16:59:21Z',
   })
   @IsString()
-  expirationDate: Date;
+  expirationDate: string;
   @ApiProperty({
     name: 'credentialHash',
     description: 'Hash of credential',
@@ -371,14 +371,14 @@ export class CreateCredentialResponse {
   persist: boolean;
 }
 
-class CredProof extends CredentialProof {
+export class CredProof extends CredentialProof {
   @ApiProperty({
     name: 'updated',
-    description: 'Date on which credential has issued',
+    description: 'Date on which credential has updated',
     example: '2023-01-25T17:01:02Z',
   })
   @IsString()
-  updated: Date;
+  updated: string;
 }
 
 class ResolvedCredentialStatus extends CredStatus {

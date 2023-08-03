@@ -13,6 +13,8 @@ import { EdvService } from 'src/edv/services/edv.service';
 import { DidRepository } from 'src/did/repository/did.repository';
 import { HypersignDID, HypersignVerifiableCredential } from 'hs-ssi-sdk';
 import { VerifyCredentialDto } from '../dto/verify-credential.dto';
+import { RegisterCredentialStatusDto } from '../dto/register-credential.dto';
+import { DeliverTxResponse } from 'hs-ssi-sdk/build/src/did/IDID';
 @Injectable()
 export class CredentialService {
   constructor(
@@ -277,7 +279,7 @@ export class CredentialService {
     let verificationResult;
     try {
       verificationResult = await hypersignCredential.verify({
-        credential: verifyCredentialDto.credentialDocument,
+        credential: verifyCredentialDto.credentialDocument as any, // will fix it latter
         issuerDid: issuer,
         verificationMethodId:
           verifyCredentialDto.credentialDocument.proof.verificationMethod,
@@ -286,5 +288,32 @@ export class CredentialService {
       throw new BadRequestException([e.message]);
     }
     return verificationResult;
+  }
+
+  async registerCredentialStatus(
+    registerCredentialDto: RegisterCredentialStatusDto,
+    appDetail,
+  ) {
+    const { credentialStatus, credentialStatusProof, namespace } =
+      registerCredentialDto;
+    const { edvId, edvDocId } = appDetail;
+    await this.edvService.init(edvId);
+    const docs = await this.edvService.getDecryptedDocument(edvDocId);
+    const mnemonic: string = docs.mnemonic;
+    await this.hidWallet.generateWallet(mnemonic);
+    let registeredVC: DeliverTxResponse;
+    try {
+      const hypersignVC = await this.credentialSSIService.initateHypersignVC(
+        mnemonic,
+        namespace,
+      );
+      registeredVC = await hypersignVC.registerCredentialStatus({
+        credentialStatus,
+        credentialStatusProof,
+      });
+    } catch (e) {
+      throw new BadRequestException([e.message]);
+    }
+    return { transactionHash: registeredVC.transactionHash };
   }
 }

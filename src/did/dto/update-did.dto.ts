@@ -70,7 +70,7 @@ export class SignInfo {
       adr036SignerAddress: 'bech32address',
     },
     type: ClientSpec,
-    name: 'clinetSpec',
+    name: 'clientSpec',
   })
   @Type(() => ClientSpec)
   @ValidateNested({ each: true })
@@ -145,7 +145,7 @@ export class DidDoc {
   })
   @IsOptional()
   @IsArray()
-  '@context': Array<string>;
+  '@context'?: Array<string>;
 
   @IsOptional()
   @IsArray()
@@ -193,14 +193,14 @@ export class DidDoc {
 
   @ApiProperty({
     description: 'keyAgreement',
-    example: ['did:hid:method:......'],
+    example: [],
   })
   @IsArray()
   @IsOptional()
   keyAgreement: Array<string>;
   @ApiProperty({
     description: 'capabilityInvocation',
-    example: ['did:hid:method:......'],
+    example: [],
   })
   @IsArray()
   @IsOptional()

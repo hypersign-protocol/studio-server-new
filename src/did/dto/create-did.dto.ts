@@ -15,19 +15,8 @@ import { RegistrationStatus } from '../schemas/did.schema';
 import { DidDoc } from '../dto/update-did.dto';
 import { IsDid } from 'src/utils/customDecorator/did.decorator';
 import { ValidatePublicKeyMultibase } from 'src/utils/customDecorator/pubKeyMultibase.decorator';
+import { IVerificationRelationships, IKeyType } from 'hs-ssi-sdk';
 
-export enum IKeyType {
-  Ed25519VerificationKey2020 = 'Ed25519VerificationKey2020',
-  EcdsaSecp256k1VerificationKey2019 = 'EcdsaSecp256k1VerificationKey2019',
-  EcdsaSecp256k1RecoveryMethod2020 = 'EcdsaSecp256k1RecoveryMethod2020',
-}
-export enum VerificationRelationships {
-  authentication = 'authentication',
-  assertionMethod = 'assertionMethod',
-  keyAgreement = 'keyAgreement',
-  capabilityInvocation = 'capabilityInvocation',
-  capabilityDelegation = 'capabilityDelegation',
-}
 export enum Namespace {
   testnet = 'testnet',
   mainnet = '',
@@ -87,8 +76,8 @@ export class Options {
   })
   @IsOptional()
   @IsArray()
-  @IsEnum(VerificationRelationships, { each: true })
-  verificationRelationships?: VerificationRelationships[];
+  @IsEnum(IVerificationRelationships, { each: true })
+  verificationRelationships?: IVerificationRelationships[];
 }
 export class CreateDidDto {
   @ApiProperty({
@@ -135,7 +124,7 @@ export class CreateDidDto {
 export class TxnHash {
   @ApiProperty({
     name: 'transactionHash',
-    description: 'Transaction Has',
+    description: 'Transaction Hash',
     example: 'XYAIFLKFLKHSLFHKLAOHFOAIHG..........',
   })
   transactionHash: string;
