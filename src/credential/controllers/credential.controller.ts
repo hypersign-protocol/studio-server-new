@@ -45,6 +45,8 @@ import { BooleanPipe } from 'src/utils/Pipes/boolean.pipe';
 import { CredentialResponseInterceptor } from '../interceptors/transformResponse.interseptor';
 import { Credential } from '../schemas/credntial.schema';
 import { GetCredentialList } from '../dto/fetch-credential.dto';
+import { RegisterCredentialStatusDto } from '../dto/register-credential.dto';
+import { TxnHash } from 'src/did/dto/create-did.dto';
 @ApiBearerAuth('Authorization')
 @UseGuards(AuthGuard('jwt'))
 @Controller('credential')
@@ -198,6 +200,38 @@ export class CredentialController {
   ) {
     return this.credentialService.verfiyCredential(
       verifyCredentialDto,
+      req.user,
+    );
+  }
+
+  @UsePipes(ValidationPipe)
+  @Post('status/register')
+  @ApiOkResponse({
+    description: 'Register credential Status',
+    type: TxnHash,
+  })
+  @ApiBadRequestResponse({
+    status: 400,
+    description: 'Error occured at the time of registering credential status',
+    type: CredentialError,
+  })
+  @ApiHeader({
+    name: 'Authorization',
+    description: 'Bearer <access_token>',
+    required: false,
+  })
+  @ApiHeader({
+    name: 'Origin',
+    description: 'Origin as you set in application cors',
+    required: false,
+  })
+  registerCred(
+    @Headers('Authorization') authorization: string,
+    @Body() registerCredentialDto: RegisterCredentialStatusDto,
+    @Req() req,
+  ) {
+    return this.credentialService.registerCredentialStatus(
+      registerCredentialDto,
       req.user,
     );
   }
