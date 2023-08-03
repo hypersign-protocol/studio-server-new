@@ -9,6 +9,8 @@ import * as express from 'express';
 // eslint-disable-next-line
 const hidWallet = require('hid-hd-wallet');
 import { Bip39, EnglishMnemonic } from '@cosmjs/crypto';
+import { Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 //import { Header } from '@nestjs/common';
 
 async function bootstrap() {
@@ -81,5 +83,6 @@ async function bootstrap() {
   };
   SwaggerModule.setup('api', app, document, options);
   await app.listen(process.env.PORT || 3001);
+  Logger.log(`Server running on http://localhost:${process.env.PORT}`, 'Bootstrap');
 }
 bootstrap();

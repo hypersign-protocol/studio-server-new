@@ -40,7 +40,7 @@
     "class-validator": "^0.14.0",
     "fs": "^0.0.1-security",
     "hid-hd-wallet": "git+https://github.com/hypersign-protocol/hid-hd-wallet.git#ssi-integration",
-    "hs-ssi-sdk": "git+https://github.com/hypersign-protocol/hid-ssi-js-sdk.git#studiocompat",
+    "hs-ssi-sdk": "git+https://github.com/hypersign-protocol/hid-ssi-js-sdk.git#HSSTUD-219",
     "hypersign-edv-client": "git+https://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@github.com/hypersign-protocol/hypersign-edv-client.git#authentication",
     "mongoose": "^6.8.3",
     "passport": "^0.6.0",
