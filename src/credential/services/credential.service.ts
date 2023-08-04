@@ -300,8 +300,7 @@ export class CredentialService {
     await this.edvService.init(edvId);
     const docs = await this.edvService.getDecryptedDocument(edvDocId);
     const mnemonic: string = docs.mnemonic;
-    await this.hidWallet.generateWallet(mnemonic);
-    let registeredVC: DeliverTxResponse;
+    let registeredVC: { transactionHash: string };
     try {
       const hypersignVC = await this.credentialSSIService.initateHypersignVC(
         mnemonic,
