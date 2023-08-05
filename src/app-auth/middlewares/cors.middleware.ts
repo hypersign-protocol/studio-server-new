@@ -1,5 +1,6 @@
 import {
   Injectable,
+  Logger,
   NestMiddleware,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -9,9 +10,15 @@ import { AppRepository } from 'src/app-auth/repositories/app.repository';
 export class WhitelistAppCorsMiddleware implements NestMiddleware {
   constructor(private readonly appRepositiory: AppRepository) {}
   async use(req: Request, res: Response, next: NextFunction) {
+    Logger.log(
+      'Middleware:: WhitelistAppCorsMiddleware: checking if call is form whitelisted domain starts',
+    );
     const whitelistedOrigins = process.env.WHITELISTED_CORS;
     const apiSecretKey = req.headers['x-api-secret-key'] as string;
     const origin = req.header('Origin');
+    Logger.debug(
+      `Middleware:: WhitelistAppCorsMiddleware: request is comming from ${origin}`,
+    );
     if (whitelistedOrigins.includes(origin)) {
       return next();
     } else if (apiSecretKey !== '' && apiSecretKey != undefined) {
@@ -26,6 +33,9 @@ export class WhitelistAppCorsMiddleware implements NestMiddleware {
         return next();
       }
       if (!appDetail.whitelistedCors.includes(origin)) {
+        Logger.error(
+          'Middleware:: WhitelistAppCorsMiddleware: Error: origin mismatch',
+        );
         throw new UnauthorizedException(['Origin mismatch']);
       }
       return next();
