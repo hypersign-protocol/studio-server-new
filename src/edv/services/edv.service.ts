@@ -4,6 +4,7 @@ import { X25519KeyAgreementKey2020 } from '@digitalbazaar/x25519-key-agreement-k
 import { Ed25519VerificationKey2020 } from '@digitalbazaar/ed25519-verification-key-2020';
 import * as fs from 'fs';
 import { ConfigService } from '@nestjs/config';
+import { urlSanitizer } from 'src/utils/sanitizeUrl.validator';
 
 interface IEd25519VerificationKey2020KeyPair {
   privateKeyMultibase: string;
@@ -32,7 +33,7 @@ export class EdvService {
   private edvCapabilityInvocationKeyPrivateKeyJwk: string;
 
   constructor(private readonly configService: ConfigService) {
-    this.edvUrl = this.configService.get('EDV_BASE_URL');
+    this.edvUrl = urlSanitizer(this.configService.get('EDV_BASE_URL'), false);
     this.edvId = 'hid:SSI:dummyEdv';
   }
   async setAuthenticationKey(
