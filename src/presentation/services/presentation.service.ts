@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   Injectable,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { CreatePresentationTemplateDto } from '../dto/create-presentation-templete.dto';
@@ -33,6 +34,11 @@ export class PresentationService {
     createPresentationTemplateDto: CreatePresentationTemplateDto,
     appDetail,
   ): Promise<PresentationTemplate> {
+    Logger.log(
+      'createPresentationTemplate() method: starts....',
+      'PresentationService',
+    );
+
     const { domain, name, query } = createPresentationTemplateDto;
     const templateDetail = await this.presentationtempleteReopsitory.findOne({
       appId: appDetail.appId,
@@ -50,6 +56,11 @@ export class PresentationService {
       query,
       name,
     });
+    Logger.log(
+      'createPresentationTemplate() method: ends....',
+      'PresentationService',
+    );
+
     return newPresentationTemplate;
   }
 
@@ -57,6 +68,11 @@ export class PresentationService {
     paginationOption,
     appDetail,
   ): Promise<PresentationTemplate[]> {
+    Logger.log(
+      'fetchListOfPresentationTemplate() method: starts....',
+      'PresentationService',
+    );
+
     const skip = (paginationOption.page - 1) * paginationOption.limit;
     paginationOption['skip'] = skip;
     const templateList = await this.presentationtempleteReopsitory.find({
@@ -68,6 +84,11 @@ export class PresentationService {
     //     `No template has created for appId ${appDetail.appId}`,
     //   ]);
     // }
+    Logger.log(
+      'fetchListOfPresentationTemplate() method: ends....',
+      'PresentationService',
+    );
+
     return templateList;
   }
 
@@ -75,6 +96,10 @@ export class PresentationService {
     templateId: string,
     appDetail,
   ): Promise<PresentationTemplate> {
+    Logger.log(
+      'fetchAPresentationTemplate() method: starts....',
+      'PresentationService',
+    );
     const templateDetail = await this.presentationtempleteReopsitory.findOne({
       appId: appDetail.appId,
       _id: templateId,
@@ -85,6 +110,11 @@ export class PresentationService {
         `${templateId} does not belongs to the App id : ${appDetail.appId}`,
       ]);
     }
+    Logger.log(
+      'fetchAPresentationTemplate() method: ends....',
+      'PresentationService',
+    );
+
     return templateDetail;
   }
 
@@ -93,6 +123,11 @@ export class PresentationService {
     updatePresentationDto: UpdatePresentationDto,
     appDetail,
   ): Promise<PresentationTemplate> {
+    Logger.log(
+      'updatePresentationTemplate() method: starts....',
+      'PresentationService',
+    );
+
     const { domain, name, query } = updatePresentationDto;
     const templateDetail = await this.presentationtempleteReopsitory.findOne({
       appId: appDetail.appId,
@@ -117,6 +152,11 @@ export class PresentationService {
         appId: appDetail.appId,
       },
     );
+    Logger.log(
+      'updatePresentationTemplate() method: ends....',
+      'PresentationService',
+    );
+
     return updatedresult;
   }
 
@@ -124,6 +164,11 @@ export class PresentationService {
     templateId: string,
     appDetail,
   ): Promise<PresentationTemplate> {
+    Logger.log(
+      'updatePresentationTemplate() method: starts....',
+      'PresentationService',
+    );
+
     let templateDetail = await this.presentationtempleteReopsitory.findOne({
       appId: appDetail.appId,
       _id: templateId,
@@ -139,6 +184,11 @@ export class PresentationService {
         _id: templateId,
       },
     );
+    Logger.log(
+      'updatePresentationTemplate() method: ends....',
+      'PresentationService',
+    );
+
     return templateDetail;
   }
 }
@@ -158,6 +208,11 @@ export class PresentationRequestService {
     createPresentationRequestDto: CreatePresentationRequestDto,
     appDetail,
   ) {
+    Logger.log(
+      'createPresentationRequest() method: starts....',
+      'PresentationRequestService',
+    );
+
     const { challenge, did, templateId, expiresTime, callbackUrl } =
       createPresentationRequestDto;
     let presentationTemplete = undefined;
@@ -167,6 +222,11 @@ export class PresentationRequestService {
         _id: templateId,
       });
     } catch (error) {
+      Logger.error(
+        `createPresentationRequest() method: Error:${error.message}`,
+        'PresentationRequestService',
+      );
+
       throw new BadRequestException([`templeteId : ${templateId} not found`]);
     }
 
@@ -182,10 +242,25 @@ export class PresentationRequestService {
       reply_to: [did],
       body,
     };
+    Logger.log(
+      'createPresentationRequest() method: ends....',
+      'PresentationRequestService',
+    );
+
     return response;
   }
 
   async createPresentation(credentialsDto: CreatePresentationDto, appDetail) {
+    Logger.log(
+      'createPresentation() method: starts....',
+      'PresentationRequestService',
+    );
+
+    Logger.log(
+      'createPresentation() method: before initializing HypersignVerifiablePresentation and HypersignDID',
+      'PresentationRequestService',
+    );
+
     const hypersignVP = new HypersignVerifiablePresentation({
       nodeRestEndpoint: this.config.get('HID_NETWORK_API'),
       nodeRpcEndpoint: this.config.get('HID_NETWORK_RPC'),
@@ -200,6 +275,11 @@ export class PresentationRequestService {
 
     const { credentialDocuments, holderDid, challenge, domain } =
       credentialsDto;
+    Logger.log(
+      'createPresentation() method: before calling hypersignVP.generate',
+      'PresentationRequestService',
+    );
+
     const unsignedverifiablePresentation = await hypersignVP.generate({
       verifiableCredentials: credentialDocuments as any,
       holderDid: holderDid,
@@ -211,6 +291,10 @@ export class PresentationRequestService {
     const verificationMethodIdforAssert = didDocument.assertionMethod[0]; //remove hardcoding
 
     const { edvId, edvDocId } = appDetail;
+    Logger.log(
+      'createPresentation() method: initialising edv service',
+      'PresentationRequestService',
+    );
     await this.edvService.init(edvId);
     const didInfo = await this.didRepositiory.findOne({
       appId: appDetail.appId,
@@ -226,6 +310,10 @@ export class PresentationRequestService {
 
     const docs = await this.edvService.getDecryptedDocument(edvDocId);
     const mnemonic: string = docs.mnemonic;
+    Logger.log(
+      'createPresentation() method: before calling generateWallet',
+      'PresentationRequestService',
+    );
     await this.hidWallet.generateWallet(mnemonic);
 
     const slipPathKeys = this.hidWallet.makeSSIWalletPath(didInfo.hdPathIndex);
@@ -234,7 +322,10 @@ export class PresentationRequestService {
       slipPathKeys,
     );
     const { privateKeyMultibase } = await hypersignDID.generateKeys({ seed });
-
+    Logger.log(
+      'createPresentation() method: before calling hypersignVP.sign',
+      'PresentationRequestService',
+    );
     const signedVerifiablePresentation = await hypersignVP.sign({
       presentation: unsignedverifiablePresentation as IVerifiablePresentation,
       holderDid,
@@ -242,10 +333,25 @@ export class PresentationRequestService {
       challenge,
       privateKeyMultibase,
     });
+    Logger.log(
+      'createPresentation() method: ends....',
+      'PresentationRequestService',
+    );
+
     return { presentation: signedVerifiablePresentation };
   }
 
   async verifyPresentation(presentations: VerifyPresentationDto) {
+    Logger.log(
+      'verifyPresentation() method: starts....',
+      'PresentationRequestService',
+    );
+
+    Logger.log(
+      'verifyPresentation() method:before initialising HypersignVerifiablePresentation',
+      'PresentationRequestService',
+    );
+
     const hypersignVP = new HypersignVerifiablePresentation({
       nodeRestEndpoint: this.config.get('HID_NETWORK_API'),
       nodeRpcEndpoint: this.config.get('HID_NETWORK_RPC'),
@@ -258,6 +364,10 @@ export class PresentationRequestService {
 
     // const domain = presentation['proof']['domain'];
     const challenge = presentation['proof']['challenge'];
+    Logger.log(
+      'verifyPresentation() method:before calling  hypersignVP.verify',
+      'PresentationRequestService',
+    );
     const verifiedPresentationDetail = await hypersignVP.verify({
       signedPresentation: presentation as any,
       issuerDid,
@@ -266,6 +376,10 @@ export class PresentationRequestService {
       issuerVerificationMethodId: issuerDid + '#key-1',
       challenge,
     });
+    Logger.log(
+      'verifyPresentation() method: ends....',
+      'PresentationRequestService',
+    );
 
     return verifiedPresentationDetail;
   }

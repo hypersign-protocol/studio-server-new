@@ -15,6 +15,7 @@ import {
   HttpCode,
   UseInterceptors,
   Headers,
+  Logger,
 } from '@nestjs/common';
 import {
   PresentationRequestService,
@@ -89,6 +90,11 @@ export class PresentationTempleteController {
     @Body() createPresentationTemplateDto: CreatePresentationTemplateDto,
     @Req() req: any,
   ): Promise<PresentationTemplate> {
+    Logger.log(
+      'createPresentationTemplate() method: starts',
+      'PresentationTempleteController',
+    );
+
     return this.presentationService.createPresentationTemplate(
       createPresentationTemplateDto,
       req.user,
@@ -131,6 +137,11 @@ export class PresentationTempleteController {
     @Req() req: any,
     @Query() pageOption: PaginationDto,
   ): Promise<PresentationTemplate[]> {
+    Logger.log(
+      'fetchListOfPresentationTemplate() method: starts',
+      'PresentationTempleteController',
+    );
+
     return this.presentationService.fetchListOfPresentationTemplate(
       pageOption,
       req.user,
@@ -162,6 +173,11 @@ export class PresentationTempleteController {
     @Req() req: any,
     @Param('templateId') templateId: string,
   ): Promise<PresentationTemplate> {
+    Logger.log(
+      'fetchAPresentationTemplate() method: starts',
+      'PresentationTempleteController',
+    );
+
     return this.presentationService.fetchAPresentationTemplate(
       templateId,
       req.user,
@@ -194,6 +210,11 @@ export class PresentationTempleteController {
     @Param('templateId') templateId: string,
     @Body() updatePresentationDto: UpdatePresentationDto,
   ) {
+    Logger.log(
+      'updatePresentationTemplate() method: starts',
+      'PresentationTempleteController',
+    );
+
     return this.presentationService.updatePresentationTemplate(
       templateId,
       updatePresentationDto,
@@ -225,6 +246,8 @@ export class PresentationTempleteController {
     @Param('templateId') templateId: string,
     @Req() req: any,
   ) {
+    Logger.log('remove() method: starts', 'PresentationTempleteController');
+
     return this.presentationService.deletePresentationTemplate(
       templateId,
       req.user,
@@ -266,6 +289,8 @@ export class PresentationController {
     @Body() presentation: CreatePresentationDto,
     @Req() req,
   ) {
+    Logger.log('create() method: starts', 'PresentationController');
+
     return this.presentationRequestService.createPresentation(
       presentation,
       req.user,
@@ -296,6 +321,11 @@ export class PresentationController {
     @Body() createPresentationRequestDto: CreatePresentationRequestDto,
     @Req() req,
   ) {
+    Logger.log(
+      'createPresentationRequest() method: starts',
+      'PresentationController',
+    );
+
     return this.presentationRequestService.createPresentationRequest(
       createPresentationRequestDto,
       req.user,
@@ -321,6 +351,8 @@ export class PresentationController {
     @Headers('Authorization') authorization: string,
     @Body() presentation: VerifyPresentationDto,
   ) {
+    Logger.log('verify() method: starts', 'PresentationController');
+
     return this.presentationRequestService.verifyPresentation(presentation);
   }
 }

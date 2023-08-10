@@ -79,7 +79,7 @@ export class SchemaController {
     @Body() createSchemaDto: CreateSchemaDto,
     @Req() req: any,
   ) {
-    Logger.log('SchemaController: create() method: starts');
+    Logger.log('create() method: starts', 'SchemaController');
     const appDetail = req.user;
     return this.schemaService.create(createSchemaDto, appDetail);
   }
@@ -122,7 +122,7 @@ export class SchemaController {
     @Req() req: any,
     @Query() paginationOption: PaginationDto,
   ): Promise<Schemas[]> {
-    Logger.log('SchemaController: getSchemaList() method: starts');
+    Logger.log('getSchemaList() method: starts', 'SchemaController');
 
     const appDetial = req.user;
     return this.schemaService.getSchemaList(appDetial, paginationOption);
@@ -153,7 +153,7 @@ export class SchemaController {
     @Headers('Authorization') authorization: string,
     @Param('schemaId') schemaId: string,
   ): Promise<ResolveSchema> {
-    Logger.log('SchemaController: resolveSchema() method: starts');
+    Logger.log('resolveSchema() method: starts', 'SchemaController');
 
     return this.schemaService.resolveSchema(schemaId);
   }
@@ -189,7 +189,7 @@ export class SchemaController {
     @Body() registerSchemaDto: RegisterSchemaDto,
     @Req() req: any,
   ): Promise<{ transactionHash: string }> {
-    Logger.log('SchemaController: resolveSchema() method: starts');
+    Logger.log('resolveSchema() method: starts', 'SchemaController');
 
     return this.schemaService.registerSchema(registerSchemaDto, req.user);
   }

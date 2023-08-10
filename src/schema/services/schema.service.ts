@@ -35,13 +35,13 @@ export class SchemaService {
     createSchemaDto: CreateSchemaDto,
     appDetail,
   ): Promise<createSchemaResponse> {
-    Logger.log('SchemaService:: create() method: starts....');
+    Logger.log('create() method: starts....', 'SchemaService');
     const { schema } = createSchemaDto;
     const { namespace, verificationMethodId } = createSchemaDto;
     const { author } = schema;
     const { edvId, edvDocId } = appDetail;
     const didOfvmId = verificationMethodId.split('#')[0];
-    Logger.log('SchemaService:: create() method: initialising edv service ');
+    Logger.log('create() method: initialising edv service', 'SchemaService');
     await this.edvService.init(edvId);
     const didInfo = await this.didRepositiory.findOne({
       appId: appDetail.appId,
@@ -56,7 +56,10 @@ export class SchemaService {
     }
     const docs = await this.edvService.getDecryptedDocument(edvDocId);
     const mnemonic: string = docs.mnemonic;
-    Logger.log('SchemaService:: create() method: initialising hypersignSchema');
+    Logger.log(
+      'create() method: initialising hypersignSchema',
+      'SchemaService',
+    );
 
     const hypersignSchema = await this.schemaSSIservice.initiateHypersignSchema(
       mnemonic,
@@ -68,28 +71,34 @@ export class SchemaService {
         slipPathKeys,
       );
       const hypersignDid = new HypersignDID();
-      Logger.log('SchemaService:: create() method: generating key pair starts');
+      Logger.log(
+        'create() method: generating key pair starts',
+        'SchemaService',
+      );
       const { privateKeyMultibase } = await hypersignDid.generateKeys({ seed });
       Logger.log(
-        'SchemaService:: create() method generating new using hypersignSchema',
+        'create() method generating new using hypersignSchema',
+        'SchemaService',
       );
 
       const generatedSchema = await hypersignSchema.generate(schema);
-      Logger.log('SchemaService:: create() method: signing new schema');
+      Logger.log('create() method: signing new schema', 'SchemaService');
       const signedSchema = await hypersignSchema.sign({
         privateKeyMultibase,
         schema: generatedSchema,
         verificationMethodId: verificationMethodId,
       });
       Logger.log(
-        'SchemaService:: create() method: registering new schema to the blockchain',
+        'create() method: registering new schema to the blockchain',
+        'SchemaService',
       );
 
       const registeredSchema = await hypersignSchema.register({
         schema: signedSchema,
       });
       Logger.log(
-        'SchemaService:: create() method: storing schema information to DB',
+        'create() method: storing schema information to DB',
+        'SchemaService',
       );
       await this.schemaRepository.create({
         schemaId: signedSchema.id,
@@ -97,7 +106,8 @@ export class SchemaService {
         authorDid: author,
         transactionHash: registeredSchema['transactionHash'],
       });
-      Logger.log('SchemaService:: create() method: ends');
+      Logger.log('create() method: ends', 'SchemaService');
+
       return {
         schemaId: signedSchema.id,
         transactionHash: registeredSchema['transactionHash'],
@@ -105,17 +115,21 @@ export class SchemaService {
     } catch (error) {
       Logger.error(
         `SchemaService: create() method: Error occuered ${error.message}`,
+        'SchemaService',
       );
       throw new BadRequestException([error.message]);
     }
   }
 
   async getSchemaList(appDetial, paginationOption): Promise<Schemas[]> {
-    Logger.log('SchemaService:: getSchemaList() method: starts....');
+    Logger.log('getSchemaList() method: starts....', 'SchemaService');
 
     const skip = (paginationOption.page - 1) * paginationOption.limit;
     paginationOption['skip'] = skip;
-    Logger.log('SchemaService:: getSchemaList() method: fetching data from DB');
+    Logger.log(
+      'getSchemaList() method: fetching data from DB',
+      'SchemaService',
+    );
 
     const schemaList = await this.schemaRepository.find({
       appId: appDetial.appId,
@@ -123,34 +137,42 @@ export class SchemaService {
     });
     if (schemaList.length <= 0) {
       Logger.error(
-        'SchemaService:: getSchemaList() method: no schema found in db ',
+        'getSchemaList() method: no schema found in db ',
+        'SchemaService',
       );
 
       throw new NotFoundException([
         `No schema has created for appId ${appDetial.appId}`,
       ]);
     }
+    Logger.log('getSchemaList() method: ends....', 'SchemaService');
+
     return schemaList;
   }
 
   async resolveSchema(schemaId: string) {
-    Logger.log('SchemaService:: resolveSchema() method: starts....');
+    Logger.log('resolveSchema() method: starts....', 'SchemaService');
     Logger.log(
-      'SchemaService:: resolveSchema() method: creating instance of hypersign schema',
+      'resolveSchema() method: creating instance of hypersign schema',
+      'SchemaService',
     );
 
     const hypersignSchema = new HypersignSchema();
     Logger.log(
-      'SchemaService:: resolveSchema() method: resolving schema from blockchain',
+      'resolveSchema() method: resolving schema from blockchain',
+      'SchemaService',
     );
 
     const resolvedSchema = await hypersignSchema.resolve({ schemaId });
     if (resolvedSchema == undefined) {
       Logger.error(
-        'SchemaService:: resolveSchema() method: Error whilt resolving schema',
+        'resolveSchema() method: Error whilt resolving schema',
+        'SchemaService',
       );
       throw new NotFoundException([`${schemaId} is not chain`]);
     }
+    Logger.log('resolveSchema() method: ends....', 'SchemaService');
+
     return resolvedSchema;
   }
 
@@ -158,21 +180,17 @@ export class SchemaService {
     registerSchemaDto: RegisterSchemaDto,
     appDetail,
   ): Promise<{ transactionHash: string }> {
-    Logger.log('SchemaService:: registerSchema() method: starts....');
+    Logger.log('registerSchema() method: starts....', 'SchemaService');
 
     const { edvId, edvDocId } = appDetail;
     const { schemaDocument, schemaProof } = registerSchemaDto;
-    Logger.log(
-      'SchemaService:: registerSchema() method: initialising edv service ',
-    );
+    Logger.log('registerSchema() method: initialising edv service ');
 
     await this.edvService.init(edvId);
     const docs = await this.edvService.getDecryptedDocument(edvDocId);
     const mnemonic: string = docs.mnemonic;
     const namespace = Namespace.testnet;
-    Logger.log(
-      'SchemaService:: registerSchema() method: initialising hypersignSchema',
-    );
+    Logger.log('registerSchema() method: initialising hypersignSchema');
 
     const hypersignSchema = await this.schemaSSIservice.initiateHypersignSchema(
       mnemonic,
@@ -180,19 +198,17 @@ export class SchemaService {
     );
     let registeredSchema = {} as { transactionHash: string };
     schemaDocument['proof'] = schemaProof;
-    Logger.log(
-      'SchemaService:: registerSchema() method: registering schema on the blockchain',
-    );
+    Logger.log('registerSchema() method: registering schema on the blockchain');
     try {
       registeredSchema = await hypersignSchema.register({
         schema: schemaDocument,
       });
     } catch (e) {
-      Logger.error(
-        'SchemaService:: registerSchema() method: Error while registering schema',
-      );
+      Logger.error('registerSchema() method: Error while registering schema');
       throw new BadRequestException([e.message]);
     }
+    Logger.log('registerSchema() method: ends....', 'SchemaService');
+
     return { transactionHash: registeredSchema.transactionHash };
   }
 }

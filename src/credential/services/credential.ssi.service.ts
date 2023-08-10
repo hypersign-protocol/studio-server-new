@@ -1,4 +1,4 @@
-import { Injectable, Scope } from '@nestjs/common';
+import { Injectable, Scope, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
 import { HypersignVerifiableCredential } from 'hs-ssi-sdk';
@@ -10,11 +10,14 @@ export class CredentialSSIService {
     private readonly config: ConfigService,
     private readonly hidWallet: HidWalletService,
   ) {}
-
   async initateHypersignVC(mnemonic: string, namespace: string) {
+    Logger.log('InitateHypersignVC(): starts....', 'CredentialSSIService');
     const nodeRpcEndpoint = this.config.get('HID_NETWORK_RPC');
     const nodeRestEndpoint = this.config.get('HID_NETWORK_API');
-
+    Logger.log(
+      'InitateHypersignVC() method: before getting offlinesigner',
+      'CredentialSSIService',
+    );
     await this.hidWallet.generateWallet(mnemonic);
     const offlineSigner = this.hidWallet.getOfflineSigner();
     const hypersignVC = new HypersignVerifiableCredential({

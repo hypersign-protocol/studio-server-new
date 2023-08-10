@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { HypersignEdvClient, HypersignCipher } from 'hypersign-edv-client';
 import { X25519KeyAgreementKey2020 } from '@digitalbazaar/x25519-key-agreement-key-2020';
 import { Ed25519VerificationKey2020 } from '@digitalbazaar/ed25519-verification-key-2020';
@@ -40,6 +40,7 @@ export class EdvService {
     authenticationKeyId: string,
     controller: string,
   ) {
+    Logger.log('setAuthenticationKey() method: starts...', 'EdvService');
     const key = {
       id:
         authenticationKeyId.split('#')[0] +
@@ -74,7 +75,10 @@ export class EdvService {
             publicKeyMultibase: this.edvCapabilityInvocationKeyPublicKeyMultibase,
             privateKeyMultibase: ''
         }*/
-
+    Logger.log(
+      'hypersignDIDKeyResolverForEd25519KeyPair() method: starts...',
+      'EdvService',
+    );
     let authserverDid: any = fs
       .readFileSync(process.env.EDV_DID_FILE_PATH)
       .toString();
@@ -93,19 +97,25 @@ export class EdvService {
       publicKeyMultibase: authserverKey.publicKeyMultibase,
       privateKeyMultibase: '',
     };
-
+    Logger.log(
+      'hypersignDIDKeyResolverForEd25519KeyPair() method: generating authentication key',
+      'EdvService',
+    );
     const ed25519KeyPair: Ed25519VerificationKey2020 =
       await Ed25519VerificationKey2020.generate({ ...authenticationKey });
     return ed25519KeyPair;
   }
 
   async init(edvId?: string) {
+    Logger.log('init() method: starts...', 'EdvService');
+
     const apiServerKeys = JSON.parse(
       fs.readFileSync(this.configService.get('EDV_KEY_FILE_PATH')).toString(),
     );
     const edvServiceDidDoc = JSON.parse(
       fs.readFileSync(this.configService.get('EDV_DID_FILE_PATH')).toString(),
     );
+    Logger.log('init() method: setting authentication key', 'EdvService');
     await this.setAuthenticationKey(
       apiServerKeys,
       edvServiceDidDoc.authentication[0],
@@ -125,6 +135,10 @@ export class EdvService {
       edvId: edvId ? edvId : this.edvId,
     };
     this.edvId = config.edvId;
+    Logger.log(
+      'init() method: creating instance of HypersignEdvClient',
+      'EdvService',
+    );
     const client = new HypersignEdvClient({
       keyResolver: this.hypersignDIDKeyResolverForEd25519KeyPair,
       url: this.edvUrl,
@@ -132,35 +146,65 @@ export class EdvService {
     });
     const data = await client.registerEdv(config);
     this.edvClient = client;
+    Logger.log('init() method: ends...', 'EdvService');
     return data;
   }
 
   public async createDocument(doc: object) {
+    Logger.log(
+      'createDocument() method: starts, adding document to the edv',
+      'EdvService',
+    );
+
     const { edvClient, edvId } = this;
     const resp = await edvClient.insertDoc({ document: doc, edvId });
+    Logger.log('createDocument() method: ends..', 'EdvService');
+
     return resp;
   }
 
   public async updateDocument(doc: object, id: string) {
+    Logger.log('updateDocument() method: starts..', 'EdvService');
+
     const { edvClient, edvId } = this;
     return await edvClient.updateDoc({ document: doc, edvId, documentId: id });
   }
 
   public async getDocument(id: string) {
+    Logger.log(
+      'getDocument() method: starts, fetching docs from edvClient',
+      'EdvService',
+    );
+
     const { edvClient, edvId } = this;
     return await edvClient.fetchDoc({ edvId, documentId: id });
   }
 
   public async getDecryptedDocument(id: string) {
+    Logger.log('getDecryptedDocument() method: starts....', 'EdvService');
+
     const { edvClient, edvId } = this;
+    Logger.log(
+      'getDecryptedDocument() method: fetching doc from edvCLient',
+      'EdvService',
+    );
+
     const doc = await edvClient.fetchDoc({ edvId, documentId: id });
+    Logger.log(
+      'getDecryptedDocument() method: decrypting doc using edvClient',
+      'EdvService',
+    );
 
     const decryptedDoc = await edvClient.hsCipher.decryptObject({
       jwe: JSON.parse(doc[0].encData),
     });
+    Logger.log('getDecryptedDocument() method: ends....', 'EdvService');
+
     return decryptedDoc;
   }
   public async deleteDoc(id: string) {
+    Logger.log('deleteDoc() method: starts....', 'EdvService');
+
     const { edvClient } = this;
     return await edvClient.deleteDoc({ documentId: id });
   }

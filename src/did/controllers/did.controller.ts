@@ -14,6 +14,7 @@ import {
   Query,
   UseInterceptors,
   Headers,
+  Logger,
 } from '@nestjs/common';
 import { DidService } from '../services/did.service';
 import {
@@ -94,6 +95,7 @@ export class DidController {
     @Query()
     pageOption: PaginationDto,
   ): Promise<Did[]> {
+    Logger.log('getDidList() method: starts', 'DidController');
     const appDetail = req.user;
     return this.didService.getDidList(appDetail, pageOption);
   }
@@ -118,6 +120,7 @@ export class DidController {
     @Req() req: any,
     @Param('did') did: string,
   ): Promise<ResolvedDid> {
+    Logger.log('resolveDid() method: starts', 'DidController');
     const appDetail = req.user;
     return this.didService.resolveDid(appDetail, did);
   }
@@ -158,6 +161,7 @@ export class DidController {
     @Body() createDidDto: CreateDidDto,
     @Req() req: any,
   ) {
+    Logger.log('create() method: starts', 'DidController');
     const { options } = createDidDto;
     const appDetail = req.user;
     switch (options?.keyType) {
@@ -210,6 +214,8 @@ export class DidController {
     @Body() registerDidDto: RegisterDidDto,
     @Req() req: any,
   ) {
+    Logger.log('register() method: starts', 'DidController');
+
     const appDetail = req.user;
     return this.didService.register(registerDidDto, appDetail);
   }
@@ -245,6 +251,8 @@ export class DidController {
     @Req() req: any,
     @Body() updateDidDto: UpdateDidDto,
   ) {
+    Logger.log('updateDid() method: starts', 'DidController');
+
     const appDetail = req.user;
     return this.didService.updateDid(updateDidDto, appDetail);
   }

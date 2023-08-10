@@ -2,6 +2,7 @@ import {
   UnauthorizedException,
   Injectable,
   NotFoundException,
+  Logger,
 } from '@nestjs/common';
 import { CreateAppDto } from '../dtos/create-app.dto';
 
@@ -32,16 +33,26 @@ export class AppAuthService {
     createAppDto: CreateAppDto,
     userId: string,
   ): Promise<createAppResponse> {
+    Logger.log('createAnApp() method: starts....', 'AppAuthService');
     const { mnemonic, address } = await this.hidWalletService.generateWallet();
     const appId = await this.appAuthApiKeyService.generateAppId();
     const edvId = 'hs:apiservice:edv:' + appId;
+    Logger.log(
+      'createAnApp() method: initialising edv service',
+      'AppAuthService',
+    );
     await this.edvService.init(edvId);
     const document: EdvDocsDto = {
       mnemonic,
       address,
     };
+    Logger.log('createAnApp() method: generating api key', 'AppAuthService');
     const { apiSecretKey, apiSecret } =
       await this.appAuthApiKeyService.generateApiKey();
+    Logger.log(
+      'createAnApp() method: before creating new app doc in db',
+      'AppAuthService',
+    );
 
     const { id: edvDocId } = await this.edvService.createDocument(document);
     const appData = await this.appRepository.create({
@@ -60,8 +71,19 @@ export class AppAuthService {
   }
 
   async reGenerateAppSecretKey(app, userId) {
+    Logger.log('reGenerateAppSecretKey() method: starts....');
+
+    Logger.log(
+      'reGenerateAppSecretKey() method: generating api key',
+      'AppAuthService',
+    );
+
     const { apiSecretKey, apiSecret } =
       await this.appAuthApiKeyService.generateApiKey();
+    Logger.log(
+      'reGenerateAppSecretKey() method: before calling app repository to updating app detail in db',
+      'AppAuthService',
+    );
 
     await this.appRepository.findOneAndUpdate(
       { appId: app.appId, userId },
@@ -72,8 +94,15 @@ export class AppAuthService {
   }
 
   getAllApps(userId: string, paginationOption) {
+    Logger.log('getAllApps() method: starts....', 'AppAuthService');
+
     const skip = (paginationOption.page - 1) * paginationOption.limit;
     paginationOption.skip = skip;
+    Logger.log(
+      'getAllApps() method: before calling app repository to fetch app details',
+      'AppAuthService',
+    );
+
     return this.appRepository.find({
       userId,
       paginationOption,
@@ -81,6 +110,8 @@ export class AppAuthService {
   }
 
   async getAppById(appId: string, userId: string): Promise<App> {
+    Logger.log('getAppById() method: starts....', 'AppAuthService');
+
     return this.appRepository.findOne({ appId, userId });
   }
 
@@ -89,12 +120,18 @@ export class AppAuthService {
     updataAppDto: UpdateAppDto,
     userId: string,
   ): Promise<App> {
+    Logger.log('updateAnApp() method: starts....', 'AppAuthService');
+
     return this.appRepository.findOneAndUpdate({ appId, userId }, updataAppDto);
   }
 
   async deleteApp(appId: string, userId: string): Promise<App> {
+    Logger.log('deleteApp() method: starts....', 'AppAuthService');
+
     let appDetail = await this.appRepository.findOne({ appId, userId });
     if (!appDetail) {
+      Logger.error('deleteApp() method: Error: no app found', 'AppAuthService');
+
       throw new NotFoundException([`No App found for appId ${appId}`]);
     }
     //commenting this code as delete operation is not implemented in edvClient
@@ -109,6 +146,8 @@ export class AppAuthService {
   async generateAccessToken(
     appSecreatKey: string,
   ): Promise<{ access_token; expiresIn; tokenType }> {
+    Logger.log('generateAccessToken() method: starts....', 'AppAuthService');
+
     const apikeyIndex = appSecreatKey.split('.')[0];
 
     const grantType = 'client_credentials'; //TODO: Remove hardcoding
@@ -116,6 +155,11 @@ export class AppAuthService {
       apiKeyPrefix: apikeyIndex,
     });
     if (!appDetail) {
+      Logger.error(
+        'generateAccessToken() method: Error: no app found',
+        'AppAuthService',
+      );
+
       throw new UnauthorizedException(['access_denied']);
     }
 
@@ -125,6 +169,11 @@ export class AppAuthService {
     );
 
     if (!compareHash) {
+      Logger.error(
+        'generateAccessToken() method: Error: hashMismatch',
+        'AppAuthService',
+      );
+
       throw new UnauthorizedException('access_denied');
     }
 
@@ -140,6 +189,8 @@ export class AppAuthService {
       secret,
     });
     const expiresIn = (4 * 1 * 60 * 60 * 1000) / 1000;
+    Logger.log('generateAccessToken() method: ends....', 'AppAuthService');
+
     return { access_token: token, expiresIn, tokenType: 'Bearer' };
   }
 }

@@ -13,11 +13,13 @@ export class WhitelistSSICorsMiddleware implements NestMiddleware {
   constructor(private readonly appRepositiory: AppRepository) {}
   async use(req: Request, res: Response, next: NextFunction) {
     Logger.log(
-      'Middleware:: WhitelistSSICorsMiddleware: checking if call is form whitelisted domain starts',
+      'WhitelistSSICorsMiddleware: checking if call is form whitelisted domain starts',
+      'Middleware',
     );
     const origin = req.header('Origin') || req.header('Referer');
     Logger.debug(
-      `Middleware:: WhitelistSSICorsMiddleware: request is comming from ${origin}`,
+      `WhitelistSSICorsMiddleware: request is comming from ${origin}`,
+      'Middleware',
     );
     let matchOrigin;
     if (origin) {
@@ -30,7 +32,8 @@ export class WhitelistSSICorsMiddleware implements NestMiddleware {
       req.header('authorization') == ''
     ) {
       Logger.error(
-        'Middleware:: WhitelistSSICorsMiddleware: Error authorization token is null or undefiend',
+        'WhitelistSSICorsMiddleware: Error authorization token is null or undefiend',
+        'Middleware',
       );
 
       throw new UnauthorizedException([
@@ -43,7 +46,7 @@ export class WhitelistSSICorsMiddleware implements NestMiddleware {
       try {
         decoded = jwt.verify(token, process.env.JWT_SECRET);
       } catch (e) {
-        Logger.error(`Middleware:: WhitelistSSICorsMiddleware: Error ${e}`);
+        Logger.error(`WhitelistSSICorsMiddleware: Error ${e}`, 'Middleware');
 
         throw new UnauthorizedException([e]);
       }
@@ -58,7 +61,8 @@ export class WhitelistSSICorsMiddleware implements NestMiddleware {
 
       if (appInfo.whitelistedCors.includes('*')) {
         Logger.log(
-          'Middleware:: WhitelistSSICorsMiddleware: Origin includes *. Allowing all',
+          'WhitelistSSICorsMiddleware: Origin includes *. Allowing all',
+          'Middleware',
         );
 
         return next();

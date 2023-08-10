@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 
 export class TrimMiddleware implements NestMiddleware {
   use(req: Request, _res: Response, next: NextFunction) {
-    Logger.log('Middleware:: TrimMiddleware: trims whitspace');
+    Logger.log('TrimMiddleware: trims whitspace', 'Middleware');
 
     const requestBody = req.body;
     if (this.isObj(requestBody)) {

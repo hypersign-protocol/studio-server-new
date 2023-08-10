@@ -1,4 +1,4 @@
-import { Injectable, Scope } from '@nestjs/common';
+import { Injectable, Logger, Scope } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Bip39, Slip10, Slip10RawIndex, Slip10Curve } from '@cosmjs/crypto';
 import { DirectSecp256k1HdWallet } from '@cosmjs/proto-signing';
@@ -13,6 +13,8 @@ export class HidWalletService {
     mnemonic: string;
     address: string;
   }> {
+    Logger.log('generateWallet() method: starts....', 'generateWallet');
+
     this.mnemonic = mnemonic;
 
     let wallet: any;
@@ -28,7 +30,14 @@ export class HidWalletService {
 
     const generatedMnemonice = wallet.secret.data;
     this.offlineSigner = wallet;
+    Logger.log(
+      'generateWallet() method:fetching hid wallet address',
+      'generateWallet',
+    );
+
     const hidWalletAddress = await wallet.getAccounts();
+    Logger.log('generateWallet() method: ends....', 'generateWallet');
+
     return {
       mnemonic: generatedMnemonice,
       address: hidWalletAddress[0].address,
@@ -39,6 +48,11 @@ export class HidWalletService {
   }
 
   async generateMnemonicToHDSeed(minHardIndex = 0) {
+    Logger.log(
+      'generateMnemonicToHDSeed() method: starts....',
+      'generateWallet',
+    );
+
     if (this.mnemonic === undefined) {
       throw new Error('Mnemonic is undefined');
     }
@@ -51,10 +65,17 @@ export class HidWalletService {
       this.makeSSIWalletPath(minHardIndex),
     );
     const seedHD = slipPathKeys.privkey;
+    Logger.log('generateMnemonicToHDSeed() method: ends....', 'generateWallet');
+
     return seedHD;
   }
 
   async generateMemonicToSeedFromSlip10RawIndex(path: Array<Slip10RawIndex>) {
+    Logger.log(
+      'generateMemonicToSeedFromSlip10RawIndex() method: starts....',
+      'generateWallet',
+    );
+
     const seed = Bip39.decode(this.mnemonic);
     const slipPathKeys = Slip10.derivePath(Slip10Curve.Ed25519, seed, path);
     const seedHD = slipPathKeys.privkey;
