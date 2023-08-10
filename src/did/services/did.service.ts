@@ -2,6 +2,7 @@ import {
   BadRequestException,
   ConflictException,
   Injectable,
+  Logger,
   NotFoundException,
   Scope,
 } from '@nestjs/common';
@@ -39,6 +40,8 @@ export class DidService {
   ) {}
 
   async createByClientSpec(createDidDto: CreateDidDto, appDetail) {
+    Logger.log('createByClientSpec() method: starts....', 'DidService');
+
     let methodSpecificId = createDidDto.methodSpecificId;
     const publicKey = createDidDto.options?.publicKey;
     const chainId = createDidDto.options.chainId;
@@ -57,6 +60,10 @@ export class DidService {
           IVerificationRelationships.keyAgreement,
         )
       ) {
+        Logger.error(
+          'createByClientSpec() method: Invalid varifiactionRelationship method',
+          'DidService',
+        );
         throw new BadRequestException([
           'verificationRelationships.keyAgreement is not allowed at the time of creating a did',
         ]);
@@ -89,14 +96,26 @@ export class DidService {
     }
 
     const { edvId, edvDocId } = appDetail;
+    Logger.log(
+      'createByClientSpec() method: initialising edv service',
+      'DidService',
+    );
     await this.edvService.init(edvId);
     const docs = await this.edvService.getDecryptedDocument(edvDocId);
     const mnemonic: string = docs.mnemonic;
+    Logger.log(
+      'createByClientSpec() method: initialising hypersignDid',
+      'DidService',
+    );
     const hypersignDid = await this.didSSIService.initiateHypersignDid(
       mnemonic,
       createDidDto.namespace,
     );
     let clientSpec: IClientSpec;
+    Logger.log(
+      `createByClientSpec() method:keyType is ${keyType}`,
+      'DidService',
+    );
     if (keyType) {
       if (keyType === IKeyType.EcdsaSecp256k1RecoveryMethod2020) {
         clientSpec = IClientSpec['eth-personalSign'];
@@ -106,6 +125,10 @@ export class DidService {
         throw new BadRequestException([`Invalid KeyType ${keyType}`]);
       }
     }
+    Logger.log(
+      'createByClientSpec() method: before calling hypersignDid.createByClientSpec',
+      'DidService',
+    );
     const didDoc = await hypersignDid.createByClientSpec({
       methodSpecificId,
       publicKey,
@@ -129,6 +152,8 @@ export class DidService {
     createDidDto: CreateDidDto,
     appDetail,
   ): Promise<CreateDidResponse> {
+    Logger.log('createByClientSpec() method: starts....', 'DidService');
+
     try {
       const methodSpecificId = createDidDto.methodSpecificId;
       let verificationRelationships: IVerificationRelationships[];
@@ -149,9 +174,14 @@ export class DidService {
         }
       }
       const { edvId, edvDocId } = appDetail;
+      Logger.log('create() method: initialising edv service', 'DidService');
       await this.edvService.init(edvId);
       const docs = await this.edvService.getDecryptedDocument(edvDocId);
       const mnemonic: string = docs.mnemonic;
+      Logger.log(
+        'create() method: initialising didSSIService service',
+        'DidService',
+      );
       const hypersignDid = await this.didSSIService.initiateHypersignDid(
         mnemonic,
         createDidDto.namespace,
@@ -172,6 +202,10 @@ export class DidService {
         this.hidWallet.makeSSIWalletPath(hdPathIndex);
       const seed = await this.hidWallet.generateMemonicToSeedFromSlip10RawIndex(
         slipPathKeys,
+      );
+      Logger.log(
+        'create() method: before calling hypersignDid.generateKeys ',
+        'DidService',
       );
       const { publicKeyMultibase, privateKeyMultibase } =
         await hypersignDid.generateKeys({ seed });
@@ -201,7 +235,10 @@ export class DidService {
           appId: appDetail.appId,
         },
       );
-
+      Logger.log(
+        'create() method: before creating new document in db',
+        'DidService',
+      );
       await this.didRepositiory.create({
         did: didDoc.id,
         appId: appDetail.appId,
@@ -231,6 +268,7 @@ export class DidService {
         },
       };
     } catch (e) {
+      Logger.error(`create() method: Error: ${e.message}`, 'DidService');
       if (e.code === 11000) {
         throw new ConflictException(['Duplicate key error']);
       }
@@ -242,8 +280,10 @@ export class DidService {
     registerDidDto: RegisterDidDto,
     appDetail,
   ): Promise<RegisterDidResponse> {
+    Logger.log('createByClientSpec() method: starts....', 'DidService');
     let registerDidDoc;
     const { edvId, edvDocId } = appDetail;
+    Logger.log('register() method: initialising edv service', 'DidService');
     await this.edvService.init(edvId);
     const docs = await this.edvService.getDecryptedDocument(edvDocId);
 
@@ -259,6 +299,10 @@ export class DidService {
         `${registerDidDto.didDocument['id']} already registered`,
       ]);
     }
+    Logger.log(
+      'register() method: initialising didSSIService service',
+      'DidService',
+    );
     const hypersignDid = await this.didSSIService.initiateHypersignDid(
       mnemonic,
       namespace,
@@ -310,7 +354,10 @@ export class DidService {
         privateKeyMultibase,
         verificationMethodId: verificationMethodId,
       };
-
+      Logger.log(
+        'register() method: before calling hypersignDid.register ',
+        'DidService',
+      );
       registerDidDoc = await hypersignDid.register(params);
       data = await this.didRepositiory.findOneAndUpdate(
         { did: didDocument['id'] },
@@ -341,6 +388,8 @@ export class DidService {
   }
 
   async getDidList(appDetail, option): Promise<IDidDto[]> {
+    Logger.log('getDidList() method: starts....', 'DidService');
+
     const skip = (option.page - 1) * option.limit;
     option['skip'] = skip;
     const didList = await this.didRepositiory.find({
@@ -352,22 +401,31 @@ export class DidService {
     //     `No did has created for appId ${appDetail.appId}`,
     //   ]);
     // }
+    Logger.log('getDidList() method: ends....', 'DidService');
+
     return didList;
   }
 
   async resolveDid(appDetail, did: string) {
+    Logger.log('resolveDid() method: starts....', 'DidService');
+
     const didInfo = await this.didRepositiory.findOne({
       did,
     });
     let resolvedDid;
     if (didInfo !== null && didInfo.registrationStatus !== 'COMPLETED') {
       const { edvId, edvDocId } = appDetail;
+      Logger.log('resolveDid() method: initialising edv service', 'DidService');
       await this.edvService.init(edvId);
       const docs = await this.edvService.getDecryptedDocument(edvDocId);
       const mnemonic: string = docs.mnemonic;
       const didSplitedArray = did.split(':'); // Todo Remove this worst way of doing it
       const namespace = didSplitedArray[2];
       const methodSpecificId = didSplitedArray[3];
+      Logger.log(
+        'resolveDid() method: initialising didSSIService service',
+        'DidService',
+      );
       const hypersignDid = await this.didSSIService.initiateHypersignDid(
         mnemonic,
         namespace,
@@ -379,6 +437,10 @@ export class DidService {
         slipPathKeys,
       );
       const { publicKeyMultibase } = await hypersignDid.generateKeys({ seed });
+      Logger.log(
+        'resolveDid() method: before calling hypersignDid.generate',
+        'DidService',
+      );
       resolvedDid = await hypersignDid.generate({
         methodSpecificId,
         publicKeyMultibase,
@@ -396,6 +458,8 @@ export class DidService {
   }
 
   async updateDid(updateDidDto: UpdateDidDto, appDetail): Promise<TxnHash> {
+    Logger.log('updateDid() method: starts....', 'DidService');
+
     if (
       updateDidDto.didDocument['id'] == undefined ||
       updateDidDto.didDocument['id'] == ''
@@ -404,6 +468,11 @@ export class DidService {
     }
 
     let updatedDid;
+    Logger.debug(
+      `updateDid() method: verificationMethod: ${updateDidDto.verificationMethodId}`,
+      'DidService',
+    );
+
     if (!updateDidDto.verificationMethodId) {
       const did = updateDidDto.didDocument['id'];
       const { edvId, edvDocId } = appDetail;
@@ -435,12 +504,20 @@ export class DidService {
       }
       try {
         if (!updateDidDto.deactivate) {
+          Logger.log(
+            'updateDid() method: before calling hypersignDid.updateByClientSpec to update did',
+            'DidService',
+          );
           updatedDid = await hypersignDid.updateByClientSpec({
             didDocument: updateDidDto.didDocument as Did,
             signInfos,
             versionId: updatedDidDocMetaData.versionId,
           });
         } else {
+          Logger.log(
+            'updateDid() method: before calling hypersignDid.deactivateByClientSpec to deactivate did',
+            'DidService',
+          );
           updatedDid = await hypersignDid.deactivateByClientSpec({
             didDocument: updateDidDto.didDocument as Did,
             signInfos,
@@ -510,6 +587,11 @@ export class DidService {
       });
       try {
         if (!updateDidDto.deactivate) {
+          Logger.debug(
+            'updateDid() method: before calling hypersignDid.update to update did',
+            'DidService',
+          );
+
           updatedDid = await hypersignDid.update({
             didDocument: updateDidDto.didDocument as Did,
             privateKeyMultibase,
@@ -517,6 +599,11 @@ export class DidService {
             versionId: updatedDidDocMetaData.versionId,
           });
         } else {
+          Logger.debug(
+            'updateDid() method: before calling hypersignDid.deactivate to deactivate did',
+            'DidService',
+          );
+
           updatedDid = await hypersignDid.deactivate({
             didDocument: updateDidDto.didDocument as Did,
             privateKeyMultibase,
@@ -525,6 +612,10 @@ export class DidService {
           });
         }
       } catch (error) {
+        Logger.error(
+          `updateDid() method: Error: ${error.message}`,
+          'DidService',
+        );
         throw new BadRequestException([error.message]);
       }
     }

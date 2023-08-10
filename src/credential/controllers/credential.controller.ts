@@ -13,6 +13,7 @@ import {
   HttpCode,
   UseInterceptors,
   Headers,
+  Logger,
 } from '@nestjs/common';
 import { CredentialService } from '../services/credential.service';
 import {
@@ -91,6 +92,7 @@ export class CredentialController {
     @Req() req: any,
     @Query() pageOption: PaginationDto,
   ): Promise<Credential[]> {
+    Logger.log('CredentialController:: findAll() method: starts....');
     return this.credentialService.findAll(req.user, pageOption);
   }
 
@@ -124,6 +126,7 @@ export class CredentialController {
     @Param('credentialId') credentialId: string,
     @Query('retrieveCredential', BooleanPipe) retrieveCredential: boolean,
   ) {
+    Logger.log('CredentialController:: resolveCredential() method: starts....');
     const appDetail = req.user;
     retrieveCredential = retrieveCredential === true ? true : false;
     return this.credentialService.resolveCredential(
@@ -164,6 +167,7 @@ export class CredentialController {
     @Body() createCredentialDto: CreateCredentialDto,
     @Req() req,
   ) {
+    Logger.log('CredentialController:: create() method: starts....');
     return this.credentialService.create(createCredentialDto, req.user);
   }
   @UsePipes(ValidationPipe)
@@ -198,6 +202,7 @@ export class CredentialController {
     @Body() verifyCredentialDto: VerifyCredentialDto,
     @Req() req,
   ) {
+    Logger.log('CredentialController:: verify() method: starts....');
     return this.credentialService.verfiyCredential(
       verifyCredentialDto,
       req.user,
@@ -230,6 +235,7 @@ export class CredentialController {
     @Body() registerCredentialDto: RegisterCredentialStatusDto,
     @Req() req,
   ) {
+    Logger.log('CredentialController:: registerCred() method: starts....');
     return this.credentialService.registerCredentialStatus(
       registerCredentialDto,
       req.user,
@@ -268,6 +274,7 @@ export class CredentialController {
     @Body() updateCredentialDto: UpdateCredentialDto,
     @Req() req,
   ) {
+    Logger.log('CredentialController:: update() method: starts....');
     return this.credentialService.update(
       credentialId,
       updateCredentialDto,

@@ -1,4 +1,4 @@
-import { Injectable, Scope } from '@nestjs/common';
+import { Injectable, Logger, Scope } from '@nestjs/common';
 
 import { HypersignDID } from 'hs-ssi-sdk';
 
@@ -13,9 +13,15 @@ export class DidSSIService {
   ) {}
 
   async initiateHypersignDid(mnemonic: string, namespace: string) {
+    Logger.log('InitateHypersignDid(): starts....', 'DidSSIService');
+
     const nodeRpcEndpoint = this.config.get('HID_NETWORK_RPC');
     const nodeRestEndpoint = this.config.get('HID_NETWORK_API');
     await this.hidWallet.generateWallet(mnemonic);
+    Logger.log(
+      'initiateHypersignDid() method: before getting offlinesigner',
+      'DidSSIService',
+    );
     const offlineSigner = this.hidWallet.getOfflineSigner();
     const hypersignDid = new HypersignDID({
       offlineSigner,

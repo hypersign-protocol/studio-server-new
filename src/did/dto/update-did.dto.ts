@@ -105,7 +105,7 @@ class verificationMethod {
   })
   @IsOptional()
   @IsString()
-  publicKeyMultibase?: string;
+  publicKeyMultibase: string;
   @ApiProperty({
     description: 'blockchainAccountId',
     example: 'eip155:1:0x19d73aeeBcc6FEf2d0342375090401301Fe9663F',
@@ -113,7 +113,7 @@ class verificationMethod {
   })
   @IsOptional()
   @IsString()
-  blockchainAccountId?: string;
+  blockchainAccountId: string;
 }
 class Service {
   @ApiProperty({
