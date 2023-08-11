@@ -57,7 +57,7 @@ import { AddVMResponse, AddVerificationMethodDto } from '../dto/addVm.dto';
 @ApiBearerAuth('Authorization')
 @UseGuards(AuthGuard('jwt'))
 export class DidController {
-  constructor(private readonly didService: DidService) { }
+  constructor(private readonly didService: DidService) {}
   @UsePipes(new ValidationPipe({ transform: true }))
   @Get()
   @ApiOkResponse({
@@ -197,7 +197,8 @@ export class DidController {
   })
   @ApiBadRequestResponse({
     status: 400,
-    description: 'Error occured at the time of adding verification method to did document',
+    description:
+      'Error occured at the time of adding verification method to did document',
     type: DidError,
   })
   @ApiHeader({
