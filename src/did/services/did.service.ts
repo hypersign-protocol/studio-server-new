@@ -28,6 +28,7 @@ import { DidSSIService } from './did.ssi.service';
 import { RegistrationStatus } from '../schemas/did.schema';
 import { RegisterDidDto } from '../dto/register-did.dto';
 import { Did as IDidDto } from '../schemas/did.schema';
+import { AddVerificationMethodDto } from '../dto/addVm.dto';
 
 @Injectable({ scope: Scope.REQUEST })
 export class DidService {
@@ -621,5 +622,19 @@ export class DidService {
     }
 
     return { transactionHash: updatedDid.transactionHash };
+  }
+
+  async addVerificationMethod(
+    addVMDto: AddVerificationMethodDto,
+  ): Promise<Did> {
+    Logger.log('addVerificationMethod() method: starts....', 'DidService');
+    const hypersignDid = new HypersignDID();
+    let result;
+    try {
+      result = await hypersignDid.addVerificationMethod({ ...addVMDto });
+    } catch (e) {
+      throw new BadRequestException([`${e.message}`]);
+    }
+    return result;
   }
 }
