@@ -1,12 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
+  IsArray,
   IsEnum,
   IsNotEmpty,
   IsOptional,
   IsString,
   ValidateNested,
 } from 'class-validator';
-import { DidDoc } from './update-did.dto';
+import { DidDoc, verificationMethod } from './update-did.dto';
 import { Type } from 'class-transformer';
 import { IKeyType } from 'hs-ssi-sdk';
 import { ValidateVerificationMethodId } from 'src/utils/customDecorator/vmId.decorator';
@@ -75,4 +76,58 @@ export class AddVerificationMethodDto {
   @IsOptional()
   @IsString()
   blockchainAccountId?: string;
+}
+
+export class AddVMResponse extends DidDoc {
+  @ApiProperty({
+    description: 'verificationMethod',
+    isArray: true,
+    example:
+      [{
+        "id": "did:hid:testnet:...............#key-1",
+        "type": "Ed25519VerificationKey2020",
+        "controller": "did:hid:method:..............",
+        "publicKeyMultibase": "z28ScfSszr2zi2Bd7qmNE4mfHX5j8nCwx4DBF6nAUHu4p",
+        "blockchainAccountId": ""
+      },
+      {
+        "id": 'did:hid:testnet:xyz.............#key-1',
+        "type": 'Ed25519VerificationKey2020',
+        "controller": 'did:hid:method:..............',
+        "publicKeyMultibase": 'zBpyG2BAx7ngwhxMdFjaAnjup6DPztJpjjdfjdgji5GX6zP8E',
+        "blockchainAccountId": ''
+      }]
+  })
+
+  verificationMethod: Array<verificationMethod>;
+  @ApiProperty({
+    description: 'authentication',
+    example: ['did:hid:method:......#key-${id}',
+      "did:hid:method:xyz............#key-${id}"],
+  })
+  @IsArray()
+  authentication: Array<string>;
+  @ApiProperty({
+    description: 'assertionMethod',
+    example: ['did:hid:method:......#key-${id}',
+      "did:hid:method:xyz............#key-${id}"],
+  })
+  @IsArray()
+  assertionMethod: Array<string>;
+  @ApiProperty({
+    description: 'capabilityInvocation',
+    example: ['did:hid:method:......#key-${id}',
+      "did:hid:method:xyz............#key-${id}"],
+  })
+  @IsArray()
+  @IsOptional()
+  capabilityInvocation: Array<string>;
+  @ApiProperty({
+    description: 'capabilityDelegation',
+    example: ['did:hid:method:......#key-${id}',
+      "did:hid:method:xyz............#key-${id}"],
+  })
+  @IsArray()
+  @IsOptional()
+  capabilityDelegation: Array<string>;
 }

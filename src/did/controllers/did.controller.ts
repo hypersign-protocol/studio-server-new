@@ -50,14 +50,14 @@ import { GetDidList } from '../dto/fetch-did.dto';
 import { RegisterDidDto } from '../dto/register-did.dto';
 import { IKeyType } from 'hs-ssi-sdk';
 import { AtLeastOneParamPipe } from 'src/utils/Pipes/atleastOneParam.pipe';
-import { AddVerificationMethodDto } from '../dto/addVm.dto';
+import { AddVMResponse, AddVerificationMethodDto } from '../dto/addVm.dto';
 @UseFilters(AllExceptionsFilter)
 @ApiTags('Did')
 @Controller('did')
 @ApiBearerAuth('Authorization')
 @UseGuards(AuthGuard('jwt'))
 export class DidController {
-  constructor(private readonly didService: DidService) {}
+  constructor(private readonly didService: DidService) { }
   @UsePipes(new ValidationPipe({ transform: true }))
   @Get()
   @ApiOkResponse({
@@ -191,6 +191,15 @@ export class DidController {
   }
 
   @Post('/addVerificationMethod')
+  @ApiCreatedResponse({
+    description: 'Added vm to Did Document',
+    type: AddVMResponse,
+  })
+  @ApiBadRequestResponse({
+    status: 400,
+    description: 'Error occured at the time of adding verification method to did document',
+    type: DidError,
+  })
   @ApiHeader({
     name: 'Authorization',
     description: 'Bearer <access_token>',
