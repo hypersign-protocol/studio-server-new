@@ -460,7 +460,6 @@ export class DidService {
 
   async updateDid(updateDidDto: UpdateDidDto, appDetail): Promise<TxnHash> {
     Logger.log('updateDid() method: starts....', 'DidService');
-
     if (
       updateDidDto.didDocument['id'] == undefined ||
       updateDidDto.didDocument['id'] == ''
@@ -473,7 +472,15 @@ export class DidService {
       `updateDid() method: verificationMethod: ${updateDidDto.verificationMethodId}`,
       'DidService',
     );
-
+    const hasKeyAgreementType =
+      updateDidDto.didDocument.verificationMethod.some(
+        (VM) =>
+          VM.type === IKeyType.X25519KeyAgreementKey2020 ||
+          VM.type === IKeyType.X25519KeyAgreementKeyEIP5630,
+      );
+    if (!hasKeyAgreementType) {
+      updateDidDto.didDocument.keyAgreement = [];
+    }
     if (!updateDidDto.verificationMethodId) {
       const did = updateDidDto.didDocument['id'];
       const { edvId, edvDocId } = appDetail;
