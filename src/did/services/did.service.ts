@@ -28,6 +28,7 @@ import { DidSSIService } from './did.ssi.service';
 import { RegistrationStatus } from '../schemas/did.schema';
 import { RegisterDidDto } from '../dto/register-did.dto';
 import { Did as IDidDto } from '../schemas/did.schema';
+import { AddVerificationMethodDto } from '../dto/addVm.dto';
 
 @Injectable({ scope: Scope.REQUEST })
 export class DidService {
@@ -459,7 +460,6 @@ export class DidService {
 
   async updateDid(updateDidDto: UpdateDidDto, appDetail): Promise<TxnHash> {
     Logger.log('updateDid() method: starts....', 'DidService');
-
     if (
       updateDidDto.didDocument['id'] == undefined ||
       updateDidDto.didDocument['id'] == ''
@@ -472,7 +472,15 @@ export class DidService {
       `updateDid() method: verificationMethod: ${updateDidDto.verificationMethodId}`,
       'DidService',
     );
-
+    const hasKeyAgreementType =
+      updateDidDto.didDocument.verificationMethod.some(
+        (VM) =>
+          VM.type === IKeyType.X25519KeyAgreementKey2020 ||
+          VM.type === IKeyType.X25519KeyAgreementKeyEIP5630,
+      );
+    if (!hasKeyAgreementType) {
+      updateDidDto.didDocument.keyAgreement = [];
+    }
     if (!updateDidDto.verificationMethodId) {
       const did = updateDidDto.didDocument['id'];
       const { edvId, edvDocId } = appDetail;
@@ -621,5 +629,19 @@ export class DidService {
     }
 
     return { transactionHash: updatedDid.transactionHash };
+  }
+
+  async addVerificationMethod(
+    addVMDto: AddVerificationMethodDto,
+  ): Promise<Did> {
+    Logger.log('addVerificationMethod() method: starts....', 'DidService');
+    const hypersignDid = new HypersignDID();
+    let result;
+    try {
+      result = await hypersignDid.addVerificationMethod({ ...addVMDto });
+    } catch (e) {
+      throw new BadRequestException([`${e.message}`]);
+    }
+    return result;
   }
 }

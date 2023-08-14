@@ -16,6 +16,7 @@ import {
   HypersignVerifiablePresentation,
   HypersignDID,
   IVerifiableCredential,
+  IVerifiablePresentation,
 } from 'hs-ssi-sdk';
 import { ConfigService } from '@nestjs/config';
 import { EdvService } from 'src/edv/services/edv.service';
@@ -23,7 +24,6 @@ import { HidWalletService } from 'src/hid-wallet/services/hid-wallet.service';
 import { DidRepository } from 'src/did/repository/did.repository';
 import { VerifyPresentationDto } from '../dto/verify-presentation.dto';
 import { AppAuthApiKeyService } from 'src/app-auth/services/app-auth-apikey.service';
-import { IVerifiablePresentation } from 'hs-ssi-sdk/build/src/presentation/IPresentation';
 
 @Injectable()
 export class PresentationService {

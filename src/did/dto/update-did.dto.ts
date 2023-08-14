@@ -76,7 +76,7 @@ export class SignInfo {
   @ValidateNested({ each: true })
   clientSpec: ClientSpec;
 }
-class verificationMethod {
+export class verificationMethod {
   @ApiProperty({
     description: 'Verification Method id',
     example:
