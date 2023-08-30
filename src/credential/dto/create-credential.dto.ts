@@ -59,7 +59,6 @@ export class CreateCredentialDto {
   @ApiHideProperty()
   @ValidateIf((o) => o.schemaId === undefined)
   @IsArray()
-  @ArrayNotEmpty()
   type?: Array<string>;
 
   @ApiProperty({
