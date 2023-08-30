@@ -38,6 +38,7 @@ export class CredentialService {
       verificationMethodId,
       persist,
     } = createCredentialDto;
+    let { registerCredentialStatus } = createCredentialDto;
     const nameSpace = createCredentialDto.namespace;
     const didOfvmId = verificationMethodId.split('#')[0];
 
@@ -119,6 +120,9 @@ export class CredentialService {
         'create() method: before calling hypersignVC.issue',
         'CredentialService',
       );
+      if (registerCredentialStatus == undefined) {
+        registerCredentialStatus = true;
+      }
       const {
         signedCredential,
         credentialStatus,
@@ -128,6 +132,7 @@ export class CredentialService {
         issuerDid,
         verificationMethodId,
         privateKeyMultibase,
+        registerCredential: registerCredentialStatus,
       });
       let edvData = undefined;
       if (persist) {

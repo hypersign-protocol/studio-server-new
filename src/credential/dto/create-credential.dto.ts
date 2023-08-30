@@ -104,10 +104,18 @@ export class CreateCredentialDto {
   @ApiProperty({
     name: 'persist',
     description: 'Persist in edv',
-    example: 'true',
+    example: true,
   })
   @IsBoolean()
   persist: boolean;
+  @ApiProperty({
+    name: 'registerCredentialStatus',
+    description: 'Parameter to indicate whether to register credential status',
+    example: true,
+  })
+  @IsOptional()
+  @IsBoolean()
+  registerCredentialStatus?: boolean;
 }
 
 export class CredentialSubject {
