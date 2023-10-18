@@ -12,6 +12,7 @@ import {
   Query,
   UseInterceptors,
   Headers,
+  Logger,
 } from '@nestjs/common';
 import { PaginationDto } from 'src/utils/pagination.dto';
 import { SchemaService } from '../services/schema.service';
@@ -32,10 +33,13 @@ import {
   ApiBadRequestResponse,
   ApiQuery,
   ApiHeader,
+  ApiOkResponse,
 } from '@nestjs/swagger';
 import { Schemas } from '../schemas/schemas.schema';
 import { SchemaResponseInterceptor } from '../interceptors/transformResponse.interseptor';
 import { GetSchemaList } from '../dto/get-schema.dto';
+import { RegisterSchemaDto } from '../dto/register-schema.dto';
+import { TxnHash } from 'src/did/dto/create-did.dto';
 @UseFilters(AllExceptionsFilter)
 @ApiTags('Schema')
 @Controller('schema')
@@ -75,6 +79,7 @@ export class SchemaController {
     @Body() createSchemaDto: CreateSchemaDto,
     @Req() req: any,
   ) {
+    Logger.log('create() method: starts', 'SchemaController');
     const appDetail = req.user;
     return this.schemaService.create(createSchemaDto, appDetail);
   }
@@ -117,6 +122,8 @@ export class SchemaController {
     @Req() req: any,
     @Query() paginationOption: PaginationDto,
   ): Promise<Schemas[]> {
+    Logger.log('getSchemaList() method: starts', 'SchemaController');
+
     const appDetial = req.user;
     return this.schemaService.getSchemaList(appDetial, paginationOption);
   }
@@ -146,6 +153,44 @@ export class SchemaController {
     @Headers('Authorization') authorization: string,
     @Param('schemaId') schemaId: string,
   ): Promise<ResolveSchema> {
+    Logger.log('resolveSchema() method: starts', 'SchemaController');
+
     return this.schemaService.resolveSchema(schemaId);
+  }
+
+  @Post('/register')
+  @ApiOkResponse({
+    description: 'Registered schema successfully',
+    type: TxnHash,
+  })
+  @ApiBadRequestResponse({
+    description: 'Invalid field value',
+    type: SchemaError,
+  })
+  @ApiHeader({
+    name: 'Authorization',
+    description: 'Bearer <access_token>',
+    required: false,
+  })
+  @ApiHeader({
+    name: 'Origin',
+    description: 'Origin as you set in application cors',
+    required: false,
+  })
+  @UsePipes(
+    new ValidationPipe({
+      whitelist: true,
+      // forbidNonWhitelisted: true,
+      transform: true,
+    }),
+  )
+  registerSchema(
+    @Headers('Authorization') authorization: string,
+    @Body() registerSchemaDto: RegisterSchemaDto,
+    @Req() req: any,
+  ): Promise<{ transactionHash: string }> {
+    Logger.log('resolveSchema() method: starts', 'SchemaController');
+
+    return this.schemaService.registerSchema(registerSchemaDto, req.user);
   }
 }

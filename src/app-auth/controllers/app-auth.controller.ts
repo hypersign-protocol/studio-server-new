@@ -15,6 +15,7 @@ import {
   Req,
   Delete,
   Headers,
+  Logger,
 } from '@nestjs/common';
 import { CreateAppDto } from 'src/app-auth/dtos/create-app.dto';
 import {
@@ -85,6 +86,7 @@ export class AppAuthController {
     @Req() req: any,
     @Query() pageOption: PaginationDto,
   ): Promise<App[]> {
+    Logger.log('getApps() method: starts', 'AppAuthController');
     const userId = req.user.userId;
     const appList: any = await this.appAuthService.getAllApps(
       userId,
@@ -116,6 +118,8 @@ export class AppAuthController {
 
     @Param('appId') appId: string,
   ): Promise<App> {
+    Logger.log('getAppById() method: starts', 'AppAuthController');
+
     const userId = req.user.userId;
 
     const app = await this.appAuthService.getAppById(appId, userId);
@@ -142,6 +146,8 @@ export class AppAuthController {
     @Req() req: any,
     @Body() createAppDto: CreateAppDto,
   ): Promise<createAppResponse> {
+    Logger.log('register() method: starts', 'AppAuthController');
+
     const userId = req.user.userId;
 
     return this.appAuthService.createAnApp(createAppDto, userId);
@@ -173,6 +179,11 @@ export class AppAuthController {
     @Param('appId') appId: string,
     @Body() updateAppDto: UpdateAppDto,
   ): Promise<App> {
+    Logger.log(
+      'App-auth controller: update() method: starts',
+      'AppAuthController',
+    );
+
     const userId = req.user.userId;
 
     const app = await this.appAuthService.getAppById(appId, userId);
@@ -200,6 +211,8 @@ export class AppAuthController {
     @Req() req: any,
     @Param('appId') appId: string,
   ): Promise<App> {
+    Logger.log('deleteApp() method: starts', 'AppAuthController');
+
     const userId = req.user.userId;
     const app = await this.appAuthService.deleteApp(appId, userId);
     return app;
@@ -216,6 +229,8 @@ export class AppAuthController {
     type: AppError,
   })
   async reGenerateAppSecretKey(@Req() req: any, @Param('appId') appId: string) {
+    Logger.log('reGenerateAppSecretKey() method: starts', 'AppAuthController');
+
     const userId = req.user.userId;
 
     const app = await this.appAuthService.getAppById(appId, userId);
@@ -263,6 +278,7 @@ export class AppOAuthController {
     @Headers('X-Api-Secret-Key') apiSectretKey: string,
     @AppSecretHeader() appSecreatKey,
   ): Promise<{ access_token; expiresIn; tokenType }> {
+    Logger.log('reGenerateAppSecretKey() method: starts', 'AppOAuthController');
     return this.appAuthService.generateAccessToken(appSecreatKey);
   }
 }

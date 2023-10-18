@@ -1,5 +1,6 @@
 import {
   Injectable,
+  Logger,
   NestMiddleware,
   UnauthorizedException,
 } from '@nestjs/common';
@@ -11,7 +12,15 @@ import { AppRepository } from 'src/app-auth/repositories/app.repository';
 export class WhitelistSSICorsMiddleware implements NestMiddleware {
   constructor(private readonly appRepositiory: AppRepository) {}
   async use(req: Request, res: Response, next: NextFunction) {
+    Logger.log(
+      'WhitelistSSICorsMiddleware: checking if call is form whitelisted domain starts',
+      'Middleware',
+    );
     const origin = req.header('Origin') || req.header('Referer');
+    Logger.debug(
+      `WhitelistSSICorsMiddleware: request is comming from ${origin}`,
+      'Middleware',
+    );
     let matchOrigin;
     if (origin) {
       // regex to check if url consists of some path or not
@@ -22,6 +31,11 @@ export class WhitelistSSICorsMiddleware implements NestMiddleware {
       req.header('authorization') == undefined ||
       req.header('authorization') == ''
     ) {
+      Logger.error(
+        'WhitelistSSICorsMiddleware: Error authorization token is null or undefiend',
+        'Middleware',
+      );
+
       throw new UnauthorizedException([
         'Unauthorized',
         'Please pass access token',
@@ -32,6 +46,8 @@ export class WhitelistSSICorsMiddleware implements NestMiddleware {
       try {
         decoded = jwt.verify(token, process.env.JWT_SECRET);
       } catch (e) {
+        Logger.error(`WhitelistSSICorsMiddleware: Error ${e}`, 'Middleware');
+
         throw new UnauthorizedException([e]);
       }
       const whitelistedOrigins = process.env.WHITELISTED_CORS;
@@ -44,13 +60,18 @@ export class WhitelistSSICorsMiddleware implements NestMiddleware {
       });
 
       if (appInfo.whitelistedCors.includes('*')) {
+        Logger.log(
+          'WhitelistSSICorsMiddleware: Origin includes *. Allowing all',
+          'Middleware',
+        );
+
         return next();
       }
       if (!appInfo['whitelistedCors'].includes(origin)) {
         throw new UnauthorizedException(['Origin mismatch']);
       }
     } else {
-      throw new UnauthorizedException(['This is a cors enable api']);
+      throw new UnauthorizedException(['This is a cors enabled api']);
     }
     next();
   }

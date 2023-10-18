@@ -14,6 +14,7 @@ import {
   Query,
   UseInterceptors,
   Headers,
+  Logger,
 } from '@nestjs/common';
 import { DidService } from '../services/did.service';
 import {
@@ -48,6 +49,8 @@ import { DidResponseInterceptor } from '../interceptors/transformResponse.inters
 import { GetDidList } from '../dto/fetch-did.dto';
 import { RegisterDidDto } from '../dto/register-did.dto';
 import { IKeyType } from 'hs-ssi-sdk';
+import { AtLeastOneParamPipe } from 'src/utils/Pipes/atleastOneParam.pipe';
+import { AddVMResponse, AddVerificationMethodDto } from '../dto/addVm.dto';
 @UseFilters(AllExceptionsFilter)
 @ApiTags('Did')
 @Controller('did')
@@ -94,6 +97,7 @@ export class DidController {
     @Query()
     pageOption: PaginationDto,
   ): Promise<Did[]> {
+    Logger.log('getDidList() method: starts', 'DidController');
     const appDetail = req.user;
     return this.didService.getDidList(appDetail, pageOption);
   }
@@ -118,6 +122,7 @@ export class DidController {
     @Req() req: any,
     @Param('did') did: string,
   ): Promise<ResolvedDid> {
+    Logger.log('resolveDid() method: starts', 'DidController');
     const appDetail = req.user;
     return this.didService.resolveDid(appDetail, did);
   }
@@ -158,6 +163,7 @@ export class DidController {
     @Body() createDidDto: CreateDidDto,
     @Req() req: any,
   ) {
+    Logger.log('create() method: starts', 'DidController');
     const { options } = createDidDto;
     const appDetail = req.user;
     switch (options?.keyType) {
@@ -184,6 +190,37 @@ export class DidController {
     }
   }
 
+  @Post('/addVerificationMethod')
+  @ApiCreatedResponse({
+    description: 'Added vm to Did Document',
+    type: AddVMResponse,
+  })
+  @ApiBadRequestResponse({
+    status: 400,
+    description:
+      'Error occured at the time of adding verification method to did document',
+    type: DidError,
+  })
+  @ApiHeader({
+    name: 'Authorization',
+    description: 'Bearer <access_token>',
+    required: false,
+  })
+  @ApiHeader({
+    name: 'Origin',
+    description: 'Origin as you set in application cors',
+    required: false,
+  })
+  @UsePipes(ValidationPipe)
+  @UsePipes(new AtLeastOneParamPipe(['did', 'didDocument']))
+  addVerficationMethod(
+    @Headers('Authorization') authorization: string,
+    @Body() addVm: AddVerificationMethodDto,
+    @Req() req: any,
+  ) {
+    Logger.log('addVerificationMethod() method: starts', 'DidController');
+    return this.didService.addVerificationMethod(addVm);
+  }
   @ApiCreatedResponse({
     description: 'DID Registred',
     type: RegisterDidResponse,
@@ -210,6 +247,8 @@ export class DidController {
     @Body() registerDidDto: RegisterDidDto,
     @Req() req: any,
   ) {
+    Logger.log('register() method: starts', 'DidController');
+
     const appDetail = req.user;
     return this.didService.register(registerDidDto, appDetail);
   }
@@ -245,6 +284,8 @@ export class DidController {
     @Req() req: any,
     @Body() updateDidDto: UpdateDidDto,
   ) {
+    Logger.log('updateDid() method: starts', 'DidController');
+
     const appDetail = req.user;
     return this.didService.updateDid(updateDidDto, appDetail);
   }

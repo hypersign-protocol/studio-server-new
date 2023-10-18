@@ -6,7 +6,7 @@ import { IsEnum, ValidateNested } from 'class-validator';
 export class RegisterCredentialStatusDto {
   @ApiProperty({
     name: 'credentialStatus',
-    description: 'Credential stauts',
+    description: 'Credential status',
     required: true,
     type: CredStatus,
   })

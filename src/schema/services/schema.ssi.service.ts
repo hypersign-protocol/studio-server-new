@@ -1,4 +1,4 @@
-import { Injectable, Scope } from '@nestjs/common';
+import { Injectable, Logger, Scope } from '@nestjs/common';
 
 import { HypersignSchema } from 'hs-ssi-sdk';
 
@@ -13,9 +13,15 @@ export class SchemaSSIService {
   ) {}
 
   async initiateHypersignSchema(mnemonic: string, namespace: string) {
+    Logger.log('initiateHypersignSchema(): starts....', 'SchemaSSIService');
+
     const nodeRpcEndpoint = this.config.get('HID_NETWORK_RPC');
     const nodeRestEndpoint = this.config.get('HID_NETWORK_API');
     await this.hidWallet.generateWallet(mnemonic);
+    Logger.log(
+      'initiateHypersignSchema() method: before getting offlinesigner',
+      'SchemaSSIService',
+    );
     const offlineSigner = this.hidWallet.getOfflineSigner();
     const hypersignSchema = new HypersignSchema({
       offlineSigner,
@@ -24,6 +30,8 @@ export class SchemaSSIService {
       namespace: namespace,
     });
     await hypersignSchema.init();
+    Logger.log('initiateHypersignSchema(): ends....', 'SchemaSSIService');
+
     return hypersignSchema;
   }
 }

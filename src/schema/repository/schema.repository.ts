@@ -1,7 +1,7 @@
 import { Schemas, SchemaDocument } from '../schemas/schemas.schema';
 import { FilterQuery, Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 
 @Injectable()
 export class SchemaRepository {
@@ -11,9 +11,17 @@ export class SchemaRepository {
   ) {}
 
   async findOne(schemaFilterQuery: FilterQuery<Schemas>): Promise<Schemas> {
+    Logger.log(
+      'findOne() method: starts, finding particular schema from db',
+      'SchemaRepository',
+    );
     return this.schemaModel.findOne(schemaFilterQuery);
   }
   async find(schemaFilterQuery: FilterQuery<Schemas>): Promise<Schemas[]> {
+    Logger.log(
+      'find() method: starts, finding list of schemas from db',
+      'SchemaRepository',
+    );
     return await this.schemaModel.aggregate([
       { $match: { appId: schemaFilterQuery.appId } },
       {
@@ -32,6 +40,10 @@ export class SchemaRepository {
   }
 
   async create(schema: Schemas): Promise<Schemas> {
+    Logger.log(
+      'create() method: starts,creating new schemas in db',
+      'SchemaRepository',
+    );
     const newSchema = new this.schemaModel(schema);
     return newSchema.save();
   }
@@ -40,6 +52,10 @@ export class SchemaRepository {
     schemaFilterQuery: FilterQuery<Schemas>,
     schema: Partial<Schemas>,
   ): Promise<Schemas> {
+    Logger.log(
+      'create() method: starts,updating schemas in db',
+      'SchemaRepository',
+    );
     return this.schemaModel.findOneAndUpdate(schemaFilterQuery, schema, {
       new: true,
     });
