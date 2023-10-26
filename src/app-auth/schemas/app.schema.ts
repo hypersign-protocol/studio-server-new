@@ -46,14 +46,21 @@ export class App {
   })
   @Prop()
   edvId: string;
+
   @ApiHideProperty()
   @Prop()
   @Exclude()
   edvDocId: string;
-  @ApiHideProperty()
+
+  //@ApiHideProperty()
   @Prop()
-  @Exclude()
+  //@Exclude()
+  @ApiProperty({
+    description: 'Key Manager Service Id',
+    example: 'KMS Id for this application',
+  })
   kmsId: string;
+
   @ApiHideProperty()
   @Prop()
   apiKeyPrefix: string;

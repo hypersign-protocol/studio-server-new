@@ -16,6 +16,8 @@ import { EdvDocsDto } from 'src/edv/dtos/create-edv.dto';
 import { AppAuthSecretService } from './app-auth-passord.service';
 import { JwtService } from '@nestjs/jwt';
 import { AppAuthApiKeyService } from './app-auth-apikey.service';
+import { EdvClientManagerFactoryService } from '../../edv/services/edv.clientFactory';
+import { VaultWalletManager } from '../../edv/services/vaultWalletManager';
 
 @Injectable()
 export class AppAuthService {
@@ -36,33 +38,61 @@ export class AppAuthService {
     Logger.log('createAnApp() method: starts....', 'AppAuthService');
     const { mnemonic, address } = await this.hidWalletService.generateWallet();
     const appId = await this.appAuthApiKeyService.generateAppId();
-    const edvId = 'hs:apiservice:edv:' + appId;
+    const vaultPrefixInEnv = this.config.get('VAULT_PREFIX');
+    const vaultPrefix = vaultPrefixInEnv ? vaultPrefixInEnv : 'hs:studio-api:';
+    const edvId = vaultPrefix + 'app:' + appId;
     Logger.log(
       'createAnApp() method: initialising edv service',
       'AppAuthService',
     );
-    await this.edvService.init(edvId);
-    const document: EdvDocsDto = {
+
+    // Store menemonic and edvId in the key manager vault and get the kmsId.
+    const doc = {
       mnemonic,
-      address,
+      edvId: edvId,
     };
+    Logger.log(
+      'createAnApp() method: Prepareing app keys to insert in kms vault',
+    );
+    const edvDocToInsert = globalThis.kmsVault.prepareEdvDocument(doc, [
+      { index: 'content.edvId', unique: true },
+    ]);
+
+    Logger.log(
+      'createAnApp() method: Inserting app keys to insert in kms vault',
+    );
+    const { id: kmsId } = await globalThis.kmsVault.insertDocument(
+      edvDocToInsert,
+    );
+
+    // TODO use mnemonic as a seed to generate API keys
     Logger.log('createAnApp() method: generating api key', 'AppAuthService');
     const { apiSecretKey, apiSecret } =
       await this.appAuthApiKeyService.generateApiKey();
+
+    Logger.log('createAnApp() method: Preparing wallet for the app');
+    // TODO generate vault for this app.
+    const appVaultWallet = await VaultWalletManager.getWallet(mnemonic);
+    // we do not need to storing anything in the app's vault, we just create a vault for this guy
+    Logger.log('createAnApp() method: Creating vault for the app');
+    await EdvClientManagerFactoryService.createEdvClientManger(
+      appVaultWallet,
+      edvId,
+    );
+
     Logger.log(
       'createAnApp() method: before creating new app doc in db',
       'AppAuthService',
     );
-
-    const { id: edvDocId } = await this.edvService.createDocument(document);
+    // Finally stroring application in db
     const appData = await this.appRepository.create({
       ...createAppDto,
       userId,
       appId: appId, // generate app id
       apiKeySecret: apiSecret, // TODO: generate app secret and should be handled like password by hashing and all...
       edvId, // generate edvId  by called hypersign edv service
-      kmsId: 'demo-kms-1',
-      edvDocId,
+      kmsId: kmsId,
+      edvDocId: kmsId, // TODO this should be deprecated in favor of kmsId variable.
       walletAddress: address,
       apiKeyPrefix: apiSecretKey.split('.')[0],
     });

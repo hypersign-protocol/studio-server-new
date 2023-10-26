@@ -24,7 +24,7 @@ Added basic project st. with following features
 
 ## Pre-requisites
 
-Node version `v14.20.1`
+Node version `v16.14.0`
 
 ```bash
 npm i -g @nestjs/cli

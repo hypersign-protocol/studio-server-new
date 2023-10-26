@@ -11,6 +11,8 @@ const hidWallet = require('hid-hd-wallet');
 import { Bip39, EnglishMnemonic } from '@cosmjs/crypto';
 import { Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { EdvClientKeysManager } from './edv/services/edv.singleton';
+import { VaultWalletManager } from './edv/services/vaultWalletManager';
 //import { Header } from '@nestjs/common';
 
 async function bootstrap() {
@@ -28,6 +30,8 @@ async function bootstrap() {
   await hidWalletInstance.generateWallet({
     mnemonic: process.env.MNEMONIC,
   });
+
+  // HID SDK instance
   const offlineSigner = hidWalletInstance.offlineSigner;
   const nodeRpcEndpoint = walletOptions.hidNodeRPCUrl;
   const nodeRestEndpoint = walletOptions.hidNodeRestUrl;
@@ -39,23 +43,54 @@ async function bootstrap() {
     namespace,
   });
   await hsSSIdkInstance.init();
+  globalThis.hsSSIdkInstance = hsSSIdkInstance;
+
   const mnemonic_EnglishMnemonic: EnglishMnemonic = process.env
     .MNEMONIC as unknown as EnglishMnemonic;
-  const seedEntropy = Bip39.decode(mnemonic_EnglishMnemonic);
-  const keys = await hsSSIdkInstance.did.generateKeys({ seed: seedEntropy });
-  const edvDid = await hsSSIdkInstance.did.generate({
-    publicKeyMultibase: keys.publicKeyMultibase,
-  });
+
+  const kmsVaultWallet = await VaultWalletManager.getWallet(
+    mnemonic_EnglishMnemonic,
+  );
+
   app.setGlobalPrefix('api/v1');
   if (!existDir(process.env.EDV_CONFIG_DIR)) {
     createDir(process.env.EDV_CONFIG_DIR);
   }
   if (!existDir(process.env.EDV_DID_FILE_PATH)) {
-    store(edvDid, process.env.EDV_DID_FILE_PATH);
+    store(kmsVaultWallet.didDocument, process.env.EDV_DID_FILE_PATH);
   }
   if (!existDir(process.env.EDV_KEY_FILE_PATH)) {
-    store(keys, process.env.EDV_KEY_FILE_PATH);
+    store(kmsVaultWallet.keys, process.env.EDV_KEY_FILE_PATH);
   }
+
+  try {
+    Logger.log('Before keymanager initialization');
+    const kmsVaultManager = new EdvClientKeysManager();
+    const config = new ConfigService();
+    const vaultPrefixInEnv = config.get('VAULT_PREFIX');
+    const vaultPrefix = vaultPrefixInEnv ? vaultPrefixInEnv : 'hs:studio-api:';
+    const edvId = vaultPrefix + 'kms:' + kmsVaultWallet.didDocument.id;
+    const kmsVault = await kmsVaultManager.createVault(kmsVaultWallet, edvId);
+
+    // TODO rename this to kmsVault for bnetter cla
+    globalThis.kmsVault = kmsVault;
+
+    // const message = {
+    //   status: 'succes',
+    //   mnemonic: '1231 123123 123123 123',
+    // }
+    // const edvDocToInsert = VaultKeysManager.prepareEdvDocument(message, [{ index: 'content.status', unique: true }])
+    // Logger.log(edvDocToInsert)
+    // const docID = await VaultKeysManager.insertDocument(edvDocToInsert)
+    // Logger.log(docID)
+
+    // return docID
+
+    Logger.log('After  keymanager initialization');
+  } catch (e) {
+    console.log(e);
+  }
+
   const config = new DocumentBuilder()
     .setTitle('Entity Studio SSI API Playground')
     .setDescription('Open API Documentation of the Entity Studio')
