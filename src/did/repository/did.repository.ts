@@ -11,7 +11,7 @@ import { Injectable, Logger } from '@nestjs/common';
 @Injectable()
 export class DidRepository {
   constructor(
-    @InjectModel(Did.name, "APP") private readonly didModel: Model<DidDocument>,
+    @InjectModel(Did.name, 'APP') private readonly didModel: Model<DidDocument>,
   ) {}
 
   async findOne(didFilterQuery: FilterQuery<Did>): Promise<Did> {
@@ -67,7 +67,7 @@ export class DidRepository {
 @Injectable()
 export class DidMetaDataRepo {
   constructor(
-    @InjectModel(DidMetaData.name, "APP")
+    @InjectModel(DidMetaData.name, 'APP')
     private readonly didModel: Model<DidDocumentMetaData>,
   ) {}
 
