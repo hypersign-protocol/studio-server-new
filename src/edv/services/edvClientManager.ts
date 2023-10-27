@@ -51,9 +51,9 @@ export class EdvClientManger implements IEdvClientManager {
   }
 
   async initate(): Promise<IEdvClientManager> {
-    const ed25519 =this.vaultWallet.ed25519Signer
-    const x25519 = this.vaultWallet.ed25519Signer
-    const keyAgreementKey = this.vaultWallet.keyAgreementKey
+    const ed25519 = this.vaultWallet.ed25519Signer;
+    const x25519 = this.vaultWallet.ed25519Signer;
+    const keyAgreementKey = this.vaultWallet.keyAgreementKey;
 
     this.recipient = [
       {
@@ -121,7 +121,10 @@ export class EdvClientManger implements IEdvClientManager {
       'getDocument() method: starts, fetching docs from edvClient',
       'EdvService',
     );
-    const resp: IResponse = await this.vault.fetchDoc({ edvId: this.edvId,  documentId: id });
+    const resp: IResponse = await this.vault.fetchDoc({
+      edvId: this.edvId,
+      documentId: id,
+    });
     return resp;
   }
 
@@ -134,16 +137,16 @@ export class EdvClientManger implements IEdvClientManager {
     );
 
     const doc: IResponse = await this.getDocument(id);
-    if(!doc.document){
-      throw new Error(doc.message)
+    if (!doc.document) {
+      throw new Error(doc.message);
     }
 
     Logger.log(
       'getDecryptedDocument() method: decrypting doc using edvClient',
       'EdvService',
-    )
+    );
 
-    const {content} = await this.vault.decryptObject({
+    const { content } = await this.vault.decryptObject({
       keyAgreementKey: this.vaultWallet.x25519Signer,
       jwe: doc.document.jwe,
     });
@@ -151,6 +154,4 @@ export class EdvClientManger implements IEdvClientManager {
 
     return content;
   }
-
-
 }

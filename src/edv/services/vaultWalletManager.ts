@@ -1,13 +1,16 @@
 import { Bip39, EnglishMnemonic } from '@cosmjs/crypto';
-import {
-  Logger,
-} from '@nestjs/common';
+import { Logger } from '@nestjs/common';
 
 import { X25519KeyAgreementKey2020 } from '@digitalbazaar/x25519-key-agreement-key-2020';
 import { Ed25519VerificationKey2020 } from '@digitalbazaar/ed25519-verification-key-2020';
 
-
-type authenticationKeyType = {id: string, controller: string,publicKeyMultibase: string, privateKeyMultibase: string, '@context': string } 
+type authenticationKeyType = {
+  id: string;
+  controller: string;
+  publicKeyMultibase: string;
+  privateKeyMultibase: string;
+  '@context': string;
+};
 export class VaultWallet {
   private mnemonic: EnglishMnemonic;
   didDocument: any;
@@ -26,7 +29,7 @@ export class VaultWallet {
 
   async Initialize() {
     const seedEntropy = Bip39.decode(this.mnemonic);
-    
+
     this.keys = await globalThis.hsSSIdkInstance.did.generateKeys({
       seed: seedEntropy,
     });
@@ -38,9 +41,7 @@ export class VaultWallet {
     this.authenticationKey = {
       '@context': 'https://w3id.org/security/suites/ed25519-2020/v1',
       id:
-        this.didDocument.id.split('#')[0] +
-        '#' +
-        this.keys.publicKeyMultibase,
+        this.didDocument.id.split('#')[0] + '#' + this.keys.publicKeyMultibase,
       controller: this.didDocument.id,
       publicKeyMultibase: this.keys.publicKeyMultibase,
       privateKeyMultibase: this.keys.privateKeyMultibase,
@@ -48,24 +49,31 @@ export class VaultWallet {
 
     this.ed25519Signer = await Ed25519VerificationKey2020.from(
       this.authenticationKey,
-    )
+    );
 
-    this.x25519Signer = await X25519KeyAgreementKey2020.fromEd25519VerificationKey2020({
+    this.x25519Signer =
+      await X25519KeyAgreementKey2020.fromEd25519VerificationKey2020({
         keyPair: {
           publicKeyMultibase: this.keys.publicKeyMultibase,
           privateKeyMultibase: this.keys.privateKeyMultibase,
         },
       });
-    
-    this.x25519Signer.id = this.didDocument.id.split('#')[0] + '#' + this.x25519Signer.publicKeyMultibase;
 
-   // TODO: confued between x25519Signer & keyAgreementKey
+    this.x25519Signer.id =
+      this.didDocument.id.split('#')[0] +
+      '#' +
+      this.x25519Signer.publicKeyMultibase;
+
+    // TODO: confued between x25519Signer & keyAgreementKey
     this.keyAgreementKey = {
-      id: this.didDocument.id.split('#')[0] + '#' + this.x25519Signer.publicKeyMultibase,
+      id:
+        this.didDocument.id.split('#')[0] +
+        '#' +
+        this.x25519Signer.publicKeyMultibase,
       type: 'X25519KeyAgreementKey2020',
       publicKeyMultibase: this.x25519Signer.publicKeyMultibase,
       privateKeyMultibase: this.x25519Signer.privateKeyMultibase,
-    }
+    };
 
     this.keyResolver = async ({ id }: { id: string }) => {
       // Resolve the key from the DID Document or from the blockchain or from any other source

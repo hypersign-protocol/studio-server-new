@@ -157,7 +157,6 @@ export class DidService {
     Logger.log('createByClientSpec() method: starts....', 'DidService');
 
     try {
-      
       const methodSpecificId = createDidDto.methodSpecificId;
       let verificationRelationships: IVerificationRelationships[];
       if (
@@ -177,7 +176,7 @@ export class DidService {
         }
       }
       const { edvId, kmsId } = appDetail;
-      // Step 1: Generate a new menmonic 
+      // Step 1: Generate a new menmonic
       const userWallet = await this.hidWallet.generateWallet();
 
       // Step 2: Create a DID using that mnemonic
@@ -187,24 +186,27 @@ export class DidService {
       );
 
       const seed = await this.hidWallet.generateMnemonicToHDSeed();
-      const { publicKeyMultibase, privateKeyMultibase } = await hypersignDid.generateKeys({ seed });
+      const { publicKeyMultibase, privateKeyMultibase } =
+        await hypersignDid.generateKeys({ seed });
       const didDoc = await hypersignDid.generate({
         methodSpecificId,
         publicKeyMultibase,
         verificationRelationships,
       });
-      
-      // Step 3: Get app's vault using app's kmsId from kmsVault; 
-        /// get the app's menemonic from kmsvault and then form app's vault object
+
+      // Step 3: Get app's vault using app's kmsId from kmsVault;
+      /// get the app's menemonic from kmsvault and then form app's vault object
       const appVault = await getAppVault(kmsId, edvId);
-      
+
       // Step 3: Store the menmonic and walletaddress in app's vault and get user's kmsId (docId)
       const userCredential = {
         mnemonic: userWallet.mnemonic,
-        walletAddress: userWallet.address
-      }
-      const userEdvDoc = appVault.prepareEdvDocument(userCredential, [{ index: 'content.walletAddress', unique: false }])
-      const {id: userKMSId} =  await appVault.insertDocument(userEdvDoc)
+        walletAddress: userWallet.address,
+      };
+      const userEdvDoc = appVault.prepareEdvDocument(userCredential, [
+        { index: 'content.walletAddress', unique: false },
+      ]);
+      const { id: userKMSId } = await appVault.insertDocument(userEdvDoc);
 
       // Step 4: Store user's kmsId in DID db for that application. x
       await this.didRepositiory.create({
@@ -213,8 +215,8 @@ export class DidService {
         kmsId: userKMSId,
         slipPathKeys: null,
         hdPathIndex: null,
-        transactionHash : '',
-        registrationStatus:RegistrationStatus.UNREGISTRED 
+        transactionHash: '',
+        registrationStatus: RegistrationStatus.UNREGISTRED,
       });
 
       return {
