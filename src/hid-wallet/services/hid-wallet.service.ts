@@ -15,7 +15,7 @@ export class HidWalletService {
   }> {
     Logger.log('generateWallet() method: starts....', 'generateWallet');
 
-    this.mnemonic = mnemonic;
+    // this.mnemonic = mnemonic;
 
     let wallet: any;
     if (!mnemonic) {
@@ -38,6 +38,7 @@ export class HidWalletService {
     const hidWalletAddress = await wallet.getAccounts();
     Logger.log('generateWallet() method: ends....', 'generateWallet');
 
+    this.mnemonic = generatedMnemonice;
     return {
       mnemonic: generatedMnemonice,
       address: hidWalletAddress[0].address,

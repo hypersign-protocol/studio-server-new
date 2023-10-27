@@ -58,6 +58,7 @@ import { AddVMResponse, AddVerificationMethodDto } from '../dto/addVm.dto';
 @UseGuards(AuthGuard('jwt'))
 export class DidController {
   constructor(private readonly didService: DidService) {}
+
   @UsePipes(new ValidationPipe({ transform: true }))
   @Get()
   @ApiOkResponse({
@@ -133,6 +134,7 @@ export class DidController {
       forbidNonWhitelisted: true,
     }),
   )
+
   @Post('create')
   @ApiCreatedResponse({
     description: 'DID Created',
@@ -165,7 +167,7 @@ export class DidController {
   ) {
     Logger.log('create() method: starts', 'DidController');
     const { options } = createDidDto;
-    const appDetail = req.user;
+    const appDetail = req.user;    
     switch (options?.keyType) {
       case IKeyType.EcdsaSecp256k1RecoveryMethod2020: {
         const response = this.didService.createByClientSpec(
@@ -240,6 +242,7 @@ export class DidController {
     description: 'Origin as you set in application cors',
     required: false,
   })
+
   @Post('/register')
   @UsePipes(ValidationPipe)
   register(
