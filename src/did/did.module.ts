@@ -27,7 +27,7 @@ import { TrimMiddleware } from 'src/utils/middleware/trim.middleware';
     MongooseModule.forFeature([
       { name: Did.name, schema: DidSchema },
       { name: DidMetaData.name, schema: DidMetaDataSchema },
-    ]),
+    ], "APP"),
     EdvModule,
     HidWalletModule,
     AppAuthModule,

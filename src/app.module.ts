@@ -11,6 +11,7 @@ import { DidModule } from './did/did.module';
 import { SchemaModule } from './schema/schema.module';
 import { CredentialModule } from './credential/credential.module';
 import { PresentationModule } from './presentation/presentation.module';
+import { MongooseConfigService } from './mongoose/mongoose.service';
 @Module({
   imports: [
     AppAuthModule,
@@ -19,7 +20,11 @@ import { PresentationModule } from './presentation/presentation.module';
       isGlobal: true,
     }),
     MongooseModule.forRoot(process.env.DATABASE_CONNECTION_PATH),
-
+    MongooseModule.forRootAsync({
+      inject: [ConfigModule],
+      useClass: MongooseConfigService,
+      connectionName: 'APP',
+    }),
     EdvModule,
     DidModule,
     SchemaModule,
