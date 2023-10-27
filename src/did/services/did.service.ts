@@ -30,6 +30,7 @@ import { RegisterDidDto } from '../dto/register-did.dto';
 import { Did as IDidDto } from '../schemas/did.schema';
 import { AddVerificationMethodDto } from '../dto/addVm.dto';
 import getAppVault from 'src/app-auth/services/app-vault.service';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable({ scope: Scope.REQUEST })
 export class DidService {
@@ -39,6 +40,7 @@ export class DidService {
     private readonly edvService: EdvService,
     private readonly hidWallet: HidWalletService,
     private readonly didSSIService: DidSSIService,
+    private readonly config: ConfigService,
   ) {}
 
   async createByClientSpec(createDidDto: CreateDidDto, appDetail) {
@@ -185,9 +187,10 @@ export class DidService {
         createDidDto.namespace,
       );
 
-      const seed = await this.hidWallet.generateMnemonicToHDSeed();
-      const { publicKeyMultibase, privateKeyMultibase } =
-        await hypersignDid.generateKeys({ seed });
+      const seed = await this.hidWallet.getSeedFromMnemonic(
+        userWallet.mnemonic,
+      );
+      const { publicKeyMultibase } = await hypersignDid.generateKeys({ seed });
       const didDoc = await hypersignDid.generate({
         methodSpecificId,
         publicKeyMultibase,
@@ -242,14 +245,15 @@ export class DidService {
   ): Promise<RegisterDidResponse> {
     Logger.log('createByClientSpec() method: starts....', 'DidService');
     let registerDidDoc;
-    const { edvId, edvDocId } = appDetail;
+    const { edvId, kmsId } = appDetail;
     Logger.log('register() method: initialising edv service', 'DidService');
-    await this.edvService.init(edvId);
-    const docs = await this.edvService.getDecryptedDocument(edvDocId);
 
-    const mnemonic: string = docs.mnemonic;
-
-    const namespace = registerDidDto.didDocument['id'].split(':')[2]; // Todo Remove this worst way of doing it
+    // TODO: Once we implemnt authz, we can ask user' to do this tranction
+    const { mnemonic: appMenemonic } =
+      await global.kmsVault.getDecryptedDocument(kmsId);
+    const namespace = this.config.get('NETWORK')
+      ? this.config.get('NETWORK')
+      : 'testnet';
     const DidInfo = await this.didRepositiory.findOne({
       appId: appDetail.appId,
       did: registerDidDto.didDocument['id'],
@@ -264,11 +268,12 @@ export class DidService {
       'DidService',
     );
     const hypersignDid = await this.didSSIService.initiateHypersignDid(
-      mnemonic,
+      appMenemonic,
       namespace,
     );
     let data;
     const { didDocument, signInfos, verificationMethodId } = registerDidDto;
+
     if (!verificationMethodId && signInfos) {
       registerDidDoc = await hypersignDid.registerByClientSpec({
         didDocument,
@@ -298,17 +303,16 @@ export class DidService {
         throw new NotFoundException([didDocument['id'] + ' not found']);
       }
 
-      const hdPathIndex = didData.hdPathIndex;
-
-      const slipPathKeys: Array<Slip10RawIndex> =
-        this.hidWallet.makeSSIWalletPath(hdPathIndex);
-
-      const seed = await this.hidWallet.generateMemonicToSeedFromSlip10RawIndex(
-        slipPathKeys,
+      const appVault = await getAppVault(kmsId, edvId);
+      const { mnemonic: userMnemonic } = await appVault.getDecryptedDocument(
+        didData.kmsId,
       );
-      const { privateKeyMultibase } = await hypersignDid.generateKeys({
-        seed: seed,
-      });
+
+      const seed = await this.hidWallet.getSeedFromMnemonic(userMnemonic);
+      const { privateKeyMultibase, publicKeyMultibase } =
+        await hypersignDid.generateKeys({
+          seed: seed,
+        });
       const regDidDocument = registerDidDto.didDocument as Did;
       const params = {
         didDocument: regDidDocument,
@@ -325,8 +329,8 @@ export class DidService {
         {
           did: didDocument['id'],
           appId: appDetail.appId,
-          slipPathKeys,
-          hdPathIndex,
+          slipPathKeys: null,
+          hdPathIndex: null,
           transactionHash:
             registerDidDoc && registerDidDoc?.transactionHash
               ? registerDidDoc.transactionHash

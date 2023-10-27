@@ -15,7 +15,7 @@ export class HidWalletService {
   }> {
     Logger.log('generateWallet() method: starts....', 'generateWallet');
 
-    // this.mnemonic = mnemonic;
+    this.mnemonic = mnemonic;
 
     let wallet: any;
     if (!mnemonic) {
@@ -91,5 +91,9 @@ export class HidWalletService {
       Slip10RawIndex.hardened(0),
       Slip10RawIndex.hardened(minHardIndex),
     ];
+  }
+
+  getSeedFromMnemonic(mnemonic = this.mnemonic) {
+    return Bip39.decode(mnemonic);
   }
 }
