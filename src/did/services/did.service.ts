@@ -284,7 +284,7 @@ export class DidService {
         appId: appDetail.appId,
         slipPathKeys: null,
         hdPathIndex: null,
-        kmsId: '',
+        kmsId: DidInfo.kmsId,
         transactionHash:
           registerDidDoc && registerDidDoc?.transactionHash
             ? registerDidDoc.transactionHash
