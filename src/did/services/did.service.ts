@@ -510,14 +510,17 @@ export class DidService {
       }
 
       const did = updateDidDto.didDocument['id'];
-      const { edvId, edvDocId } = appDetail;
-      await this.edvService.init(edvId);
-      const docs = await this.edvService.getDecryptedDocument(edvDocId);
-      const mnemonic: string = docs.mnemonic;
+      const { edvId, kmsId } = appDetail;
+
+      const { mnemonic: appMenemonic } =
+        await global.kmsVault.getDecryptedDocument(kmsId);
+      const namespace = this.config.get('NETWORK')
+        ? this.config.get('NETWORK')
+        : 'testnet';
 
       const hypersignDid = await this.didSSIService.initiateHypersignDid(
-        mnemonic,
-        'testnet',
+        appMenemonic,
+        namespace,
       );
 
       const didInfo = await this.didRepositiory.findOne({
@@ -546,17 +549,16 @@ export class DidService {
       if (updatedDidDocMetaData === null) {
         throw new NotFoundException([`${did} is not registered on the chain`]);
       }
-      const slipPathKeys = this.hidWallet.makeSSIWalletPath(
-        didInfo.hdPathIndex,
-      );
 
-      const seed = await this.hidWallet.generateMemonicToSeedFromSlip10RawIndex(
-        slipPathKeys,
+      const appVault = await getAppVault(kmsId, edvId);
+      const { mnemonic: userMnemonic } = await appVault.getDecryptedDocument(
+        didInfo.kmsId,
       );
-
+      const seed = await this.hidWallet.getSeedFromMnemonic(userMnemonic);
       const { privateKeyMultibase } = await hypersignDid.generateKeys({
         seed,
       });
+
       try {
         if (!updateDidDto.deactivate) {
           Logger.debug(
