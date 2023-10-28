@@ -311,12 +311,16 @@ export class CredentialService {
       const hypersignDid = new HypersignDID();
       const { privateKeyMultibase } = await hypersignDid.generateKeys({ seed });
 
-       // Apps Identity: - used for gas fee
+      // Apps Identity: - used for gas fee
       const appMenemonic = await getAppMenemonic(kmsId);
-      const nameSpace = namespace? namespace : (this.config.get('NETWORK')?this.config.get('NETWORK'): 'testnet' )
+      const nameSpace = namespace
+        ? namespace
+        : this.config.get('NETWORK')
+        ? this.config.get('NETWORK')
+        : 'testnet';
       const hypersignVC = await this.credentialSSIService.initateHypersignVC(
         appMenemonic,
-        nameSpace
+        nameSpace,
       );
       Logger.log(
         'update() method: before calling hypersignVC.resolveCredentialStatus to resolve cred status',
