@@ -414,6 +414,7 @@ export class CredentialService {
     return verificationResult;
   }
 
+  // TODO: need to tested
   async registerCredentialStatus(
     registerCredentialDto: RegisterCredentialStatusDto,
     appDetail,
@@ -425,18 +426,16 @@ export class CredentialService {
 
     const { credentialStatus, credentialStatusProof, namespace } =
       registerCredentialDto;
-    const { edvId, edvDocId } = appDetail;
+    const { kmsId } = appDetail;
     Logger.log(
       'registerCredentialStatus() method: initialising edv service',
       'CredentialService',
     );
-    await this.edvService.init(edvId);
-    const docs = await this.edvService.getDecryptedDocument(edvDocId);
-    const mnemonic: string = docs.mnemonic;
     let registeredVC: { transactionHash: string };
     try {
+      const appMenemonic = await getAppMenemonic(kmsId);
       const hypersignVC = await this.credentialSSIService.initateHypersignVC(
-        mnemonic,
+        appMenemonic,
         namespace,
       );
       Logger.log(
