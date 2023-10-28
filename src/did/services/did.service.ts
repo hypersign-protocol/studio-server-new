@@ -43,6 +43,7 @@ export class DidService {
     private readonly config: ConfigService,
   ) {}
 
+  // TODO: need to fix this once ed25519 is finished.
   async createByClientSpec(createDidDto: CreateDidDto, appDetail) {
     Logger.log('createByClientSpec() method: starts....', 'DidService');
 
@@ -99,20 +100,21 @@ export class DidService {
       ]);
     }
 
-    const { edvId, edvDocId } = appDetail;
+    const { edvId, kmsId } = appDetail;
     Logger.log(
       'createByClientSpec() method: initialising edv service',
       'DidService',
     );
-    await this.edvService.init(edvId);
-    const docs = await this.edvService.getDecryptedDocument(edvDocId);
-    const mnemonic: string = docs.mnemonic;
+    
+    // TODO: we are not storing it in db wrt to the app, we need to 
+    // const appVault = await getAppVault(kmsId, edvId);
+    
     Logger.log(
       'createByClientSpec() method: initialising hypersignDid',
       'DidService',
     );
-    const hypersignDid = await this.didSSIService.initiateHypersignDid(
-      mnemonic,
+
+    const hypersignDid = await this.didSSIService.initiateHypersignDidOffline(
       createDidDto.namespace,
     );
     let clientSpec: IClientSpec;
