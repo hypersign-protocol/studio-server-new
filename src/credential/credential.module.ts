@@ -20,12 +20,15 @@ import { WhitelistSSICorsMiddleware } from 'src/utils/middleware/cors.middleware
 import { TrimMiddleware } from 'src/utils/middleware/trim.middleware';
 @Module({
   imports: [
-    MongooseModule.forFeature([
-      {
-        name: Credential.name,
-        schema: CredentialSchema,
-      },
-    ], "APP"),
+    MongooseModule.forFeature(
+      [
+        {
+          name: Credential.name,
+          schema: CredentialSchema,
+        },
+      ],
+      'APP',
+    ),
     EdvModule,
     HidWalletModule,
     DidModule,

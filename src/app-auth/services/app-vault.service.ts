@@ -4,13 +4,8 @@ import { EdvClientManagerFactoryService } from '../../edv/services/edv.clientFac
 
 export async function getAppVault(kmsId, edvId) {
   Logger.log('Inside getAppVault()', 'getAppVault');
-  const appMenemonic = await getAppMenemonic(
-    kmsId,
-  );
-  Logger.log(
-    'Inside getAppVault() ...',
-    'getAppVault',
-  );
+  const appMenemonic = await getAppMenemonic(kmsId);
+  Logger.log('Inside getAppVault() ...', 'getAppVault');
   const appVaultWallet = await VaultWalletManager.getWallet(appMenemonic);
   const appVault = await EdvClientManagerFactoryService.createEdvClientManger(
     appVaultWallet,
@@ -19,10 +14,7 @@ export async function getAppVault(kmsId, edvId) {
   return appVault;
 }
 
-
-export async function getAppMenemonic(kmsId): Promise<string>{
-  const { mnemonic } = await global.kmsVault.getDecryptedDocument(
-    kmsId,
-  );
-  return mnemonic
+export async function getAppMenemonic(kmsId): Promise<string> {
+  const { mnemonic } = await global.kmsVault.getDecryptedDocument(kmsId);
+  return mnemonic;
 }
