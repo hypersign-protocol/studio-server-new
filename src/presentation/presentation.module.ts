@@ -29,12 +29,15 @@ import { TrimMiddleware } from 'src/utils/middleware/trim.middleware';
     DidModule,
     AppAuthModule,
 
-    MongooseModule.forFeature([
-      {
-        name: PresentationTemplate.name,
-        schema: PresentationTemplateSchema,
-      },
-    ]),
+    MongooseModule.forFeature(
+      [
+        {
+          name: PresentationTemplate.name,
+          schema: PresentationTemplateSchema,
+        },
+      ],
+      'APP',
+    ),
   ],
   controllers: [PresentationTempleteController, PresentationController],
   providers: [

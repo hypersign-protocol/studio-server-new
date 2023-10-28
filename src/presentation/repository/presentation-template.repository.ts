@@ -9,7 +9,7 @@ import { InjectModel } from '@nestjs/mongoose';
 @Injectable()
 export class PresentationTemplateRepository {
   constructor(
-    @InjectModel(PresentationTemplate.name)
+    @InjectModel(PresentationTemplate.name, 'APP')
     private readonly presentationTemplateModel: Model<PresentationTemplateDocument>,
   ) {}
   async findOne(
