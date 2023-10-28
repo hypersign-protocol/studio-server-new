@@ -173,7 +173,20 @@ export class SchemaService {
         'resolveSchema() method: Error whilt resolving schema',
         'SchemaService',
       );
-      throw new NotFoundException([`${schemaId} is not chain`]);
+      throw new NotFoundException([
+        `${schemaId} could not resolve this schema`,
+      ]);
+    }
+
+    try {
+      resolvedSchema.schema.properties = JSON.parse(
+        resolvedSchema.schema?.properties,
+      );
+    } catch (e) {
+      Logger.log(
+        'resolveSchema() method: Error in parsing schema properties',
+        'SchemaService',
+      );
     }
     Logger.log('resolveSchema() method: ends....', 'SchemaService');
 
