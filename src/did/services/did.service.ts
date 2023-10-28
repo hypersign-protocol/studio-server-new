@@ -29,7 +29,7 @@ import { RegistrationStatus } from '../schemas/did.schema';
 import { RegisterDidDto } from '../dto/register-did.dto';
 import { Did as IDidDto } from '../schemas/did.schema';
 import { AddVerificationMethodDto } from '../dto/addVm.dto';
-import getAppVault from 'src/app-auth/services/app-vault.service';
+import {getAppVault, getAppMenemonic} from 'src/app-auth/services/app-vault.service';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable({ scope: Scope.REQUEST })
@@ -251,8 +251,7 @@ export class DidService {
     Logger.log('register() method: initialising edv service', 'DidService');
 
     // TODO: Once we implemnt authz, we can ask user' to do this tranction
-    const { mnemonic: appMenemonic } =
-      await global.kmsVault.getDecryptedDocument(kmsId);
+    const appMenemonic = await getAppMenemonic(kmsId);
     const namespace = this.config.get('NETWORK')
       ? this.config.get('NETWORK')
       : 'testnet';

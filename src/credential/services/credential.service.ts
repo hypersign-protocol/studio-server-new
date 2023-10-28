@@ -15,6 +15,8 @@ import { DidRepository } from 'src/did/repository/did.repository';
 import { HypersignDID, HypersignVerifiableCredential } from 'hs-ssi-sdk';
 import { VerifyCredentialDto } from '../dto/verify-credential.dto';
 import { RegisterCredentialStatusDto } from '../dto/register-credential.dto';
+import {getAppVault, getAppMenemonic} from 'src/app-auth/services/app-vault.service';
+
 @Injectable()
 export class CredentialService {
   constructor(
@@ -25,6 +27,7 @@ export class CredentialService {
     private credentialRepository: CredentialRepository,
     private readonly didRepositiory: DidRepository,
   ) {}
+
   async create(createCredentialDto: CreateCredentialDto, appDetail) {
     Logger.log('create() method: starts....', 'CredentialService');
     const {
@@ -40,51 +43,55 @@ export class CredentialService {
     } = createCredentialDto;
     let { registerCredentialStatus } = createCredentialDto;
     const nameSpace = createCredentialDto.namespace;
-    const didOfvmId = verificationMethodId.split('#')[0];
+    const didOfvmId = verificationMethodId.split('#')[0]; // issuer's did
 
-    const { edvId, edvDocId } = appDetail;
+    const { edvId, kmsId } = appDetail;
     Logger.log(
       'create() method: before initialising edv service',
       'CredentialService',
     );
-    await this.edvService.init(edvId);
+    
+    // await this.edvService.init(edvId);
+    // Step 1: Fist find the issuer exists or not 
+    Logger.log({
+      appId: appDetail.appId,
+      didOfvmId
+    })
     const didInfo = await this.didRepositiory.findOne({
       appId: appDetail.appId,
       did: didOfvmId,
     });
     if (!didInfo || didInfo == null) {
-      Logger.error('create() method: Error: No did found', 'CredentialService');
+      Logger.error('create() method: Error: No issuer did found', 'CredentialService');
       throw new NotFoundException([
         `${verificationMethodId} not found`,
         `${verificationMethodId} is not owned by the appId ${appDetail.appId}`,
         `Resource not found`,
       ]);
     }
-    const docs = await this.edvService.getDecryptedDocument(edvDocId);
-    const mnemonic: string = docs.mnemonic;
+    
     Logger.log(
       'create() method: before generating Hid wallet',
       'CredentialService',
     );
-    await this.hidWallet.generateWallet(mnemonic);
-    try {
-      const slipPathKeys = this.hidWallet.makeSSIWalletPath(
-        didInfo.hdPathIndex,
-      );
+    
 
-      const seed = await this.hidWallet.generateMemonicToSeedFromSlip10RawIndex(
-        slipPathKeys,
+    try {
+      // Issuer Identity: - used for authenticating credenital
+      const appVault = await getAppVault(kmsId, edvId);
+      const { mnemonic: issuerMnemonic } = await appVault.getDecryptedDocument(
+        didInfo.kmsId,
       );
-      Logger.log(
-        'create() method: before initialising HypersignDID',
-        'CredentialService',
+      const seed = await this.hidWallet.getSeedFromMnemonic(
+        issuerMnemonic
       );
       const hypersignDid = new HypersignDID();
-
-      const { privateKeyMultibase } = await hypersignDid.generateKeys({ seed });
-
+      const { privateKeyMultibase } = await hypersignDid.generateKeys({ seed });   
+      
+      // Apps Identity: - used for gas fee
+      const appMenemonic = await getAppMenemonic(kmsId);
       const hypersignVC = await this.credentialSSIService.initateHypersignVC(
-        mnemonic,
+        appMenemonic,
         nameSpace,
       );
       let credential;
@@ -136,7 +143,24 @@ export class CredentialService {
       });
       let edvData = undefined;
       if (persist) {
-        edvData = await this.edvService.createDocument({ signedCredential });
+        const creedential = {
+          ...signedCredential,
+        };
+        const creedentialEdvDoc = appVault.prepareEdvDocument(creedential, [
+          {
+            index: 'content.id',
+            unique: true,
+          },
+          {
+            index: 'content.issuer',
+            unique: false,
+          },
+          {
+            index: 'content.credentialSubject.id',
+            unique: false,
+          },,
+        ]);
+        edvData = await appVault.insertDocument(creedentialEdvDoc);
       }
       Logger.log(
         'create() method: before creating credential doc in db',

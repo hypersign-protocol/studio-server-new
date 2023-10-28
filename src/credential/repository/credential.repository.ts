@@ -6,7 +6,7 @@ import { FilterQuery, Model } from 'mongoose';
 @Injectable()
 export class CredentialRepository {
   constructor(
-    @InjectModel(Credential.name)
+    @InjectModel(Credential.name, "APP")
     private readonly credentialModel: Model<CredentialModel>,
   ) {}
 

@@ -25,7 +25,7 @@ import { TrimMiddleware } from 'src/utils/middleware/trim.middleware';
         name: Credential.name,
         schema: CredentialSchema,
       },
-    ]),
+    ], "APP"),
     EdvModule,
     HidWalletModule,
     DidModule,

@@ -2,13 +2,13 @@ import { Logger } from '@nestjs/common';
 import { VaultWalletManager } from '../../edv/services/vaultWalletManager';
 import { EdvClientManagerFactoryService } from '../../edv/services/edv.clientFactory';
 
-export default async function getAppVault(kmsId, edvId) {
+export async function getAppVault(kmsId, edvId) {
   Logger.log('Inside getAppVault()', 'getAppVault');
-  const { mnemonic: appMenemonic } = await global.kmsVault.getDecryptedDocument(
+  const appMenemonic = await getAppMenemonic(
     kmsId,
   );
   Logger.log(
-    'Inside getAppVault(), menemonic = ' + appMenemonic,
+    'Inside getAppVault() ...',
     'getAppVault',
   );
   const appVaultWallet = await VaultWalletManager.getWallet(appMenemonic);
@@ -17,4 +17,12 @@ export default async function getAppVault(kmsId, edvId) {
     edvId,
   );
   return appVault;
+}
+
+
+export async function getAppMenemonic(kmsId): Promise<string>{
+  const { mnemonic } = await global.kmsVault.getDecryptedDocument(
+    kmsId,
+  );
+  return mnemonic
 }
