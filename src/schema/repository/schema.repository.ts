@@ -6,7 +6,7 @@ import { Injectable, Logger } from '@nestjs/common';
 @Injectable()
 export class SchemaRepository {
   constructor(
-    @InjectModel(Schemas.name)
+    @InjectModel(Schemas.name, 'APP')
     private readonly schemaModel: Model<SchemaDocument>,
   ) {}
 

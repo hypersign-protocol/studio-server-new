@@ -19,7 +19,10 @@ import { AppAuthModule } from 'src/app-auth/app-auth.module';
 import { TrimMiddleware } from 'src/utils/middleware/trim.middleware';
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: Schemas.name, schema: SchemasSchema }]),
+    MongooseModule.forFeature(
+      [{ name: Schemas.name, schema: SchemasSchema }],
+      'APP',
+    ),
     DidModule,
     AppAuthModule,
   ],

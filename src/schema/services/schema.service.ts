@@ -20,6 +20,10 @@ import { SchemaRepository } from '../repository/schema.repository';
 import { Schemas } from '../schemas/schemas.schema';
 import { RegisterSchemaDto } from '../dto/register-schema.dto';
 import { Namespace } from 'src/did/dto/create-did.dto';
+import {
+  getAppVault,
+  getAppMenemonic,
+} from 'src/app-auth/services/app-vault.service';
 
 @Injectable({ scope: Scope.REQUEST })
 export class SchemaService {
@@ -39,10 +43,9 @@ export class SchemaService {
     const { schema } = createSchemaDto;
     const { namespace, verificationMethodId } = createSchemaDto;
     const { author } = schema;
-    const { edvId, edvDocId } = appDetail;
+    const { edvId, kmsId } = appDetail;
     const didOfvmId = verificationMethodId.split('#')[0];
     Logger.log('create() method: initialising edv service', 'SchemaService');
-    await this.edvService.init(edvId);
     const didInfo = await this.didRepositiory.findOne({
       appId: appDetail.appId,
       did: didOfvmId,
@@ -54,28 +57,29 @@ export class SchemaService {
         `Resource not found`,
       ]);
     }
-    const docs = await this.edvService.getDecryptedDocument(edvDocId);
-    const mnemonic: string = docs.mnemonic;
     Logger.log(
       'create() method: initialising hypersignSchema',
       'SchemaService',
     );
 
-    const hypersignSchema = await this.schemaSSIservice.initiateHypersignSchema(
-      mnemonic,
-      namespace,
-    );
-    const slipPathKeys = this.hidWallet.makeSSIWalletPath(didInfo.hdPathIndex);
     try {
-      const seed = await this.hidWallet.generateMemonicToSeedFromSlip10RawIndex(
-        slipPathKeys,
+      // Issuer Identity: - used for authenticating credenital
+      const appVault = await getAppVault(kmsId, edvId);
+      const { mnemonic: authorMnemonic } = await appVault.getDecryptedDocument(
+        didInfo.kmsId,
       );
+      const seed = await this.hidWallet.getSeedFromMnemonic(authorMnemonic);
       const hypersignDid = new HypersignDID();
-      Logger.log(
-        'create() method: generating key pair starts',
-        'SchemaService',
-      );
       const { privateKeyMultibase } = await hypersignDid.generateKeys({ seed });
+
+      // Apps Identity: - used for gas fee
+      const appMenemonic = await getAppMenemonic(kmsId);
+      const hypersignSchema =
+        await this.schemaSSIservice.initiateHypersignSchema(
+          appMenemonic,
+          namespace,
+        );
+
       Logger.log(
         'create() method generating new using hypersignSchema',
         'SchemaService',
