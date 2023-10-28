@@ -105,10 +105,10 @@ export class DidService {
       'createByClientSpec() method: initialising edv service',
       'DidService',
     );
-    
-    // TODO: we are not storing it in db wrt to the app, we need to 
+
+    // TODO: we are not storing it in db wrt to the app, we need to
     // const appVault = await getAppVault(kmsId, edvId);
-    
+
     Logger.log(
       'createByClientSpec() method: initialising hypersignDid',
       'DidService',
