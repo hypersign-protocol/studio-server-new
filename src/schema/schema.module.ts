@@ -17,15 +17,11 @@ import { Schemas, SchemasSchema } from './schemas/schemas.schema';
 import { WhitelistSSICorsMiddleware } from 'src/utils/middleware/cors.middleware';
 import { AppAuthModule } from 'src/app-auth/app-auth.module';
 import { TrimMiddleware } from 'src/utils/middleware/trim.middleware';
+import { schemaProviders } from './providers/schema.provider';
+import { databaseProviders } from '../mongoose/tenant-mongoose-connections';
+
 @Module({
-  imports: [
-    MongooseModule.forFeature(
-      [{ name: Schemas.name, schema: SchemasSchema }],
-      'APP',
-    ),
-    DidModule,
-    AppAuthModule,
-  ],
+  imports: [DidModule, AppAuthModule],
   controllers: [SchemaController],
   providers: [
     SchemaService,
@@ -34,6 +30,8 @@ import { TrimMiddleware } from 'src/utils/middleware/trim.middleware';
     EdvService,
     HidWalletService,
     SchemaRepository,
+    ...databaseProviders,
+    ...schemaProviders,
   ],
   exports: [SchemaModule],
 })

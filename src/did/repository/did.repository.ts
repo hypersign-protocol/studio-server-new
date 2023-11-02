@@ -6,12 +6,12 @@ import {
 } from '../schemas/did.schema';
 import { FilterQuery, Model } from 'mongoose';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
-import { Injectable, Logger } from '@nestjs/common';
+import { Inject, Injectable, Logger } from '@nestjs/common';
 
 @Injectable()
 export class DidRepository {
   constructor(
-    @InjectModel(Did.name, 'APP') private readonly didModel: Model<DidDocument>,
+    @Inject('DID_MODEL') private readonly didModel: Model<DidDocument>,
   ) {}
 
   async findOne(didFilterQuery: FilterQuery<Did>): Promise<Did> {
@@ -67,7 +67,7 @@ export class DidRepository {
 @Injectable()
 export class DidMetaDataRepo {
   constructor(
-    @InjectModel(DidMetaData.name, 'APP')
+    @Inject('DID_METADATA_MODEL')
     private readonly didModel: Model<DidDocumentMetaData>,
   ) {}
 

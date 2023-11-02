@@ -22,19 +22,12 @@ import { HidWalletService } from 'src/hid-wallet/services/hid-wallet.service';
 import { AppAuthModule } from 'src/app-auth/app-auth.module';
 import { WhitelistSSICorsMiddleware } from 'src/utils/middleware/cors.middleware';
 import { TrimMiddleware } from 'src/utils/middleware/trim.middleware';
+import { MongooseConfigService } from 'src/mongoose/mongoose.service';
+import { ConfigModule } from '@nestjs/config';
+import { databaseProviders } from '../mongoose/tenant-mongoose-connections';
+import { didProviders } from './providers/did.provider';
 @Module({
-  imports: [
-    MongooseModule.forFeature(
-      [
-        { name: Did.name, schema: DidSchema },
-        { name: DidMetaData.name, schema: DidMetaDataSchema },
-      ],
-      'APP',
-    ),
-    EdvModule,
-    HidWalletModule,
-    AppAuthModule,
-  ],
+  imports: [EdvModule, HidWalletModule, AppAuthModule],
   controllers: [DidController],
   providers: [
     DidService,
@@ -43,6 +36,8 @@ import { TrimMiddleware } from 'src/utils/middleware/trim.middleware';
     DidMetaDataRepo,
     HidWalletService,
     DidSSIService,
+    ...databaseProviders,
+    ...didProviders,
   ],
   exports: [
     DidService,

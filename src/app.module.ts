@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AppAuthModule } from './app-auth/app-auth.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
@@ -11,7 +11,7 @@ import { DidModule } from './did/did.module';
 import { SchemaModule } from './schema/schema.module';
 import { CredentialModule } from './credential/credential.module';
 import { PresentationModule } from './presentation/presentation.module';
-import { MongooseConfigService } from './mongoose/mongoose.service';
+
 @Module({
   imports: [
     AppAuthModule,
@@ -20,11 +20,6 @@ import { MongooseConfigService } from './mongoose/mongoose.service';
       isGlobal: true,
     }),
     MongooseModule.forRoot(process.env.DATABASE_CONNECTION_PATH),
-    MongooseModule.forRootAsync({
-      inject: [ConfigModule],
-      useClass: MongooseConfigService,
-      connectionName: 'APP',
-    }),
     EdvModule,
     DidModule,
     SchemaModule,

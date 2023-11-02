@@ -18,22 +18,11 @@ import { DidModule } from 'src/did/did.module';
 import { AppAuthModule } from 'src/app-auth/app-auth.module';
 import { WhitelistSSICorsMiddleware } from 'src/utils/middleware/cors.middleware';
 import { TrimMiddleware } from 'src/utils/middleware/trim.middleware';
+import { credentialProviders } from './providers/credential.provider';
+import { databaseProviders } from '../mongoose/tenant-mongoose-connections';
+
 @Module({
-  imports: [
-    MongooseModule.forFeature(
-      [
-        {
-          name: Credential.name,
-          schema: CredentialSchema,
-        },
-      ],
-      'APP',
-    ),
-    EdvModule,
-    HidWalletModule,
-    DidModule,
-    AppAuthModule,
-  ],
+  imports: [EdvModule, HidWalletModule, DidModule, AppAuthModule],
   controllers: [CredentialController],
   providers: [
     CredentialService,
@@ -41,6 +30,8 @@ import { TrimMiddleware } from 'src/utils/middleware/trim.middleware';
     EdvService,
     HidWalletService,
     CredentialRepository,
+    ...databaseProviders,
+    ...credentialProviders,
   ],
 })
 export class CredentialModule implements NestModule {
