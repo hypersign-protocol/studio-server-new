@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Injectable,
   Logger,
   NestMiddleware,
@@ -17,10 +18,19 @@ export class WhitelistSSICorsMiddleware implements NestMiddleware {
       'Middleware',
     );
     const origin = req.header('Origin') || req.header('Referer');
+
     Logger.debug(
       `WhitelistSSICorsMiddleware: request is comming from ${origin}`,
       'Middleware',
     );
+
+    const subdomain = req.headers['x-subdomain'];
+    Logger.debug(`Subdomain ${subdomain} `, 'Middleware');
+
+    if (!subdomain) {
+      throw new BadRequestException(['Invalid subdomain']);
+    }
+
     let matchOrigin;
     if (origin) {
       // regex to check if url consists of some path or not
@@ -57,7 +67,12 @@ export class WhitelistSSICorsMiddleware implements NestMiddleware {
       const appInfo = await this.appRepositiory.findOne({
         appId: decoded['appId'],
         userId: decoded['userId'],
+        subdomain,
       });
+
+      if (!appInfo) {
+        throw new UnauthorizedException(['Invalid authorization token']);
+      }
 
       if (appInfo.whitelistedCors.includes('*')) {
         Logger.log(
@@ -65,6 +80,8 @@ export class WhitelistSSICorsMiddleware implements NestMiddleware {
           'Middleware',
         );
 
+        req.user = {};
+        req.user['subdomain'] = subdomain;
         return next();
       }
       if (!appInfo['whitelistedCors'].includes(origin)) {

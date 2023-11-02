@@ -5,6 +5,7 @@ import {
 } from 'hypersign-edv-client/build/Types';
 import { VaultWallet } from './vaultWalletManager';
 import { Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
 type EDVDocType = {
   document: object;
@@ -32,10 +33,6 @@ export interface IEdvClientManager {
   ): EDVDocType;
 }
 
-const process = {
-  vaultUrl: 'https://stage.hypermine.in/vault',
-};
-
 export class EdvClientManger implements IEdvClientManager {
   didDocument: any;
   edvId?: string;
@@ -43,11 +40,13 @@ export class EdvClientManger implements IEdvClientManager {
   private vault: any;
   private recipient: any;
   private vaultWallet: VaultWallet;
+  private config: ConfigService;
   constructor(vaultWallet: VaultWallet, edvId?: string) {
     this.vaultWallet = vaultWallet;
     this.edvId = edvId;
     this.didDocument = this.vaultWallet.didDocument;
     this.keyResolver = this.vaultWallet.keyResolver;
+    this.config = new ConfigService();
   }
 
   async initate(): Promise<IEdvClientManager> {
@@ -64,13 +63,13 @@ export class EdvClientManger implements IEdvClientManager {
 
     this.vault = new HypersignEdvClientEd25519VerificationKey2020({
       keyResolver: this.keyResolver,
-      url: process.vaultUrl,
+      url: this.config.get('EDV_BASE_URL'),
       ed25519VerificationKey2020: ed25519,
       x25519KeyAgreementKey2020: x25519,
     });
 
     const config = {
-      url: process.vaultUrl,
+      url: this.config.get('EDV_BASE_URL'),
       keyAgreementKey,
       controller: this.vaultWallet.authenticationKey.id,
       edvId: this.edvId

@@ -100,6 +100,11 @@ export class App {
   @IsUrl()
   @Prop({ required: false })
   logoUrl: string;
+
+  @IsOptional()
+  @IsString()
+  @Prop({ required: false, unique: true })
+  subdomain: string;
 }
 
 export class createAppResponse extends App {
@@ -109,6 +114,13 @@ export class createAppResponse extends App {
   })
   @Prop()
   apiKeySecret: string;
+
+  @ApiProperty({
+    description: 'Your base API url',
+    example: 'yoursubdomain.api.entity.hypersign.id',
+  })
+  @Prop()
+  baseAPIUrl: string;
 }
 
 export const AppSchema = SchemaFactory.createForClass(App);

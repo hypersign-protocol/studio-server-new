@@ -16,3 +16,16 @@ export const AppSecretHeader = createParamDecorator(
     return request.headers['x-api-secret-key'];
   },
 );
+
+export const AppSubdomainHeader = createParamDecorator(
+  (_data: unknown, ctx: ExecutionContext) => {
+    const request = ctx.switchToHttp().getRequest();
+    if (
+      !request.headers['x-subdomain'] ||
+      request.headers['x-subdomain'] == undefined
+    ) {
+      throw new UnauthorizedException(['x-subdomain header is missing']);
+    }
+    return request.headers['x-subdomain'];
+  },
+);

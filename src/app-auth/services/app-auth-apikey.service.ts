@@ -30,9 +30,9 @@ export class AppAuthApiKeyService {
       apiSecret,
     };
   }
-  async generateAppId() {
+  async generateAppId(length = 36) {
     Logger.log('generateAppId() method: starts....', 'AppAuthApiKeyService');
 
-    return await this.generateRandomString(36);
+    return await this.generateRandomString(length);
   }
 }

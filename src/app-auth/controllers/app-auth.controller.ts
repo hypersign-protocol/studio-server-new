@@ -43,7 +43,10 @@ import { MongooseClassSerializerInterceptor } from '../../utils/utils';
 import { AllExceptionsFilter } from '../../utils/utils';
 import { AppError, GetAppList } from '../dtos/fetch-app.dto';
 import { PaginationDto } from 'src/utils/pagination.dto';
-import { AppSecretHeader } from '../decorator/app-sercret.decorator';
+import {
+  AppSecretHeader,
+  AppSubdomainHeader,
+} from '../decorator/app-sercret.decorator';
 import { TransformResponseInterceptor } from '../interceptors/transformResponse.interseptor';
 import { JwtGuard } from '../guard/jwt.guard';
 
@@ -277,8 +280,9 @@ export class AppOAuthController {
   generateAccessToken(
     @Headers('X-Api-Secret-Key') apiSectretKey: string,
     @AppSecretHeader() appSecreatKey,
+    @AppSubdomainHeader() appSubdomain,
   ): Promise<{ access_token; expiresIn; tokenType }> {
     Logger.log('reGenerateAppSecretKey() method: starts', 'AppOAuthController');
-    return this.appAuthService.generateAccessToken(appSecreatKey);
+    return this.appAuthService.generateAccessToken(appSecreatKey, appSubdomain);
   }
 }

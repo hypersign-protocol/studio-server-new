@@ -3,6 +3,7 @@ import {
   Injectable,
   NotFoundException,
   Logger,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { CreateAppDto } from '../dtos/create-app.dto';
 
@@ -54,6 +55,11 @@ export class AppAuthService {
     Logger.log(
       'createAnApp() method: Prepareing app keys to insert in kms vault',
     );
+
+    if (!globalThis.kmsVault) {
+      throw new InternalServerErrorException('KMS vault is not initialized');
+    }
+
     const edvDocToInsert = globalThis.kmsVault.prepareEdvDocument(doc, [
       { index: 'content.edvId', unique: true },
     ]);
@@ -84,8 +90,9 @@ export class AppAuthService {
       'createAnApp() method: before creating new app doc in db',
       'AppAuthService',
     );
+    const subdomain = await this.getRandomSubdomain();
     // Finally stroring application in db
-    const appData = await this.appRepository.create({
+    const appData: App = await this.appRepository.create({
       ...createAppDto,
       userId,
       appId: appId, // generate app id
@@ -95,9 +102,46 @@ export class AppAuthService {
       edvDocId: kmsId, // TODO this should be deprecated in favor of kmsId variable.
       walletAddress: address,
       apiKeyPrefix: apiSecretKey.split('.')[0],
+      subdomain,
     });
-    appData.apiKeySecret = apiSecretKey;
-    return appData;
+
+    const baseURl = this.config.get('ENTITY_API_SERVICE_BASE_URL')
+      ? this.config.get('ENTITY_API_SERVICE_BASE_URL')
+      : 'https://api.entity.hypersign.id';
+    const url = require('node:url');
+    const SERVICE_BASE_URL = url.parse(baseURl);
+
+    const appResponse: createAppResponse = {
+      ...appData['_doc'],
+      apiSecretKey,
+      baseAPIUrl:
+        SERVICE_BASE_URL.protocol +
+        '//' +
+        appData.subdomain +
+        '.' +
+        SERVICE_BASE_URL.host +
+        SERVICE_BASE_URL.pathname,
+    };
+
+    delete appResponse.userId;
+    delete appResponse['_id'];
+    delete appResponse['__v'];
+    Logger.log('App created successfully', 'app-auth-service');
+    return appResponse;
+  }
+
+  private async getRandomSubdomain() {
+    let subdomain = await this.appAuthApiKeyService.generateAppId(7);
+    const appInDb = await this.appRepository.findOne({
+      subdomain: subdomain,
+    });
+
+    if (!appInDb) {
+      Logger.log('Found subdomain in db, going recursively');
+      return this.config.get('TENANT_SUBDOMAIN_PREFIX') + subdomain;
+    }
+
+    await this.getRandomSubdomain();
   }
 
   async reGenerateAppSecretKey(app, userId) {
@@ -175,6 +219,7 @@ export class AppAuthService {
 
   async generateAccessToken(
     appSecreatKey: string,
+    appSubdomain: string,
   ): Promise<{ access_token; expiresIn; tokenType }> {
     Logger.log('generateAccessToken() method: starts....', 'AppAuthService');
 
@@ -183,6 +228,7 @@ export class AppAuthService {
     const grantType = 'client_credentials'; //TODO: Remove hardcoding
     const appDetail = await this.appRepository.findOne({
       apiKeyPrefix: apikeyIndex,
+      subdomain: appSubdomain,
     });
     if (!appDetail) {
       Logger.error(
