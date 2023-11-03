@@ -120,7 +120,7 @@ export class createAppResponse extends App {
     example: 'yoursubdomain.api.entity.hypersign.id',
   })
   @Prop()
-  baseAPIUrl: string;
+  tenantUrl: string;
 }
 
 export const AppSchema = SchemaFactory.createForClass(App);

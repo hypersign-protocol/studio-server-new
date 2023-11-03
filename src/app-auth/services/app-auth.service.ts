@@ -6,7 +6,6 @@ import {
   InternalServerErrorException,
 } from '@nestjs/common';
 import { CreateAppDto } from '../dtos/create-app.dto';
-
 import { App, createAppResponse } from 'src/app-auth/schemas/app.schema';
 import { AppRepository } from '../repositories/app.repository';
 import { UpdateAppDto } from '../dtos/update-app.dto';
@@ -19,7 +18,7 @@ import { JwtService } from '@nestjs/jwt';
 import { AppAuthApiKeyService } from './app-auth-apikey.service';
 import { EdvClientManagerFactoryService } from '../../edv/services/edv.clientFactory';
 import { VaultWalletManager } from '../../edv/services/vaultWalletManager';
-
+import * as url from 'url';
 @Injectable()
 export class AppAuthService {
   constructor(
@@ -108,13 +107,13 @@ export class AppAuthService {
     const baseURl = this.config.get('ENTITY_API_SERVICE_BASE_URL')
       ? this.config.get('ENTITY_API_SERVICE_BASE_URL')
       : 'https://api.entity.hypersign.id';
-    const url = require('node:url');
+
     const SERVICE_BASE_URL = url.parse(baseURl);
 
     const appResponse: createAppResponse = {
       ...appData['_doc'],
       apiSecretKey,
-      baseAPIUrl:
+      tenantUrl:
         SERVICE_BASE_URL.protocol +
         '//' +
         appData.subdomain +
@@ -131,7 +130,7 @@ export class AppAuthService {
   }
 
   private async getRandomSubdomain() {
-    let subdomain = await this.appAuthApiKeyService.generateAppId(7);
+    const subdomain = await this.appAuthApiKeyService.generateAppId(7);
     const appInDb = await this.appRepository.findOne({
       subdomain: subdomain,
     });
