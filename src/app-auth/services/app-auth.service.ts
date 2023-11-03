@@ -107,11 +107,14 @@ export class AppAuthService {
     return this.getAppResponse(appData, apiSecretKey);
   }
 
-  private getAppResponse(appData: App, apiSecretKey?: string): createAppResponse {
+  private getAppResponse(
+    appData: App,
+    apiSecretKey?: string,
+  ): createAppResponse {
     const appResponse: createAppResponse = {
       ...appData['_doc'],
       apiSecretKey,
-      tenantUrl: this.getTenantUrl(appData.subdomain)
+      tenantUrl: this.getTenantUrl(appData.subdomain),
     };
 
     delete appResponse.userId;
@@ -123,20 +126,21 @@ export class AppAuthService {
     return appResponse;
   }
 
-  private getTenantUrl(subdomain: string){
+  private getTenantUrl(subdomain: string) {
     const baseURl = this.config.get('ENTITY_API_SERVICE_BASE_URL')
       ? this.config.get('ENTITY_API_SERVICE_BASE_URL')
       : 'https://api.entity.hypersign.id';
 
     const SERVICE_BASE_URL = url.parse(baseURl);
 
-    const tenantUrl = SERVICE_BASE_URL.protocol +
-    '//' +
-    subdomain +
-    '.' +
-    SERVICE_BASE_URL.host +
-    SERVICE_BASE_URL.pathname
-    return tenantUrl
+    const tenantUrl =
+      SERVICE_BASE_URL.protocol +
+      '//' +
+      subdomain +
+      '.' +
+      SERVICE_BASE_URL.host +
+      SERVICE_BASE_URL.pathname;
+    return tenantUrl;
   }
 
   private async getRandomSubdomain() {
@@ -192,10 +196,10 @@ export class AppAuthService {
     });
   }
 
-  async getAppById(appId: string, userId: string): Promise<App> {
+  async getAppById(appId: string, userId: string): Promise<createAppResponse> {
     Logger.log('getAppById() method: starts....', 'AppAuthService');
-
-    return this.appRepository.findOne({ appId, userId });
+    const app: App = await this.appRepository.findOne({ appId, userId });
+    return this.getAppResponse(app);
   }
 
   async updateAnApp(
@@ -204,7 +208,10 @@ export class AppAuthService {
     userId: string,
   ): Promise<createAppResponse> {
     Logger.log('updateAnApp() method: starts....', 'AppAuthService');
-    const app: App = await this.appRepository.findOneAndUpdate({ appId, userId }, updataAppDto);
+    const app: App = await this.appRepository.findOneAndUpdate(
+      { appId, userId },
+      updataAppDto,
+    );
     return this.getAppResponse(app);
   }
 

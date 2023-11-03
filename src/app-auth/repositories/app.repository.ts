@@ -40,6 +40,7 @@ export class AppRepository {
                 description: 1,
                 logoUrl: 1,
                 whitelistedCors: 1,
+                subdomain: 1,
                 _id: 0,
               },
             },
