@@ -98,7 +98,6 @@ export class AppAuthService {
       apiKeySecret: apiSecret, // TODO: generate app secret and should be handled like password by hashing and all...
       edvId, // generate edvId  by called hypersign edv service
       kmsId: kmsId,
-      edvDocId: kmsId, // TODO this should be deprecated in favor of kmsId variable.
       walletAddress: address,
       apiKeyPrefix: apiSecretKey.split('.')[0],
       subdomain,

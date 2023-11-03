@@ -47,11 +47,6 @@ export class App {
   @Prop()
   edvId: string;
 
-  @ApiHideProperty()
-  @Prop()
-  @Exclude()
-  edvDocId: string;
-
   //@ApiHideProperty()
   @Prop()
   //@Exclude()
