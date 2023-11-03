@@ -103,29 +103,40 @@ export class AppAuthService {
       subdomain,
     });
 
+    Logger.log('App created successfully', 'app-auth-service');
+    return this.getAppResponse(appData, apiSecretKey);
+  }
+
+  private getAppResponse(appData: App, apiSecretKey?: string): createAppResponse {
+    const appResponse: createAppResponse = {
+      ...appData['_doc'],
+      apiSecretKey,
+      tenantUrl: this.getTenantUrl(appData.subdomain)
+    };
+
+    delete appResponse.userId;
+    delete appResponse['_id'];
+    delete appResponse['__v'];
+    delete appResponse['apiKeySecret'];
+    delete appResponse['apiKeyPrefix'];
+    Logger.log('App created successfully', 'app-auth-service');
+    return appResponse;
+  }
+
+  private getTenantUrl(subdomain: string){
     const baseURl = this.config.get('ENTITY_API_SERVICE_BASE_URL')
       ? this.config.get('ENTITY_API_SERVICE_BASE_URL')
       : 'https://api.entity.hypersign.id';
 
     const SERVICE_BASE_URL = url.parse(baseURl);
 
-    const appResponse: createAppResponse = {
-      ...appData['_doc'],
-      apiSecretKey,
-      tenantUrl:
-        SERVICE_BASE_URL.protocol +
-        '//' +
-        appData.subdomain +
-        '.' +
-        SERVICE_BASE_URL.host +
-        SERVICE_BASE_URL.pathname,
-    };
-
-    delete appResponse.userId;
-    delete appResponse['_id'];
-    delete appResponse['__v'];
-    Logger.log('App created successfully', 'app-auth-service');
-    return appResponse;
+    const tenantUrl = SERVICE_BASE_URL.protocol +
+    '//' +
+    subdomain +
+    '.' +
+    SERVICE_BASE_URL.host +
+    SERVICE_BASE_URL.pathname
+    return tenantUrl
   }
 
   private async getRandomSubdomain() {
@@ -187,14 +198,14 @@ export class AppAuthService {
     return this.appRepository.findOne({ appId, userId });
   }
 
-  updateAnApp(
+  async updateAnApp(
     appId: string,
     updataAppDto: UpdateAppDto,
     userId: string,
-  ): Promise<App> {
+  ): Promise<createAppResponse> {
     Logger.log('updateAnApp() method: starts....', 'AppAuthService');
-
-    return this.appRepository.findOneAndUpdate({ appId, userId }, updataAppDto);
+    const app: App = await this.appRepository.findOneAndUpdate({ appId, userId }, updataAppDto);
+    return this.getAppResponse(app);
   }
 
   async deleteApp(appId: string, userId: string): Promise<App> {
