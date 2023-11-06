@@ -1,6 +1,6 @@
 name: Studio API Release Docker Workflow
 
-on: workflow_dispatch
+on: push
 
 permissions:
   contents: write
