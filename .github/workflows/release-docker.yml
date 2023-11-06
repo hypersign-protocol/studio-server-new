@@ -1,4 +1,4 @@
-name: Studio API Release Workflow
+name: Studio API Release Docker Workflow
 
 on: workflow_dispatch
 
