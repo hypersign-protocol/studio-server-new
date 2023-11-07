@@ -49,15 +49,11 @@ import {
   AppSubdomainHeader,
 } from '../decorator/app-sercret.decorator';
 import { TransformResponseInterceptor } from '../interceptors/transformResponse.interseptor';
-import { JwtGuard } from '../guard/jwt.guard';
-import { BasicAuthVerificationGuard } from '../guard/basic-auth-verification.guard';
+import { AuthenticatedGuard } from 'src/org-user/guard/authenticated.guard';
 
 @UseFilters(AllExceptionsFilter)
 @Controller('app')
-// @ApiExcludeController()
-// @ApiBearerAuth('Authorization')
-@ApiBasicAuth('Basic Auth')
-@UseGuards(BasicAuthVerificationGuard)
+@UseGuards(AuthenticatedGuard)
 export class AppAuthController {
   constructor(private readonly appAuthService: AppAuthService) {}
   @UseInterceptors(
@@ -93,6 +89,7 @@ export class AppAuthController {
     @Query() pageOption: PaginationDto,
   ): Promise<App[]> {
     Logger.log('getApps() method: starts', 'AppAuthController');
+    Logger.log(req.user);
     const userId = req.user.userId;
     const appList: any = await this.appAuthService.getAllApps(
       userId,
@@ -103,6 +100,7 @@ export class AppAuthController {
     }
     if (appList) return appList;
   }
+
   @UseInterceptors(
     MongooseClassSerializerInterceptor(App, {
       excludePrefixes: ['apiKeySecret', 'apiKeyPrefix', '_', '__'],
@@ -223,6 +221,7 @@ export class AppAuthController {
     const app = await this.appAuthService.deleteApp(appId, userId);
     return app;
   }
+
   @Post(':appId/secret/new')
   @HttpCode(200)
   @ApiResponse({

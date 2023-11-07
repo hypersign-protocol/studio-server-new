@@ -22,6 +22,8 @@ import { AppOauthModule } from './app-oauth/app-oauth.module';
 import { OrgUserModule } from './org-user/org-user.module';
 //import { Header } from '@nestjs/common';
 
+import * as session from 'express-session';
+import * as passport from 'passport';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { cors: true });
   app.use(json({ limit: '10mb' }));
@@ -71,7 +73,8 @@ async function bootstrap() {
   }
 
   try {
-    Logger.log('Before keymanager initialization');
+    // Super admin keymanager setup
+    Logger.log('Before keymanager initialization', 'main');
     const kmsVaultManager = new EdvClientKeysManager();
     const config = new ConfigService();
     const vaultPrefixInEnv = config.get('VAULT_PREFIX');
@@ -85,77 +88,79 @@ async function bootstrap() {
     // TODO rename this to kmsVault for bnetter cla
     globalThis.kmsVault = kmsVault;
 
-    // const message = {
-    //   status: 'succes',
-    //   mnemonic: '1231 123123 123123 123',
-    // }
-    // const edvDocToInsert = VaultKeysManager.prepareEdvDocument(message, [{ index: 'content.status', unique: true }])
-    // Logger.log(edvDocToInsert)
-    // const docID = await VaultKeysManager.insertDocument(edvDocToInsert)
-    // Logger.log(docID)
-
-    // return docID
-
-    Logger.log('After  keymanager initialization');
+    Logger.log('After  keymanager initialization', 'main');
   } catch (e) {
-    console.log(e);
+    Logger.log(e);
   }
 
-  const orgDocConfig = new DocumentBuilder()
-    .setTitle('Entity Studio SSI API Playground')
-    .setDescription('Open API Documentation of the Entity Studio')
-    .addBasicAuth(
-      {
-        type: 'http',
-        name: 'Basic Auth',
-        in: 'header',
+  try {
+    // Swagger documentation setup
+
+    const orgDocConfig = new DocumentBuilder()
+      .setTitle('Entity Studio SSI API Playground')
+      .setDescription('Open API Documentation of the Entity Studio')
+      .setVersion('1.0')
+      .build();
+
+    const tenantDocConfig = new DocumentBuilder()
+      .setTitle('Entity Studio SSI API Playground')
+      .setDescription('Open API Documentation of the Entity Studio')
+      .addBearerAuth(
+        {
+          type: 'http',
+          name: 'Authorization',
+          in: 'header',
+        },
+        'Authorization',
+      )
+      .setVersion('1.0')
+      .build();
+
+    const tenantDocuments = SwaggerModule.createDocument(app, tenantDocConfig, {
+      include: [
+        AppOauthModule,
+        DidModule,
+        SchemaModule,
+        CredentialModule,
+        PresentationModule,
+      ], // don't include, say, BearsModule
+    });
+    const orgDocuments = SwaggerModule.createDocument(app, orgDocConfig, {
+      include: [AppAuthModule, OrgUserModule], // don't include, say, BearsModule
+    });
+    const tenantOptions = {
+      swaggerOptions: {
+        defaultModelsExpandDepth: -1,
       },
-      'Basic Auth',
-    )
-    .setVersion('1.0')
-    .build();
+      customfavIcon: '/Entity_favicon.png',
+      customSiteTitle: 'API-Playground',
+      customCss: ` .topbar-wrapper img {content:url(\'./Entity_full.png\'); width:135px; height:auto;margin-left: -150px;}
+      .swagger-ui .topbar { background-color: #fff; }`,
+    };
+    const orgOptions = tenantOptions;
+    SwaggerModule.setup('/ssi', app, tenantDocuments, tenantOptions);
+    SwaggerModule.setup('/', app, orgDocuments, orgOptions);
+  } catch (e) {
+    Logger.log(e);
+  }
 
-  const tenantDocConfig = new DocumentBuilder()
-    .setTitle('Entity Studio SSI API Playground')
-    .setDescription('Open API Documentation of the Entity Studio')
-    .addBearerAuth(
-      {
-        type: 'http',
-        name: 'Authorization',
-        in: 'header',
-      },
-      'Authorization',
-    )
-    .setVersion('1.0')
-    .build();
-
-  const tenantDocuments = SwaggerModule.createDocument(app, tenantDocConfig, {
-    include: [
-      AppOauthModule,
-      DidModule,
-      SchemaModule,
-      CredentialModule,
-      PresentationModule,
-    ], // don't include, say, BearsModule
-  });
-  const orgDocuments = SwaggerModule.createDocument(app, orgDocConfig, {
-    include: [AppAuthModule, OrgUserModule], // don't include, say, BearsModule
-  });
-
-  const tenantOptions = {
-    swaggerOptions: {
-      defaultModelsExpandDepth: -1,
-    },
-    customfavIcon: '/Entity_favicon.png',
-    customSiteTitle: 'API-Playground',
-    customCss: ` .topbar-wrapper img {content:url(\'./Entity_full.png\'); width:135px; height:auto;margin-left: -150px;}
-    .swagger-ui .topbar { background-color: #fff; }`,
-  };
-
-  const orgOptions = tenantOptions;
-
-  SwaggerModule.setup('/ssi', app, tenantDocuments, tenantOptions);
-  SwaggerModule.setup('/', app, orgDocuments, orgOptions);
+  try {
+    // Session for super admin
+    Logger.log('Setting up session start', 'main');
+    app.use(
+      session({
+        secret: 'some secret to be taked from env',
+        resave: false,
+        saveUnitialized: false,
+        cookie: { maxAge: 3600000 },
+      }),
+    );
+    app.use(passport.initialize());
+    app.use(passport.session());
+    Logger.log('Setting up session finished', 'main');
+  } catch (e) {
+    Logger.log(e);
+  }
 
   await app.listen(process.env.PORT || 3001);
   Logger.log(

@@ -1,4 +1,9 @@
-import { Injectable, UnauthorizedException, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  UnauthorizedException,
+  Logger,
+  ExecutionContext,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
 @Injectable()
@@ -18,5 +23,12 @@ export class BasicAuthVerificationGuard extends AuthGuard('local') {
       );
     }
     return user;
+  }
+
+  async canActivate(context: ExecutionContext) {
+    const result = (await super.canActivate(context)) as boolean;
+    const request = context.switchToHttp().getRequest();
+    await super.logIn(request);
+    return result;
   }
 }
