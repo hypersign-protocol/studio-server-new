@@ -12,6 +12,7 @@ import { SchemaModule } from './schema/schema.module';
 import { CredentialModule } from './credential/credential.module';
 import { PresentationModule } from './presentation/presentation.module';
 import { AppOauthModule } from './app-oauth/app-oauth.module';
+import { OrgUserModule } from './org-user/org-user.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { AppOauthModule } from './app-oauth/app-oauth.module';
     }),
     MongooseModule.forRoot(process.env.DATABASE_CONNECTION_PATH),
     EdvModule,
+    OrgUserModule,
     AppOauthModule,
     DidModule,
     SchemaModule,

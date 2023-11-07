@@ -19,6 +19,7 @@ import { SchemaModule } from './schema/schema.module';
 import { PresentationModule } from './presentation/presentation.module';
 import { CredentialModule } from './credential/credential.module';
 import { AppOauthModule } from './app-oauth/app-oauth.module';
+import { OrgUserModule } from './org-user/org-user.module';
 //import { Header } from '@nestjs/common';
 
 async function bootstrap() {
@@ -138,7 +139,7 @@ async function bootstrap() {
     ], // don't include, say, BearsModule
   });
   const orgDocuments = SwaggerModule.createDocument(app, orgDocConfig, {
-    include: [AppAuthModule], // don't include, say, BearsModule
+    include: [AppAuthModule, OrgUserModule], // don't include, say, BearsModule
   });
 
   const tenantOptions = {
