@@ -68,7 +68,10 @@ async function bootstrap() {
     const kmsVaultManager = new EdvClientKeysManager();
     const config = new ConfigService();
     const vaultPrefixInEnv = config.get('VAULT_PREFIX');
-    const vaultPrefix = vaultPrefixInEnv ? vaultPrefixInEnv : 'hs:studio-api:';
+    const vaultPrefix =
+      vaultPrefixInEnv && vaultPrefixInEnv != 'undefined'
+        ? vaultPrefixInEnv
+        : 'hs:studio-api:';
     const edvId = vaultPrefix + 'kms:' + kmsVaultWallet.didDocument.id;
     const kmsVault = await kmsVaultManager.createVault(kmsVaultWallet, edvId);
 

@@ -149,7 +149,14 @@ export class AppAuthService {
 
     if (!appInDb) {
       Logger.log('Found subdomain in db, going recursively');
-      return this.config.get('TENANT_SUBDOMAIN_PREFIX') + subdomain;
+      const tenantSubDomainPrefixEnv = this.config.get(
+        'TENANT_SUBDOMAIN_PREFIX',
+      );
+      return (
+        (tenantSubDomainPrefixEnv && tenantSubDomainPrefixEnv != 'undefined'
+          ? tenantSubDomainPrefixEnv
+          : 'ent_') + subdomain
+      );
     }
 
     await this.getRandomSubdomain();
