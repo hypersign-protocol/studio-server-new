@@ -72,11 +72,11 @@ async function bootstrap() {
     store(kmsVaultWallet.keys, process.env.EDV_KEY_FILE_PATH);
   }
 
+  const config = new ConfigService();
   try {
     // Super admin keymanager setup
     Logger.log('Before keymanager initialization', 'main');
     const kmsVaultManager = new EdvClientKeysManager();
-    const config = new ConfigService();
     const vaultPrefixInEnv = config.get('VAULT_PREFIX');
     const vaultPrefix =
       vaultPrefixInEnv && vaultPrefixInEnv != 'undefined'
@@ -90,7 +90,7 @@ async function bootstrap() {
 
     Logger.log('After  keymanager initialization', 'main');
   } catch (e) {
-    Logger.log(e);
+    Logger.error(e);
   }
 
   try {
@@ -141,17 +141,29 @@ async function bootstrap() {
     SwaggerModule.setup('/ssi', app, tenantDocuments, tenantOptions);
     SwaggerModule.setup('/', app, orgDocuments, orgOptions);
   } catch (e) {
-    Logger.log(e);
+    Logger.error(e);
   }
 
   try {
     // Session for super admin
+    if (
+      !config.get('SUPER_ADMIN_USERNAME') ||
+      !config.get('SUPER_ADMIN_PASSWORD')
+    ) {
+      throw new Error(
+        'SUPER_ADMIN_USERNAME or SUPER_ADMIN_PASSWORD are not set in env',
+      );
+    }
+
+    if (!config.get('SESSION_SECRET_KEY')) {
+      throw new Error('SESSION_KEY is not set in env');
+    }
     Logger.log('Setting up session start', 'main');
     app.use(
       session({
-        secret: 'some secret to be taked from env',
+        secret: config.get('SESSION_SECRET_KEY'),
         resave: false,
-        saveUnitialized: false,
+        saveUninitialized: false,
         cookie: { maxAge: 3600000 },
       }),
     );
@@ -159,7 +171,7 @@ async function bootstrap() {
     app.use(passport.session());
     Logger.log('Setting up session finished', 'main');
   } catch (e) {
-    Logger.log(e);
+    Logger.error(e);
   }
 
   await app.listen(process.env.PORT || 3001);

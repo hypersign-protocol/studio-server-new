@@ -16,8 +16,8 @@ export class BasicAuthStrategy extends PassportStrategy(Strategy, 'local') {
     });
 
     const userInEnv = {
-      username: 'vishwas',
-      password: '123@',
+      username: this.config.get('SUPER_ADMIN_USERNAME'),
+      password: this.config.get('SUPER_ADMIN_PASSWORD'),
     };
 
     if (!username || !password) {
