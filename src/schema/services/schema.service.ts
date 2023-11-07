@@ -13,7 +13,6 @@ import { HypersignSchema } from 'hs-ssi-sdk';
 import { ConfigService } from '@nestjs/config';
 import { SchemaSSIService } from './schema.ssi.service';
 import { HidWalletService } from 'src/hid-wallet/services/hid-wallet.service';
-import { EdvService } from 'src/edv/services/edv.service';
 import { DidRepository } from 'src/did/repository/did.repository';
 import { HypersignDID } from 'hs-ssi-sdk';
 import { SchemaRepository } from '../repository/schema.repository';
@@ -31,7 +30,6 @@ export class SchemaService {
     private readonly schemaRepository: SchemaRepository,
     private readonly config: ConfigService,
     private readonly schemaSSIservice: SchemaSSIService,
-    private readonly edvService: EdvService,
     private readonly hidWallet: HidWalletService,
     private readonly didRepositiory: DidRepository,
   ) {}
@@ -199,18 +197,29 @@ export class SchemaService {
   ): Promise<{ transactionHash: string }> {
     Logger.log('registerSchema() method: starts....', 'SchemaService');
 
-    const { edvId, edvDocId } = appDetail;
+    const { edvId, kmsId } = appDetail;
     const { schemaDocument, schemaProof } = registerSchemaDto;
     Logger.log('registerSchema() method: initialising edv service ');
 
-    await this.edvService.init(edvId);
-    const docs = await this.edvService.getDecryptedDocument(edvDocId);
-    const mnemonic: string = docs.mnemonic;
+    const didOfvmId = schemaProof.verificationMethod.split('#')[0];
+    const didInfo = await this.didRepositiory.findOne({
+      appId: appDetail.appId,
+      did: didOfvmId,
+    });
+    if (!didInfo || didInfo == null) {
+      throw new NotFoundException([
+        `${didOfvmId} not found`,
+        `${didOfvmId} is not owned by the appId ${appDetail.appId}`,
+        `Resource not found`,
+      ]);
+    }
+
+    const appMenemonic = await getAppMenemonic(kmsId);
     const namespace = Namespace.testnet;
     Logger.log('registerSchema() method: initialising hypersignSchema');
 
     const hypersignSchema = await this.schemaSSIservice.initiateHypersignSchema(
-      mnemonic,
+      appMenemonic,
       namespace,
     );
     let registeredSchema = {} as { transactionHash: string };

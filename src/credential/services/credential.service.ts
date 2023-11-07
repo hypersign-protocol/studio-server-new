@@ -10,7 +10,6 @@ import { ConfigService } from '@nestjs/config';
 import { CredentialSSIService } from './credential.ssi.service';
 import { HidWalletService } from 'src/hid-wallet/services/hid-wallet.service';
 import { CredentialRepository } from '../repository/credential.repository';
-import { EdvService } from 'src/edv/services/edv.service';
 import { DidRepository } from 'src/did/repository/did.repository';
 import { HypersignDID, HypersignVerifiableCredential } from 'hs-ssi-sdk';
 import { VerifyCredentialDto } from '../dto/verify-credential.dto';
@@ -25,7 +24,6 @@ export class CredentialService {
   constructor(
     private readonly config: ConfigService,
     private readonly credentialSSIService: CredentialSSIService,
-    private readonly edvService: EdvService,
     private readonly hidWallet: HidWalletService,
     private credentialRepository: CredentialRepository,
     private readonly didRepositiory: DidRepository,
@@ -283,7 +281,6 @@ export class CredentialService {
       'update() method: before initialising edv service',
       'CredentialService',
     );
-    await this.edvService.init(edvId);
     const didInfo = await this.didRepositiory.findOne({
       appId: appDetail.appId,
       did: didOfvmId,

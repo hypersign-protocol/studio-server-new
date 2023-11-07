@@ -21,7 +21,6 @@ import {
   Did,
 } from 'hs-ssi-sdk';
 import { DidRepository, DidMetaDataRepo } from '../repository/did.repository';
-import { EdvService } from 'src/edv/services/edv.service';
 import { Slip10RawIndex } from '@cosmjs/crypto';
 import { HidWalletService } from '../../hid-wallet/services/hid-wallet.service';
 import { DidSSIService } from './did.ssi.service';
@@ -40,7 +39,6 @@ export class DidService {
   constructor(
     private readonly didRepositiory: DidRepository,
     private readonly didMetadataRepository: DidMetaDataRepo,
-    private readonly edvService: EdvService,
     private readonly hidWallet: HidWalletService,
     private readonly didSSIService: DidSSIService,
     private readonly config: ConfigService,
@@ -383,11 +381,10 @@ export class DidService {
     });
     let resolvedDid;
     if (didInfo !== null && didInfo.registrationStatus !== 'COMPLETED') {
-      const { edvId, edvDocId } = appDetail;
+      const { edvId, kmsId } = appDetail;
       Logger.log('resolveDid() method: initialising edv service', 'DidService');
-      await this.edvService.init(edvId);
-      const docs = await this.edvService.getDecryptedDocument(edvDocId);
-      const mnemonic: string = docs.mnemonic;
+
+      const mnemonic = await getAppMenemonic(kmsId);
       const didSplitedArray = did.split(':'); // Todo Remove this worst way of doing it
       const namespace = didSplitedArray[2];
       const methodSpecificId = didSplitedArray[3];
@@ -451,10 +448,9 @@ export class DidService {
     }
     if (!updateDidDto.verificationMethodId) {
       const did = updateDidDto.didDocument['id'];
-      const { edvId, edvDocId } = appDetail;
-      await this.edvService.init(edvId);
-      const docs = await this.edvService.getDecryptedDocument(edvDocId);
-      const mnemonic: string = docs.mnemonic;
+      const { edvId, kmsId } = appDetail;
+
+      const mnemonic = await getAppMenemonic(kmsId);
       const hypersignDid = await this.didSSIService.initiateHypersignDid(
         mnemonic,
         'testnet',
