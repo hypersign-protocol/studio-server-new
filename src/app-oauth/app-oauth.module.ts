@@ -9,6 +9,6 @@ import { WhitelistSSICorsMiddleware } from 'src/utils/middleware/cors.middleware
 })
 export class AppOauthModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer.apply(WhitelistSSICorsMiddleware).forRoutes(AppOauthController);
+    // consumer.apply(WhitelistSSICorsMiddleware).forRoutes(AppOauthController);
   }
 }
