@@ -61,15 +61,16 @@ export class EdvClientManger implements IEdvClientManager {
       },
     ];
 
+    const EDV_BASE_URL = this.config.get('EDV_BASE_URL');
     this.vault = new HypersignEdvClientEd25519VerificationKey2020({
       keyResolver: this.keyResolver,
-      url: this.config.get('EDV_BASE_URL'),
+      url: EDV_BASE_URL,
       ed25519VerificationKey2020: ed25519,
       x25519KeyAgreementKey2020: x25519,
     });
 
     const config = {
-      url: this.config.get('EDV_BASE_URL'),
+      url: EDV_BASE_URL,
       keyAgreementKey,
       controller: this.vaultWallet.authenticationKey.id,
       edvId: this.edvId
