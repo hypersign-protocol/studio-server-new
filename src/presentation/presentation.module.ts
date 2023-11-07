@@ -19,7 +19,6 @@ import {
 import { MongooseModule } from '@nestjs/mongoose';
 import { PresentationTemplateRepository } from './repository/presentation-template.repository';
 import { HidWalletService } from 'src/hid-wallet/services/hid-wallet.service';
-import { EdvService } from 'src/edv/services/edv.service';
 import { DidModule } from 'src/did/did.module';
 import { AppAuthModule } from 'src/app-auth/app-auth.module';
 import { WhitelistSSICorsMiddleware } from 'src/utils/middleware/cors.middleware';
@@ -35,7 +34,6 @@ import { databaseProviders } from '../mongoose/tenant-mongoose-connections';
     PresentationTemplateRepository,
     PresentationRequestService,
     HidWalletService,
-    EdvService,
     ...databaseProviders,
     ...presentationTemplateProviders,
   ],

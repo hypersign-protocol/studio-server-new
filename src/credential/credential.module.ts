@@ -9,7 +9,6 @@ import { CredentialController } from './controllers/credential.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Credential, CredentialSchema } from './schemas/credntial.schema';
 import { CredentialSSIService } from './services/credential.ssi.service';
-import { EdvService } from 'src/edv/services/edv.service';
 import { EdvModule } from 'src/edv/edv.module';
 import { HidWalletModule } from 'src/hid-wallet/hid-wallet.module';
 import { HidWalletService } from 'src/hid-wallet/services/hid-wallet.service';
@@ -27,7 +26,6 @@ import { databaseProviders } from '../mongoose/tenant-mongoose-connections';
   providers: [
     CredentialService,
     CredentialSSIService,
-    EdvService,
     HidWalletService,
     CredentialRepository,
     ...databaseProviders,

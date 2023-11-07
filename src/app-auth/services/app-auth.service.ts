@@ -10,7 +10,6 @@ import { App, createAppResponse } from 'src/app-auth/schemas/app.schema';
 import { AppRepository } from '../repositories/app.repository';
 import { UpdateAppDto } from '../dtos/update-app.dto';
 import { HidWalletService } from '../../hid-wallet/services/hid-wallet.service';
-import { EdvService } from '../../edv/services/edv.service';
 import { ConfigService } from '@nestjs/config';
 import { EdvDocsDto } from 'src/edv/dtos/create-edv.dto';
 import { AppAuthSecretService } from './app-auth-passord.service';
@@ -25,7 +24,6 @@ export class AppAuthService {
     private readonly config: ConfigService,
     private readonly appRepository: AppRepository,
     private readonly hidWalletService: HidWalletService,
-    private readonly edvService: EdvService,
     private readonly appAuthSecretService: AppAuthSecretService,
     private readonly jwt: JwtService,
     private readonly appAuthApiKeyService: AppAuthApiKeyService,

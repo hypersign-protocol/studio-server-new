@@ -6,7 +6,6 @@ import {
 } from '@nestjs/common';
 import { DidService } from './services/did.service';
 import { DidController } from './controllers/did.controller';
-import { EdvService } from 'src/edv/services/edv.service';
 import { EdvModule } from 'src/edv/edv.module';
 import { DidMetaDataRepo, DidRepository } from './repository/did.repository';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -31,7 +30,6 @@ import { didProviders } from './providers/did.provider';
   controllers: [DidController],
   providers: [
     DidService,
-    EdvService,
     DidRepository,
     DidMetaDataRepo,
     HidWalletService,
@@ -41,7 +39,6 @@ import { didProviders } from './providers/did.provider';
   ],
   exports: [
     DidService,
-    EdvService,
     DidRepository,
     DidMetaDataRepo,
     HidWalletService,

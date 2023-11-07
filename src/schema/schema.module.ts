@@ -8,7 +8,6 @@ import { SchemaService } from './services/schema.service';
 import { SchemaController } from './controllers/schema.controller';
 import { SchemaSSIService } from './services/schema.ssi.service';
 import { HidWalletService } from 'src/hid-wallet/services/hid-wallet.service';
-import { EdvService } from 'src/edv/services/edv.service';
 import { DidService } from 'src/did/services/did.service';
 import { DidModule } from 'src/did/did.module';
 import { SchemaRepository } from './repository/schema.repository';
@@ -27,7 +26,6 @@ import { databaseProviders } from '../mongoose/tenant-mongoose-connections';
     SchemaService,
     SchemaSSIService,
     DidService,
-    EdvService,
     HidWalletService,
     SchemaRepository,
     ...databaseProviders,

@@ -17,7 +17,6 @@ import { AppRepository } from './repositories/app.repository';
 import { HidWalletService } from 'src/hid-wallet/services/hid-wallet.service';
 import { HidWalletModule } from 'src/hid-wallet/hid-wallet.module';
 import { EdvModule } from 'src/edv/edv.module';
-import { EdvService } from 'src/edv/services/edv.service';
 import { AppAuthSecretService } from './services/app-auth-passord.service';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy, JwtStrategyApp } from './strategy/jwt.strategy';
@@ -36,7 +35,6 @@ import { TrimMiddleware } from 'src/utils/middleware/trim.middleware';
     AppAuthService,
     AppRepository,
     HidWalletService,
-    EdvService,
     AppAuthSecretService,
     JwtStrategy,
     JwtStrategyApp,
