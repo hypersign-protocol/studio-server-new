@@ -6,10 +6,7 @@ import {
 } from '@nestjs/common';
 
 import { AppAuthService } from './services/app-auth.service';
-import {
-  AppAuthController,
-  AppOAuthController,
-} from './controllers/app-auth.controller';
+import { AppAuthController } from './controllers/app-auth.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { App, AppSchema } from './schemas/app.schema';
 
@@ -40,15 +37,12 @@ import { TrimMiddleware } from 'src/utils/middleware/trim.middleware';
     JwtStrategyApp,
     AppAuthApiKeyService,
   ],
-  controllers: [AppAuthController, AppOAuthController],
+  controllers: [AppAuthController],
 
-  exports: [AppAuthService, AppRepository, AppAuthApiKeyService],
+  exports: [AppAuthService, AppRepository, AppAuthApiKeyService, AppAuthModule],
 })
 export class AppAuthModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(WhitelistAppCorsMiddleware)
-      .forRoutes(AppAuthController, AppOAuthController);
     consumer
       .apply(TrimMiddleware)
       .exclude(

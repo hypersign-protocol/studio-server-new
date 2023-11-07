@@ -13,6 +13,12 @@ import { Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { EdvClientKeysManager } from './edv/services/edv.singleton';
 import { VaultWalletManager } from './edv/services/vaultWalletManager';
+import { AppAuthModule } from './app-auth/app-auth.module';
+import { DidModule } from './did/did.module';
+import { SchemaModule } from './schema/schema.module';
+import { PresentationModule } from './presentation/presentation.module';
+import { CredentialModule } from './credential/credential.module';
+import { AppOauthModule } from './app-oauth/app-oauth.module';
 //import { Header } from '@nestjs/common';
 
 async function bootstrap() {
@@ -94,7 +100,21 @@ async function bootstrap() {
     console.log(e);
   }
 
-  const config = new DocumentBuilder()
+  const orgDocConfig = new DocumentBuilder()
+    .setTitle('Entity Studio SSI API Playground')
+    .setDescription('Open API Documentation of the Entity Studio')
+    .addBasicAuth(
+      {
+        type: 'http',
+        name: 'Basic Auth',
+        in: 'header',
+      },
+      'Basic Auth',
+    )
+    .setVersion('1.0')
+    .build();
+
+  const tenantDocConfig = new DocumentBuilder()
     .setTitle('Entity Studio SSI API Playground')
     .setDescription('Open API Documentation of the Entity Studio')
     .addBearerAuth(
@@ -105,12 +125,23 @@ async function bootstrap() {
       },
       'Authorization',
     )
-
     .setVersion('1.0')
     .build();
 
-  const document = SwaggerModule.createDocument(app, config);
-  const options = {
+  const tenantDocuments = SwaggerModule.createDocument(app, tenantDocConfig, {
+    include: [
+      AppOauthModule,
+      DidModule,
+      SchemaModule,
+      CredentialModule,
+      PresentationModule,
+    ], // don't include, say, BearsModule
+  });
+  const orgDocuments = SwaggerModule.createDocument(app, orgDocConfig, {
+    include: [AppAuthModule], // don't include, say, BearsModule
+  });
+
+  const tenantOptions = {
     swaggerOptions: {
       defaultModelsExpandDepth: -1,
     },
@@ -119,7 +150,12 @@ async function bootstrap() {
     customCss: ` .topbar-wrapper img {content:url(\'./Entity_full.png\'); width:135px; height:auto;margin-left: -150px;}
     .swagger-ui .topbar { background-color: #fff; }`,
   };
-  SwaggerModule.setup('api', app, document, options);
+
+  const orgOptions = tenantOptions;
+
+  SwaggerModule.setup('/ssi', app, tenantDocuments, tenantOptions);
+  SwaggerModule.setup('/', app, orgDocuments, orgOptions);
+
   await app.listen(process.env.PORT || 3001);
   Logger.log(
     `Server running on http://localhost:${process.env.PORT}`,

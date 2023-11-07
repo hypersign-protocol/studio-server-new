@@ -26,6 +26,7 @@ import {
 import { AppAuthService } from 'src/app-auth/services/app-auth.service';
 import {
   ApiBadRequestResponse,
+  ApiBasicAuth,
   ApiBearerAuth,
   ApiCreatedResponse,
   ApiExcludeController,
@@ -49,12 +50,14 @@ import {
 } from '../decorator/app-sercret.decorator';
 import { TransformResponseInterceptor } from '../interceptors/transformResponse.interseptor';
 import { JwtGuard } from '../guard/jwt.guard';
+import { BasicAuthVerificationGuard } from '../guard/basic-auth-verification.guard';
 
 @UseFilters(AllExceptionsFilter)
 @Controller('app')
-@ApiExcludeController()
-@ApiBearerAuth('Authorization')
-@UseGuards(JwtGuard)
+// @ApiExcludeController()
+// @ApiBearerAuth('Authorization')
+@ApiBasicAuth('Basic Auth')
+@UseGuards(BasicAuthVerificationGuard)
 export class AppAuthController {
   constructor(private readonly appAuthService: AppAuthService) {}
   @UseInterceptors(
@@ -241,48 +244,5 @@ export class AppAuthController {
       throw new AppNotFoundException();
     }
     return this.appAuthService.reGenerateAppSecretKey(app, userId);
-  }
-}
-
-@UseFilters(AllExceptionsFilter)
-@ApiTags('App')
-@Controller('app')
-export class AppOAuthController {
-  constructor(private readonly appAuthService: AppAuthService) {}
-
-  @ApiHeader({
-    name: 'X-Api-Secret-Key',
-    description: 'Provide Api Secret  key to get access token',
-    required: true,
-  })
-  @ApiHeader({
-    name: 'Origin',
-    description: 'Origin as you set in application cors',
-    required: false,
-  })
-  @ApiBadRequestResponse({
-    status: 400,
-    description: 'Error occured at the time of generating access token',
-    type: AppError,
-  })
-  @Post('oauth')
-  @HttpCode(200)
-  @ApiResponse({
-    status: 200,
-    description: 'AccessToken generated',
-    type: GenerateTokenResponse,
-  })
-  @ApiUnauthorizedResponse({
-    description: 'Unauthorized',
-    type: GenerateTokenError,
-  })
-  @UsePipes(ValidationPipe)
-  generateAccessToken(
-    @Headers('X-Api-Secret-Key') apiSectretKey: string,
-    @AppSecretHeader() appSecreatKey,
-    @AppSubdomainHeader() appSubdomain,
-  ): Promise<{ access_token; expiresIn; tokenType }> {
-    Logger.log('reGenerateAppSecretKey() method: starts', 'AppOAuthController');
-    return this.appAuthService.generateAccessToken(appSecreatKey, appSubdomain);
   }
 }
