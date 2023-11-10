@@ -14,10 +14,6 @@ import { ConfigService } from '@nestjs/config';
 import { EdvClientKeysManager } from './edv/services/edv.singleton';
 import { VaultWalletManager } from './edv/services/vaultWalletManager';
 import { AppAuthModule } from './app-auth/app-auth.module';
-import { DidModule } from './did/did.module';
-import { SchemaModule } from './schema/schema.module';
-import { PresentationModule } from './presentation/presentation.module';
-import { CredentialModule } from './credential/credential.module';
 import { AppOauthModule } from './app-oauth/app-oauth.module';
 import { OrgUserModule } from './org-user/org-user.module';
 //import { Header } from '@nestjs/common';
@@ -116,17 +112,14 @@ async function bootstrap() {
       .setVersion('1.0')
       .build();
 
-    const tenantDocuments = SwaggerModule.createDocument(app, tenantDocConfig, {
-      include: [
-        AppOauthModule,
-        DidModule,
-        SchemaModule,
-        CredentialModule,
-        PresentationModule,
-      ], // don't include, say, BearsModule
-    });
+    // const tenantDocuments = SwaggerModule.createDocument(app, tenantDocConfig, {
+    //   include: [
+    //     AppOauthModule,
+
+    //   ], // don't include, say, BearsModule
+    // });
     const orgDocuments = SwaggerModule.createDocument(app, orgDocConfig, {
-      include: [AppAuthModule, OrgUserModule], // don't include, say, BearsModule
+      include: [AppAuthModule, OrgUserModule, AppOauthModule], // don't include, say, BearsModule
     });
     const tenantOptions = {
       swaggerOptions: {
@@ -138,7 +131,6 @@ async function bootstrap() {
       .swagger-ui .topbar { background-color: #fff; }`,
     };
     const orgOptions = tenantOptions;
-    SwaggerModule.setup('/ssi', app, tenantDocuments, tenantOptions);
     SwaggerModule.setup('/', app, orgDocuments, orgOptions);
   } catch (e) {
     Logger.error(e);

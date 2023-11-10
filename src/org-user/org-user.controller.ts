@@ -14,9 +14,9 @@ import {
   LoginOrgUserResponseDto,
 } from './dto/create-org-user.dto';
 import { BasicAuthVerificationGuard } from './guard/basic-auth-verification.guard';
-import { ApiCreatedResponse, ApiResponse } from '@nestjs/swagger';
+import { ApiCreatedResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
 // import { ApiNotFoundResponse } from '@nestjs/swagger';
-
+@ApiTags('Super Admin')
 @Controller('sa')
 export class OrgUserController {
   constructor(private readonly orgUserService: OrgUserService) {}

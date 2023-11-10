@@ -29,7 +29,7 @@ import {
 } from './dtos/generate-token.dto';
 
 @UseFilters(AllExceptionsFilter)
-@ApiTags('App')
+@ApiTags('Super Admin')
 @Controller('app')
 export class AppOauthController {
   constructor(private readonly appAuthService: AppAuthService) {}
@@ -64,9 +64,8 @@ export class AppOauthController {
   generateAccessToken(
     @Headers('X-Api-Secret-Key') apiSectretKey: string,
     @AppSecretHeader() appSecreatKey,
-    @AppSubdomainHeader() appSubdomain,
   ): Promise<{ access_token; expiresIn; tokenType }> {
     Logger.log('reGenerateAppSecretKey() method: starts', 'AppOAuthController');
-    return this.appAuthService.generateAccessToken(appSecreatKey, appSubdomain);
+    return this.appAuthService.generateAccessToken(appSecreatKey);
   }
 }

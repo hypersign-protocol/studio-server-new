@@ -52,6 +52,7 @@ import { TransformResponseInterceptor } from '../interceptors/transformResponse.
 import { AuthenticatedGuard } from 'src/org-user/guard/authenticated.guard';
 
 @UseFilters(AllExceptionsFilter)
+@ApiTags('Super Admin')
 @Controller('app')
 @UseGuards(AuthenticatedGuard)
 export class AppAuthController {

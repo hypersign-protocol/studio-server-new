@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { AppAuthModule } from './app-auth/app-auth.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
@@ -7,10 +7,6 @@ import { AllExceptionsFilter } from './utils/utils';
 import { APP_FILTER } from '@nestjs/core';
 
 import { AppAuthSecretService } from './app-auth/services/app-auth-passord.service';
-import { DidModule } from './did/did.module';
-import { SchemaModule } from './schema/schema.module';
-import { CredentialModule } from './credential/credential.module';
-import { PresentationModule } from './presentation/presentation.module';
 import { AppOauthModule } from './app-oauth/app-oauth.module';
 import { OrgUserModule } from './org-user/org-user.module';
 
@@ -25,10 +21,6 @@ import { OrgUserModule } from './org-user/org-user.module';
     EdvModule,
     OrgUserModule,
     AppOauthModule,
-    DidModule,
-    SchemaModule,
-    CredentialModule,
-    PresentationModule,
   ],
   controllers: [],
   providers: [

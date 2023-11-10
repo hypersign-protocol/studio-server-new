@@ -240,7 +240,6 @@ export class AppAuthService {
 
   async generateAccessToken(
     appSecreatKey: string,
-    appSubdomain: string,
   ): Promise<{ access_token; expiresIn; tokenType }> {
     Logger.log('generateAccessToken() method: starts....', 'AppAuthService');
 
@@ -249,7 +248,6 @@ export class AppAuthService {
     const grantType = 'client_credentials'; //TODO: Remove hardcoding
     const appDetail = await this.appRepository.findOne({
       apiKeyPrefix: apikeyIndex,
-      subdomain: appSubdomain,
     });
     if (!appDetail) {
       Logger.error(
