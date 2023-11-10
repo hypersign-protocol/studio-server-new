@@ -276,6 +276,10 @@ export class AppAuthService {
       appId: appDetail.appId,
       userId: appDetail.userId,
       grantType,
+      kmsId: appDetail.kmsId,
+      whitelistedCors: appDetail.whitelistedCors,
+      subdomain: appDetail.subdomain,
+      edvId: appDetail.edvId,
     };
 
     const secret = this.config.get('JWT_SECRET');

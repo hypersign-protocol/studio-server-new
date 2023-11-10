@@ -16,9 +16,8 @@ import { HidWalletModule } from 'src/hid-wallet/hid-wallet.module';
 import { EdvModule } from 'src/edv/edv.module';
 import { AppAuthSecretService } from './services/app-auth-passord.service';
 import { JwtModule } from '@nestjs/jwt';
-import { JwtStrategy, JwtStrategyApp } from './strategy/jwt.strategy';
+import { JwtStrategy } from './strategy/jwt.strategy';
 import { AppAuthApiKeyService } from './services/app-auth-apikey.service';
-import { WhitelistAppCorsMiddleware } from './middlewares/cors.middleware';
 import { TrimMiddleware } from 'src/utils/middleware/trim.middleware';
 @Module({
   imports: [
@@ -34,7 +33,6 @@ import { TrimMiddleware } from 'src/utils/middleware/trim.middleware';
     HidWalletService,
     AppAuthSecretService,
     JwtStrategy,
-    JwtStrategyApp,
     AppAuthApiKeyService,
   ],
   controllers: [AppAuthController],

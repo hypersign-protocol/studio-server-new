@@ -14,28 +14,18 @@ import {
   UseGuards,
   Req,
   Delete,
-  Headers,
   Logger,
 } from '@nestjs/common';
 import { CreateAppDto } from 'src/app-auth/dtos/create-app.dto';
-import {
-  GenerateTokenError,
-  GenerateTokenResponse,
-  RegenrateAppApiSecretResponse,
-} from '../dtos/generate-token.dto';
+import { RegenrateAppApiSecretResponse } from '../dtos/generate-token.dto';
 import { AppAuthService } from 'src/app-auth/services/app-auth.service';
 import {
   ApiBadRequestResponse,
-  ApiBasicAuth,
-  ApiBearerAuth,
   ApiCreatedResponse,
-  ApiExcludeController,
-  ApiHeader,
   ApiNotFoundResponse,
   ApiQuery,
   ApiResponse,
   ApiTags,
-  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { App, createAppResponse } from '../schemas/app.schema';
 import { AppNotFoundException } from 'src/app-auth/exceptions/app-not-found.exception';
@@ -44,10 +34,6 @@ import { MongooseClassSerializerInterceptor } from '../../utils/utils';
 import { AllExceptionsFilter } from '../../utils/utils';
 import { AppError, GetAppList } from '../dtos/fetch-app.dto';
 import { PaginationDto } from 'src/utils/pagination.dto';
-import {
-  AppSecretHeader,
-  AppSubdomainHeader,
-} from '../decorator/app-sercret.decorator';
 import { TransformResponseInterceptor } from '../interceptors/transformResponse.interseptor';
 import { AuthenticatedGuard } from 'src/org-user/guard/authenticated.guard';
 
