@@ -17,11 +17,17 @@ import { AppAuthModule } from './app-auth/app-auth.module';
 import { AppOauthModule } from './app-oauth/app-oauth.module';
 import { OrgUserModule } from './org-user/org-user.module';
 //import { Header } from '@nestjs/common';
+import * as cors from 'cors';
 
 import * as session from 'express-session';
 import * as passport from 'passport';
+import { UserModule } from './user/user.module';
+
+// eslint-disable-next-line
+const HypersignAuth = require('hypersign-auth-node-sdk');
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, { cors: true });
+  const app = await NestFactory.create(AppModule);
+
   app.use(json({ limit: '10mb' }));
   app.use(urlencoded({ extended: true, limit: '10mb' }));
   app.use(express.static(path.join(__dirname, '../public')));
@@ -32,6 +38,7 @@ async function bootstrap() {
     hidNodeRPCUrl: process.env.HID_NETWORK_RPC,
   };
   const hidWalletInstance = new hidWallet(walletOptions);
+
   await hidWalletInstance.generateWallet({
     mnemonic: process.env.MNEMONIC,
   });
@@ -57,7 +64,7 @@ async function bootstrap() {
     mnemonic_EnglishMnemonic,
   );
 
-  app.setGlobalPrefix('api/v1');
+  // app.setGlobalPrefix('api/v1');
   if (!existDir(process.env.EDV_CONFIG_DIR)) {
     createDir(process.env.EDV_CONFIG_DIR);
   }
@@ -119,7 +126,7 @@ async function bootstrap() {
     //   ], // don't include, say, BearsModule
     // });
     const orgDocuments = SwaggerModule.createDocument(app, orgDocConfig, {
-      include: [AppAuthModule, OrgUserModule, AppOauthModule], // don't include, say, BearsModule
+      include: [AppAuthModule, AppOauthModule, UserModule], // don't include, say, BearsModule
     });
     const tenantOptions = {
       swaggerOptions: {
@@ -136,37 +143,56 @@ async function bootstrap() {
     Logger.error(e);
   }
 
-  try {
-    // Session for super admin
-    if (
-      !config.get('SUPER_ADMIN_USERNAME') ||
-      !config.get('SUPER_ADMIN_PASSWORD')
-    ) {
-      throw new Error(
-        'SUPER_ADMIN_USERNAME or SUPER_ADMIN_PASSWORD are not set in env',
-      );
-    }
+  // try {
+  //   // Session for super admin
+  //   if (
+  //     !config.get('SUPER_ADMIN_USERNAME') ||
+  //     !config.get('SUPER_ADMIN_PASSWORD')
+  //   ) {
+  //     throw new Error(
+  //       'SUPER_ADMIN_USERNAME or SUPER_ADMIN_PASSWORD are not set in env',
+  //     );
+  //   }
 
-    if (!config.get('SESSION_SECRET_KEY')) {
-      throw new Error('SESSION_KEY is not set in env');
-    }
-    Logger.log('Setting up session start', 'main');
-    app.use(
-      session({
-        secret: config.get('SESSION_SECRET_KEY'),
-        resave: false,
-        saveUninitialized: false,
-        cookie: { maxAge: 3600000 },
-      }),
-    );
-    app.use(passport.initialize());
-    app.use(passport.session());
-    Logger.log('Setting up session finished', 'main');
-  } catch (e) {
-    Logger.error(e);
-  }
+  //   if (!config.get('SESSION_SECRET_KEY')) {
+  //     throw new Error('SESSION_KEY is not set in env');
+  //   }
+  //   Logger.log('Setting up session start', 'main');
+  //   app.use(
+  //     session({
+  //       secret: config.get('SESSION_SECRET_KEY'),
+  //       resave: false,
+  //       saveUninitialized: false,
+  //       cookie: { maxAge: 3600000 },
+  //     }),
+  //   );
+  //   app.use(passport.initialize());
+  //   app.use(passport.session());
+  //   Logger.log('Setting up session finished', 'main');
+  // } catch (e) {
+  //   Logger.error(e);
+  // }
 
-  await app.listen(process.env.PORT || 3001);
+  // Only Allowing frontends which are mentioned in env
+  const allowedOriginInEnv = JSON.parse(config.get('WHITELISTED_CORS')); // ["http://localhost:9001","https://wallet-jagrat.hypersign.id"]
+  app.use(
+    cors({
+      origin: allowedOriginInEnv,
+      methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+      credentials: true,
+    }),
+  );
+
+  const server = await app.listen(process.env.PORT || 3001);
+
+  // TODO: we might not need to pass hidWalletInstance.offlineSigner since this sdk only verifies presenatation
+  const hypersignAuth = new HypersignAuth(
+    server,
+    hidWalletInstance.offlineSigner,
+  );
+  await hypersignAuth.init();
+  globalThis.hypersignAuth = hypersignAuth;
+
   Logger.log(
     `Server running on http://localhost:${process.env.PORT}`,
     'Bootstrap',

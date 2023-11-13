@@ -39,8 +39,8 @@ import { AuthenticatedGuard } from 'src/org-user/guard/authenticated.guard';
 
 @UseFilters(AllExceptionsFilter)
 @ApiTags('Super Admin')
-@Controller('app')
-@UseGuards(AuthenticatedGuard)
+@Controller('/api/v1/app')
+// @UseGuards(AuthenticatedGuard)
 export class AppAuthController {
   constructor(private readonly appAuthService: AppAuthService) {}
   @UseInterceptors(

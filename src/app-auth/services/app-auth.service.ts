@@ -120,7 +120,6 @@ export class AppAuthService {
     delete appResponse['__v'];
     delete appResponse['apiKeySecret'];
     delete appResponse['apiKeyPrefix'];
-    Logger.log('App created successfully', 'app-auth-service');
     return appResponse;
   }
 
@@ -179,7 +178,10 @@ export class AppAuthService {
 
     await this.appRepository.findOneAndUpdate(
       { appId: app.appId, userId },
-      { apiKeyPrefix: apiSecretKey.split('.')[0], apiKeySecret: apiSecret },
+      {
+        apiKeyPrefix: apiSecretKey.split('.')[0],
+        apiKeySecret: apiSecret,
+      },
     );
 
     return { apiSecretKey };
@@ -201,10 +203,10 @@ export class AppAuthService {
     });
   }
 
-  async getAppById(appId: string, userId: string): Promise<createAppResponse> {
+  async getAppById(appId: string, userId: string): Promise<any> {
     Logger.log('getAppById() method: starts....', 'AppAuthService');
     const app: App = await this.appRepository.findOne({ appId, userId });
-    return this.getAppResponse(app);
+    return app;
   }
 
   async updateAnApp(
