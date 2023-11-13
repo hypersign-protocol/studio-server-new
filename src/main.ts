@@ -68,11 +68,14 @@ async function bootstrap() {
   if (!existDir(process.env.EDV_CONFIG_DIR)) {
     createDir(process.env.EDV_CONFIG_DIR);
   }
-  if (!existDir(process.env.EDV_DID_FILE_PATH)) {
-    store(kmsVaultWallet.didDocument, process.env.EDV_DID_FILE_PATH);
+  const EDV_DID_FILE_PATH = `${process.env.EDV_CONFIG_DIR}/edv-did.json`
+  if (!existDir(EDV_DID_FILE_PATH)) {
+    store(kmsVaultWallet.didDocument, EDV_DID_FILE_PATH);
   }
-  if (!existDir(process.env.EDV_KEY_FILE_PATH)) {
-    store(kmsVaultWallet.keys, process.env.EDV_KEY_FILE_PATH);
+
+  const EDV_KEY_FILE_PATH = `${process.env.EDV_CONFIG_DIR}/edv-keys.json`
+  if (!existDir(EDV_KEY_FILE_PATH)) {
+    store(kmsVaultWallet.keys, EDV_KEY_FILE_PATH);
   }
 
   const config = new ConfigService();
@@ -100,24 +103,24 @@ async function bootstrap() {
     // Swagger documentation setup
 
     const orgDocConfig = new DocumentBuilder()
-      .setTitle('Entity Studio SSI API Playground')
+      .setTitle('Entity Studio API')
       .setDescription('Open API Documentation of the Entity Studio')
       .setVersion('1.0')
       .build();
 
-    const tenantDocConfig = new DocumentBuilder()
-      .setTitle('Entity Studio SSI API Playground')
-      .setDescription('Open API Documentation of the Entity Studio')
-      .addBearerAuth(
-        {
-          type: 'http',
-          name: 'Authorization',
-          in: 'header',
-        },
-        'Authorization',
-      )
-      .setVersion('1.0')
-      .build();
+    // const tenantDocConfig = new DocumentBuilder()
+    //   .setTitle('Entity Studio SSI API Playground')
+    //   .setDescription('Open API Documentation of the Entity Studio')
+    //   .addBearerAuth(
+    //     {
+    //       type: 'http',
+    //       name: 'Authorization',
+    //       in: 'header',
+    //     },
+    //     'Authorization',
+    //   )
+    //   .setVersion('1.0')
+    //   .build();
 
     // const tenantDocuments = SwaggerModule.createDocument(app, tenantDocConfig, {
     //   include: [

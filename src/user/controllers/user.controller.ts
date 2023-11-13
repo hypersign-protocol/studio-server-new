@@ -35,7 +35,7 @@ import { AuthenticatedGuard } from 'src/org-user/guard/authenticated.guard';
 import { UserService } from '../services/user.service';
 
 @UseFilters(AllExceptionsFilter)
-@ApiTags('Super Admin')
+@ApiTags('Authentication')
 @Controller()
 export class UserController {
   constructor(private readonly userService: UserService) {}

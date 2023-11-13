@@ -29,8 +29,8 @@ import {
 } from './dtos/generate-token.dto';
 
 @UseFilters(AllExceptionsFilter)
-@ApiTags('Super Admin')
-@Controller('app')
+@ApiTags('Application')
+@Controller('/api/v1/app')
 export class AppOauthController {
   constructor(private readonly appAuthService: AppAuthService) {}
 
