@@ -33,22 +33,33 @@ import { AllExceptionsFilter } from '../../utils/utils';
 import { PaginationDto } from 'src/utils/pagination.dto';
 import { AuthenticatedGuard } from 'src/org-user/guard/authenticated.guard';
 import { UserService } from '../services/user.service';
+import { UserRepository } from '../repository/user.repository';
 
 @UseFilters(AllExceptionsFilter)
 @ApiTags('Super Admin')
 @Controller()
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(
+    private readonly userService: UserService,
+    private readonly userRepository: UserRepository,
+  ) {}
 
   @Post('/hs/api/v2/auth')
   @UsePipes(new ValidationPipe({ transform: true }))
-  authenticate(@Res() res: any, @Req() req: any, @Body() body: any) {
+  async authenticate(@Res() res: any, @Req() req: any, @Body() body: any) {
     Logger.log('authenticate() method: starts', 'userController');
 
     const { hypersign } = body;
     Logger.log(hypersign);
     const { user } = hypersign.data;
-    Logger.log(user);
+    let userInfo = await this.userRepository.findOne({ email: user.email });
+    if (!userInfo) {
+      userInfo = await this.userRepository.create({
+        email: user.email,
+        did: user.id,
+        userId: user.appUserID,
+      });
+    }
     res.status(200).json({
       status: 200,
       message: user,

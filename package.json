@@ -42,7 +42,7 @@
     "fs": "^0.0.1-security",
     "hid-hd-wallet": "git+https://github.com/hypersign-protocol/hid-hd-wallet.git#main",
     "hs-ssi-sdk": "7.0.1",
-    "hypersign-auth-node-sdk": "^6.3.2",
+    "hypersign-auth-node-sdk": "^6.3.4",
     "hypersign-edv-client": "github:hypersign-protocol/hypersign-edv-client#develop",
     "mongoose": "^6.8.3",
     "passport": "^0.6.0",
@@ -50,7 +50,8 @@
     "passport-local": "^1.0.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.2.0",
-    "swagger-ui-express": "^4.6.0"
+    "swagger-ui-express": "^4.6.0",
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
     "@nestjs/cli": "^9.0.0",

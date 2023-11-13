@@ -40,7 +40,6 @@ import { AuthenticatedGuard } from 'src/org-user/guard/authenticated.guard';
 @UseFilters(AllExceptionsFilter)
 @ApiTags('Super Admin')
 @Controller('/api/v1/app')
-// @UseGuards(AuthenticatedGuard)
 export class AppAuthController {
   constructor(private readonly appAuthService: AppAuthService) {}
   @UseInterceptors(
@@ -133,12 +132,11 @@ export class AppAuthController {
     type: AppError,
   })
   @UsePipes(new ValidationPipe({ transform: true }))
-  register(
+  async register(
     @Req() req: any,
     @Body() createAppDto: CreateAppDto,
   ): Promise<createAppResponse> {
     Logger.log('register() method: starts', 'AppAuthController');
-
     const userId = req.user.userId;
 
     return this.appAuthService.createAnApp(createAppDto, userId);
