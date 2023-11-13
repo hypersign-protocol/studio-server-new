@@ -20,7 +20,7 @@ import { JwtStrategy } from './strategy/jwt.strategy';
 import { AppAuthApiKeyService } from './services/app-auth-apikey.service';
 import { TrimMiddleware } from 'src/utils/middleware/trim.middleware';
 import { HypersignAuthorizeMiddleware } from 'src/utils/middleware/hypersign-authorize.middleware';
-import { HypersignAuthDataTransformerMiddleware } from 'src/utils/middleware/tranform-hypersign-user-data';
+import { HypersignAuthDataTransformerMiddleware } from '../user/middleware/tranform-hypersign-user-data';
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: App.name, schema: AppSchema }]),

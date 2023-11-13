@@ -10,10 +10,17 @@ import { HypersignAuthenticateMiddleware } from 'src/utils/middleware/hypersign-
 import { WhitelistAppCorsMiddleware } from 'src/app-auth/middlewares/cors.middleware';
 import { AppAuthModule } from 'src/app-auth/app-auth.module';
 import { HypersignAuthorizeMiddleware } from 'src/utils/middleware/hypersign-authorize.middleware';
+import { UserRepository } from './repository/user.repository';
+import { MongooseModule } from '@nestjs/mongoose';
+import { UserSchema, User } from './schema/user.schema';
 @Module({
-  imports: [AppAuthModule],
+  imports: [
+    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+    AppAuthModule,
+  ],
   controllers: [UserController],
-  providers: [UserService],
+  providers: [UserService, UserRepository],
+  exports: [UserRepository, UserModule],
 })
 export class UserModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
