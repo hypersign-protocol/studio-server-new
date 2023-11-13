@@ -68,12 +68,12 @@ async function bootstrap() {
   if (!existDir(process.env.EDV_CONFIG_DIR)) {
     createDir(process.env.EDV_CONFIG_DIR);
   }
-  const EDV_DID_FILE_PATH = `${process.env.EDV_CONFIG_DIR}/edv-did.json`
+  const EDV_DID_FILE_PATH = `${process.env.EDV_CONFIG_DIR}/edv-did.json`;
   if (!existDir(EDV_DID_FILE_PATH)) {
     store(kmsVaultWallet.didDocument, EDV_DID_FILE_PATH);
   }
 
-  const EDV_KEY_FILE_PATH = `${process.env.EDV_CONFIG_DIR}/edv-keys.json`
+  const EDV_KEY_FILE_PATH = `${process.env.EDV_CONFIG_DIR}/edv-keys.json`;
   if (!existDir(EDV_KEY_FILE_PATH)) {
     store(kmsVaultWallet.keys, EDV_KEY_FILE_PATH);
   }
