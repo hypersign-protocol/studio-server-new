@@ -76,7 +76,6 @@ export class AppAuthController {
     @Query() pageOption: PaginationDto,
   ): Promise<App[]> {
     Logger.log('getApps() method: starts', 'AppAuthController');
-    Logger.log(req.user);
     const userId = req.user.userId;
     const appList: any = await this.appAuthService.getAllApps(
       userId,

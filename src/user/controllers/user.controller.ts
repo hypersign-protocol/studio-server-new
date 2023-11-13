@@ -60,11 +60,7 @@ export class UserController {
   @UsePipes(new ValidationPipe({ transform: true }))
   authorize(@Res() res: any, @Req() req: any, @Body() body: any) {
     Logger.log('authorize() method: starts', 'userController');
-
     const { hypersign } = body;
-    Logger.log(hypersign);
-    const { user } = hypersign.data;
-    Logger.log(user);
     res.status(200).json({
       status: 200,
       message: hypersign.data,
