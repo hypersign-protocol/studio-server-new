@@ -31,6 +31,6 @@ export class HypersignAuthenticateMiddleware implements NestMiddleware {
       userId = userIndb.userId;
     }
 
-    await globalThis.hypersignAuth.authenticate(req, res, next, userId);
+    return globalThis.hypersignAuth.authenticate(req, res, next, userId);
   }
 }
