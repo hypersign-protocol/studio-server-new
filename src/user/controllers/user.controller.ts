@@ -1,56 +1,30 @@
 import {
   Controller,
-  Get,
   ValidationPipe,
   Post,
   UsePipes,
   Body,
-  Put,
-  Param,
-  UseInterceptors,
-  HttpCode,
   UseFilters,
-  Query,
-  UseGuards,
-  Req,
-  Delete,
   Logger,
   Res,
+  Req,
 } from '@nestjs/common';
-import { CreateAppDto } from 'src/app-auth/dtos/create-app.dto';
-import { AppAuthService } from 'src/app-auth/services/app-auth.service';
-import {
-  ApiBadRequestResponse,
-  ApiCreatedResponse,
-  ApiNotFoundResponse,
-  ApiQuery,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
-import { AppNotFoundException } from 'src/app-auth/exceptions/app-not-found.exception';
-import { MongooseClassSerializerInterceptor } from '../../utils/utils';
+
+import { ApiTags } from '@nestjs/swagger';
 import { AllExceptionsFilter } from '../../utils/utils';
-import { PaginationDto } from 'src/utils/pagination.dto';
-import { AuthenticatedGuard } from 'src/org-user/guard/authenticated.guard';
-import { UserService } from '../services/user.service';
 import { UserRepository } from '../repository/user.repository';
 
 @UseFilters(AllExceptionsFilter)
 @ApiTags('Authentication')
 @Controller()
 export class UserController {
-  constructor(
-    private readonly userService: UserService,
-    private readonly userRepository: UserRepository,
-  ) {}
+  constructor(private readonly userRepository: UserRepository) {}
 
   @Post('/hs/api/v2/auth')
   @UsePipes(new ValidationPipe({ transform: true }))
   async authenticate(@Res() res: any, @Req() req: any, @Body() body: any) {
     Logger.log('authenticate() method: starts', 'userController');
-
     const { hypersign } = body;
-    Logger.log(hypersign);
     const { user } = hypersign.data;
     let userInfo = await this.userRepository.findOne({ email: user.email });
     if (!userInfo) {

@@ -15,12 +15,8 @@ import { EdvClientKeysManager } from './edv/services/edv.singleton';
 import { VaultWalletManager } from './edv/services/vaultWalletManager';
 import { AppAuthModule } from './app-auth/app-auth.module';
 import { AppOauthModule } from './app-oauth/app-oauth.module';
-import { OrgUserModule } from './org-user/org-user.module';
 //import { Header } from '@nestjs/common';
 import * as cors from 'cors';
-
-import * as session from 'express-session';
-import * as passport from 'passport';
 import { UserModule } from './user/user.module';
 
 // eslint-disable-next-line
@@ -63,8 +59,6 @@ async function bootstrap() {
   const kmsVaultWallet = await VaultWalletManager.getWallet(
     mnemonic_EnglishMnemonic,
   );
-
-  // app.setGlobalPrefix('api/v1');
   if (!existDir(process.env.EDV_CONFIG_DIR)) {
     createDir(process.env.EDV_CONFIG_DIR);
   }
@@ -108,26 +102,6 @@ async function bootstrap() {
       .setVersion('1.0')
       .build();
 
-    // const tenantDocConfig = new DocumentBuilder()
-    //   .setTitle('Entity Studio SSI API Playground')
-    //   .setDescription('Open API Documentation of the Entity Studio')
-    //   .addBearerAuth(
-    //     {
-    //       type: 'http',
-    //       name: 'Authorization',
-    //       in: 'header',
-    //     },
-    //     'Authorization',
-    //   )
-    //   .setVersion('1.0')
-    //   .build();
-
-    // const tenantDocuments = SwaggerModule.createDocument(app, tenantDocConfig, {
-    //   include: [
-    //     AppOauthModule,
-
-    //   ], // don't include, say, BearsModule
-    // });
     const orgDocuments = SwaggerModule.createDocument(app, orgDocConfig, {
       include: [AppAuthModule, AppOauthModule, UserModule], // don't include, say, BearsModule
     });

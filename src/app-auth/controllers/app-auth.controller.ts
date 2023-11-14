@@ -11,7 +11,6 @@ import {
   HttpCode,
   UseFilters,
   Query,
-  UseGuards,
   Req,
   Delete,
   Logger,
@@ -35,8 +34,6 @@ import { AllExceptionsFilter } from '../../utils/utils';
 import { AppError, GetAppList } from '../dtos/fetch-app.dto';
 import { PaginationDto } from 'src/utils/pagination.dto';
 import { TransformResponseInterceptor } from '../interceptors/transformResponse.interseptor';
-import { AuthenticatedGuard } from 'src/org-user/guard/authenticated.guard';
-
 @UseFilters(AllExceptionsFilter)
 @ApiTags('Application')
 @Controller('/api/v1/app')
