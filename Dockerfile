@@ -3,8 +3,9 @@ WORKDIR /usr/src/app
 COPY ./package.json .
 COPY ./tsconfig.json .
 COPY ./hypersign.json .
-RUN npm install
 COPY . .
+RUN npm cache clean --force
+RUN npm install
 CMD ["npm","run", "start:dev"]
 
 
