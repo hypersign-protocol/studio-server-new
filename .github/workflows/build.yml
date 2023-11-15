@@ -1,4 +1,4 @@
-name: Studio API Build Workflow
+name: Studio Server Build Workflow
 
 on:
   pull_request:

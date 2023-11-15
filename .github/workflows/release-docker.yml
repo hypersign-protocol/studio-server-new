@@ -1,4 +1,4 @@
-name: Studio API Release Docker Workflow
+name: Studio Server Release Docker Workflow
 
 on: push
 
