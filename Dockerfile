@@ -3,9 +3,9 @@ WORKDIR /usr/src/app
 COPY ./package.json .
 COPY ./tsconfig.json .
 COPY ./hypersign.json .
+RUN npm install
 COPY . .
-RUN yarn
-CMD ["yarn", "start:dev"]
+CMD ["npm","run", "start:dev"]
 
 
 
