@@ -16,7 +16,6 @@ import { HidWalletModule } from 'src/hid-wallet/hid-wallet.module';
 import { EdvModule } from 'src/edv/edv.module';
 import { AppAuthSecretService } from './services/app-auth-passord.service';
 import { JwtModule } from '@nestjs/jwt';
-import { JwtStrategy } from './strategy/jwt.strategy';
 import { AppAuthApiKeyService } from './services/app-auth-apikey.service';
 import { TrimMiddleware } from 'src/utils/middleware/trim.middleware';
 import { HypersignAuthorizeMiddleware } from 'src/utils/middleware/hypersign-authorize.middleware';
@@ -34,7 +33,6 @@ import { HypersignAuthDataTransformerMiddleware } from '../user/middleware/tranf
     AppRepository,
     HidWalletService,
     AppAuthSecretService,
-    JwtStrategy,
     AppAuthApiKeyService,
   ],
   controllers: [AppAuthController],
