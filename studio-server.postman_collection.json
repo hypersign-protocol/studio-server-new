@@ -2478,10 +2478,7 @@
                 {
                   "listen": "prerequest",
                   "script": {
-                    "exec": [
-                      "const url= pm.environment.get('tenantUrl')\r",
-                      "console.log(url)"
-                    ],
+                    "exec": ["const url= pm.environment.get('tenantUrl')\r"],
                     "type": "text/javascript"
                   }
                 }
@@ -3861,7 +3858,6 @@
                       "})",
                       "pm.test(\"Should not be able to regenerate appSecret as appId passed in request params is wrong\", function () {",
                       "    pm.expect(responseBody.hasOwnProperty(\"statusCode\")).to.be.true;",
-                      "    console.log(responseBody.statusCode)",
                       "    pm.expect(responseBody.statusCode).to.be.a('number')",
                       "    pm.expect(responseBody.statusCode).to.be.equal(400)",
                       "    pm.expect(responseBody.hasOwnProperty(\"message\")).to.be.true;",
@@ -4598,11 +4594,11 @@
   "variable": [
     {
       "key": "studio-server-base-url",
-      "value": "http://localhost:3002"
+      "value": "{{studio-server-base-url}}"
     },
     {
       "key": "studio-server-auth",
-      "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiVmFyc2hhIGt1bWFyaSIsImVtYWlsIjoidmFyc2hha3VtYXJpMzcwQGdtYWlsLmNvbSIsImlkIjoiZGlkOmhpZDp0ZXN0bmV0OnoySkZBRWdmRzViN1BoakhtQ0d1QWVSUHpxVWFKM1RlOUxVeWNiRE1SekR3SCIsImFwcFVzZXJJRCI6ImFiOGQ0OGUwLTYwZWItNDM3Yy05YTg2LWUwNjMwODBiMjk0MyIsImlhdCI6MTY5OTk1MTY1OCwiZXhwIjoxNzAwMDcxNjU4fQ.nGSYonNcHDu1xLOGAjU8L3Rh9SbpwrHRtw6jGSRIdco"
+      "value": "{{studio-server-auth-token}}"
     },
     {
       "key": "appId",
