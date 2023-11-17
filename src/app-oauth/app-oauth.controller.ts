@@ -18,10 +18,7 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { AllExceptionsFilter } from 'src/utils/utils';
-import {
-  AppSecretHeader,
-  AppSubdomainHeader,
-} from './dtos/app-sercret.decorator';
+import { AppSecretHeader } from './dtos/app-sercret.decorator';
 import {
   GenerateTokenError,
   GenerateTokenResponse,
