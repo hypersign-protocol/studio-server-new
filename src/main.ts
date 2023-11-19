@@ -97,8 +97,8 @@ async function bootstrap() {
     // Swagger documentation setup
 
     const orgDocConfig = new DocumentBuilder()
-      .setTitle('Entity Studio API')
-      .setDescription('Open API Documentation of the Entity Studio')
+      .setTitle('Entity Developer Dashboard Service API')
+      .setDescription('Open API Documentation for Entity Developer Dashboard')
       .setVersion('1.0')
       .build();
 
@@ -110,7 +110,7 @@ async function bootstrap() {
         defaultModelsExpandDepth: -1,
       },
       customfavIcon: '/Entity_favicon.png',
-      customSiteTitle: 'API-Playground',
+      customSiteTitle: 'Entity Developer Documentation',
       customCss: ` .topbar-wrapper img {content:url(\'./Entity_full.png\'); width:135px; height:auto;margin-left: -150px;}
       .swagger-ui .topbar { background-color: #fff; }`,
     };

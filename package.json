@@ -1,7 +1,7 @@
 {
-  "name": "studio-api",
+  "name": "entity-developer-dashboard-service",
   "version": "2.2.4",
-  "description": "",
+  "description": "Backend service for Entity Developer Dashboard",
   "author": "",
   "private": true,
   "license": "UNLICENSED",
