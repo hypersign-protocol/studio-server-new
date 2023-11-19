@@ -43,7 +43,7 @@
         "issuanceDate": "2021-06-13T07:58:30.006Z",
         "issuer": "did:hid:testnet:z8uyZoEA2JTCMWfadrSPaqyWmwzwc3qAwAM4snVrfLKue",
         "credentialSubject": {
-            "name": "Hypersign Auth",
+            "name": "Entity Developer Dashboard",
             "did": "did:hid:testnet:z8uyZoEA2JTCMWfadrSPaqyWmwzwc3qAwAM4snVrfLKue",
             "owner": "did:hid:testnet:z8uyZoEA2JTCMWfadrSPaqyWmwzwc3qAwAM4snVrfLKue",
             "schemaId": "sch:hid:testnet:zufjU7LuQuJNFiUpuhCwYkTrakUu1VmtxE9SPi5TwfUB:1.0",
