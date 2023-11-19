@@ -23,13 +23,12 @@ import { randomUUID } from 'crypto';
 // eslint-disable-next-line
 const HypersignAuth = require('hypersign-auth-node-sdk');
 
-
 const hidNetworkUrls = Object.freeze({
   testnet: {
-      rpc: 'https://rpc.jagrat.hypersign.id/',
-      rest: 'https://api.jagrat.hypersign.id/',
-  }
-})
+    rpc: 'https://rpc.jagrat.hypersign.id/',
+    rest: 'https://api.jagrat.hypersign.id/',
+  },
+});
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
@@ -173,24 +172,36 @@ async function bootstrap() {
   // TODO: we might not need to pass hidWalletInstance.offlineSigner since this sdk only verifies presenatation
   // This way we do not have to pass hypersign.json config file
   const hypersignAuthOptions = {
-    serviceName: "Entity Developer Dashboard",
-    serviceEp: config.get('DEVELOPER_DASHBOARD_SERVICE_PUBLIC_EP') ? config.get('DEVELOPER_DASHBOARD_SERVICE_PUBLIC_EP') : `http://localhost:${process.env.PORT}`,
-    schemaId: config.get('EMAIL_CREDENTITAL_SCHEMA_ID') ? config.get('EMAIL_CREDENTITAL_SCHEMA_ID'): "sch:hid:testnet:zufjU7LuQuJNFiUpuhCwYkTrakUu1VmtxE9SPi5TwfUB:1.0",
+    serviceName: 'Entity Developer Dashboard',
+    serviceEp: config.get('DEVELOPER_DASHBOARD_SERVICE_PUBLIC_EP')
+      ? config.get('DEVELOPER_DASHBOARD_SERVICE_PUBLIC_EP')
+      : `http://localhost:${process.env.PORT}`,
+    schemaId: config.get('EMAIL_CREDENTITAL_SCHEMA_ID')
+      ? config.get('EMAIL_CREDENTITAL_SCHEMA_ID')
+      : 'sch:hid:testnet:zufjU7LuQuJNFiUpuhCwYkTrakUu1VmtxE9SPi5TwfUB:1.0',
     accessToken: {
-      "secret": config.get('JWT_SECRET')? config.get('JWT_SECRET'): randomUUID() ,
-      "expiryTime": 120000
+      secret: config.get('JWT_SECRET')
+        ? config.get('JWT_SECRET')
+        : randomUUID(),
+      expiryTime: 120000,
     },
     refreshToken: {
-        "secret": config.get('JWT_SECRET')? config.get('JWT_SECRET'): randomUUID() ,
-        "expiryTime": 120000
+      secret: config.get('JWT_SECRET')
+        ? config.get('JWT_SECRET')
+        : randomUUID(),
+      expiryTime: 120000,
     },
-    networkUrl: config.get('HID_NETWORK_RPC')? config.get('HID_NETWORK_RPC'): hidNetworkUrls.testnet.rpc,
-    networkRestUrl: config.get('HID_NETWORK_API')? config.get('HID_NETWORK_API'): hidNetworkUrls.testnet.rest,
-}
+    networkUrl: config.get('HID_NETWORK_RPC')
+      ? config.get('HID_NETWORK_RPC')
+      : hidNetworkUrls.testnet.rpc,
+    networkRestUrl: config.get('HID_NETWORK_API')
+      ? config.get('HID_NETWORK_API')
+      : hidNetworkUrls.testnet.rest,
+  };
   const hypersignAuth = new HypersignAuth(
     server,
     hidWalletInstance.offlineSigner,
-    hypersignAuthOptions
+    hypersignAuthOptions,
   );
   await hypersignAuth.init();
   globalThis.hypersignAuth = hypersignAuth;
