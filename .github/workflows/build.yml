@@ -1,4 +1,4 @@
-name: Studio API Build Workflow
+name: Entity Developer Dashboard Build Workflow
 
 on:
   pull_request:
