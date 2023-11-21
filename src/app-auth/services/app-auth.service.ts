@@ -3,27 +3,27 @@ import {
   Injectable,
   NotFoundException,
   Logger,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { CreateAppDto } from '../dtos/create-app.dto';
-
 import { App, createAppResponse } from 'src/app-auth/schemas/app.schema';
 import { AppRepository } from '../repositories/app.repository';
 import { UpdateAppDto } from '../dtos/update-app.dto';
 import { HidWalletService } from '../../hid-wallet/services/hid-wallet.service';
-import { EdvService } from '../../edv/services/edv.service';
 import { ConfigService } from '@nestjs/config';
 import { EdvDocsDto } from 'src/edv/dtos/create-edv.dto';
 import { AppAuthSecretService } from './app-auth-passord.service';
 import { JwtService } from '@nestjs/jwt';
 import { AppAuthApiKeyService } from './app-auth-apikey.service';
-
+import { EdvClientManagerFactoryService } from '../../edv/services/edv.clientFactory';
+import { VaultWalletManager } from '../../edv/services/vaultWalletManager';
+import * as url from 'url';
 @Injectable()
 export class AppAuthService {
   constructor(
     private readonly config: ConfigService,
     private readonly appRepository: AppRepository,
     private readonly hidWalletService: HidWalletService,
-    private readonly edvService: EdvService,
     private readonly appAuthSecretService: AppAuthSecretService,
     private readonly jwt: JwtService,
     private readonly appAuthApiKeyService: AppAuthApiKeyService,
@@ -36,38 +36,129 @@ export class AppAuthService {
     Logger.log('createAnApp() method: starts....', 'AppAuthService');
     const { mnemonic, address } = await this.hidWalletService.generateWallet();
     const appId = await this.appAuthApiKeyService.generateAppId();
-    const edvId = 'hs:apiservice:edv:' + appId;
+    const vaultPrefixInEnv = this.config.get('VAULT_PREFIX');
+    const vaultPrefix = vaultPrefixInEnv ? vaultPrefixInEnv : 'hs:studio-api:';
+    const edvId = vaultPrefix + 'app:' + appId;
     Logger.log(
       'createAnApp() method: initialising edv service',
       'AppAuthService',
     );
-    await this.edvService.init(edvId);
-    const document: EdvDocsDto = {
+
+    // Store menemonic and edvId in the key manager vault and get the kmsId.
+    const doc = {
       mnemonic,
-      address,
+      edvId: edvId,
     };
+    Logger.log(
+      'createAnApp() method: Prepareing app keys to insert in kms vault',
+    );
+
+    if (!globalThis.kmsVault) {
+      throw new InternalServerErrorException('KMS vault is not initialized');
+    }
+
+    const edvDocToInsert = globalThis.kmsVault.prepareEdvDocument(doc, [
+      { index: 'content.edvId', unique: true },
+    ]);
+
+    Logger.log(
+      'createAnApp() method: Inserting app keys to insert in kms vault',
+    );
+    const { id: kmsId } = await globalThis.kmsVault.insertDocument(
+      edvDocToInsert,
+    );
+
+    // TODO use mnemonic as a seed to generate API keys
     Logger.log('createAnApp() method: generating api key', 'AppAuthService');
     const { apiSecretKey, apiSecret } =
       await this.appAuthApiKeyService.generateApiKey();
+
+    Logger.log('createAnApp() method: Preparing wallet for the app');
+    // TODO generate vault for this app.
+    const appVaultWallet = await VaultWalletManager.getWallet(mnemonic);
+    // we do not need to storing anything in the app's vault, we just create a vault for this guy
+    Logger.log('createAnApp() method: Creating vault for the app');
+    await EdvClientManagerFactoryService.createEdvClientManger(
+      appVaultWallet,
+      edvId,
+    );
+
     Logger.log(
       'createAnApp() method: before creating new app doc in db',
       'AppAuthService',
     );
-
-    const { id: edvDocId } = await this.edvService.createDocument(document);
-    const appData = await this.appRepository.create({
+    const subdomain = await this.getRandomSubdomain();
+    // Finally stroring application in db
+    const appData: App = await this.appRepository.create({
       ...createAppDto,
       userId,
       appId: appId, // generate app id
       apiKeySecret: apiSecret, // TODO: generate app secret and should be handled like password by hashing and all...
       edvId, // generate edvId  by called hypersign edv service
-      kmsId: 'demo-kms-1',
-      edvDocId,
+      kmsId: kmsId,
       walletAddress: address,
       apiKeyPrefix: apiSecretKey.split('.')[0],
+      subdomain,
     });
-    appData.apiKeySecret = apiSecretKey;
-    return appData;
+
+    Logger.log('App created successfully', 'app-auth-service');
+    return this.getAppResponse(appData, apiSecretKey);
+  }
+
+  private getAppResponse(
+    appData: App,
+    apiSecretKey?: string,
+  ): createAppResponse {
+    const appResponse: createAppResponse = {
+      ...appData['_doc'],
+      apiSecretKey,
+      tenantUrl: this.getTenantUrl(appData.subdomain),
+    };
+
+    delete appResponse.userId;
+    delete appResponse['_id'];
+    delete appResponse['__v'];
+    delete appResponse['apiKeySecret'];
+    delete appResponse['apiKeyPrefix'];
+    return appResponse;
+  }
+
+  private getTenantUrl(subdomain: string) {
+    const baseURl = this.config.get('ENTITY_API_SERVICE_BASE_URL')
+      ? this.config.get('ENTITY_API_SERVICE_BASE_URL')
+      : 'https://api.entity.hypersign.id';
+
+    const SERVICE_BASE_URL = url.parse(baseURl);
+
+    const tenantUrl =
+      SERVICE_BASE_URL.protocol +
+      '//' +
+      subdomain +
+      '.' +
+      SERVICE_BASE_URL.host +
+      SERVICE_BASE_URL.pathname;
+    return tenantUrl;
+  }
+
+  private async getRandomSubdomain() {
+    const subdomain = await this.appAuthApiKeyService.generateAppId(7);
+    const appInDb = await this.appRepository.findOne({
+      subdomain: subdomain,
+    });
+
+    if (!appInDb) {
+      Logger.log('Found subdomain in db, going recursively');
+      const tenantSubDomainPrefixEnv = this.config.get(
+        'TENANT_SUBDOMAIN_PREFIX',
+      );
+      return (
+        (tenantSubDomainPrefixEnv && tenantSubDomainPrefixEnv != 'undefined'
+          ? tenantSubDomainPrefixEnv
+          : 'ent_') + subdomain
+      );
+    }
+
+    await this.getRandomSubdomain();
   }
 
   async reGenerateAppSecretKey(app, userId) {
@@ -87,7 +178,10 @@ export class AppAuthService {
 
     await this.appRepository.findOneAndUpdate(
       { appId: app.appId, userId },
-      { apiKeyPrefix: apiSecretKey.split('.')[0], apiKeySecret: apiSecret },
+      {
+        apiKeyPrefix: apiSecretKey.split('.')[0],
+        apiKeySecret: apiSecret,
+      },
     );
 
     return { apiSecretKey };
@@ -109,20 +203,23 @@ export class AppAuthService {
     });
   }
 
-  async getAppById(appId: string, userId: string): Promise<App> {
+  async getAppById(appId: string, userId: string): Promise<any> {
     Logger.log('getAppById() method: starts....', 'AppAuthService');
-
-    return this.appRepository.findOne({ appId, userId });
+    const app: App = await this.appRepository.findOne({ appId, userId });
+    return app;
   }
 
-  updateAnApp(
+  async updateAnApp(
     appId: string,
     updataAppDto: UpdateAppDto,
     userId: string,
-  ): Promise<App> {
+  ): Promise<createAppResponse> {
     Logger.log('updateAnApp() method: starts....', 'AppAuthService');
-
-    return this.appRepository.findOneAndUpdate({ appId, userId }, updataAppDto);
+    const app: App = await this.appRepository.findOneAndUpdate(
+      { appId, userId },
+      updataAppDto,
+    );
+    return this.getAppResponse(app);
   }
 
   async deleteApp(appId: string, userId: string): Promise<App> {
@@ -181,6 +278,10 @@ export class AppAuthService {
       appId: appDetail.appId,
       userId: appDetail.userId,
       grantType,
+      kmsId: appDetail.kmsId,
+      whitelistedCors: appDetail.whitelistedCors,
+      subdomain: appDetail.subdomain,
+      edvId: appDetail.edvId,
     };
 
     const secret = this.config.get('JWT_SECRET');

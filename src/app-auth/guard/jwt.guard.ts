@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException, Logger } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
 @Injectable()
@@ -7,7 +7,9 @@ export class JwtGuard extends AuthGuard('jwtApp') {
     if (err || !user) {
       throw (
         err ||
-        new UnauthorizedException(['Authorization token is missing in header'])
+        new UnauthorizedException([
+          'Bearer authorization token is missing in header or could not be verified',
+        ])
       );
     }
     return user;

@@ -7,10 +7,9 @@ import { AllExceptionsFilter } from './utils/utils';
 import { APP_FILTER } from '@nestjs/core';
 
 import { AppAuthSecretService } from './app-auth/services/app-auth-passord.service';
-import { DidModule } from './did/did.module';
-import { SchemaModule } from './schema/schema.module';
-import { CredentialModule } from './credential/credential.module';
-import { PresentationModule } from './presentation/presentation.module';
+import { AppOauthModule } from './app-oauth/app-oauth.module';
+import { UserModule } from './user/user.module';
+
 @Module({
   imports: [
     AppAuthModule,
@@ -19,12 +18,9 @@ import { PresentationModule } from './presentation/presentation.module';
       isGlobal: true,
     }),
     MongooseModule.forRoot(process.env.DATABASE_CONNECTION_PATH),
-
     EdvModule,
-    DidModule,
-    SchemaModule,
-    CredentialModule,
-    PresentationModule,
+    AppOauthModule,
+    UserModule,
   ],
   controllers: [],
   providers: [

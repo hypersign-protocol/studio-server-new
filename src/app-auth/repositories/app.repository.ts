@@ -9,13 +9,39 @@ export class AppRepository {
     @InjectModel(App.name) private readonly appModel: Model<AppDocument>,
   ) {}
 
+  private appDataProjectPipelineToReturn() {
+    return {
+      appName: 1,
+      appId: 1,
+      edvId: 1,
+      walletAddress: 1,
+      description: 1,
+      logoUrl: 1,
+      whitelistedCors: 1,
+      subdomain: 1,
+      _id: 0,
+      tenantUrl: {
+        $concat: ['http://', '$subdomain', '.localhost:8080'], // TODO url Parse `${http(s)}://${$subdomain}.${host}`
+      },
+    };
+  }
   async findOne(appFilterQuery: FilterQuery<App>): Promise<App> {
     Logger.log(
       'findOne() method: starts, finding particular app from db',
       'AppRepository',
     );
-
-    return this.appModel.findOne(appFilterQuery);
+    const aggrerationPipeline = [
+      { $match: appFilterQuery },
+      {
+        $set: {
+          tenantUrl: {
+            $concat: ['http://', '$subdomain', '.localhost:8080'], // TODO url Parse `${http(s)}://${$subdomain}.${host}`
+          },
+        },
+      },
+    ];
+    const apps = await this.appModel.aggregate(aggrerationPipeline);
+    return apps[0];
   }
   async find(appsFilterQuery: FilterQuery<App>): Promise<App[]> {
     Logger.log(
@@ -32,16 +58,7 @@ export class AppRepository {
             { $skip: appsFilterQuery.paginationOption.skip },
             { $limit: appsFilterQuery.paginationOption.limit },
             {
-              $project: {
-                appName: 1,
-                appId: 1,
-                edvId: 1,
-                walletAddress: 1,
-                description: 1,
-                logoUrl: 1,
-                whitelistedCors: 1,
-                _id: 0,
-              },
+              $project: this.appDataProjectPipelineToReturn(),
             },
           ],
         },

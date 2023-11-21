@@ -46,14 +46,16 @@ export class App {
   })
   @Prop()
   edvId: string;
-  @ApiHideProperty()
+
+  //@ApiHideProperty()
   @Prop()
-  @Exclude()
-  edvDocId: string;
-  @ApiHideProperty()
-  @Prop()
-  @Exclude()
+  //@Exclude()
+  @ApiProperty({
+    description: 'Key Manager Service Id',
+    example: 'KMS Id for this application',
+  })
   kmsId: string;
+
   @ApiHideProperty()
   @Prop()
   apiKeyPrefix: string;
@@ -93,6 +95,11 @@ export class App {
   @IsUrl()
   @Prop({ required: false })
   logoUrl: string;
+
+  @IsOptional()
+  @IsString()
+  @Prop({ required: false, unique: true })
+  subdomain: string;
 }
 
 export class createAppResponse extends App {
@@ -102,6 +109,13 @@ export class createAppResponse extends App {
   })
   @Prop()
   apiKeySecret: string;
+
+  @ApiProperty({
+    description: 'Your base API url',
+    example: 'yoursubdomain.api.entity.hypersign.id',
+  })
+  @Prop()
+  tenantUrl: string;
 }
 
 export const AppSchema = SchemaFactory.createForClass(App);

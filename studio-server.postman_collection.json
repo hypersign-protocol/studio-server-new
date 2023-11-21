@@ -1,0 +1,4609 @@
+{
+  "info": {
+    "_postman_id": "80c97de5-600c-482d-bc80-43657c527b35",
+    "name": "studio-server",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "13310082"
+  },
+  "item": [
+    {
+      "name": "app-auth",
+      "item": [
+        {
+          "name": "register app",
+          "item": [
+            {
+              "name": "auth token not passed",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "var responseBody = pm.response.json()",
+                      "pm.test(\"Status code is 403\", function () {",
+                      "    pm.response.to.have.status(403);",
+                      "});",
+                      "pm.test('Response body should be an object', function () {",
+                      "    pm.expect(typeof responseBody).to.equal(\"object\")",
+                      "})",
+                      "pm.test(\"Should not be able to register an app as authToken is not passed in header\", function () {",
+                      "    pm.expect(responseBody.hasOwnProperty(\"hypersign\")).to.be.true;",
+                      "    pm.expect(responseBody.hypersign).to.be.an(\"object\");",
+                      "    pm.expect(responseBody.hypersign.hasOwnProperty(\"success\")).to.be.true;",
+                      "    pm.expect(responseBody.hypersign.success).to.be.equal(false)",
+                      "    pm.expect(responseBody.hypersign.hasOwnProperty(\"message\")).to.be.true;",
+                      "    pm.expect(responseBody.hypersign.message).to.be.equal(\"HS-AUTH-NODE-SDK:: Error: Authorization token is not passed in the header\")",
+                      "    pm.expect(responseBody.hypersign.hasOwnProperty(\"data\")).to.be.true;",
+                      "",
+                      "",
+                      "});",
+                      "",
+                      "",
+                      ""
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "origin",
+                    "value": "http://localhost:3001",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"appName\":\"  \",\n    \"description\":\"This is a test description\",\n    \"whitelistedCors\":[\"http://localhost:3001/\",\"*\"],\n      \"logoUrl\": \"http://image.png\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{studio-server-base-url}}/api/v1/app",
+                  "host": ["{{studio-server-base-url}}"],
+                  "path": ["api", "v1", "app"]
+                }
+              },
+              "response": [
+                {
+                  "name": "auth token not passed",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "origin",
+                        "value": "http://localhost:3001",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n    \"appName\":\"  \",\n    \"description\":\"This is a test description\",\n    \"whitelistedCors\":[\"http://localhost:3001/\",\"*\"],\n      \"logoUrl\": \"http://image.png\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "http://localhost:3002/api/v1/app",
+                      "protocol": "http",
+                      "host": ["localhost"],
+                      "port": "3002",
+                      "path": ["api", "v1", "app"]
+                    }
+                  },
+                  "status": "Forbidden",
+                  "code": 403,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "X-Powered-By",
+                      "value": "Express"
+                    },
+                    {
+                      "key": "Vary",
+                      "value": "Origin"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Credentials",
+                      "value": "true"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json; charset=utf-8"
+                    },
+                    {
+                      "key": "Content-Length",
+                      "value": "127"
+                    },
+                    {
+                      "key": "ETag",
+                      "value": "W/\"7f-whgJttHrAINLbnaZSk4ZbGq0u1s\""
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Tue, 14 Nov 2023 11:48:48 GMT"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Keep-Alive",
+                      "value": "timeout=5"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"hypersign\": {\n        \"success\": false,\n        \"message\": \"HS-AUTH-NODE-SDK:: Error: Authorization token is not passed in the header\",\n        \"data\": {}\n    }\n}"
+                }
+              ]
+            },
+            {
+              "name": "invalid authtoken",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "var responseBody = pm.response.json()",
+                      "pm.test(\"Status code is 403\", function () {",
+                      "    pm.response.to.have.status(403);",
+                      "});",
+                      "pm.test('Response body should be an object', function () {",
+                      "    pm.expect(typeof responseBody).to.equal(\"object\")",
+                      "})",
+                      "pm.test(\"Should not be able to register an app as authToken passed in header is invalid \", function () {",
+                      " ",
+                      "    pm.expect(responseBody.hasOwnProperty(\"hypersign\")).to.be.true;",
+                      "    pm.expect(responseBody.hypersign).to.be.an(\"object\");",
+                      "    pm.expect(responseBody.hypersign.hasOwnProperty(\"success\")).to.be.true;",
+                      "    pm.expect(responseBody.hypersign.success).to.be.equal(false)",
+                      "    pm.expect(responseBody.hypersign.hasOwnProperty(\"message\")).to.be.true;",
+                      "    pm.expect(responseBody.hypersign.message).to.be.equal(\"invalid token\")",
+                      "    pm.expect(responseBody.hypersign.hasOwnProperty(\"data\")).to.be.true;",
+                      "",
+                      "",
+                      "});",
+                      "",
+                      "",
+                      ""
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "eywsdvklfvhsdbksmvf.eehnfd,mnsxzcfired.wkrirogkfdkfneiwfkfdvnjekffbjjlffvafrufwd",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "origin",
+                    "value": "http://localhost:3001",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"appName\":\"  \",\n    \"description\":\"This is a test description\",\n    \"whitelistedCors\":[\"http://localhost:3001/\",\"*\"],\n      \"logoUrl\": \"http://image.png\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{studio-server-base-url}}/api/v1/app",
+                  "host": ["{{studio-server-base-url}}"],
+                  "path": ["api", "v1", "app"]
+                }
+              },
+              "response": [
+                {
+                  "name": "auth token not passed Copy",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "origin",
+                        "value": "http://localhost:3001",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n    \"appName\":\"  \",\n    \"description\":\"This is a test description\",\n    \"whitelistedCors\":[\"http://localhost:3001/\",\"*\"],\n      \"logoUrl\": \"http://image.png\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{studio-server-base-url}}/api/v1/app",
+                      "host": ["{{studio-server-base-url}}"],
+                      "path": ["api", "v1", "app"]
+                    }
+                  },
+                  "status": "Forbidden",
+                  "code": 403,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "X-Powered-By",
+                      "value": "Express"
+                    },
+                    {
+                      "key": "Vary",
+                      "value": "Origin"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Credentials",
+                      "value": "true"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json; charset=utf-8"
+                    },
+                    {
+                      "key": "Content-Length",
+                      "value": "67"
+                    },
+                    {
+                      "key": "ETag",
+                      "value": "W/\"43-1BX/VR1K6uZ38Xr6ZLqH3aSWpQY\""
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Tue, 14 Nov 2023 13:09:47 GMT"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Keep-Alive",
+                      "value": "timeout=5"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"hypersign\": {\n        \"success\": false,\n        \"message\": \"invalid token\",\n        \"data\": {}\n    }\n}"
+                }
+              ]
+            },
+            {
+              "name": "empty appName",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "var responseBody = pm.response.json()",
+                      "pm.test(\"Status code is 400\", function () {",
+                      "    pm.response.to.have.status(400);",
+                      "});",
+                      "pm.test('Response body should be an object', function () {",
+                      "    pm.expect(typeof responseBody).to.equal(\"object\")",
+                      "})",
+                      "pm.test(\"Should not able to register an app and fail as appName passed in request body is empty or less than 5 characters\", function () {",
+                      "    pm.expect(responseBody.hasOwnProperty(\"statusCode\")).to.be.true;",
+                      "    pm.expect(responseBody.statusCode).to.be.a('number')",
+                      "    pm.expect(responseBody.statusCode).to.be.equal(400)",
+                      "    pm.expect(responseBody.hasOwnProperty(\"message\")).to.be.true;",
+                      "    pm.expect(responseBody.message).to.be.an(\"array\");",
+                      "    pm.expect(responseBody.message[0]).to.be.equal(\"appName must be longer than or equal to 5 characters\")",
+                      "    pm.expect(responseBody.hasOwnProperty(\"error\")).to.be.true;",
+                      "    pm.expect(responseBody.error).to.be.equal(\"Bad Request\")",
+                      "",
+                      "});",
+                      "",
+                      "",
+                      ""
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{studio-server-auth}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "origin",
+                    "value": "{{Origin}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"appName\":\"  \",\n    \"description\":\"This is a test description\",\n    \"whitelistedCors\":[\"http://localhost:3001/\",\"*\"],\n      \"logoUrl\": \"http://image.png\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{studio-server-base-url}}/api/v1/app",
+                  "host": ["{{studio-server-base-url}}"],
+                  "path": ["api", "v1", "app"]
+                }
+              },
+              "response": [
+                {
+                  "name": "empty appName",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "origin",
+                        "value": "{{Origin}}",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n    \"appName\":\"  \",\n    \"description\":\"This is a test description\",\n    \"whitelistedCors\":[\"http://localhost:3001/\",\"*\"],\n      \"logoUrl\": \"http://image.png\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "http://localhost:3002/api/v1/app",
+                      "protocol": "http",
+                      "host": ["localhost"],
+                      "port": "3002",
+                      "path": ["api", "v1", "app"]
+                    }
+                  },
+                  "status": "Bad Request",
+                  "code": 400,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "X-Powered-By",
+                      "value": "Express"
+                    },
+                    {
+                      "key": "Vary",
+                      "value": "Origin"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Credentials",
+                      "value": "true"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json; charset=utf-8"
+                    },
+                    {
+                      "key": "Content-Length",
+                      "value": "107"
+                    },
+                    {
+                      "key": "ETag",
+                      "value": "W/\"6b-l3cp1ELZZGZeH+lVSaV8ci9aStE\""
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Tue, 14 Nov 2023 11:15:57 GMT"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Keep-Alive",
+                      "value": "timeout=5"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"statusCode\": 400,\n    \"message\": [\n        \"appName must be longer than or equal to 5 characters\"\n    ],\n    \"error\": \"Bad Request\"\n}"
+                }
+              ]
+            },
+            {
+              "name": "wrong whitelistedUrl",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "var responseBody = pm.response.json()",
+                      "pm.test(\"Status code is 400\", function () {",
+                      "    pm.response.to.have.status(400);",
+                      "});",
+                      "pm.test('Response body should be an object', function () {",
+                      "    pm.expect(typeof responseBody).to.equal(\"object\")",
+                      "})",
+                      "pm.test(\"Should not be able to  register an app as appName passed in request body is empty or less than 5 characters\", function () {",
+                      "    pm.expect(responseBody.hasOwnProperty(\"statusCode\")).to.be.true;",
+                      "    pm.expect(responseBody.statusCode).to.be.a('number')",
+                      "    pm.expect(responseBody.statusCode).to.be.equal(400)",
+                      "    pm.expect(responseBody.hasOwnProperty(\"message\")).to.be.true;",
+                      "    pm.expect(responseBody.message).to.be.an(\"array\");",
+                      "    pm.expect(responseBody.message[0]).to.be.equal(\"appName must be longer than or equal to 5 characters\")",
+                      "    pm.expect(responseBody.hasOwnProperty(\"error\")).to.be.true;",
+                      "    pm.expect(responseBody.error).to.be.equal(\"Bad Request\")",
+                      "",
+                      "});",
+                      "",
+                      "",
+                      ""
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{studio-server-auth}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "origin",
+                    "value": "{{Origin}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"appName\":\"  \",\n    \"description\":\"This is a test description\",\n    \"whitelistedCors\":[\"http://localhost:3001/\",\"*\"],\n      \"logoUrl\": \"http://image.png\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{studio-server-base-url}}/api/v1/app",
+                  "host": ["{{studio-server-base-url}}"],
+                  "path": ["api", "v1", "app"]
+                }
+              },
+              "response": [
+                {
+                  "name": "wrong whitelist url",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "origin",
+                        "value": "{{Origin}}",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n    \"appName\":\"demo test5\",\n    \"description\":\"This is a test description\",\n    \"whitelistedCors\":[\"cbbnn\"],\n      \"logoUrl\": \"http://image.png\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "http://localhost:3002/api/v1/app",
+                      "protocol": "http",
+                      "host": ["localhost"],
+                      "port": "3002",
+                      "path": ["api", "v1", "app"]
+                    }
+                  },
+                  "status": "Bad Request",
+                  "code": 400,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "X-Powered-By",
+                      "value": "Express"
+                    },
+                    {
+                      "key": "Vary",
+                      "value": "Origin"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Credentials",
+                      "value": "true"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json; charset=utf-8"
+                    },
+                    {
+                      "key": "Content-Length",
+                      "value": "96"
+                    },
+                    {
+                      "key": "ETag",
+                      "value": "W/\"60-RIqEfmO9wLXmpLC3xLB66TKCj7s\""
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Tue, 14 Nov 2023 11:26:40 GMT"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Keep-Alive",
+                      "value": "timeout=5"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"statusCode\": 400,\n    \"message\": [\n        \"Whitelisted cors must be a valid url or *\"\n    ],\n    \"error\": \"Bad Request\"\n}"
+                }
+              ]
+            },
+            {
+              "name": "wrong logourl",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "var responseBody = pm.response.json()",
+                      "pm.test(\"Status code is 400\", function () {",
+                      "    pm.response.to.have.status(400);",
+                      "});",
+                      "pm.test('Response body should be an object', function () {",
+                      "    pm.expect(typeof responseBody).to.equal(\"object\")",
+                      "})",
+                      "pm.test(\"Should not be able to register an app and fail as appName passed in request body is empty or less than 5 characters\", function () {",
+                      "    pm.expect(responseBody.hasOwnProperty(\"statusCode\")).to.be.true;",
+                      "    pm.expect(responseBody.statusCode).to.be.a('number')",
+                      "    pm.expect(responseBody.statusCode).to.be.equal(400)",
+                      "    pm.expect(responseBody.hasOwnProperty(\"message\")).to.be.true;",
+                      "    pm.expect(responseBody.message).to.be.an(\"array\");",
+                      "    pm.expect(responseBody.message[0]).to.be.equal(\"appName must be longer than or equal to 5 characters\")",
+                      "    pm.expect(responseBody.hasOwnProperty(\"error\")).to.be.true;",
+                      "    pm.expect(responseBody.error).to.be.equal(\"Bad Request\")",
+                      "",
+                      "});",
+                      "",
+                      "",
+                      ""
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{studio-server-auth}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "origin",
+                    "value": "{{Origin}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"appName\":\"  \",\n    \"description\":\"This is a test description\",\n    \"whitelistedCors\":[\"http://localhost:3001/\",\"*\"],\n      \"logoUrl\": \"http://image.png\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{studio-server-base-url}}/api/v1/app",
+                  "host": ["{{studio-server-base-url}}"],
+                  "path": ["api", "v1", "app"]
+                }
+              },
+              "response": [
+                {
+                  "name": "wrong whitelistedUrl Copy",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "origin",
+                        "value": "{{Origin}}",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n    \"appName\":\"Demo test app\",\n    \"description\":\"This is a test description\",\n    \"whitelistedCors\":[\"http://localhost:3001\",\"*\"],\n      \"logoUrl\": \"xklvc\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "http://localhost:3002/api/v1/app",
+                      "protocol": "http",
+                      "host": ["localhost"],
+                      "port": "3002",
+                      "path": ["api", "v1", "app"]
+                    }
+                  },
+                  "status": "Bad Request",
+                  "code": 400,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "X-Powered-By",
+                      "value": "Express"
+                    },
+                    {
+                      "key": "Vary",
+                      "value": "Origin"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Credentials",
+                      "value": "true"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json; charset=utf-8"
+                    },
+                    {
+                      "key": "Content-Length",
+                      "value": "81"
+                    },
+                    {
+                      "key": "ETag",
+                      "value": "W/\"51-ux4IpwdtWXuvjDMF+isDPn21rD0\""
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Tue, 14 Nov 2023 11:27:53 GMT"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Keep-Alive",
+                      "value": "timeout=5"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"statusCode\": 400,\n    \"message\": [\n        \"logoUrl is not a valid URL\"\n    ],\n    \"error\": \"Bad Request\"\n}"
+                }
+              ]
+            },
+            {
+              "name": "register app",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "var responseBody = pm.response.json()",
+                      "pm.test(\"Status code is 201\", function () {",
+                      "    pm.response.to.have.status(201);",
+                      "});",
+                      "pm.test('Response body should be an object', function () {",
+                      "    pm.expect(typeof responseBody).to.equal(\"object\")",
+                      "})",
+                      "pm.test(\"Should be able to register an app and have list of response body parameters\", function () {",
+                      "    pm.expect(\"appId\" in responseBody).to.be.true;",
+                      "    pm.expect(responseBody.hasOwnProperty(\"appName\")).to.be.true;",
+                      "    pm.expect(responseBody.hasOwnProperty(\"apiSecretKey\")).to.be.true;",
+                      "    pm.expect(responseBody.hasOwnProperty(\"edvId\")).to.be.true;",
+                      "    pm.expect(responseBody.hasOwnProperty(\"kmsId\")).to.be.true;",
+                      "    pm.expect(responseBody.hasOwnProperty(\"walletAddress\")).to.be.true;",
+                      "    console.log(responseBody.walletAddress)",
+                      "    pm.expect(responseBody.hasOwnProperty(\"description\")).to.be.true;",
+                      "    pm.expect(responseBody.hasOwnProperty(\"whitelistedCors\")).to.be.true;",
+                      "    pm.expect(responseBody.whitelistedCors).to.be.an(\"array\");",
+                      "    pm.expect(\"logoUrl\" in responseBody).to.be.true",
+                      "    pm.expect(\"subdomain\" in responseBody).to.be.true",
+                      "    pm.expect(\"tenantUrl\" in responseBody).to.be.true",
+                      "    pm.environment.set(\"appId\", responseBody.appId)",
+                      "    pm.environment.set(\"X-Api-Secret-Key\", responseBody.apiSecretKey)",
+                      "    pm.environment.set(\"methodSpecificId\",responseBody.walletAddress)",
+                      "    console.log(`Your tenant url is  ${responseBody.tenantUrl}`)",
+                      "    pm.environment.set(\"tenantUrl\", responseBody.tenantUrl)",
+                      "});",
+                      ""
+                    ],
+                    "type": "text/javascript"
+                  }
+                },
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "exec": [""],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{studio-server-auth}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "origin",
+                    "value": "{{Origin}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"appName\":\"Demo test app\",\n    \"description\":\"This is a test description\",\n    \"whitelistedCors\":[\"http://localhost:3002\"],\n      \"logoUrl\": \"\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{studio-server-base-url}}/api/v1/app",
+                  "host": ["{{studio-server-base-url}}"],
+                  "path": ["api", "v1", "app"]
+                }
+              },
+              "response": [
+                {
+                  "name": "register app",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "origin",
+                        "value": "{{Origin}}",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n    \"appName\":\"Demo test app\",\n    \"description\":\"This is a test description\",\n    \"whitelistedCors\":[\"http://localhost:3002\"],\n      \"logoUrl\": \"http://image.png\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{studio-server-baseurl}}api/v1/app",
+                      "host": ["{{studio-server-baseurl}}api"],
+                      "path": ["v1", "app"]
+                    }
+                  },
+                  "status": "Created",
+                  "code": 201,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "X-Powered-By",
+                      "value": "Express"
+                    },
+                    {
+                      "key": "Vary",
+                      "value": "Origin"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Credentials",
+                      "value": "true"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json; charset=utf-8"
+                    },
+                    {
+                      "key": "Content-Length",
+                      "value": "597"
+                    },
+                    {
+                      "key": "ETag",
+                      "value": "W/\"255-rXXT37tXWvLEq2kL3oBFTlNLCh4\""
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Tue, 14 Nov 2023 12:28:50 GMT"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Keep-Alive",
+                      "value": "timeout=5"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"appName\": \"Demo test app\",\n    \"appId\": \"88e248a7bf49e18cdfdfbfaf3c58d23f628f\",\n    \"edvId\": \"hs:studio-api:app:88e248a7bf49e18cdfdfbfaf3c58d23f628f\",\n    \"kmsId\": \"hs:doc:nkobyhhhxqxftpzsljnfe-2gf9v47tc-2pgp7lnauha\",\n    \"walletAddress\": \"hid1sj7g2ef47e93f8luxvxfe8j7jcmqx8fqmleqzp\",\n    \"description\": \"This is a test description\",\n    \"whitelistedCors\": [\n        \"http://localhost:3002\"\n    ],\n    \"logoUrl\": \"http://image.png\",\n    \"subdomain\": \"ent_4b84441\",\n    \"apiSecretKey\": \"a3fffc8bd8278239aad451976f6e6.c3e152b00c7b1a06751c815307a841f927a97583d33d04b79926d0685c4c81abb928805d007558b7cd0a461bdff7d840d\",\n    \"tenantUrl\": \"http://ent_4b84441.localhost:8080/\"\n}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "get appByAppId",
+          "item": [
+            {
+              "name": "auth token not passed",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "var responseBody = pm.response.json()",
+                      "pm.test(\"Status code is 403\", function () {",
+                      "    pm.response.to.have.status(403);",
+                      "});",
+                      "pm.test('Response body should be an object', function () {",
+                      "    pm.expect(typeof responseBody).to.equal(\"object\")",
+                      "})",
+                      "pm.test(\"Should not be able to fetch app by its id as authToken is not passed in header\", function () {",
+                      "    pm.expect(responseBody.hasOwnProperty(\"hypersign\")).to.be.true;",
+                      "    pm.expect(responseBody.hypersign).to.be.an(\"object\");",
+                      "    pm.expect(responseBody.hypersign.hasOwnProperty(\"success\")).to.be.true;",
+                      "    pm.expect(responseBody.hypersign.success).to.be.equal(false)",
+                      "    pm.expect(responseBody.hypersign.hasOwnProperty(\"message\")).to.be.true;",
+                      "    pm.expect(responseBody.hypersign.message).to.be.equal(\"HS-AUTH-NODE-SDK:: Error: Authorization token is not passed in the header\")",
+                      "    pm.expect(responseBody.hypersign.hasOwnProperty(\"data\")).to.be.true;",
+                      "",
+                      "",
+                      "});",
+                      "",
+                      "",
+                      ""
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "origin",
+                    "value": "http://localhost:3001",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{studio-server-base-url}}/api/v1/app/{{appId}}",
+                  "host": ["{{studio-server-base-url}}"],
+                  "path": ["api", "v1", "app", "{{appId}}"]
+                }
+              },
+              "response": [
+                {
+                  "name": "auth token not passed",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "origin",
+                        "value": "http://localhost:3001",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{studio-server-base-url}}/api/v1/app/{{appId}}",
+                      "host": ["{{studio-server-base-url}}"],
+                      "path": ["api", "v1", "app", "{{appId}}"]
+                    }
+                  },
+                  "status": "Forbidden",
+                  "code": 403,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "X-Powered-By",
+                      "value": "Express"
+                    },
+                    {
+                      "key": "Vary",
+                      "value": "Origin"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Credentials",
+                      "value": "true"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json; charset=utf-8"
+                    },
+                    {
+                      "key": "Content-Length",
+                      "value": "127"
+                    },
+                    {
+                      "key": "ETag",
+                      "value": "W/\"7f-whgJttHrAINLbnaZSk4ZbGq0u1s\""
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Tue, 14 Nov 2023 13:07:45 GMT"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Keep-Alive",
+                      "value": "timeout=5"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"hypersign\": {\n        \"success\": false,\n        \"message\": \"HS-AUTH-NODE-SDK:: Error: Authorization token is not passed in the header\",\n        \"data\": {}\n    }\n}"
+                }
+              ]
+            },
+            {
+              "name": "invalid authtoken",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "var responseBody = pm.response.json()",
+                      "pm.test(\"Status code is 403\", function () {",
+                      "    pm.response.to.have.status(403);",
+                      "});",
+                      "pm.test('Response body should be an object', function () {",
+                      "    pm.expect(typeof responseBody).to.equal(\"object\")",
+                      "})",
+                      "pm.test(\"Should not be able to fetch app by its id as authToken passed in header is not valid\", function () {",
+                      "    pm.expect(responseBody.hasOwnProperty(\"hypersign\")).to.be.true;",
+                      "    pm.expect(responseBody.hypersign).to.be.an(\"object\");",
+                      "    pm.expect(responseBody.hypersign.hasOwnProperty(\"success\")).to.be.true;",
+                      "    pm.expect(responseBody.hypersign.success).to.be.equal(false)",
+                      "    pm.expect(responseBody.hypersign.hasOwnProperty(\"message\")).to.be.true;",
+                      "    pm.expect(responseBody.hypersign.message).to.be.equal(\"invalid token\")",
+                      "    pm.expect(responseBody.hypersign.hasOwnProperty(\"data\")).to.be.true;",
+                      "",
+                      "",
+                      "});",
+                      "",
+                      "",
+                      ""
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "eywsdvklfvhsdbksmvf.eehnfd,mnsxzcfired.wkrirogkfdkfneiwfkfdvnjekffbjjlffvafrufwd",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "origin",
+                    "value": "http://localhost:3001",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{studio-server-base-url}}/api/v1/app/{{appId}}",
+                  "host": ["{{studio-server-base-url}}"],
+                  "path": ["api", "v1", "app", "{{appId}}"]
+                }
+              },
+              "response": [
+                {
+                  "name": "invalid authtoken",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "origin",
+                        "value": "http://localhost:3001",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{studio-server-base-url}}/api/v1/app/{{appId}}",
+                      "host": ["{{studio-server-base-url}}"],
+                      "path": ["api", "v1", "app", "{{appId}}"]
+                    }
+                  },
+                  "status": "Forbidden",
+                  "code": 403,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "X-Powered-By",
+                      "value": "Express"
+                    },
+                    {
+                      "key": "Vary",
+                      "value": "Origin"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Credentials",
+                      "value": "true"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json; charset=utf-8"
+                    },
+                    {
+                      "key": "Content-Length",
+                      "value": "67"
+                    },
+                    {
+                      "key": "ETag",
+                      "value": "W/\"43-1BX/VR1K6uZ38Xr6ZLqH3aSWpQY\""
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Tue, 14 Nov 2023 13:14:37 GMT"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Keep-Alive",
+                      "value": "timeout=5"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"hypersign\": {\n        \"success\": false,\n        \"message\": \"invalid token\",\n        \"data\": {}\n    }\n}"
+                }
+              ]
+            },
+            {
+              "name": "wrong appId",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "var responseBody = pm.response.json()",
+                      "pm.test(\"Status code is 400\", function () {",
+                      "    pm.response.to.have.status(400);",
+                      "});",
+                      "pm.test('Response body should be an object', function () {",
+                      "    pm.expect(typeof responseBody).to.equal(\"object\")",
+                      "})",
+                      "pm.test(\"Should not able to get app information as appId passed doesnot exists\", function () {",
+                      "    pm.expect(responseBody.hasOwnProperty(\"statusCode\")).to.be.true;",
+                      "    pm.expect(responseBody.statusCode).to.be.a('number')",
+                      "    pm.expect(responseBody.statusCode).to.be.equal(400)",
+                      "    pm.expect(responseBody.hasOwnProperty(\"message\")).to.be.true;",
+                      "    pm.expect(responseBody.message).to.be.an(\"array\");",
+                      "    pm.expect(responseBody.message[0]).to.be.equal( \"Application Not Found\")",
+                      "    pm.expect(responseBody.hasOwnProperty(\"error\")).to.be.true;",
+                      "    pm.expect(responseBody.error).to.be.equal(\"Bad Request\")",
+                      "});",
+                      "",
+                      "",
+                      ""
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{studio-server-auth}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "origin",
+                    "value": "{{Origin}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{studio-server-base-url}}/api/v1/app/65423890348446586",
+                  "host": ["{{studio-server-base-url}}"],
+                  "path": ["api", "v1", "app", "65423890348446586"]
+                }
+              },
+              "response": [
+                {
+                  "name": "wrong appId",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "origin",
+                        "value": "{{Origin}}",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{studio-server-base-url}}/api/v1/app/65423890348446586",
+                      "host": ["{{studio-server-base-url}}"],
+                      "path": ["api", "v1", "app", "65423890348446586"]
+                    }
+                  },
+                  "status": "Bad Request",
+                  "code": 400,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "X-Powered-By",
+                      "value": "Express"
+                    },
+                    {
+                      "key": "Vary",
+                      "value": "Origin"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Credentials",
+                      "value": "true"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json; charset=utf-8"
+                    },
+                    {
+                      "key": "Content-Length",
+                      "value": "76"
+                    },
+                    {
+                      "key": "ETag",
+                      "value": "W/\"4c-NO7lw8kkSNMmXa9I2zOR3gKFPz8\""
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Tue, 14 Nov 2023 13:02:01 GMT"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Keep-Alive",
+                      "value": "timeout=5"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"message\": [\n        \"Application Not Found\"\n    ],\n    \"statusCode\": 400,\n    \"error\": \"Bad Request\"\n}"
+                }
+              ]
+            },
+            {
+              "name": "fetch particular appinfo",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "var responseBody = pm.response.json()",
+                      "",
+                      "pm.test(\"Status code is 200\", function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "pm.test('Response body should be an object', function () {",
+                      "    pm.expect(typeof responseBody).to.equal(\"object\")",
+                      "})",
+                      "pm.test(\"Should be able to fetch particular app based on appId\", function () {",
+                      "    pm.expect(\"userId\" in responseBody).to.be.true;",
+                      "    pm.expect(responseBody.hasOwnProperty(\"appName\")).to.be.true;",
+                      "    pm.expect(\"appId\" in responseBody).to.be.true;",
+                      "    pm.expect(responseBody.hasOwnProperty(\"apiKeySecret\")).to.be.true;",
+                      "    pm.expect(responseBody.hasOwnProperty(\"edvId\")).to.be.true;",
+                      "    pm.expect(responseBody.hasOwnProperty(\"kmsId\")).to.be.true;",
+                      "    pm.expect(responseBody.hasOwnProperty(\"walletAddress\")).to.be.true;",
+                      "    pm.expect(responseBody.hasOwnProperty(\"description\")).to.be.true;",
+                      "    pm.expect(responseBody.hasOwnProperty(\"whitelistedCors\")).to.be.true;",
+                      "    pm.expect(responseBody.whitelistedCors).to.be.an(\"array\");",
+                      "    pm.expect(\"logoUrl\" in responseBody).to.be.true",
+                      "    pm.expect(\"subdomain\" in responseBody).to.be.true",
+                      "    pm.expect(\"tenantUrl\" in responseBody).to.be.true",
+                      "});",
+                      ""
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{studio-server-auth}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "origin",
+                    "value": "{{Origin}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n    \"appName\":\"Demo test app\",\n    \"description\":\"This is a test description\",\n    \"whitelistedCors\":[\"http://localhost:3002\"],\n      \"logoUrl\": \"http://image.png\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{studio-server-base-url}}/api/v1/app/{{appId}}",
+                  "host": ["{{studio-server-base-url}}"],
+                  "path": ["api", "v1", "app", "{{appId}}"]
+                }
+              },
+              "response": [
+                {
+                  "name": "fetch particular app",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "origin",
+                        "value": "{{Origin}}",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n    \"appName\":\"Demo test app\",\n    \"description\":\"This is a test description\",\n    \"whitelistedCors\":[\"http://localhost:3002\"],\n      \"logoUrl\": \"http://image.png\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{studio-server-baseurl}}api/v1/app/{{appId}}",
+                      "host": ["{{studio-server-baseurl}}api"],
+                      "path": ["v1", "app", "{{appId}}"]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "X-Powered-By",
+                      "value": "Express"
+                    },
+                    {
+                      "key": "Vary",
+                      "value": "Origin"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Credentials",
+                      "value": "true"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json; charset=utf-8"
+                    },
+                    {
+                      "key": "Content-Length",
+                      "value": "678"
+                    },
+                    {
+                      "key": "ETag",
+                      "value": "W/\"2a6-zx4s2WoA12+UoeA2jH/RR6AX+uo\""
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Tue, 14 Nov 2023 12:50:07 GMT"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Keep-Alive",
+                      "value": "timeout=5"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"_id\": {},\n    \"userId\": \"ab8d48e0-60eb-437c-9a86-e063080b2943\",\n    \"appName\": \"Demo test app\",\n    \"appId\": \"bb6f11565e7d8bd1d82fe4e0f06fc6eefc0e\",\n    \"apiKeySecret\": \"$argon2id$v=19$m=65536,t=3,p=4$jSflaqiI6qU3nW7vfHlkkw$wukhJkR8cNQTxJ5ZKPMHpPaEZ4WsGbB8x1/MB2p+HaE\",\n    \"edvId\": \"hs:studio-api:app:bb6f11565e7d8bd1d82fe4e0f06fc6eefc0e\",\n    \"kmsId\": \"hs:doc:coueooodalqcukyptsth6jgwyllcaijcgtos3qtedfa\",\n    \"apiKeyPrefix\": \"49e07deb81496524aaa37fc0249a3\",\n    \"walletAddress\": \"hid134dpkhydx8wr487dyzrwtma8ynrsfzfusee4c5\",\n    \"description\": \"This is a test description\",\n    \"whitelistedCors\": [\n        \"http://localhost:3002\"\n    ],\n    \"logoUrl\": \"http://image.png\",\n    \"subdomain\": \"ent_f0c517a\",\n    \"__v\": 0,\n    \"tenantUrl\": \"http://ent_f0c517a.localhost:8080\"\n}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "appList",
+          "item": [
+            {
+              "name": "auth token not passed",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "var responseBody = pm.response.json()",
+                      "pm.test(\"Status code is 403\", function () {",
+                      "    pm.response.to.have.status(403);",
+                      "});",
+                      "pm.test('Response body should be an object', function () {",
+                      "    pm.expect(typeof responseBody).to.equal(\"object\")",
+                      "})",
+                      "pm.test(\"Should not be able to fetch app list as authToken is not passed in header\", function () {",
+                      "    pm.expect(responseBody.hasOwnProperty(\"hypersign\")).to.be.true;",
+                      "    pm.expect(responseBody.hypersign).to.be.an(\"object\");",
+                      "    pm.expect(responseBody.hypersign.hasOwnProperty(\"success\")).to.be.true;",
+                      "    pm.expect(responseBody.hypersign.success).to.be.equal(false)",
+                      "    pm.expect(responseBody.hypersign.hasOwnProperty(\"message\")).to.be.true;",
+                      "    pm.expect(responseBody.hypersign.message).to.be.equal(\"HS-AUTH-NODE-SDK:: Error: Authorization token is not passed in the header\")",
+                      "    pm.expect(responseBody.hypersign.hasOwnProperty(\"data\")).to.be.true;",
+                      "});",
+                      "",
+                      "",
+                      ""
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "origin",
+                    "value": "http://localhost:3001",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{studio-server-base-url}}/api/v1/app",
+                  "host": ["{{studio-server-base-url}}"],
+                  "path": ["api", "v1", "app"]
+                }
+              },
+              "response": [
+                {
+                  "name": "auth token not passed",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "origin",
+                        "value": "http://localhost:3001",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\n    \"appName\":\"  \",\n    \"description\":\"This is a test description\",\n    \"whitelistedCors\":[\"http://localhost:3001/\",\"*\"],\n      \"logoUrl\": \"http://image.png\"\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "http://localhost:3002/api/v1/app",
+                      "protocol": "http",
+                      "host": ["localhost"],
+                      "port": "3002",
+                      "path": ["api", "v1", "app"]
+                    }
+                  },
+                  "status": "Forbidden",
+                  "code": 403,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "X-Powered-By",
+                      "value": "Express"
+                    },
+                    {
+                      "key": "Vary",
+                      "value": "Origin"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Credentials",
+                      "value": "true"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json; charset=utf-8"
+                    },
+                    {
+                      "key": "Content-Length",
+                      "value": "127"
+                    },
+                    {
+                      "key": "ETag",
+                      "value": "W/\"7f-whgJttHrAINLbnaZSk4ZbGq0u1s\""
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Tue, 14 Nov 2023 11:48:48 GMT"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Keep-Alive",
+                      "value": "timeout=5"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"hypersign\": {\n        \"success\": false,\n        \"message\": \"HS-AUTH-NODE-SDK:: Error: Authorization token is not passed in the header\",\n        \"data\": {}\n    }\n}"
+                }
+              ]
+            },
+            {
+              "name": "invalid auth token",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "var responseBody = pm.response.json()",
+                      "pm.test(\"Status code is 403\", function () {",
+                      "    pm.response.to.have.status(403);",
+                      "});",
+                      "pm.test('Response body should be an object', function () {",
+                      "    pm.expect(typeof responseBody).to.equal(\"object\")",
+                      "})",
+                      "pm.test(\"Should not be able to fetch app list as authToken passed in header is not valid\", function () {",
+                      "    pm.expect(responseBody.hasOwnProperty(\"hypersign\")).to.be.true;",
+                      "    pm.expect(responseBody.hypersign).to.be.an(\"object\");",
+                      "    pm.expect(responseBody.hypersign.hasOwnProperty(\"success\")).to.be.true;",
+                      "    pm.expect(responseBody.hypersign.success).to.be.equal(false)",
+                      "    pm.expect(responseBody.hypersign.hasOwnProperty(\"message\")).to.be.true;",
+                      "    pm.expect(responseBody.hypersign.message).to.be.equal(\"invalid token\")",
+                      "    pm.expect(responseBody.hypersign.hasOwnProperty(\"data\")).to.be.true;",
+                      "});",
+                      "",
+                      "",
+                      ""
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "eywsdvklfvhsdbksmvf.eehnfd,mnsxzcfired.wkrirogkfdkfneiwfkfdvnjekffbjjlffvafrufwd",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "origin",
+                    "value": "http://localhost:3001",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{studio-server-base-url}}/api/v1/app/{{appId}}",
+                  "host": ["{{studio-server-base-url}}"],
+                  "path": ["api", "v1", "app", "{{appId}}"]
+                }
+              },
+              "response": [
+                {
+                  "name": "invalid auth token",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "origin",
+                        "value": "http://localhost:3001",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{studio-server-base-url}}/api/v1/app/{{appId}}",
+                      "host": ["{{studio-server-base-url}}"],
+                      "path": ["api", "v1", "app", "{{appId}}"]
+                    }
+                  },
+                  "status": "Forbidden",
+                  "code": 403,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "X-Powered-By",
+                      "value": "Express"
+                    },
+                    {
+                      "key": "Vary",
+                      "value": "Origin"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Credentials",
+                      "value": "true"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json; charset=utf-8"
+                    },
+                    {
+                      "key": "Content-Length",
+                      "value": "67"
+                    },
+                    {
+                      "key": "ETag",
+                      "value": "W/\"43-1BX/VR1K6uZ38Xr6ZLqH3aSWpQY\""
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Tue, 14 Nov 2023 13:16:22 GMT"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Keep-Alive",
+                      "value": "timeout=5"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"hypersign\": {\n        \"success\": false,\n        \"message\": \"invalid token\",\n        \"data\": {}\n    }\n}"
+                }
+              ]
+            },
+            {
+              "name": "fetch app list",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "var responseBody = pm.response.json()",
+                      "var page;",
+                      "var limit;",
+                      "var urlString = pm.request.url.toString();",
+                      "pm.test(\"Status code is 200\", function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "pm.test('Response body should be an object', function () {",
+                      "    pm.expect(typeof responseBody).to.equal(\"object\")",
+                      "})",
+                      "pm.test(\"Should be able to pass and have list of apps in response body \", function () {",
+                      "    try {",
+                      "        page = urlString.match(/page=(\\d+)/)[1];",
+                      "        page = (parseInt(page))",
+                      "    } catch (e) {",
+                      "        page = 1",
+                      "    }",
+                      "    try {",
+                      "        limit = urlString.match(/limit=(\\d+)/)[1];",
+                      "        limit = parseInt(limit)",
+                      "    } catch (e) {",
+                      "        limit = 10",
+                      "    }",
+                      "    pm.expect(responseBody.hasOwnProperty(\"totalCount\")).to.be.true;",
+                      "    pm.expect(responseBody.totalCount).to.be.a('number')",
+                      "    pm.expect(responseBody.hasOwnProperty(\"data\")).to.be.true;",
+                      "    pm.expect(responseBody.data).to.be.an(\"array\");",
+                      "    pm.expect(responseBody.data).to.have.length.of.at.most(limit);",
+                      "",
+                      "});",
+                      "",
+                      ""
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "protocolProfileBehavior": {
+                "disableBodyPruning": true
+              },
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{studio-server-auth}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "origin",
+                    "value": "{{Origin}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{studio-server-base-url}}/api/v1/app?limit=10",
+                  "host": ["{{studio-server-base-url}}"],
+                  "path": ["api", "v1", "app"],
+                  "query": [
+                    {
+                      "key": "limit",
+                      "value": "10"
+                    }
+                  ]
+                }
+              },
+              "response": [
+                {
+                  "name": "fetch app list",
+                  "originalRequest": {
+                    "method": "GET",
+                    "header": [
+                      {
+                        "key": "origin",
+                        "value": "{{Origin}}",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{studio-server-base-url}}/api/v1/app?limit=10",
+                      "host": ["{{studio-server-base-url}}"],
+                      "path": ["api", "v1", "app"],
+                      "query": [
+                        {
+                          "key": "limit",
+                          "value": "10"
+                        }
+                      ]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "X-Powered-By",
+                      "value": "Express"
+                    },
+                    {
+                      "key": "Vary",
+                      "value": "Origin"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Credentials",
+                      "value": "true"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json; charset=utf-8"
+                    },
+                    {
+                      "key": "Content-Length",
+                      "value": "3714"
+                    },
+                    {
+                      "key": "ETag",
+                      "value": "W/\"e82-tizV0gzS2xvqotahvyVrKwYcfy4\""
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Tue, 14 Nov 2023 13:52:44 GMT"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Keep-Alive",
+                      "value": "timeout=5"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"totalCount\": 11,\n    \"data\": [\n        {\n            \"appName\": \"new app\",\n            \"appId\": \"a462bab8f693bd92fc7854dd0e5c3ab05917\",\n            \"edvId\": \"hs:studio-api:app:a462bab8f693bd92fc7854dd0e5c3ab05917\",\n            \"walletAddress\": \"hid1uh773w5rjs7mundlkec0th95d6h44yn0j6dpvk\",\n            \"whitelistedCors\": [\n                \"*\"\n            ],\n            \"logoUrl\": \"\",\n            \"subdomain\": \"ent_6d101d6\",\n            \"tenantUrl\": \"http://ent_6d101d6.localhost:8080\"\n        },\n        {\n            \"appName\": \"new demo app\",\n            \"appId\": \"17c1a602c0298084eb9b40b4464fd5aaae31\",\n            \"edvId\": \"hs:studio-api:app:17c1a602c0298084eb9b40b4464fd5aaae31\",\n            \"walletAddress\": \"hid1xcj20mc6ktteq3ezj8yj8h427648ttxd4l8msa\",\n            \"whitelistedCors\": [\n                \"*\"\n            ],\n            \"logoUrl\": \"\",\n            \"subdomain\": \"ent_81bb0f3\",\n            \"tenantUrl\": \"http://ent_81bb0f3.localhost:8080\"\n        },\n        {\n            \"appName\": \"new fyre app\",\n            \"appId\": \"3977ed2d3c26824d77c08c24aa7f22dbee81\",\n            \"edvId\": \"hs:studio-api:app:3977ed2d3c26824d77c08c24aa7f22dbee81\",\n            \"walletAddress\": \"hid1yam5kyrcyvrpah750zfhsjuqg5u2lfc3th2wul\",\n            \"whitelistedCors\": [\n                \"*\",\n                \"http://locahost:8080\"\n            ],\n            \"logoUrl\": \"\",\n            \"subdomain\": \"ent_5f9e3e0\",\n            \"tenantUrl\": \"http://ent_5f9e3e0.localhost:8080\"\n        },\n        {\n            \"appName\": \"Demo test app\",\n            \"appId\": \"66bf60b1dddb04a48575701a21395925b833\",\n            \"edvId\": \"hs:studio-api:app:66bf60b1dddb04a48575701a21395925b833\",\n            \"walletAddress\": \"hid1fqs9hjn30wxczm5cfl8hsl2d6dhygsthgte82z\",\n            \"description\": \"This is a test description\",\n            \"whitelistedCors\": [\n                \"http://localhost:3002\"\n            ],\n            \"logoUrl\": \"http://image.png\",\n            \"subdomain\": \"ent_55d3bcf\",\n            \"tenantUrl\": \"http://ent_55d3bcf.localhost:8080\"\n        },\n        {\n            \"appName\": \"Demo test app\",\n            \"appId\": \"08a663276ed0d903e668ca61724d0101fc08\",\n            \"edvId\": \"hs:studio-api:app:08a663276ed0d903e668ca61724d0101fc08\",\n            \"walletAddress\": \"hid1ymxhlzwxndpgxyqj7vdgs7jles6a2hd0x3nkxz\",\n            \"description\": \"This is a test description\",\n            \"whitelistedCors\": [\n                \"http://localhost:3002\"\n            ],\n            \"logoUrl\": \"http://image.png\",\n            \"subdomain\": \"ent_e66a35e\",\n            \"tenantUrl\": \"http://ent_e66a35e.localhost:8080\"\n        },\n        {\n            \"appName\": \"Demo test app\",\n            \"appId\": \"88e248a7bf49e18cdfdfbfaf3c58d23f628f\",\n            \"edvId\": \"hs:studio-api:app:88e248a7bf49e18cdfdfbfaf3c58d23f628f\",\n            \"walletAddress\": \"hid1sj7g2ef47e93f8luxvxfe8j7jcmqx8fqmleqzp\",\n            \"description\": \"This is a test description\",\n            \"whitelistedCors\": [\n                \"http://localhost:3002\"\n            ],\n            \"logoUrl\": \"http://image.png\",\n            \"subdomain\": \"ent_4b84441\",\n            \"tenantUrl\": \"http://ent_4b84441.localhost:8080\"\n        },\n        {\n            \"appName\": \"Demo test app\",\n            \"appId\": \"b119034f17415b72e17a7a50b5434bb781f0\",\n            \"edvId\": \"hs:studio-api:app:b119034f17415b72e17a7a50b5434bb781f0\",\n            \"walletAddress\": \"hid1j0s0nep4j5ujvuatrzwu0we2sa4xp27ps4xua7\",\n            \"description\": \"This is a test description\",\n            \"whitelistedCors\": [\n                \"http://localhost:3002\"\n            ],\n            \"logoUrl\": \"http://image.png\",\n            \"subdomain\": \"ent_4cf2fa9\",\n            \"tenantUrl\": \"http://ent_4cf2fa9.localhost:8080\"\n        },\n        {\n            \"appName\": \"Demo test app\",\n            \"appId\": \"8ec1fd61e602b733721a8766aeba38dfe3e0\",\n            \"edvId\": \"hs:studio-api:app:8ec1fd61e602b733721a8766aeba38dfe3e0\",\n            \"walletAddress\": \"hid1x242emfcww9y59454p0nyv0a85lccegmcgc28z\",\n            \"description\": \"This is a test description\",\n            \"whitelistedCors\": [\n                \"http://localhost:3002\"\n            ],\n            \"logoUrl\": \"http://image.png\",\n            \"subdomain\": \"ent_8d28f27\",\n            \"tenantUrl\": \"http://ent_8d28f27.localhost:8080\"\n        },\n        {\n            \"appName\": \"Demo test app\",\n            \"appId\": \"2bc5ea68f8f44f68f797a62ed1be68bd1769\",\n            \"edvId\": \"hs:studio-api:app:2bc5ea68f8f44f68f797a62ed1be68bd1769\",\n            \"walletAddress\": \"hid1njr75dw5ghz72ntmw37vrnsajh2lm5twtjpj0n\",\n            \"description\": \"This is a test description\",\n            \"whitelistedCors\": [\n                \"http://localhost:3002\"\n            ],\n            \"logoUrl\": \"http://image.png\",\n            \"subdomain\": \"ent_fe69609\",\n            \"tenantUrl\": \"http://ent_fe69609.localhost:8080\"\n        },\n        {\n            \"appName\": \"Demo test app\",\n            \"appId\": \"bb6f11565e7d8bd1d82fe4e0f06fc6eefc0e\",\n            \"edvId\": \"hs:studio-api:app:bb6f11565e7d8bd1d82fe4e0f06fc6eefc0e\",\n            \"walletAddress\": \"hid134dpkhydx8wr487dyzrwtma8ynrsfzfusee4c5\",\n            \"description\": \"This is a test description\",\n            \"whitelistedCors\": [\n                \"http://localhost:3002\"\n            ],\n            \"logoUrl\": \"http://image.png\",\n            \"subdomain\": \"ent_f0c517a\",\n            \"tenantUrl\": \"http://ent_f0c517a.localhost:8080\"\n        }\n    ]\n}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "update app",
+          "item": [
+            {
+              "name": "auth token not passed",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "var responseBody = pm.response.json()",
+                      "pm.test(\"Status code is 403\", function () {",
+                      "    pm.response.to.have.status(403);",
+                      "});",
+                      "pm.test('Response body should be an object', function () {",
+                      "    pm.expect(typeof responseBody).to.equal(\"object\")",
+                      "})",
+                      "pm.test(\"Should not be able to update an app list as authToken is not passed in header\", function () {",
+                      "    pm.expect(responseBody.hasOwnProperty(\"hypersign\")).to.be.true;",
+                      "    pm.expect(responseBody.hypersign).to.be.an(\"object\");",
+                      "    pm.expect(responseBody.hypersign.hasOwnProperty(\"success\")).to.be.true;",
+                      "    pm.expect(responseBody.hypersign.success).to.be.equal(false)",
+                      "    pm.expect(responseBody.hypersign.hasOwnProperty(\"message\")).to.be.true;",
+                      "    pm.expect(responseBody.hypersign.message).to.be.equal(\"HS-AUTH-NODE-SDK:: Error: Authorization token is not passed in the header\")",
+                      "    pm.expect(responseBody.hypersign.hasOwnProperty(\"data\")).to.be.true;",
+                      "});",
+                      "",
+                      "",
+                      ""
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "origin",
+                    "value": "http://localhost:3001",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"appName\":\"\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{studio-server-base-url}}/api/v1/app/{{appId}}",
+                  "host": ["{{studio-server-base-url}}"],
+                  "path": ["api", "v1", "app", "{{appId}}"]
+                }
+              },
+              "response": [
+                {
+                  "name": "auth token not passed",
+                  "originalRequest": {
+                    "method": "PUT",
+                    "header": [
+                      {
+                        "key": "origin",
+                        "value": "http://localhost:3001",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"appName\":\"\"\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{studio-server-base-url}}/api/v1/app/{{appId}}",
+                      "host": ["{{studio-server-base-url}}"],
+                      "path": ["api", "v1", "app", "{{appId}}"]
+                    }
+                  },
+                  "status": "Forbidden",
+                  "code": 403,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "X-Powered-By",
+                      "value": "Express"
+                    },
+                    {
+                      "key": "Vary",
+                      "value": "Origin"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Credentials",
+                      "value": "true"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json; charset=utf-8"
+                    },
+                    {
+                      "key": "Content-Length",
+                      "value": "127"
+                    },
+                    {
+                      "key": "ETag",
+                      "value": "W/\"7f-whgJttHrAINLbnaZSk4ZbGq0u1s\""
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Wed, 15 Nov 2023 04:04:58 GMT"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Keep-Alive",
+                      "value": "timeout=5"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"hypersign\": {\n        \"success\": false,\n        \"message\": \"HS-AUTH-NODE-SDK:: Error: Authorization token is not passed in the header\",\n        \"data\": {}\n    }\n}"
+                }
+              ]
+            },
+            {
+              "name": "invalid auth token",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "var responseBody = pm.response.json()",
+                      "pm.test(\"Status code is 403\", function () {",
+                      "    pm.response.to.have.status(403);",
+                      "});",
+                      "pm.test('Response body should be an object', function () {",
+                      "    pm.expect(typeof responseBody).to.equal(\"object\")",
+                      "})",
+                      "pm.test(\"Should not be able to update an app list as authToken passed in header is not valid\", function () {",
+                      "    pm.expect(responseBody.hasOwnProperty(\"hypersign\")).to.be.true;",
+                      "    pm.expect(responseBody.hypersign).to.be.an(\"object\");",
+                      "    pm.expect(responseBody.hypersign.hasOwnProperty(\"success\")).to.be.true;",
+                      "    pm.expect(responseBody.hypersign.success).to.be.equal(false)",
+                      "    pm.expect(responseBody.hypersign.hasOwnProperty(\"message\")).to.be.true;",
+                      "    pm.expect(responseBody.hypersign.message).to.be.equal(\"invalid token\")",
+                      "    pm.expect(responseBody.hypersign.hasOwnProperty(\"data\")).to.be.true;",
+                      "});",
+                      "",
+                      "",
+                      ""
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "eywsdvklfvhsdbksmvf.eehnfd,mnsxzcfired.wkrirogkfdkfneiwfkfdvnjekffbjjlffvafrufwd",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "origin",
+                    "value": "http://localhost:3001",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"appName\":\"\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{studio-server-base-url}}/api/v1/app/{{appId}}",
+                  "host": ["{{studio-server-base-url}}"],
+                  "path": ["api", "v1", "app", "{{appId}}"]
+                }
+              },
+              "response": [
+                {
+                  "name": "invalid auth token",
+                  "originalRequest": {
+                    "method": "PUT",
+                    "header": [
+                      {
+                        "key": "origin",
+                        "value": "http://localhost:3001",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"appName\":\"\"\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{studio-server-base-url}}/api/v1/app/{{appId}}",
+                      "host": ["{{studio-server-base-url}}"],
+                      "path": ["api", "v1", "app", "{{appId}}"]
+                    }
+                  },
+                  "status": "Forbidden",
+                  "code": 403,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "X-Powered-By",
+                      "value": "Express"
+                    },
+                    {
+                      "key": "Vary",
+                      "value": "Origin"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Credentials",
+                      "value": "true"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json; charset=utf-8"
+                    },
+                    {
+                      "key": "Content-Length",
+                      "value": "67"
+                    },
+                    {
+                      "key": "ETag",
+                      "value": "W/\"43-1BX/VR1K6uZ38Xr6ZLqH3aSWpQY\""
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Wed, 15 Nov 2023 04:06:05 GMT"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Keep-Alive",
+                      "value": "timeout=5"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"hypersign\": {\n        \"success\": false,\n        \"message\": \"invalid token\",\n        \"data\": {}\n    }\n}"
+                }
+              ]
+            },
+            {
+              "name": "empty app name",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "var responseBody = pm.response.json()",
+                      "pm.test(\"Status code is 400\", function () {",
+                      "    pm.response.to.have.status(400);",
+                      "});",
+                      "pm.test('Response body should be an object', function () {",
+                      "    pm.expect(typeof responseBody).to.equal(\"object\")",
+                      "})",
+                      "pm.test(\"Should not able to update an app and fail as appName passed in request body is empty or less than 5 characters\", function () {",
+                      "    pm.expect(responseBody.hasOwnProperty(\"statusCode\")).to.be.true;",
+                      "    pm.expect(responseBody.statusCode).to.be.a('number')",
+                      "    pm.expect(responseBody.statusCode).to.be.equal(400)",
+                      "    pm.expect(responseBody.hasOwnProperty(\"message\")).to.be.true;",
+                      "    pm.expect(responseBody.message).to.be.an(\"array\");",
+                      "    pm.expect(responseBody.message[0]).to.be.equal(\"appName must be longer than or equal to 5 characters\")",
+                      "    pm.expect(responseBody.message[1]).to.be.equal(\"appName should not be empty\")",
+                      "    pm.expect(responseBody.hasOwnProperty(\"error\")).to.be.true;",
+                      "    pm.expect(responseBody.error).to.be.equal(\"Bad Request\")",
+                      "",
+                      "});",
+                      "",
+                      "",
+                      ""
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{studio-server-auth}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "origin",
+                    "value": "{{Origin}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"appName\":\"\"}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{studio-server-base-url}}/api/v1/app/{{appId}}",
+                  "host": ["{{studio-server-base-url}}"],
+                  "path": ["api", "v1", "app", "{{appId}}"]
+                }
+              },
+              "response": [
+                {
+                  "name": "empty app name",
+                  "originalRequest": {
+                    "method": "PUT",
+                    "header": [
+                      {
+                        "key": "origin",
+                        "value": "{{Origin}}",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\"appName\":\"\"}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{studio-server-base-url}}/api/v1/app/{{appId}}",
+                      "host": ["{{studio-server-base-url}}"],
+                      "path": ["api", "v1", "app", "{{appId}}"]
+                    }
+                  },
+                  "status": "Bad Request",
+                  "code": 400,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "X-Powered-By",
+                      "value": "Express"
+                    },
+                    {
+                      "key": "Vary",
+                      "value": "Origin"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Credentials",
+                      "value": "true"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json; charset=utf-8"
+                    },
+                    {
+                      "key": "Content-Length",
+                      "value": "137"
+                    },
+                    {
+                      "key": "ETag",
+                      "value": "W/\"89-VRbmctkEKA1C5x/hoHoMRDWyMIA\""
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Wed, 15 Nov 2023 04:12:28 GMT"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Keep-Alive",
+                      "value": "timeout=5"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"statusCode\": 400,\n    \"message\": [\n        \"appName must be longer than or equal to 5 characters\",\n        \"appName should not be empty\"\n    ],\n    \"error\": \"Bad Request\"\n}"
+                }
+              ]
+            },
+            {
+              "name": "wrong whitelisted url",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "var responseBody = pm.response.json()",
+                      "pm.test(\"Status code is 400\", function () {",
+                      "    pm.response.to.have.status(400);",
+                      "});",
+                      "pm.test('Response body should be an object', function () {",
+                      "    pm.expect(typeof responseBody).to.equal(\"object\")",
+                      "})",
+                      "pm.test(\"Should not able to update an app and fail as whitelisted urlpassed in request body is not a valid url \", function () {",
+                      "    pm.expect(responseBody.hasOwnProperty(\"statusCode\")).to.be.true;",
+                      "    pm.expect(responseBody.statusCode).to.be.a('number')",
+                      "    pm.expect(responseBody.statusCode).to.be.equal(400)",
+                      "    pm.expect(responseBody.hasOwnProperty(\"message\")).to.be.true;",
+                      "    pm.expect(responseBody.message).to.be.an(\"array\");",
+                      "    pm.expect(responseBody.message[0]).to.be.equal(\"Whitelisted cors must be a valid url or *\")",
+                      "    pm.expect(responseBody.hasOwnProperty(\"error\")).to.be.true;",
+                      "    pm.expect(responseBody.error).to.be.equal(\"Bad Request\")",
+                      "",
+                      "});",
+                      "",
+                      "",
+                      ""
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{studio-server-auth}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "origin",
+                    "value": "{{Origin}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"appName\":\"new application\",\r\n \"whitelistedCors\":[\"cbbnn\"]\r\n }",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{studio-server-base-url}}/api/v1/app/{{appId}}",
+                  "host": ["{{studio-server-base-url}}"],
+                  "path": ["api", "v1", "app", "{{appId}}"]
+                }
+              },
+              "response": [
+                {
+                  "name": "invalid whitelistedCors",
+                  "originalRequest": {
+                    "method": "PUT",
+                    "header": [
+                      {
+                        "key": "origin",
+                        "value": "{{Origin}}",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\"appName\":\"new application\",\r\n \"whitelistedCors\":[\"cbbnn\"]\r\n }",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{studio-server-base-url}}/api/v1/app/{{appId}}",
+                      "host": ["{{studio-server-base-url}}"],
+                      "path": ["api", "v1", "app", "{{appId}}"]
+                    }
+                  },
+                  "status": "Bad Request",
+                  "code": 400,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "X-Powered-By",
+                      "value": "Express"
+                    },
+                    {
+                      "key": "Vary",
+                      "value": "Origin"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Credentials",
+                      "value": "true"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json; charset=utf-8"
+                    },
+                    {
+                      "key": "Content-Length",
+                      "value": "96"
+                    },
+                    {
+                      "key": "ETag",
+                      "value": "W/\"60-RIqEfmO9wLXmpLC3xLB66TKCj7s\""
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Wed, 15 Nov 2023 04:16:23 GMT"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Keep-Alive",
+                      "value": "timeout=5"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"statusCode\": 400,\n    \"message\": [\n        \"Whitelisted cors must be a valid url or *\"\n    ],\n    \"error\": \"Bad Request\"\n}"
+                }
+              ]
+            },
+            {
+              "name": "invalid logoUrl",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "var responseBody = pm.response.json()",
+                      "pm.test(\"Status code is 400\", function () {",
+                      "    pm.response.to.have.status(400);",
+                      "});",
+                      "pm.test('Response body should be an object', function () {",
+                      "    pm.expect(typeof responseBody).to.equal(\"object\")",
+                      "})",
+                      "pm.test(\"Should not be able to update an app and fail as logoUrl passed in request body is not a valid url \", function () {",
+                      "    pm.expect(responseBody.hasOwnProperty(\"statusCode\")).to.be.true;",
+                      "    pm.expect(responseBody.statusCode).to.be.a('number')",
+                      "    pm.expect(responseBody.statusCode).to.be.equal(400)",
+                      "    pm.expect(responseBody.hasOwnProperty(\"message\")).to.be.true;",
+                      "    pm.expect(responseBody.message).to.be.an(\"array\");",
+                      "    pm.expect(responseBody.message[0]).to.be.equal(\"logoUrl is not a valid URL\")",
+                      "    pm.expect(responseBody.hasOwnProperty(\"error\")).to.be.true;",
+                      "    pm.expect(responseBody.error).to.be.equal(\"Bad Request\")",
+                      "",
+                      "});",
+                      "",
+                      "",
+                      ""
+                    ],
+                    "type": "text/javascript"
+                  }
+                },
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "exec": ["const url= pm.environment.get('tenantUrl')\r"],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{studio-server-auth}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "origin",
+                    "value": "{{Origin}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"appName\":\"new application\",\r\n \"whitelistedCors\":[\"{{tenantUrl}}\"],\r\n \"logoUrl\":\"ddhovk\"\r\n }",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{studio-server-base-url}}/api/v1/app/{{appId}}",
+                  "host": ["{{studio-server-base-url}}"],
+                  "path": ["api", "v1", "app", "{{appId}}"]
+                }
+              },
+              "response": [
+                {
+                  "name": "invalid logoUrl",
+                  "originalRequest": {
+                    "method": "PUT",
+                    "header": [
+                      {
+                        "key": "origin",
+                        "value": "{{Origin}}",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\"appName\":\"new application\",\r\n \"whitelistedCors\":[\"{{tenantUrl}}\"],\r\n \"logoUrl\":\"ddhovk\"\r\n }",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{studio-server-base-url}}/api/v1/app/{{appId}}",
+                      "host": ["{{studio-server-base-url}}"],
+                      "path": ["api", "v1", "app", "{{appId}}"]
+                    }
+                  },
+                  "status": "Bad Request",
+                  "code": 400,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "X-Powered-By",
+                      "value": "Express"
+                    },
+                    {
+                      "key": "Vary",
+                      "value": "Origin"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Credentials",
+                      "value": "true"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json; charset=utf-8"
+                    },
+                    {
+                      "key": "Content-Length",
+                      "value": "81"
+                    },
+                    {
+                      "key": "ETag",
+                      "value": "W/\"51-ux4IpwdtWXuvjDMF+isDPn21rD0\""
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Wed, 15 Nov 2023 04:43:26 GMT"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Keep-Alive",
+                      "value": "timeout=5"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"statusCode\": 400,\n    \"message\": [\n        \"logoUrl is not a valid URL\"\n    ],\n    \"error\": \"Bad Request\"\n}"
+                }
+              ]
+            },
+            {
+              "name": "update an app",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "var responseBody = pm.response.json()",
+                      "pm.test(\"Status code is 200\", function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "pm.test('Response body should be an object', function () {",
+                      "    pm.expect(typeof responseBody).to.equal(\"object\")",
+                      "})",
+                      "pm.test(\"Should be able to update an app\", function () {",
+                      " pm.expect(\"appId\" in responseBody).to.be.true;",
+                      "    pm.expect(responseBody.hasOwnProperty(\"appName\")).to.be.true;",
+                      "    pm.expect(responseBody.hasOwnProperty(\"edvId\")).to.be.true;",
+                      "    pm.expect(responseBody.hasOwnProperty(\"kmsId\")).to.be.true;",
+                      "    pm.expect(responseBody.hasOwnProperty(\"walletAddress\")).to.be.true;",
+                      "    pm.expect(responseBody.hasOwnProperty(\"description\")).to.be.true;",
+                      "    pm.expect(responseBody.hasOwnProperty(\"whitelistedCors\")).to.be.true;",
+                      "    pm.expect(responseBody.whitelistedCors).to.be.an(\"array\");",
+                      "    pm.expect(\"logoUrl\" in responseBody).to.be.true",
+                      "    pm.expect(\"subdomain\" in responseBody).to.be.true",
+                      "    pm.expect(\"tenantUrl\" in responseBody).to.be.true",
+                      "});",
+                      "",
+                      "",
+                      ""
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{studio-server-auth}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "origin",
+                    "value": "{{Origin}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"appName\":\"new application\",\r\n \"whitelistedCors\":[\"{{tenantUrl}}\"]\r\n\r\n }",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{studio-server-base-url}}/api/v1/app/{{appId}}",
+                  "host": ["{{studio-server-base-url}}"],
+                  "path": ["api", "v1", "app", "{{appId}}"]
+                }
+              },
+              "response": [
+                {
+                  "name": "update app",
+                  "originalRequest": {
+                    "method": "PUT",
+                    "header": [
+                      {
+                        "key": "origin",
+                        "value": "{{Origin}}",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\"appName\":\"new application\",\r\n \"whitelistedCors\":[\"{{tenantUrl}}\"]\r\n\r\n }",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{studio-server-base-url}}/api/v1/app/{{appId}}",
+                      "host": ["{{studio-server-base-url}}"],
+                      "path": ["api", "v1", "app", "{{appId}}"]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "X-Powered-By",
+                      "value": "Express"
+                    },
+                    {
+                      "key": "Vary",
+                      "value": "Origin"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Credentials",
+                      "value": "true"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json; charset=utf-8"
+                    },
+                    {
+                      "key": "Content-Length",
+                      "value": "450"
+                    },
+                    {
+                      "key": "ETag",
+                      "value": "W/\"1c2-KD3xdEulv1l8RAc1UlABiTX37yk\""
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Wed, 15 Nov 2023 04:51:34 GMT"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Keep-Alive",
+                      "value": "timeout=5"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"appName\": \"new application\",\n    \"appId\": \"9d33aa668515b39d07db2eedecf2ff4b2d96\",\n    \"edvId\": \"hs:studio-api:app:9d33aa668515b39d07db2eedecf2ff4b2d96\",\n    \"kmsId\": \"hs:doc:8r6eoftsnb9_fyhwct_oyvst0tq2wekbobek8jpwpos\",\n    \"walletAddress\": \"hid14jcdmke9xzjkprdx242ycwdsw9esyynmljjze2\",\n    \"description\": \"This is a test description\",\n    \"whitelistedCors\": [\n        \"http://ent_b44df68.localhost:8080\"\n    ],\n    \"logoUrl\": \"\",\n    \"subdomain\": \"ent_b44df68\",\n    \"tenantUrl\": \"http://ent_b44df68.localhost:8080/\"\n}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "delete an app",
+          "item": [
+            {
+              "name": "new app to test delete",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "var responseBody = pm.response.json()",
+                      "",
+                      "pm.test(\"Status code is 201\", function () {",
+                      "    pm.response.to.have.status(201);",
+                      "});",
+                      "pm.test('Response body should be an object', function () {",
+                      "    pm.expect(typeof responseBody).to.equal(\"object\")",
+                      "})",
+                      "pm.test(\"Should be able to register new app and have list of response body parameters\", function () {",
+                      "    pm.expect(\"appId\" in responseBody).to.be.true;",
+                      "    pm.expect(responseBody.hasOwnProperty(\"appName\")).to.be.true;",
+                      "    pm.expect(responseBody.hasOwnProperty(\"edvId\")).to.be.true;",
+                      "    pm.expect(responseBody.hasOwnProperty(\"kmsId\")).to.be.true;",
+                      "    pm.expect(responseBody.hasOwnProperty(\"walletAddress\")).to.be.true;",
+                      "    pm.expect(responseBody.hasOwnProperty(\"whitelistedCors\")).to.be.true;",
+                      "        pm.expect(responseBody.whitelistedCors).to.be.an(\"array\");",
+                      "    pm.expect(\"subdomain\" in responseBody).to.be.true",
+                      "    pm.expect(responseBody.hasOwnProperty(\"apiSecretKey\")).to.be.true;",
+                      "",
+                      "    pm.expect(\"tenantUrl\" in responseBody).to.be.true",
+                      "",
+                      "    pm.environment.set(\"appId2\", responseBody.appId)",
+                      "});",
+                      ""
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{studio-server-auth}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "origin",
+                    "value": "http://localhost:3001",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"appName\":\"new application\",\r\n \"whitelistedCors\":[\"{{tenantUrl}}\"]\r\n\r\n }",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{studio-server-base-url}}/api/v1/app",
+                  "host": ["{{studio-server-base-url}}"],
+                  "path": ["api", "v1", "app"]
+                }
+              },
+              "response": [
+                {
+                  "name": "new app to test delete",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "origin",
+                        "value": "http://localhost:3001",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\"appName\":\"new application\",\r\n \"whitelistedCors\":[\"{{tenantUrl}}\"]\r\n\r\n }",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{studio-server-base-url}}/api/v1/app",
+                      "host": ["{{studio-server-base-url}}"],
+                      "path": ["api", "v1", "app"]
+                    }
+                  },
+                  "status": "Created",
+                  "code": 201,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "X-Powered-By",
+                      "value": "Express"
+                    },
+                    {
+                      "key": "Vary",
+                      "value": "Origin"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Credentials",
+                      "value": "true"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json; charset=utf-8"
+                    },
+                    {
+                      "key": "Content-Length",
+                      "value": "539"
+                    },
+                    {
+                      "key": "ETag",
+                      "value": "W/\"21b-FTFsDIf0c0Cr8jWV24AQS9DrAO0\""
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Wed, 15 Nov 2023 05:00:14 GMT"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Keep-Alive",
+                      "value": "timeout=5"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"appName\": \"new application\",\n    \"appId\": \"1e224d82b5f540cdcfc0ddd0d73d0824bd92\",\n    \"edvId\": \"hs:studio-api:app:1e224d82b5f540cdcfc0ddd0d73d0824bd92\",\n    \"kmsId\": \"hs:doc:orw-e8m6iagylheqf100ndailc7n8i6m8v_kb0kyxha\",\n    \"walletAddress\": \"hid10acpfyu89d3dzm3y2fagluydqt00jw42wk2h7k\",\n    \"whitelistedCors\": [\n        \"http://ent_b44df68.localhost:8080\"\n    ],\n    \"subdomain\": \"ent_e0c90d6\",\n    \"apiSecretKey\": \"4fc27c7b3463f00fc0f8d872316ba.b044a9e0c9a0b2693c0ee89f4b1ccd88baf1eb799733b7950db20ae955a2ff9cdb81ea18e9613e7a59baefa83bd7c4611\",\n    \"tenantUrl\": \"http://ent_e0c90d6.localhost:8080/\"\n}"
+                }
+              ]
+            },
+            {
+              "name": "auth token not passed",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "var responseBody = pm.response.json()",
+                      "pm.test(\"Status code is 403\", function () {",
+                      "    pm.response.to.have.status(403);",
+                      "});",
+                      "pm.test('Response body should be an object', function () {",
+                      "    pm.expect(typeof responseBody).to.equal(\"object\")",
+                      "})",
+                      "pm.test(\"Should not be able to delete an app as authToken is not passed in header\", function () {",
+                      "    pm.expect(responseBody.hasOwnProperty(\"hypersign\")).to.be.true;",
+                      "    pm.expect(responseBody.hypersign).to.be.an(\"object\");",
+                      "    pm.expect(responseBody.hypersign.hasOwnProperty(\"success\")).to.be.true;",
+                      "    pm.expect(responseBody.hypersign.success).to.be.equal(false)",
+                      "    pm.expect(responseBody.hypersign.hasOwnProperty(\"message\")).to.be.true;",
+                      "    pm.expect(responseBody.hypersign.message).to.be.equal(\"HS-AUTH-NODE-SDK:: Error: Authorization token is not passed in the header\")",
+                      "    pm.expect(responseBody.hypersign.hasOwnProperty(\"data\")).to.be.true;",
+                      "});",
+                      "",
+                      "",
+                      ""
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "origin",
+                    "value": "http://localhost:3001",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{studio-server-base-url}}/api/v1/app/{{appId2}}",
+                  "host": ["{{studio-server-base-url}}"],
+                  "path": ["api", "v1", "app", "{{appId2}}"]
+                }
+              },
+              "response": [
+                {
+                  "name": "invalid auth token",
+                  "originalRequest": {
+                    "method": "DELETE",
+                    "header": [
+                      {
+                        "key": "origin",
+                        "value": "http://localhost:3001",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"appName\":\"\"\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{studio-server-base-url}}/api/v1/app/{{appId2}}",
+                      "host": ["{{studio-server-base-url}}"],
+                      "path": ["api", "v1", "app", "{{appId2}}"]
+                    }
+                  },
+                  "status": "Forbidden",
+                  "code": 403,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "X-Powered-By",
+                      "value": "Express"
+                    },
+                    {
+                      "key": "Vary",
+                      "value": "Origin"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Credentials",
+                      "value": "true"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json; charset=utf-8"
+                    },
+                    {
+                      "key": "Content-Length",
+                      "value": "127"
+                    },
+                    {
+                      "key": "ETag",
+                      "value": "W/\"7f-whgJttHrAINLbnaZSk4ZbGq0u1s\""
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Wed, 15 Nov 2023 05:03:35 GMT"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Keep-Alive",
+                      "value": "timeout=5"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"hypersign\": {\n        \"success\": false,\n        \"message\": \"HS-AUTH-NODE-SDK:: Error: Authorization token is not passed in the header\",\n        \"data\": {}\n    }\n}"
+                }
+              ]
+            },
+            {
+              "name": "invalid auth token",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "var responseBody = pm.response.json()",
+                      "pm.test(\"Status code is 403\", function () {",
+                      "    pm.response.to.have.status(403);",
+                      "});",
+                      "pm.test('Response body should be an object', function () {",
+                      "    pm.expect(typeof responseBody).to.equal(\"object\")",
+                      "})",
+                      "pm.test(\"Should not be able to delete an app as authToken passed in header is not valid\", function () {",
+                      "    pm.expect(responseBody.hasOwnProperty(\"hypersign\")).to.be.true;",
+                      "    pm.expect(responseBody.hypersign).to.be.an(\"object\");",
+                      "    pm.expect(responseBody.hypersign.hasOwnProperty(\"success\")).to.be.true;",
+                      "    pm.expect(responseBody.hypersign.success).to.be.equal(false)",
+                      "    pm.expect(responseBody.hypersign.hasOwnProperty(\"message\")).to.be.true;",
+                      "    pm.expect(responseBody.hypersign.message).to.be.equal(\"invalid token\")",
+                      "    pm.expect(responseBody.hypersign.hasOwnProperty(\"data\")).to.be.true;",
+                      "});",
+                      "",
+                      "",
+                      ""
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "eywsdvklfvhsdbksmvf.eehnfd,mnsxzcfired.wkrirogkfdkfneiwfkfdvnjekffbjjlffvafrufwd",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "origin",
+                    "value": "http://localhost:3001",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\r\n    \"appName\":\"\"\r\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{studio-server-base-url}}/api/v1/app/{{appId}}",
+                  "host": ["{{studio-server-base-url}}"],
+                  "path": ["api", "v1", "app", "{{appId}}"]
+                }
+              },
+              "response": [
+                {
+                  "name": "invalid auth token",
+                  "originalRequest": {
+                    "method": "DELETE",
+                    "header": [
+                      {
+                        "key": "origin",
+                        "value": "http://localhost:3001",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\r\n    \"appName\":\"\"\r\n}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{studio-server-base-url}}/api/v1/app/{{appId}}",
+                      "host": ["{{studio-server-base-url}}"],
+                      "path": ["api", "v1", "app", "{{appId}}"]
+                    }
+                  },
+                  "status": "Forbidden",
+                  "code": 403,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "X-Powered-By",
+                      "value": "Express"
+                    },
+                    {
+                      "key": "Vary",
+                      "value": "Origin"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Credentials",
+                      "value": "true"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json; charset=utf-8"
+                    },
+                    {
+                      "key": "Content-Length",
+                      "value": "67"
+                    },
+                    {
+                      "key": "ETag",
+                      "value": "W/\"43-1BX/VR1K6uZ38Xr6ZLqH3aSWpQY\""
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Wed, 15 Nov 2023 05:05:37 GMT"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Keep-Alive",
+                      "value": "timeout=5"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"hypersign\": {\n        \"success\": false,\n        \"message\": \"invalid token\",\n        \"data\": {}\n    }\n}"
+                }
+              ]
+            },
+            {
+              "name": "wrong appId",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "var responseBody = pm.response.json()",
+                      "pm.test(\"Status code is 404\", function () {",
+                      "    pm.response.to.have.status(404);",
+                      "});",
+                      "pm.test('Response body should be an object', function () {",
+                      "    pm.expect(typeof responseBody).to.equal(\"object\")",
+                      "})",
+                      "pm.test(\"Should not able to delete an app and fail as appId does not exists\", function () {",
+                      "    pm.expect(responseBody.hasOwnProperty(\"statusCode\")).to.be.true;",
+                      "    pm.expect(responseBody.statusCode).to.be.a('number')",
+                      "    pm.expect(responseBody.statusCode).to.be.equal(404)",
+                      "    pm.expect(responseBody.hasOwnProperty(\"message\")).to.be.true;",
+                      "    pm.expect(responseBody.message).to.be.an(\"array\");",
+                      "    pm.expect(responseBody.message[0]).to.be.equal( \"No App found for appId xyz\")",
+                      "    pm.expect(responseBody.hasOwnProperty(\"error\")).to.be.true;",
+                      "    pm.expect(responseBody.error).to.be.equal(\"Not Found\")",
+                      "",
+                      "});",
+                      "",
+                      "",
+                      ""
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{studio-server-auth}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "origin",
+                    "value": "{{Origin}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"appName\":\"\"}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{studio-server-base-url}}/api/v1/app/xyz",
+                  "host": ["{{studio-server-base-url}}"],
+                  "path": ["api", "v1", "app", "xyz"]
+                }
+              },
+              "response": [
+                {
+                  "name": "wrong appId",
+                  "originalRequest": {
+                    "method": "DELETE",
+                    "header": [
+                      {
+                        "key": "origin",
+                        "value": "{{Origin}}",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\"appName\":\"\"}",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{studio-server-base-url}}/api/v1/app/xyz",
+                      "host": ["{{studio-server-base-url}}"],
+                      "path": ["api", "v1", "app", "xyz"]
+                    }
+                  },
+                  "status": "Not Found",
+                  "code": 404,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "X-Powered-By",
+                      "value": "Express"
+                    },
+                    {
+                      "key": "Vary",
+                      "value": "Origin"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Credentials",
+                      "value": "true"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json; charset=utf-8"
+                    },
+                    {
+                      "key": "Content-Length",
+                      "value": "79"
+                    },
+                    {
+                      "key": "ETag",
+                      "value": "W/\"4f-hwej3sYGOSWDEueYS/NyDhdAXog\""
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Wed, 15 Nov 2023 05:08:36 GMT"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Keep-Alive",
+                      "value": "timeout=5"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"statusCode\": 404,\n    \"message\": [\n        \"No App found for appId xyz\"\n    ],\n    \"error\": \"Not Found\"\n}"
+                }
+              ]
+            },
+            {
+              "name": "delete an app",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "var responseBody = pm.response.json()",
+                      "pm.test(\"Status code is 200\", function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "pm.test('Response body should be an object', function () {",
+                      "    pm.expect(typeof responseBody).to.equal(\"object\")",
+                      "})",
+                      "pm.test(\"Should be able to delete an app\", function () {",
+                      "   pm.expect(\"appId\" in responseBody).to.be.true;",
+                      "    pm.expect(responseBody.hasOwnProperty(\"appName\")).to.be.true;",
+                      "    pm.expect(responseBody.hasOwnProperty(\"edvId\")).to.be.true;",
+                      "    pm.expect(responseBody.hasOwnProperty(\"kmsId\")).to.be.true;",
+                      "    pm.expect(responseBody.hasOwnProperty(\"walletAddress\")).to.be.true;",
+                      "    pm.expect(responseBody.hasOwnProperty(\"whitelistedCors\")).to.be.true;",
+                      "    pm.expect(responseBody.whitelistedCors).to.be.an(\"array\");",
+                      "    pm.expect(\"subdomain\" in responseBody).to.be.true",
+                      "",
+                      "});",
+                      "",
+                      "",
+                      ""
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{studio-server-auth}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "origin",
+                    "value": "{{Origin}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"appName\":\"new application\",\r\n \"whitelistedCors\":[\"{{tenantUrl}}\"]\r\n\r\n }",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{studio-server-base-url}}/api/v1/app/{{appId2}}",
+                  "host": ["{{studio-server-base-url}}"],
+                  "path": ["api", "v1", "app", "{{appId2}}"]
+                }
+              },
+              "response": [
+                {
+                  "name": "delet an app",
+                  "originalRequest": {
+                    "method": "DELETE",
+                    "header": [
+                      {
+                        "key": "origin",
+                        "value": "{{Origin}}",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\"appName\":\"new application\",\r\n \"whitelistedCors\":[\"{{tenantUrl}}\"]\r\n\r\n }",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{studio-server-base-url}}/api/v1/app/{{appId2}}",
+                      "host": ["{{studio-server-base-url}}"],
+                      "path": ["api", "v1", "app", "{{appId2}}"]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "X-Powered-By",
+                      "value": "Express"
+                    },
+                    {
+                      "key": "Vary",
+                      "value": "Origin"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Credentials",
+                      "value": "true"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json; charset=utf-8"
+                    },
+                    {
+                      "key": "Content-Length",
+                      "value": "345"
+                    },
+                    {
+                      "key": "ETag",
+                      "value": "W/\"159-S10/Cj8zLrE+vtM2w6ZxL5k4J2Y\""
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Wed, 15 Nov 2023 05:15:33 GMT"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Keep-Alive",
+                      "value": "timeout=5"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"appName\": \"new application\",\n    \"appId\": \"17e0d965be69806dad91aa04b51e5d1c422e\",\n    \"edvId\": \"hs:studio-api:app:17e0d965be69806dad91aa04b51e5d1c422e\",\n    \"kmsId\": \"hs:doc:qqq9m4dpw-1xd_qrl0zujhtjjgxs7dqxhzq9t5sovqk\",\n    \"walletAddress\": \"hid1ykmgzty8jk6c262t4k2zlmvsupcdjq936kcp0k\",\n    \"whitelistedCors\": [\n        \"http://ent_b44df68.localhost:8080\"\n    ],\n    \"subdomain\": \"ent_66644e9\"\n}"
+                }
+              ]
+            },
+            {
+              "name": "app is already deleted",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "var responseBody = pm.response.json()",
+                      "pm.test(\"Status code is 404\", function () {",
+                      "    pm.response.to.have.status(404);",
+                      "});",
+                      "pm.test('Response body should be an object', function () {",
+                      "    pm.expect(typeof responseBody).to.equal(\"object\")",
+                      "})",
+                      "pm.test(\"Should not be be able to delete an app as it is already deleted not not able to find int\", function () {",
+                      "    pm.expect(responseBody.hasOwnProperty(\"statusCode\")).to.be.true;",
+                      "    pm.expect(responseBody.statusCode).to.be.a('number')",
+                      "    pm.expect(responseBody.statusCode).to.be.equal(404)",
+                      "    pm.expect(responseBody.hasOwnProperty(\"message\")).to.be.true;",
+                      "    pm.expect(responseBody.message).to.be.an(\"array\");",
+                      "    pm.expect(responseBody.message[0]).to.be.equal(`No App found for appId ${pm.environment.get(\"appId2\")}`)",
+                      "    pm.expect(responseBody.hasOwnProperty(\"error\")).to.be.true;",
+                      "    pm.expect(responseBody.error).to.be.equal(\"Not Found\")",
+                      "});",
+                      "",
+                      "",
+                      ""
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{studio-server-auth}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "origin",
+                    "value": "{{Origin}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\"appName\":\"new application\",\r\n \"whitelistedCors\":[\"{{tenantUrl}}\"]\r\n\r\n }",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{studio-server-base-url}}/api/v1/app/{{appId2}}",
+                  "host": ["{{studio-server-base-url}}"],
+                  "path": ["api", "v1", "app", "{{appId2}}"]
+                }
+              },
+              "response": [
+                {
+                  "name": "app is already deleted",
+                  "originalRequest": {
+                    "method": "DELETE",
+                    "header": [
+                      {
+                        "key": "origin",
+                        "value": "{{Origin}}",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "{\"appName\":\"new application\",\r\n \"whitelistedCors\":[\"{{tenantUrl}}\"]\r\n\r\n }",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{studio-server-base-url}}/api/v1/app/{{appId2}}",
+                      "host": ["{{studio-server-base-url}}"],
+                      "path": ["api", "v1", "app", "{{appId2}}"]
+                    }
+                  },
+                  "status": "Not Found",
+                  "code": 404,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "X-Powered-By",
+                      "value": "Express"
+                    },
+                    {
+                      "key": "Vary",
+                      "value": "Origin"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Credentials",
+                      "value": "true"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json; charset=utf-8"
+                    },
+                    {
+                      "key": "Content-Length",
+                      "value": "112"
+                    },
+                    {
+                      "key": "ETag",
+                      "value": "W/\"70-mExw37/IjSyNSwehaRwfmQXYa5Q\""
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Wed, 15 Nov 2023 05:21:16 GMT"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Keep-Alive",
+                      "value": "timeout=5"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"statusCode\": 404,\n    \"message\": [\n        \"No App found for appId 17e0d965be69806dad91aa04b51e5d1c422e\"\n    ],\n    \"error\": \"Not Found\"\n}"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "name": "generate new api secret",
+          "item": [
+            {
+              "name": "authorization issue",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "var responseBody = pm.response.json()",
+                      "pm.test(\"Status code is 403\", function () {",
+                      "    pm.response.to.have.status(403);",
+                      "});",
+                      "pm.test('Response body should be an object', function () {",
+                      "    pm.expect(typeof responseBody).to.equal(\"object\")",
+                      "})",
+                      "pm.test(\"Should not be able to regenrate appSecret as authorization token is not passed in header\", function () {",
+                      "      pm.expect(responseBody.hasOwnProperty(\"hypersign\")).to.be.true;",
+                      "    pm.expect(responseBody.hypersign).to.be.an(\"object\");",
+                      "    pm.expect(responseBody.hypersign.hasOwnProperty(\"success\")).to.be.true;",
+                      "    pm.expect(responseBody.hypersign.success).to.be.equal(false)",
+                      "    pm.expect(responseBody.hypersign.hasOwnProperty(\"message\")).to.be.true;",
+                      "    pm.expect(responseBody.hypersign.message).to.be.equal(\"HS-AUTH-NODE-SDK:: Error: Authorization token is not passed in the header\")",
+                      "    pm.expect(responseBody.hypersign.hasOwnProperty(\"data\")).to.be.true;",
+                      "});",
+                      "",
+                      "",
+                      ""
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "noauth"
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "origin",
+                    "value": "{{Origin}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{studio-server-base-url}}/api/v1/app/{{appId}}/secret/new",
+                  "host": ["{{studio-server-base-url}}"],
+                  "path": ["api", "v1", "app", "{{appId}}", "secret", "new"]
+                }
+              },
+              "response": [
+                {
+                  "name": "auth token not passed",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "origin",
+                        "value": "{{Origin}}",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{studio-server-base-url}}/api/v1/app/{{appId}}/secret/new",
+                      "host": ["{{studio-server-base-url}}"],
+                      "path": ["api", "v1", "app", "{{appId}}", "secret", "new"]
+                    }
+                  },
+                  "status": "Forbidden",
+                  "code": 403,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "X-Powered-By",
+                      "value": "Express"
+                    },
+                    {
+                      "key": "Vary",
+                      "value": "Origin"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Credentials",
+                      "value": "true"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json; charset=utf-8"
+                    },
+                    {
+                      "key": "Content-Length",
+                      "value": "127"
+                    },
+                    {
+                      "key": "ETag",
+                      "value": "W/\"7f-whgJttHrAINLbnaZSk4ZbGq0u1s\""
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Wed, 15 Nov 2023 05:27:01 GMT"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Keep-Alive",
+                      "value": "timeout=5"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"hypersign\": {\n        \"success\": false,\n        \"message\": \"HS-AUTH-NODE-SDK:: Error: Authorization token is not passed in the header\",\n        \"data\": {}\n    }\n}"
+                }
+              ]
+            },
+            {
+              "name": "invalid auth token",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "var responseBody = pm.response.json()",
+                      "pm.test(\"Status code is 403\", function () {",
+                      "    pm.response.to.have.status(403);",
+                      "});",
+                      "pm.test('Response body should be an object', function () {",
+                      "    pm.expect(typeof responseBody).to.equal(\"object\")",
+                      "})",
+                      "pm.test(\"Should not be able to regenrate appSecret as authorization token is not passed in header\", function () {",
+                      "      pm.expect(responseBody.hasOwnProperty(\"hypersign\")).to.be.true;",
+                      "    pm.expect(responseBody.hypersign).to.be.an(\"object\");",
+                      "    pm.expect(responseBody.hypersign.hasOwnProperty(\"success\")).to.be.true;",
+                      "    pm.expect(responseBody.hypersign.success).to.be.equal(false)",
+                      "    pm.expect(responseBody.hypersign.hasOwnProperty(\"message\")).to.be.true;",
+                      "    pm.expect(responseBody.hypersign.message).to.be.equal(\"invalid token\")",
+                      "    pm.expect(responseBody.hypersign.hasOwnProperty(\"data\")).to.be.true;",
+                      "});",
+                      "",
+                      "",
+                      ""
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "eywsdvklfvhsdbksmvf.eehnfd,mnsxzcfired.wkrirogkfdkfneiwfkfdvnjekffbjjlffvafrufwd",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "origin",
+                    "value": "{{Origin}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{studio-server-base-url}}/api/v1/app/{{appId}}/secret/new",
+                  "host": ["{{studio-server-base-url}}"],
+                  "path": ["api", "v1", "app", "{{appId}}", "secret", "new"]
+                }
+              },
+              "response": [
+                {
+                  "name": "invalid auth token",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "origin",
+                        "value": "{{Origin}}",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{studio-server-base-url}}/api/v1/app/{{appId}}/secret/new",
+                      "host": ["{{studio-server-base-url}}"],
+                      "path": ["api", "v1", "app", "{{appId}}", "secret", "new"]
+                    }
+                  },
+                  "status": "Forbidden",
+                  "code": 403,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "X-Powered-By",
+                      "value": "Express"
+                    },
+                    {
+                      "key": "Vary",
+                      "value": "Origin"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Credentials",
+                      "value": "true"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json; charset=utf-8"
+                    },
+                    {
+                      "key": "Content-Length",
+                      "value": "67"
+                    },
+                    {
+                      "key": "ETag",
+                      "value": "W/\"43-1BX/VR1K6uZ38Xr6ZLqH3aSWpQY\""
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Wed, 15 Nov 2023 05:30:41 GMT"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Keep-Alive",
+                      "value": "timeout=5"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"hypersign\": {\n        \"success\": false,\n        \"message\": \"invalid token\",\n        \"data\": {}\n    }\n}"
+                }
+              ]
+            },
+            {
+              "name": "wrong appId",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "var responseBody = pm.response.json()",
+                      "pm.test(\"Status code is 400\", function () {",
+                      "    pm.response.to.have.status(400);",
+                      "});",
+                      "pm.test('Response body should be an object', function () {",
+                      "    pm.expect(typeof responseBody).to.equal(\"object\")",
+                      "})",
+                      "pm.test(\"Should not be able to regenerate appSecret as appId passed in request params is wrong\", function () {",
+                      "    pm.expect(responseBody.hasOwnProperty(\"statusCode\")).to.be.true;",
+                      "    pm.expect(responseBody.statusCode).to.be.a('number')",
+                      "    pm.expect(responseBody.statusCode).to.be.equal(400)",
+                      "    pm.expect(responseBody.hasOwnProperty(\"message\")).to.be.true;",
+                      "    pm.expect(responseBody.message).to.be.an(\"array\");",
+                      "    pm.expect(responseBody.message[0]).to.be.equal( \"Application Not Found\")",
+                      "    pm.expect(responseBody.hasOwnProperty(\"error\")).to.be.true;",
+                      "    pm.expect(responseBody.error).to.be.equal(\"Bad Request\")",
+                      "});",
+                      ""
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{studio_API_auth}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "origin",
+                    "value": "{{Origin}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{studio-server-base-url}}/api/v1/app/xyz/secret/new",
+                  "host": ["{{studio-server-base-url}}"],
+                  "path": ["api", "v1", "app", "xyz", "secret", "new"]
+                }
+              },
+              "response": [
+                {
+                  "name": "wrong appId",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "origin",
+                        "value": "{{Origin}}",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{studio-server-base-url}}/api/v1/app/xyz/secret/new",
+                      "host": ["{{studio-server-base-url}}"],
+                      "path": ["api", "v1", "app", "xyz", "secret", "new"]
+                    }
+                  },
+                  "status": "Bad Request",
+                  "code": 400,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "X-Powered-By",
+                      "value": "Express"
+                    },
+                    {
+                      "key": "Vary",
+                      "value": "Origin"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Credentials",
+                      "value": "true"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json; charset=utf-8"
+                    },
+                    {
+                      "key": "Content-Length",
+                      "value": "76"
+                    },
+                    {
+                      "key": "ETag",
+                      "value": "W/\"4c-NO7lw8kkSNMmXa9I2zOR3gKFPz8\""
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Wed, 15 Nov 2023 05:28:20 GMT"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Keep-Alive",
+                      "value": "timeout=5"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"message\": [\n        \"Application Not Found\"\n    ],\n    \"statusCode\": 400,\n    \"error\": \"Bad Request\"\n}"
+                }
+              ]
+            },
+            {
+              "name": "generate new api secret",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "var responseBody = pm.response.json()",
+                      "pm.test(\"Status code is 200\", function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "pm.test('Response body should be an object', function () {",
+                      "    pm.expect(typeof responseBody).to.equal(\"object\")",
+                      "})",
+                      "pm.test(\"Should be able to regenerate appSecret\", function () {",
+                      "    pm.expect(\"apiSecretKey\" in responseBody).to.be.true;",
+                      "       pm.environment.set(\"X-Api-Secret-Key\", responseBody.apiSecretKey)",
+                      "});",
+                      ""
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{studio-server-auth}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "origin",
+                    "value": "{{Origin}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{studio-server-base-url}}/api/v1/app/{{appId}}/secret/new",
+                  "host": ["{{studio-server-base-url}}"],
+                  "path": ["api", "v1", "app", "{{appId}}", "secret", "new"]
+                }
+              },
+              "response": [
+                {
+                  "name": "generate new api secret",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "origin",
+                        "value": "{{Origin}}",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{studio-server-base-url}}/api/v1/app/{{appId}}/secret/new",
+                      "host": ["{{studio-server-base-url}}"],
+                      "path": ["api", "v1", "app", "{{appId}}", "secret", "new"]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "X-Powered-By",
+                      "value": "Express"
+                    },
+                    {
+                      "key": "Vary",
+                      "value": "Origin"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Credentials",
+                      "value": "true"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json; charset=utf-8"
+                    },
+                    {
+                      "key": "Content-Length",
+                      "value": "146"
+                    },
+                    {
+                      "key": "ETag",
+                      "value": "W/\"92-7IXTS+eZHZyWkhybsFAqAmas2L4\""
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Wed, 15 Nov 2023 05:42:01 GMT"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Keep-Alive",
+                      "value": "timeout=5"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"apiSecretKey\": \"66fd6e5fe0e1403e5542e40f91483.b8c3b2006e0d4464e90673523b030caf0d51c03227f6f9ab7040078f3faad12c444c7b9d31ba000a0a098956049f149f8\"\n}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "app-oauth",
+      "item": [
+        {
+          "name": "generate api access token",
+          "item": [
+            {
+              "name": "X-Api-secret-key is not passed or empty",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "var responseBody = pm.response.json()",
+                      "pm.test(\"Status code is 400\", function () {",
+                      "    pm.response.to.have.status(401);",
+                      "});",
+                      "pm.test('Response body should be an object', function () {",
+                      "    pm.expect(typeof responseBody).to.equal(\"object\")",
+                      "})",
+                      "pm.test(\"Should not be able to generate accessToken as x-api-secret-key is not passed in the header\", function () {",
+                      "    pm.expect(responseBody.hasOwnProperty(\"statusCode\")).to.be.true;",
+                      "    pm.expect(responseBody.statusCode).to.be.a('number')",
+                      "    pm.expect(responseBody.statusCode).to.be.equal(401)",
+                      "    pm.expect(responseBody.hasOwnProperty(\"message\")).to.be.true;",
+                      "    pm.expect(responseBody.message).to.be.an(\"array\");",
+                      "    pm.expect(responseBody.message[0]).to.be.equal(\"x-api-secret-key header is missing\")",
+                      "    pm.expect(responseBody.hasOwnProperty(\"error\")).to.be.true;",
+                      "    pm.expect(responseBody.error).to.be.equal(\"Unauthorized\")",
+                      "",
+                      "",
+                      "});",
+                      "",
+                      "",
+                      ""
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{studio_API_auth}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "X-Api-Secret-Key",
+                    "value": "",
+                    "type": "text"
+                  },
+                  {
+                    "key": "origin",
+                    "value": "{{Origin}}",
+                    "type": "text"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{studio-server-base-url}}/api/v1/app/oauth",
+                  "host": ["{{studio-server-base-url}}"],
+                  "path": ["api", "v1", "app", "oauth"]
+                }
+              },
+              "response": [
+                {
+                  "name": "X-Api-secret-key is not passed or empty",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "X-Api-Secret-Key",
+                        "value": "",
+                        "type": "text"
+                      },
+                      {
+                        "key": "origin",
+                        "value": "{{Origin}}",
+                        "type": "text"
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{studio-server-base-url}}/api/v1/app/oauth",
+                      "host": ["{{studio-server-base-url}}"],
+                      "path": ["api", "v1", "app", "oauth"]
+                    }
+                  },
+                  "status": "Unauthorized",
+                  "code": 401,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "X-Powered-By",
+                      "value": "Express"
+                    },
+                    {
+                      "key": "Vary",
+                      "value": "Origin"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Credentials",
+                      "value": "true"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json; charset=utf-8"
+                    },
+                    {
+                      "key": "Content-Length",
+                      "value": "90"
+                    },
+                    {
+                      "key": "ETag",
+                      "value": "W/\"5a-4+BeuBqmQeR3bGK7/VCnWWvZJvY\""
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Wed, 15 Nov 2023 05:55:14 GMT"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Keep-Alive",
+                      "value": "timeout=5"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"statusCode\": 401,\n    \"message\": [\n        \"x-api-secret-key header is missing\"\n    ],\n    \"error\": \"Unauthorized\"\n}"
+                }
+              ]
+            },
+            {
+              "name": "wrong X-Api-secret-key",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "var responseBody = pm.response.json()",
+                      "pm.test(\"Status code is 400\", function () {",
+                      "    pm.response.to.have.status(401);",
+                      "});",
+                      "pm.test('Response body should be an object', function () {",
+                      "    pm.expect(typeof responseBody).to.equal(\"object\")",
+                      "})",
+                      "pm.test(\"Should be able to fail as origin is not passed in header\", function () {",
+                      "    pm.expect(responseBody.hasOwnProperty(\"statusCode\")).to.be.true;",
+                      "    pm.expect(responseBody.statusCode).to.be.a('number')",
+                      "    pm.expect(responseBody.statusCode).to.be.equal(401)",
+                      "    pm.expect(responseBody.hasOwnProperty(\"message\")).to.be.true;",
+                      "    pm.expect(responseBody.message).to.be.an(\"array\");",
+                      "    pm.expect(responseBody.message[0]).to.be.equal(\"access_denied\")",
+                      "    pm.expect(responseBody.hasOwnProperty(\"error\")).to.be.true;",
+                      "    pm.expect(responseBody.error).to.be.equal(\"Unauthorized\")",
+                      "",
+                      "",
+                      "});",
+                      "",
+                      "",
+                      ""
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{studio_API_auth}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "X-Api-Secret-Key",
+                    "value": "xyz",
+                    "type": "text"
+                  },
+                  {
+                    "key": "origin",
+                    "value": "{{Origin}}",
+                    "type": "text",
+                    "disabled": true
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{studio-server-base-url}}/api/v1/app/oauth",
+                  "host": ["{{studio-server-base-url}}"],
+                  "path": ["api", "v1", "app", "oauth"]
+                }
+              },
+              "response": [
+                {
+                  "name": "wrong X-Api-secret-key",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "X-Api-Secret-Key",
+                        "value": "xyz",
+                        "type": "text"
+                      },
+                      {
+                        "key": "origin",
+                        "value": "{{Origin}}",
+                        "type": "text",
+                        "disabled": true
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{studio-server-base-url}}/api/v1/app/oauth",
+                      "host": ["{{studio-server-base-url}}"],
+                      "path": ["api", "v1", "app", "oauth"]
+                    }
+                  },
+                  "status": "Unauthorized",
+                  "code": 401,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "X-Powered-By",
+                      "value": "Express"
+                    },
+                    {
+                      "key": "Vary",
+                      "value": "Origin"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Credentials",
+                      "value": "true"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json; charset=utf-8"
+                    },
+                    {
+                      "key": "Content-Length",
+                      "value": "69"
+                    },
+                    {
+                      "key": "ETag",
+                      "value": "W/\"45-WJV85FxvXpxFwnsbpAq+QaztVHc\""
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Wed, 15 Nov 2023 05:55:52 GMT"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Keep-Alive",
+                      "value": "timeout=5"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"statusCode\": 401,\n    \"message\": [\n        \"access_denied\"\n    ],\n    \"error\": \"Unauthorized\"\n}"
+                }
+              ]
+            },
+            {
+              "name": "get api token",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "exec": [
+                      "var responseBody = pm.response.json()",
+                      "pm.test(\"Status code is 200\", function () {",
+                      "    pm.response.to.have.status(200);",
+                      "});",
+                      "pm.test('Response body should be an object', function () {",
+                      "    pm.expect(typeof responseBody).to.equal(\"object\")",
+                      "})",
+                      "pm.test(\"Should be able to pass and have list of field in response body\", function () {",
+                      "    pm.expect(\"access_token\" in responseBody).to.be.true;",
+                      "    pm.expect(responseBody.hasOwnProperty(\"expiresIn\")).to.be.true;",
+                      "    pm.expect(responseBody.hasOwnProperty(\"tokenType\")).to.be.true;",
+                      "    pm.expect(responseBody.tokenType).to.eql(\"Bearer\")",
+                      "    pm.environment.set(\"access_Token\", responseBody.access_token)",
+                      "});",
+                      ""
+                    ],
+                    "type": "text/javascript"
+                  }
+                }
+              ],
+              "request": {
+                "auth": {
+                  "type": "bearer",
+                  "bearer": [
+                    {
+                      "key": "token",
+                      "value": "{{studio_API_auth}}",
+                      "type": "string"
+                    }
+                  ]
+                },
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "X-Api-Secret-Key",
+                    "value": "{{X-Api-Secret-Key}}",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Origin",
+                    "value": "{{Origin}}",
+                    "type": "text",
+                    "disabled": true
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "url": {
+                  "raw": "{{studio-server-base-url}}/api/v1/app/oauth",
+                  "host": ["{{studio-server-base-url}}"],
+                  "path": ["api", "v1", "app", "oauth"]
+                }
+              },
+              "response": [
+                {
+                  "name": "get api token",
+                  "originalRequest": {
+                    "method": "POST",
+                    "header": [
+                      {
+                        "key": "X-Api-Secret-Key",
+                        "value": "{{X-Api-Secret-Key}}",
+                        "type": "text"
+                      },
+                      {
+                        "key": "Origin",
+                        "value": "{{Origin}}",
+                        "type": "text",
+                        "disabled": true
+                      }
+                    ],
+                    "body": {
+                      "mode": "raw",
+                      "raw": "",
+                      "options": {
+                        "raw": {
+                          "language": "json"
+                        }
+                      }
+                    },
+                    "url": {
+                      "raw": "{{studio-server-base-url}}/api/v1/app/oauth",
+                      "host": ["{{studio-server-base-url}}"],
+                      "path": ["api", "v1", "app", "oauth"]
+                    }
+                  },
+                  "status": "OK",
+                  "code": 200,
+                  "_postman_previewlanguage": "json",
+                  "header": [
+                    {
+                      "key": "X-Powered-By",
+                      "value": "Express"
+                    },
+                    {
+                      "key": "Vary",
+                      "value": "Origin"
+                    },
+                    {
+                      "key": "Access-Control-Allow-Credentials",
+                      "value": "true"
+                    },
+                    {
+                      "key": "Content-Type",
+                      "value": "application/json; charset=utf-8"
+                    },
+                    {
+                      "key": "Content-Length",
+                      "value": "634"
+                    },
+                    {
+                      "key": "ETag",
+                      "value": "W/\"27a-qqdIvVHXi1PD3iBVIHvJwibh1uo\""
+                    },
+                    {
+                      "key": "Date",
+                      "value": "Wed, 15 Nov 2023 05:56:37 GMT"
+                    },
+                    {
+                      "key": "Connection",
+                      "value": "keep-alive"
+                    },
+                    {
+                      "key": "Keep-Alive",
+                      "value": "timeout=5"
+                    }
+                  ],
+                  "cookie": [],
+                  "body": "{\n    \"access_token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhcHBJZCI6ImY4MjJhZWJkYWVkMWI5MGZjNzE2NzZkYTBiM2RkNzAwNzU2ZCIsInVzZXJJZCI6ImFiOGQ0OGUwLTYwZWItNDM3Yy05YTg2LWUwNjMwODBiMjk0MyIsImdyYW50VHlwZSI6ImNsaWVudF9jcmVkZW50aWFscyIsImttc0lkIjoiaHM6ZG9jOnJmMTRhY3FucmpwYmlubXVxdnNhMXZhM3FudmUwcGNiNHg5bjRvb3E1NXUiLCJ3aGl0ZWxpc3RlZENvcnMiOlsiaHR0cDovL2VudF9kNDE3YTFjLmxvY2FsaG9zdDo4MDgwIl0sInN1YmRvbWFpbiI6ImVudF9kNDE3YTFjIiwiZWR2SWQiOiJoczpzdHVkaW8tYXBpOmFwcDpmODIyYWViZGFlZDFiOTBmYzcxNjc2ZGEwYjNkZDcwMDc1NmQiLCJpYXQiOjE3MDAwMjc3OTcsImV4cCI6MTcwMDA0MjE5N30.TmoQz-UyafwF9m84xOuXGd5QKPNjk-FWg5tw0Gx1KzI\",\n    \"expiresIn\": 14400,\n    \"tokenType\": \"Bearer\"\n}"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [""]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [""]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "studio-server-base-url",
+      "value": "{{studio-server-base-url}}"
+    },
+    {
+      "key": "studio-server-auth",
+      "value": "{{studio-server-auth-token}}"
+    },
+    {
+      "key": "appId",
+      "value": "2bc5ea68f8f44f68f797a62ed1be68bd1769",
+      "type": "string"
+    }
+  ]
+}

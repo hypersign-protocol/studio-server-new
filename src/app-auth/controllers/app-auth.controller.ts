@@ -11,30 +11,20 @@ import {
   HttpCode,
   UseFilters,
   Query,
-  UseGuards,
   Req,
   Delete,
-  Headers,
   Logger,
 } from '@nestjs/common';
 import { CreateAppDto } from 'src/app-auth/dtos/create-app.dto';
-import {
-  GenerateTokenError,
-  GenerateTokenResponse,
-  RegenrateAppApiSecretResponse,
-} from '../dtos/generate-token.dto';
+import { RegenrateAppApiSecretResponse } from '../dtos/generate-token.dto';
 import { AppAuthService } from 'src/app-auth/services/app-auth.service';
 import {
   ApiBadRequestResponse,
-  ApiBearerAuth,
   ApiCreatedResponse,
-  ApiExcludeController,
-  ApiHeader,
   ApiNotFoundResponse,
   ApiQuery,
   ApiResponse,
   ApiTags,
-  ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { App, createAppResponse } from '../schemas/app.schema';
 import { AppNotFoundException } from 'src/app-auth/exceptions/app-not-found.exception';
@@ -43,15 +33,10 @@ import { MongooseClassSerializerInterceptor } from '../../utils/utils';
 import { AllExceptionsFilter } from '../../utils/utils';
 import { AppError, GetAppList } from '../dtos/fetch-app.dto';
 import { PaginationDto } from 'src/utils/pagination.dto';
-import { AppSecretHeader } from '../decorator/app-sercret.decorator';
 import { TransformResponseInterceptor } from '../interceptors/transformResponse.interseptor';
-import { JwtGuard } from '../guard/jwt.guard';
-
 @UseFilters(AllExceptionsFilter)
-@Controller('app')
-@ApiExcludeController()
-@ApiBearerAuth('Authorization')
-@UseGuards(JwtGuard)
+@ApiTags('Application')
+@Controller('/api/v1/app')
 export class AppAuthController {
   constructor(private readonly appAuthService: AppAuthService) {}
   @UseInterceptors(
@@ -97,6 +82,7 @@ export class AppAuthController {
     }
     if (appList) return appList;
   }
+
   @UseInterceptors(
     MongooseClassSerializerInterceptor(App, {
       excludePrefixes: ['apiKeySecret', 'apiKeyPrefix', '_', '__'],
@@ -142,12 +128,11 @@ export class AppAuthController {
     type: AppError,
   })
   @UsePipes(new ValidationPipe({ transform: true }))
-  register(
+  async register(
     @Req() req: any,
     @Body() createAppDto: CreateAppDto,
   ): Promise<createAppResponse> {
     Logger.log('register() method: starts', 'AppAuthController');
-
     const userId = req.user.userId;
 
     return this.appAuthService.createAnApp(createAppDto, userId);
@@ -217,6 +202,7 @@ export class AppAuthController {
     const app = await this.appAuthService.deleteApp(appId, userId);
     return app;
   }
+
   @Post(':appId/secret/new')
   @HttpCode(200)
   @ApiResponse({
@@ -238,47 +224,5 @@ export class AppAuthController {
       throw new AppNotFoundException();
     }
     return this.appAuthService.reGenerateAppSecretKey(app, userId);
-  }
-}
-
-@UseFilters(AllExceptionsFilter)
-@ApiTags('App')
-@Controller('app')
-export class AppOAuthController {
-  constructor(private readonly appAuthService: AppAuthService) {}
-
-  @ApiHeader({
-    name: 'X-Api-Secret-Key',
-    description: 'Provide Api Secret  key to get access token',
-    required: true,
-  })
-  @ApiHeader({
-    name: 'Origin',
-    description: 'Origin as you set in application cors',
-    required: false,
-  })
-  @ApiBadRequestResponse({
-    status: 400,
-    description: 'Error occured at the time of generating access token',
-    type: AppError,
-  })
-  @Post('oauth')
-  @HttpCode(200)
-  @ApiResponse({
-    status: 200,
-    description: 'AccessToken generated',
-    type: GenerateTokenResponse,
-  })
-  @ApiUnauthorizedResponse({
-    description: 'Unauthorized',
-    type: GenerateTokenError,
-  })
-  @UsePipes(ValidationPipe)
-  generateAccessToken(
-    @Headers('X-Api-Secret-Key') apiSectretKey: string,
-    @AppSecretHeader() appSecreatKey,
-  ): Promise<{ access_token; expiresIn; tokenType }> {
-    Logger.log('reGenerateAppSecretKey() method: starts', 'AppOAuthController');
-    return this.appAuthService.generateAccessToken(appSecreatKey);
   }
 }
