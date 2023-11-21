@@ -15,13 +15,23 @@ import { EdvClientKeysManager } from './edv/services/edv.singleton';
 import { VaultWalletManager } from './edv/services/vaultWalletManager';
 import { AppAuthModule } from './app-auth/app-auth.module';
 import { AppOauthModule } from './app-oauth/app-oauth.module';
-import { OrgUserModule } from './org-user/org-user.module';
 //import { Header } from '@nestjs/common';
+import * as cors from 'cors';
+import { UserModule } from './user/user.module';
+import { randomUUID } from 'crypto';
 
-import * as session from 'express-session';
-import * as passport from 'passport';
+// eslint-disable-next-line
+const HypersignAuth = require('hypersign-auth-node-sdk');
+
+const hidNetworkUrls = Object.freeze({
+  testnet: {
+    rpc: 'https://rpc.jagrat.hypersign.id/',
+    rest: 'https://api.jagrat.hypersign.id/',
+  },
+});
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, { cors: true });
+  const app = await NestFactory.create(AppModule);
+
   app.use(json({ limit: '10mb' }));
   app.use(urlencoded({ extended: true, limit: '10mb' }));
   app.use(express.static(path.join(__dirname, '../public')));
@@ -32,6 +42,7 @@ async function bootstrap() {
     hidNodeRPCUrl: process.env.HID_NETWORK_RPC,
   };
   const hidWalletInstance = new hidWallet(walletOptions);
+
   await hidWalletInstance.generateWallet({
     mnemonic: process.env.MNEMONIC,
   });
@@ -56,16 +67,17 @@ async function bootstrap() {
   const kmsVaultWallet = await VaultWalletManager.getWallet(
     mnemonic_EnglishMnemonic,
   );
-
-  app.setGlobalPrefix('api/v1');
   if (!existDir(process.env.EDV_CONFIG_DIR)) {
     createDir(process.env.EDV_CONFIG_DIR);
   }
-  if (!existDir(process.env.EDV_DID_FILE_PATH)) {
-    store(kmsVaultWallet.didDocument, process.env.EDV_DID_FILE_PATH);
+  const EDV_DID_FILE_PATH = `${process.env.EDV_CONFIG_DIR}/edv-did.json`;
+  if (!existDir(EDV_DID_FILE_PATH)) {
+    store(kmsVaultWallet.didDocument, EDV_DID_FILE_PATH);
   }
-  if (!existDir(process.env.EDV_KEY_FILE_PATH)) {
-    store(kmsVaultWallet.keys, process.env.EDV_KEY_FILE_PATH);
+
+  const EDV_KEY_FILE_PATH = `${process.env.EDV_CONFIG_DIR}/edv-keys.json`;
+  if (!existDir(EDV_KEY_FILE_PATH)) {
+    store(kmsVaultWallet.keys, EDV_KEY_FILE_PATH);
   }
 
   const config = new ConfigService();
@@ -91,42 +103,21 @@ async function bootstrap() {
 
   try {
     // Swagger documentation setup
-
     const orgDocConfig = new DocumentBuilder()
-      .setTitle('Entity Studio SSI API Playground')
-      .setDescription('Open API Documentation of the Entity Studio')
+      .setTitle('Entity Developer Dashboard Service API')
+      .setDescription('Open API Documentation for Entity Developer Dashboard')
       .setVersion('1.0')
       .build();
 
-    const tenantDocConfig = new DocumentBuilder()
-      .setTitle('Entity Studio SSI API Playground')
-      .setDescription('Open API Documentation of the Entity Studio')
-      .addBearerAuth(
-        {
-          type: 'http',
-          name: 'Authorization',
-          in: 'header',
-        },
-        'Authorization',
-      )
-      .setVersion('1.0')
-      .build();
-
-    // const tenantDocuments = SwaggerModule.createDocument(app, tenantDocConfig, {
-    //   include: [
-    //     AppOauthModule,
-
-    //   ], // don't include, say, BearsModule
-    // });
     const orgDocuments = SwaggerModule.createDocument(app, orgDocConfig, {
-      include: [AppAuthModule, OrgUserModule, AppOauthModule], // don't include, say, BearsModule
+      include: [AppAuthModule, AppOauthModule, UserModule], // don't include, say, BearsModule
     });
     const tenantOptions = {
       swaggerOptions: {
         defaultModelsExpandDepth: -1,
       },
       customfavIcon: '/Entity_favicon.png',
-      customSiteTitle: 'API-Playground',
+      customSiteTitle: 'Entity Developer Documentation',
       customCss: ` .topbar-wrapper img {content:url(\'./Entity_full.png\'); width:135px; height:auto;margin-left: -150px;}
       .swagger-ui .topbar { background-color: #fff; }`,
     };
@@ -136,37 +127,85 @@ async function bootstrap() {
     Logger.error(e);
   }
 
-  try {
-    // Session for super admin
-    if (
-      !config.get('SUPER_ADMIN_USERNAME') ||
-      !config.get('SUPER_ADMIN_PASSWORD')
-    ) {
-      throw new Error(
-        'SUPER_ADMIN_USERNAME or SUPER_ADMIN_PASSWORD are not set in env',
-      );
-    }
+  // try {
+  //   // Session for super admin
+  //   if (
+  //     !config.get('SUPER_ADMIN_USERNAME') ||
+  //     !config.get('SUPER_ADMIN_PASSWORD')
+  //   ) {
+  //     throw new Error(
+  //       'SUPER_ADMIN_USERNAME or SUPER_ADMIN_PASSWORD are not set in env',
+  //     );
+  //   }
 
-    if (!config.get('SESSION_SECRET_KEY')) {
-      throw new Error('SESSION_KEY is not set in env');
-    }
-    Logger.log('Setting up session start', 'main');
-    app.use(
-      session({
-        secret: config.get('SESSION_SECRET_KEY'),
-        resave: false,
-        saveUninitialized: false,
-        cookie: { maxAge: 3600000 },
-      }),
-    );
-    app.use(passport.initialize());
-    app.use(passport.session());
-    Logger.log('Setting up session finished', 'main');
-  } catch (e) {
-    Logger.error(e);
-  }
+  //   if (!config.get('SESSION_SECRET_KEY')) {
+  //     throw new Error('SESSION_KEY is not set in env');
+  //   }
+  //   Logger.log('Setting up session start', 'main');
+  //   app.use(
+  //     session({
+  //       secret: config.get('SESSION_SECRET_KEY'),
+  //       resave: false,
+  //       saveUninitialized: false,
+  //       cookie: { maxAge: 3600000 },
+  //     }),
+  //   );
+  //   app.use(passport.initialize());
+  //   app.use(passport.session());
+  //   Logger.log('Setting up session finished', 'main');
+  // } catch (e) {
+  //   Logger.error(e);
+  // }
 
-  await app.listen(process.env.PORT || 3001);
+  // Only Allowing frontends which are mentioned in env
+  const allowedOriginInEnv = JSON.parse(config.get('WHITELISTED_CORS')); // ["http://localhost:9001","https://wallet-jagrat.hypersign.id"]
+  app.use(
+    cors({
+      origin: allowedOriginInEnv,
+      methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+      credentials: true,
+    }),
+  );
+
+  const server = await app.listen(process.env.PORT || 3001);
+
+  // TODO: we might not need to pass hidWalletInstance.offlineSigner since this sdk only verifies presenatation
+  // This way we do not have to pass hypersign.json config file
+  const hypersignAuthOptions = {
+    serviceName: 'Entity Developer Dashboard',
+    serviceEp: config.get('DEVELOPER_DASHBOARD_SERVICE_PUBLIC_EP')
+      ? config.get('DEVELOPER_DASHBOARD_SERVICE_PUBLIC_EP')
+      : `http://localhost:${process.env.PORT}`,
+    schemaId: config.get('EMAIL_CREDENTITAL_SCHEMA_ID')
+      ? config.get('EMAIL_CREDENTITAL_SCHEMA_ID')
+      : 'sch:hid:testnet:zufjU7LuQuJNFiUpuhCwYkTrakUu1VmtxE9SPi5TwfUB:1.0',
+    accessToken: {
+      secret: config.get('JWT_SECRET')
+        ? config.get('JWT_SECRET')
+        : randomUUID(),
+      expiryTime: 120000,
+    },
+    refreshToken: {
+      secret: config.get('JWT_SECRET')
+        ? config.get('JWT_SECRET')
+        : randomUUID(),
+      expiryTime: 120000,
+    },
+    networkUrl: config.get('HID_NETWORK_RPC')
+      ? config.get('HID_NETWORK_RPC')
+      : hidNetworkUrls.testnet.rpc,
+    networkRestUrl: config.get('HID_NETWORK_API')
+      ? config.get('HID_NETWORK_API')
+      : hidNetworkUrls.testnet.rest,
+  };
+  const hypersignAuth = new HypersignAuth(
+    server,
+    hidWalletInstance.offlineSigner,
+    hypersignAuthOptions,
+  );
+  await hypersignAuth.init();
+  globalThis.hypersignAuth = hypersignAuth;
+
   Logger.log(
     `Server running on http://localhost:${process.env.PORT}`,
     'Bootstrap',

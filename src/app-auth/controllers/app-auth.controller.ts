@@ -11,7 +11,6 @@ import {
   HttpCode,
   UseFilters,
   Query,
-  UseGuards,
   Req,
   Delete,
   Logger,
@@ -35,12 +34,9 @@ import { AllExceptionsFilter } from '../../utils/utils';
 import { AppError, GetAppList } from '../dtos/fetch-app.dto';
 import { PaginationDto } from 'src/utils/pagination.dto';
 import { TransformResponseInterceptor } from '../interceptors/transformResponse.interseptor';
-import { AuthenticatedGuard } from 'src/org-user/guard/authenticated.guard';
-
 @UseFilters(AllExceptionsFilter)
-@ApiTags('Super Admin')
-@Controller('app')
-@UseGuards(AuthenticatedGuard)
+@ApiTags('Application')
+@Controller('/api/v1/app')
 export class AppAuthController {
   constructor(private readonly appAuthService: AppAuthService) {}
   @UseInterceptors(
@@ -76,7 +72,6 @@ export class AppAuthController {
     @Query() pageOption: PaginationDto,
   ): Promise<App[]> {
     Logger.log('getApps() method: starts', 'AppAuthController');
-    Logger.log(req.user);
     const userId = req.user.userId;
     const appList: any = await this.appAuthService.getAllApps(
       userId,
@@ -133,12 +128,11 @@ export class AppAuthController {
     type: AppError,
   })
   @UsePipes(new ValidationPipe({ transform: true }))
-  register(
+  async register(
     @Req() req: any,
     @Body() createAppDto: CreateAppDto,
   ): Promise<createAppResponse> {
     Logger.log('register() method: starts', 'AppAuthController');
-
     const userId = req.user.userId;
 
     return this.appAuthService.createAnApp(createAppDto, userId);

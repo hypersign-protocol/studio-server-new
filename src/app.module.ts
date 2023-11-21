@@ -8,7 +8,7 @@ import { APP_FILTER } from '@nestjs/core';
 
 import { AppAuthSecretService } from './app-auth/services/app-auth-passord.service';
 import { AppOauthModule } from './app-oauth/app-oauth.module';
-import { OrgUserModule } from './org-user/org-user.module';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [
@@ -19,8 +19,8 @@ import { OrgUserModule } from './org-user/org-user.module';
     }),
     MongooseModule.forRoot(process.env.DATABASE_CONNECTION_PATH),
     EdvModule,
-    OrgUserModule,
     AppOauthModule,
+    UserModule,
   ],
   controllers: [],
   providers: [
