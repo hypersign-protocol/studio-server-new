@@ -97,13 +97,14 @@ export class EdvClientManger implements IEdvClientManager {
   }
 
   async insertDocument(doc: EDVDocType): Promise<{ id: string }> {
-    if (doc['recipients'] && doc['recipients'].length !== 0) {
-      doc['recipients'].push(this.recipient[0]);
-    } else {
+    if (!doc['recipients']) {
+      doc['recipients'] = [];
+    }
+
+    if (doc['recipients'] && doc['recipients'].length == 0) {
       doc['recipients'] = this.recipient;
     }
     const resp: IResponse = await this.vault.insertDoc({ ...doc });
-
     return {
       id: resp.document.id,
     };
