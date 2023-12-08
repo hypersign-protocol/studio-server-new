@@ -1,0 +1,90 @@
+name: Dashbord Service Build and Deploy Pipeline
+
+on:
+  push:
+    branches:
+      - "master"
+
+jobs:
+  Build-Pipeline:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: code checkout
+        uses: actions/checkout@v3
+
+      - id: "auth"
+        uses: "google-github-actions/auth@v1"
+        with:
+          credentials_json: "${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}"
+
+      - name: install gcloud cli tools
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          project_id: ${{secrets.GOOGLE_PROJECT_ID}}
+          service_account_key: ${{secrets.GOOGLE_APPLICATION_CREDENTIALS}}
+          install_components: "gke-gcloud-auth-plugin"
+          export_default_credentials: true
+      - name: "Use gcloud CLI"
+        run: "gcloud info"
+
+      - name: "Docker Auth"
+        run: gcloud auth configure-docker ${{secrets.GOOGLE_ARTIFACT_URL}}
+      - name: "Docker Build and Push"
+        env:
+          GOOGLE_PROJECT_ID: ${{secrets.GOOGLE_PROJECT_ID}}
+          GOOGLE_ARTIFACT_URL: ${{secrets.GOOGLE_ARTIFACT_URL}}
+          GOOGLE_ARTIFACT_REPO: ${{secrets.GOOGLE_ARTIFACT_REPO}}
+        run:
+          docker build -t $GOOGLE_ARTIFACT_URL/$GOOGLE_PROJECT_ID/$GOOGLE_ARTIFACT_REPO/entity-developer-dashbord-service:latest .
+
+          docker push $GOOGLE_ARTIFACT_URL/$GOOGLE_PROJECT_ID/$GOOGLE_ARTIFACT_REPO/entity-developer-dashbord-service:latest
+
+  Deploy-Pipeline:
+    needs: [Build-Pipeline]
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: code checkout
+        uses: actions/checkout@v3
+      - id: "auth"
+        uses: "google-github-actions/auth@v1"
+        with:
+          credentials_json: "${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}"
+      - name: install gcloud cli tools
+        uses: google-github-actions/setup-gcloud@v1
+        with:
+          project_id: ${{secrets.GOOGLE_PROJECT_ID}}
+          service_account_key: ${{secrets.GOOGLE_APPLICATION_CREDENTIALS}}
+          install_components: "gke-gcloud-auth-plugin"
+          export_default_credentials: true
+      - name: "Configure kubectl"
+        run: gcloud container clusters get-credentials hypermine-gke --region=asia-south1
+      - name: "Replace Secrets"
+        run: find .deploy/deployment.yaml -type f -exec sed  -i ''s/__PORT__/${{ secrets.PORT }}/g'' {} \;
+      - name: "Replace Secrets"
+        run: find .deploy/deployment.yaml -type f -exec sed  -i -e "s#__DATABASE_CONNECTION_PATH__#${{ secrets.DATABASE_CONNECTION_PATH }}#" {} \;
+      - name: "Replace Secrets"
+        run: find .deploy/deployment.yaml -type f -exec sed  -i ''s/__HID_NETWORK_API__/${{ secrets.HID_NETWORK_API }}/g'' {} \;
+      - name: "Replace Secrets"
+        run: find .deploy/deployment.yaml -type f -exec sed  -i ''s/__HID_NETWORK_RPC__/${{ secrets.HID_NETWORK_RPC }}/g'' {} \;
+      - name: "Replace Secrets"
+        run: find .deploy/deployment.yaml -type f -exec sed  -i ''s/__HID_NETWORK_NAMESPACE__/${{ secrets.HID_NETWORK_NAMESPACE }}/g'' {} \;
+      - name: "Replace Secrets"
+        run: find .deploy/deployment.yaml -type f -exec sed  -i ''s/__EDV_BASE_URL__/${{ secrets.EDV_BASE_URL }}/g'' {} \;
+      - name: "Replace Secrets"
+        run: find .deploy/deployment.yaml -type f -exec sed  -i ''s/__EDV_CONFIG_DIR__/${{ secrets.EDV_CONFIG_DIR }}/g'' {} \;
+      - name: "Replace Secrets"
+        run: find .deploy/deployment.yaml -type f -exec sed  -i ''s/__EDV_DID_FILE_PATH__/${{ secrets.EDV_DID_FILE_PATH }}/g'' {} \;
+      - name: "Replace Secrets"
+        run: find .deploy/deployment.yaml -type f -exec sed  -i ''s/__EDV_KEY_FILE_PATH__/${{ secrets.EDV_KEY_FILE_PATH }}/g'' {} \;
+      - name: "Replace Secrets"
+        run: find .deploy/deployment.yaml -type f -exec sed  -i ''s/__MNEMONIC__/${{ secrets.MNEMONIC }}/g'' {} \;
+      - name: "Replace Secrets"
+        run: find .deploy/deployment.yaml -type f -exec sed  -i ''s/__JWT_SECRET__/${{ secrets.JWT_SECRET }}/g'' {} \;
+      - name: "Replace Secrets"
+        run: find .deploy/deployment.yaml -type f -exec sed  -i ''s/__WHITELISTED_CORS__/${{ secrets.WHITELISTED_CORS }}/g'' {} \;
+      - name: "Replace Secrets"
+        run: find .deploy/deployment.yaml -type f -exec sed  -i ''s/__ENTITY_API_SERVICE_BASE_URL__/${{ secrets.ENTITY_API_SERVICE_BASE_URL }}/g'' {} \;
+      - name: "Deploy to GKE"
+        run: kubectl apply -f .deploy/deployment.yaml
