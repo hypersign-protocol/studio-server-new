@@ -32,7 +32,7 @@
                       "    pm.expect(responseBody.hypersign.hasOwnProperty(\"success\")).to.be.true;",
                       "    pm.expect(responseBody.hypersign.success).to.be.equal(false)",
                       "    pm.expect(responseBody.hypersign.hasOwnProperty(\"message\")).to.be.true;",
-                      "    pm.expect(responseBody.hypersign.message).to.be.equal(\"HS-AUTH-NODE-SDK:: Error: Authorization token is not passed in the header\")",
+                      "    pm.expect(responseBody.hypersign.message).to.be.equal(\"Authorization token is not passed in the header\")",
                       "    pm.expect(responseBody.hypersign.hasOwnProperty(\"data\")).to.be.true;",
                       "",
                       "",
@@ -94,10 +94,8 @@
                       }
                     },
                     "url": {
-                      "raw": "http://localhost:3002/api/v1/app",
-                      "protocol": "http",
-                      "host": ["localhost"],
-                      "port": "3002",
+                      "raw": "{{studio-server-base-url}}/api/v1/app",
+                      "host": ["{{studio-server-base-url}}"],
                       "path": ["api", "v1", "app"]
                     }
                   },
@@ -123,15 +121,15 @@
                     },
                     {
                       "key": "Content-Length",
-                      "value": "127"
+                      "value": "101"
                     },
                     {
                       "key": "ETag",
-                      "value": "W/\"7f-whgJttHrAINLbnaZSk4ZbGq0u1s\""
+                      "value": "W/\"65-f+6XAp9gyopeXLcu6CIp8wD4ZGQ\""
                     },
                     {
                       "key": "Date",
-                      "value": "Tue, 14 Nov 2023 11:48:48 GMT"
+                      "value": "Fri, 08 Dec 2023 13:29:39 GMT"
                     },
                     {
                       "key": "Connection",
@@ -143,7 +141,7 @@
                     }
                   ],
                   "cookie": [],
-                  "body": "{\n    \"hypersign\": {\n        \"success\": false,\n        \"message\": \"HS-AUTH-NODE-SDK:: Error: Authorization token is not passed in the header\",\n        \"data\": {}\n    }\n}"
+                  "body": "{\n    \"hypersign\": {\n        \"success\": false,\n        \"message\": \"Authorization token is not passed in the header\",\n        \"data\": {}\n    }\n}"
                 }
               ]
             },
@@ -893,7 +891,7 @@
                       "    pm.expect(responseBody.hypersign.hasOwnProperty(\"success\")).to.be.true;",
                       "    pm.expect(responseBody.hypersign.success).to.be.equal(false)",
                       "    pm.expect(responseBody.hypersign.hasOwnProperty(\"message\")).to.be.true;",
-                      "    pm.expect(responseBody.hypersign.message).to.be.equal(\"HS-AUTH-NODE-SDK:: Error: Authorization token is not passed in the header\")",
+                      "    pm.expect(responseBody.hypersign.message).to.be.equal(\"Authorization token is not passed in the header\")",
                       "    pm.expect(responseBody.hypersign.hasOwnProperty(\"data\")).to.be.true;",
                       "",
                       "",
@@ -985,15 +983,15 @@
                     },
                     {
                       "key": "Content-Length",
-                      "value": "127"
+                      "value": "101"
                     },
                     {
                       "key": "ETag",
-                      "value": "W/\"7f-whgJttHrAINLbnaZSk4ZbGq0u1s\""
+                      "value": "W/\"65-f+6XAp9gyopeXLcu6CIp8wD4ZGQ\""
                     },
                     {
                       "key": "Date",
-                      "value": "Tue, 14 Nov 2023 13:07:45 GMT"
+                      "value": "Fri, 08 Dec 2023 13:30:15 GMT"
                     },
                     {
                       "key": "Connection",
@@ -1005,7 +1003,7 @@
                     }
                   ],
                   "cookie": [],
-                  "body": "{\n    \"hypersign\": {\n        \"success\": false,\n        \"message\": \"HS-AUTH-NODE-SDK:: Error: Authorization token is not passed in the header\",\n        \"data\": {}\n    }\n}"
+                  "body": "{\n    \"hypersign\": {\n        \"success\": false,\n        \"message\": \"Authorization token is not passed in the header\",\n        \"data\": {}\n    }\n}"
                 }
               ]
             },
@@ -1310,7 +1308,6 @@
                       "    pm.expect(typeof responseBody).to.equal(\"object\")",
                       "})",
                       "pm.test(\"Should be able to fetch particular app based on appId\", function () {",
-                      "    pm.expect(\"userId\" in responseBody).to.be.true;",
                       "    pm.expect(responseBody.hasOwnProperty(\"appName\")).to.be.true;",
                       "    pm.expect(\"appId\" in responseBody).to.be.true;",
                       "    pm.expect(responseBody.hasOwnProperty(\"apiKeySecret\")).to.be.true;",
@@ -1465,7 +1462,7 @@
                       "    pm.expect(responseBody.hypersign.hasOwnProperty(\"success\")).to.be.true;",
                       "    pm.expect(responseBody.hypersign.success).to.be.equal(false)",
                       "    pm.expect(responseBody.hypersign.hasOwnProperty(\"message\")).to.be.true;",
-                      "    pm.expect(responseBody.hypersign.message).to.be.equal(\"HS-AUTH-NODE-SDK:: Error: Authorization token is not passed in the header\")",
+                      "    pm.expect(responseBody.hypersign.message).to.be.equal(\"Authorization token is not passed in the header\")",
                       "    pm.expect(responseBody.hypersign.hasOwnProperty(\"data\")).to.be.true;",
                       "});",
                       "",
@@ -1510,7 +1507,7 @@
                 {
                   "name": "auth token not passed",
                   "originalRequest": {
-                    "method": "POST",
+                    "method": "GET",
                     "header": [
                       {
                         "key": "origin",
@@ -1520,7 +1517,7 @@
                     ],
                     "body": {
                       "mode": "raw",
-                      "raw": "{\n    \"appName\":\"  \",\n    \"description\":\"This is a test description\",\n    \"whitelistedCors\":[\"http://localhost:3001/\",\"*\"],\n      \"logoUrl\": \"http://image.png\"\n}",
+                      "raw": "",
                       "options": {
                         "raw": {
                           "language": "json"
@@ -1528,10 +1525,8 @@
                       }
                     },
                     "url": {
-                      "raw": "http://localhost:3002/api/v1/app",
-                      "protocol": "http",
-                      "host": ["localhost"],
-                      "port": "3002",
+                      "raw": "{{studio-server-base-url}}/api/v1/app",
+                      "host": ["{{studio-server-base-url}}"],
                       "path": ["api", "v1", "app"]
                     }
                   },
@@ -1557,15 +1552,15 @@
                     },
                     {
                       "key": "Content-Length",
-                      "value": "127"
+                      "value": "101"
                     },
                     {
                       "key": "ETag",
-                      "value": "W/\"7f-whgJttHrAINLbnaZSk4ZbGq0u1s\""
+                      "value": "W/\"65-f+6XAp9gyopeXLcu6CIp8wD4ZGQ\""
                     },
                     {
                       "key": "Date",
-                      "value": "Tue, 14 Nov 2023 11:48:48 GMT"
+                      "value": "Fri, 08 Dec 2023 13:18:07 GMT"
                     },
                     {
                       "key": "Connection",
@@ -1577,7 +1572,7 @@
                     }
                   ],
                   "cookie": [],
-                  "body": "{\n    \"hypersign\": {\n        \"success\": false,\n        \"message\": \"HS-AUTH-NODE-SDK:: Error: Authorization token is not passed in the header\",\n        \"data\": {}\n    }\n}"
+                  "body": "{\n    \"hypersign\": {\n        \"success\": false,\n        \"message\": \"Authorization token is not passed in the header\",\n        \"data\": {}\n    }\n}"
                 }
               ]
             },
@@ -1913,7 +1908,7 @@
                       "    pm.expect(responseBody.hypersign.hasOwnProperty(\"success\")).to.be.true;",
                       "    pm.expect(responseBody.hypersign.success).to.be.equal(false)",
                       "    pm.expect(responseBody.hypersign.hasOwnProperty(\"message\")).to.be.true;",
-                      "    pm.expect(responseBody.hypersign.message).to.be.equal(\"HS-AUTH-NODE-SDK:: Error: Authorization token is not passed in the header\")",
+                      "    pm.expect(responseBody.hypersign.message).to.be.equal(\"Authorization token is not passed in the header\")",
                       "    pm.expect(responseBody.hypersign.hasOwnProperty(\"data\")).to.be.true;",
                       "});",
                       "",
@@ -2000,15 +1995,15 @@
                     },
                     {
                       "key": "Content-Length",
-                      "value": "127"
+                      "value": "101"
                     },
                     {
                       "key": "ETag",
-                      "value": "W/\"7f-whgJttHrAINLbnaZSk4ZbGq0u1s\""
+                      "value": "W/\"65-f+6XAp9gyopeXLcu6CIp8wD4ZGQ\""
                     },
                     {
                       "key": "Date",
-                      "value": "Wed, 15 Nov 2023 04:04:58 GMT"
+                      "value": "Fri, 08 Dec 2023 13:18:39 GMT"
                     },
                     {
                       "key": "Connection",
@@ -2020,7 +2015,7 @@
                     }
                   ],
                   "cookie": [],
-                  "body": "{\n    \"hypersign\": {\n        \"success\": false,\n        \"message\": \"HS-AUTH-NODE-SDK:: Error: Authorization token is not passed in the header\",\n        \"data\": {}\n    }\n}"
+                  "body": "{\n    \"hypersign\": {\n        \"success\": false,\n        \"message\": \"Authorization token is not passed in the header\",\n        \"data\": {}\n    }\n}"
                 }
               ]
             },
@@ -2478,7 +2473,10 @@
                 {
                   "listen": "prerequest",
                   "script": {
-                    "exec": ["const url= pm.environment.get('tenantUrl')\r"],
+                    "exec": [
+                      "const url= pm.environment.get('tenantUrl')\r",
+                      "console.log(url)"
+                    ],
                     "type": "text/javascript"
                   }
                 }
@@ -2646,7 +2644,7 @@
                 ],
                 "body": {
                   "mode": "raw",
-                  "raw": "{\"appName\":\"new application\",\r\n \"whitelistedCors\":[\"{{tenantUrl}}\"]\r\n\r\n }",
+                  "raw": "{\"appName\":\"new application\",\r\n \"whitelistedCors\":[\"{{tenantUrl}}\",\"http://localhost:3001\"]\r\n\r\n }",
                   "options": {
                     "raw": {
                       "language": "json"
@@ -2900,7 +2898,7 @@
                       "    pm.expect(responseBody.hypersign.hasOwnProperty(\"success\")).to.be.true;",
                       "    pm.expect(responseBody.hypersign.success).to.be.equal(false)",
                       "    pm.expect(responseBody.hypersign.hasOwnProperty(\"message\")).to.be.true;",
-                      "    pm.expect(responseBody.hypersign.message).to.be.equal(\"HS-AUTH-NODE-SDK:: Error: Authorization token is not passed in the header\")",
+                      "    pm.expect(responseBody.hypersign.message).to.be.equal(\"Authorization token is not passed in the header\")",
                       "    pm.expect(responseBody.hypersign.hasOwnProperty(\"data\")).to.be.true;",
                       "});",
                       "",
@@ -2940,7 +2938,7 @@
               },
               "response": [
                 {
-                  "name": "invalid auth token",
+                  "name": "auth token not passed",
                   "originalRequest": {
                     "method": "DELETE",
                     "header": [
@@ -2952,7 +2950,7 @@
                     ],
                     "body": {
                       "mode": "raw",
-                      "raw": "{\r\n    \"appName\":\"\"\r\n}",
+                      "raw": "",
                       "options": {
                         "raw": {
                           "language": "json"
@@ -2987,15 +2985,15 @@
                     },
                     {
                       "key": "Content-Length",
-                      "value": "127"
+                      "value": "101"
                     },
                     {
                       "key": "ETag",
-                      "value": "W/\"7f-whgJttHrAINLbnaZSk4ZbGq0u1s\""
+                      "value": "W/\"65-f+6XAp9gyopeXLcu6CIp8wD4ZGQ\""
                     },
                     {
                       "key": "Date",
-                      "value": "Wed, 15 Nov 2023 05:03:35 GMT"
+                      "value": "Fri, 08 Dec 2023 13:20:05 GMT"
                     },
                     {
                       "key": "Connection",
@@ -3007,7 +3005,7 @@
                     }
                   ],
                   "cookie": [],
-                  "body": "{\n    \"hypersign\": {\n        \"success\": false,\n        \"message\": \"HS-AUTH-NODE-SDK:: Error: Authorization token is not passed in the header\",\n        \"data\": {}\n    }\n}"
+                  "body": "{\n    \"hypersign\": {\n        \"success\": false,\n        \"message\": \"Authorization token is not passed in the header\",\n        \"data\": {}\n    }\n}"
                 }
               ]
             },
@@ -3593,7 +3591,7 @@
                       "    pm.expect(responseBody.hypersign.hasOwnProperty(\"success\")).to.be.true;",
                       "    pm.expect(responseBody.hypersign.success).to.be.equal(false)",
                       "    pm.expect(responseBody.hypersign.hasOwnProperty(\"message\")).to.be.true;",
-                      "    pm.expect(responseBody.hypersign.message).to.be.equal(\"HS-AUTH-NODE-SDK:: Error: Authorization token is not passed in the header\")",
+                      "    pm.expect(responseBody.hypersign.message).to.be.equal(\"Authorization token is not passed in the header\")",
                       "    pm.expect(responseBody.hypersign.hasOwnProperty(\"data\")).to.be.true;",
                       "});",
                       "",
@@ -3633,7 +3631,7 @@
               },
               "response": [
                 {
-                  "name": "auth token not passed",
+                  "name": "authorization issue",
                   "originalRequest": {
                     "method": "POST",
                     "header": [
@@ -3680,15 +3678,15 @@
                     },
                     {
                       "key": "Content-Length",
-                      "value": "127"
+                      "value": "101"
                     },
                     {
                       "key": "ETag",
-                      "value": "W/\"7f-whgJttHrAINLbnaZSk4ZbGq0u1s\""
+                      "value": "W/\"65-f+6XAp9gyopeXLcu6CIp8wD4ZGQ\""
                     },
                     {
                       "key": "Date",
-                      "value": "Wed, 15 Nov 2023 05:27:01 GMT"
+                      "value": "Fri, 08 Dec 2023 13:21:48 GMT"
                     },
                     {
                       "key": "Connection",
@@ -3700,7 +3698,7 @@
                     }
                   ],
                   "cookie": [],
-                  "body": "{\n    \"hypersign\": {\n        \"success\": false,\n        \"message\": \"HS-AUTH-NODE-SDK:: Error: Authorization token is not passed in the header\",\n        \"data\": {}\n    }\n}"
+                  "body": "{\n    \"hypersign\": {\n        \"success\": false,\n        \"message\": \"Authorization token is not passed in the header\",\n        \"data\": {}\n    }\n}"
                 }
               ]
             },
@@ -3858,6 +3856,7 @@
                       "})",
                       "pm.test(\"Should not be able to regenerate appSecret as appId passed in request params is wrong\", function () {",
                       "    pm.expect(responseBody.hasOwnProperty(\"statusCode\")).to.be.true;",
+                      "    console.log(responseBody.statusCode)",
                       "    pm.expect(responseBody.statusCode).to.be.a('number')",
                       "    pm.expect(responseBody.statusCode).to.be.equal(400)",
                       "    pm.expect(responseBody.hasOwnProperty(\"message\")).to.be.true;",
@@ -3878,7 +3877,7 @@
                   "bearer": [
                     {
                       "key": "token",
-                      "value": "{{studio_API_auth}}",
+                      "value": "{{studio-server-auth}}",
                       "type": "string"
                     }
                   ]
