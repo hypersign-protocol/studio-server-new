@@ -82,8 +82,8 @@ jobs:
         run: find .deploy/deployment.yaml -type f -exec sed  -i "s#__MNEMONIC__#${{ secrets.MNEMONIC }}#" {} \;
       - name: "Replace Secrets"
         run: find .deploy/deployment.yaml -type f -exec sed  -i ''s/__JWT_SECRET__/${{ secrets.JWT_SECRET }}/g'' {} \;
-      - name: "Replace Secrets"
-        run: find .deploy/deployment.yaml -type f -exec sed  -i "s#__WHITELISTED_CORS__#\'$WHITELISTED_CORS\'#" {} \;
+      # - name: "Replace Secrets"
+      # run: find .deploy/deployment.yaml -type f -exec sed  -i "s#__WHITELISTED_CORS__#\'$WHITELISTED_CORS\'#" {} \;
       - name: "Replace Secrets"
         run: find .deploy/deployment.yaml -type f -exec sed  -i "s#__ENTITY_API_SERVICE_BASE_URL__#${{ secrets.ENTITY_API_SERVICE_BASE_URL }}#" {} \;
       - name: "Replace secrets"
