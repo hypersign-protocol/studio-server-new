@@ -1,0 +1,77 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: developer-dashboard-backend-app
+  namespace: hypermine-development
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: developer-dashboard-backend-app
+  template:
+    metadata:
+      labels:
+        app: developer-dashboard-backend-app
+    spec:
+      containers:
+        - name: developer-dashboard-backend-app
+          image: __GOOGLE_ARTIFACT_URL__/__GOOGLE_PROJECT_ID__/__GOOGLE_ARTIFACT_REPO__/entity-developer-dashbord-service:latest
+          resources:
+            limits:
+              memory: "1Gi"
+              cpu: "500m"
+          ports:
+            - containerPort: __PORT__
+          # livenessProbe:
+          #   httpGet:
+          #     path: /api
+          #     port: __PORT__
+          #   initialDelaySeconds: 15
+          #   periodSeconds: 10
+          env:
+            - name: PORT
+              value: "__PORT__"
+            - name: DATABASE_CONNECTION_PATH
+              value: "__DATABASE_CONNECTION_PATH__"
+            - name: HID_NETWORK_RPC
+              value: __HID_NETWORK_RPC__
+            - name: HID_NETWORK_API
+              value: __HID_NETWORK_API__
+            - name: HID_NETWORK_NAMESPACE
+              value: __HID_NETWORK_NAMESPACE__
+            - name: EDV_BASE_URL
+              value: __EDV_BASE_URL__
+            - name: EDV_CONFIG_DIR
+              value: __EDV_CONFIG_DIR__
+            - name: EDV_DID_FILE_PATH
+              value: __EDV_DID_FILE_PATH__
+            - name: EDV_KEY_FILE_PATH
+              value: __EDV_KEY_FILE_PATH__
+            - name: MNEMONIC
+              value: __MNEMONIC__
+            - name: JWT_SECRET
+              value: __JWT_SECRET__
+            - name: WHITELISTED_CORS
+              value: __WHITELISTED_CORS__
+            - name: ENTITY_API_SERVICE_BASE_URL
+              value: __ENTITY_API_SERVICE_BASE_URL__
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: developer-dashboard-backend-service
+  namespace: hypermine-development
+  annotations:
+    cloud.google.com/neg: '{"ingress": true}'
+spec:
+  type: NodePort
+  selector:
+    app: developer-dashboard-backend-app
+  ports:
+    - port: __PORT__
+      targetPort: __PORT__
+      protocol: TCP
+---
+
