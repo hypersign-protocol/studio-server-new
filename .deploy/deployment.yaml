@@ -53,7 +53,7 @@ spec:
             - name: JWT_SECRET
               value: __JWT_SECRET__
             - name: WHITELISTED_CORS
-              value: "__WHITELISTED_CORS__"
+              value: __WHITELISTED_CORS__
             - name: ENTITY_API_SERVICE_BASE_URL
               value: __ENTITY_API_SERVICE_BASE_URL__
 
