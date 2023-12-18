@@ -56,6 +56,8 @@ spec:
               value: '["https://entity.hypersign.id","http://localhost:9001", "https://wallet-jagrat.hypersign.id", "http://localhost:4999"]'
             - name: ENTITY_API_SERVICE_BASE_URL
               value: __ENTITY_API_SERVICE_BASE_URL__
+            - name: DEVELOPER_DASHBOARD_SERVICE_PUBLIC_EP
+              value: __DEVELOPER_DASHBOARD_SERVICE_PUBLIC_EP__
 
 ---
 apiVersion: v1
