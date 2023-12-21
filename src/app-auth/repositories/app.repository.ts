@@ -2,14 +2,18 @@ import { App, AppDocument } from '../schemas/app.schema';
 import { FilterQuery, Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { Injectable, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class AppRepository {
   constructor(
     @InjectModel(App.name) private readonly appModel: Model<AppDocument>,
+    private readonly config: ConfigService,
   ) {}
 
   private appDataProjectPipelineToReturn() {
+    const url = new URL(this.config.get('ENTITY_API_SERVICE_BASE_URL'));
+
     return {
       appName: 1,
       appId: 1,
@@ -21,11 +25,13 @@ export class AppRepository {
       subdomain: 1,
       _id: 0,
       tenantUrl: {
-        $concat: ['http://', '$subdomain', '.localhost:8080'], // TODO url Parse `${http(s)}://${$subdomain}.${host}`
+        $concat: [url.protocol, '//', '$subdomain', '.', url.hostname], // TODO url Parse `${http(s)}://${$subdomain}.${host}`
       },
     };
   }
   async findOne(appFilterQuery: FilterQuery<App>): Promise<App> {
+    const url = new URL(this.config.get('ENTITY_API_SERVICE_BASE_URL'));
+
     Logger.log(
       'findOne() method: starts, finding particular app from db',
       'AppRepository',
@@ -35,7 +41,7 @@ export class AppRepository {
       {
         $set: {
           tenantUrl: {
-            $concat: ['http://', '$subdomain', '.localhost:8080'], // TODO url Parse `${http(s)}://${$subdomain}.${host}`
+            $concat: [url.protocol, '//', '$subdomain', '.', url.hostname], // TODO url Parse `${http(s)}://${$subdomain}.${host}`
           },
         },
       },
