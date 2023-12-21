@@ -54,7 +54,7 @@ spec:
             - name: JWT_SECRET
               value: __JWT_SECRET__
             - name: WHITELISTED_CORS
-              value: '["https://entity.hypersign.id","http://localhost:9001", "https://wallet-jagrat.hypersign.id", "http://localhost:4999"]'
+              value: '["https://entity.hypersign.id","http://localhost:9001", "https://wallet-jagrat.hypersign.id", "http://localhost:4999","https://entity.dashboard.hypersign.id"]'
             - name: ENTITY_API_SERVICE_BASE_URL
               value: __ENTITY_API_SERVICE_BASE_URL__
             - name: DEVELOPER_DASHBOARD_SERVICE_PUBLIC_EP
