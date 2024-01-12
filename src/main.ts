@@ -178,7 +178,7 @@ async function bootstrap() {
       : `http://localhost:${process.env.PORT}`,
     schemaId: config.get('EMAIL_CREDENTITAL_SCHEMA_ID')
       ? config.get('EMAIL_CREDENTITAL_SCHEMA_ID')
-      : 'sch:hid:testnet:zufjU7LuQuJNFiUpuhCwYkTrakUu1VmtxE9SPi5TwfUB:1.0',
+      : 'sch:hid:testnet:z6MkoTFHzx3XPXAvAVAN9CWMh91vH53m4kTFiVPypC22c7fB:1.0',
     accessToken: {
       secret: config.get('JWT_SECRET')
         ? config.get('JWT_SECRET')
