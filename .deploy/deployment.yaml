@@ -61,13 +61,7 @@ spec:
               value: __ENTITY_API_SERVICE_BASE_URL__
             - name: DEVELOPER_DASHBOARD_SERVICE_PUBLIC_EP
               value: __DEVELOPER_DASHBOARD_SERVICE_PUBLIC_EP__
-          volumeMounts:
-            - name: mongo
-              mountPath: "/data"
-      volumes:
-        - name: mongo
-          secret:
-            secretName: mongo
+          
 
 ---
 apiVersion: v1
