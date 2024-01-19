@@ -16,7 +16,6 @@ export type AppDocument = App & Document;
 export class App {
   @ApiHideProperty()
   @Prop()
-  @Exclude()
   userId: string;
 
   @ApiProperty({
