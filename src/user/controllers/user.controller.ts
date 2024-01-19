@@ -26,7 +26,7 @@ export class UserController {
     Logger.log('authenticate() method: starts', 'userController');
     const { hypersign } = body;
     const { user } = hypersign.data;
-    
+
     let userInfo = await this.userRepository.findOne({ email: user.email });
     if (!userInfo) {
       userInfo = await this.userRepository.create({
