@@ -9,6 +9,7 @@ import { APP_FILTER } from '@nestjs/core';
 import { AppAuthSecretService } from './app-auth/services/app-auth-passord.service';
 import { AppOauthModule } from './app-oauth/app-oauth.module';
 import { UserModule } from './user/user.module';
+import { SupportedServiceModule } from './supported-service/supported-service.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { UserModule } from './user/user.module';
     EdvModule,
     AppOauthModule,
     UserModule,
+    SupportedServiceModule,
   ],
   controllers: [],
   providers: [

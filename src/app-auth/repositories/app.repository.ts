@@ -23,6 +23,7 @@ export class AppRepository {
       logoUrl: 1,
       whitelistedCors: 1,
       subdomain: 1,
+      services: 1,
       _id: 0,
       tenantUrl: {
         $concat: [url.protocol, '//', '$subdomain', '.', url.hostname], // TODO url Parse `${http(s)}://${$subdomain}.${host}`

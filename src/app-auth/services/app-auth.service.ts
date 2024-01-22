@@ -88,6 +88,7 @@ export class AppAuthService {
       'AppAuthService',
     );
     const subdomain = await this.getRandomSubdomain();
+
     // Finally stroring application in db
     const appData: App = await this.appRepository.create({
       ...createAppDto,
@@ -100,7 +101,6 @@ export class AppAuthService {
       apiKeyPrefix: apiSecretKey.split('.')[0],
       subdomain,
     });
-
     Logger.log('App created successfully', 'app-auth-service');
     return this.getAppResponse(appData, apiSecretKey);
   }
