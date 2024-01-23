@@ -15,8 +15,6 @@ export class AppRepository {
   ) {}
 
   private appDataProjectPipelineToReturn() {
-    const url = new URL(this.config.get('ENTITY_API_SERVICE_BASE_URL'));
-
     return {
       appName: 1,
       appId: 1,
@@ -105,8 +103,6 @@ export class AppRepository {
   }
 
   async findOne(appFilterQuery: FilterQuery<App>): Promise<App> {
-    const url = new URL(this.config.get('ENTITY_API_SERVICE_BASE_URL'));
-
     Logger.log(
       'findOne() method: starts, finding particular app from db',
       'AppRepository',
