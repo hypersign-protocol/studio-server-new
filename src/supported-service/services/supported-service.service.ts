@@ -5,4 +5,8 @@ export class SupportedServiceService {
   fetchServiceList() {
     return serviceList;
   }
+
+  fetchServiceById(id: string) {
+    return serviceList.find((service) => service.id === id);
+  }
 }

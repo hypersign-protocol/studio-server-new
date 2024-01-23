@@ -67,5 +67,5 @@ export class CreateAppDto {
   // @IsEnum(services, {
   //   message: "services must be one of the following values: 'cavach', 'entityApi'",
   // })
-  services: [string];
+  serviceIds: [string];
 }

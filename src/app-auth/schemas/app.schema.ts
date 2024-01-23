@@ -106,7 +106,7 @@ export class App {
     required: true,
     isArray: true,
   })
-  services: Array<string>;
+  services: Array<object>;
 }
 
 export class createAppResponse extends App {
@@ -130,7 +130,7 @@ export class createAppResponse extends App {
     isArray: true,
   })
   @IsArray()
-  services: [string];
+  services: [object];
 }
 
 export const AppSchema = SchemaFactory.createForClass(App);
