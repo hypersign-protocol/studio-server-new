@@ -99,6 +99,14 @@ export class App {
   @IsString()
   @Prop({ required: false, unique: true })
   subdomain: string;
+  @Prop({ required: true })
+  @ApiProperty({
+    description: 'services',
+    example: ['cavach'],
+    required: true,
+    isArray: true,
+  })
+  services: Array<object>;
 }
 
 export class createAppResponse extends App {
@@ -115,6 +123,14 @@ export class createAppResponse extends App {
   })
   @Prop()
   tenantUrl: string;
+  @ApiProperty({
+    description: 'services',
+    example: ['cavach'],
+    required: true,
+    isArray: true,
+  })
+  @IsArray()
+  services: [object];
 }
 
 export const AppSchema = SchemaFactory.createForClass(App);

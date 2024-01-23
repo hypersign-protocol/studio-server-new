@@ -1,5 +1,7 @@
 import {
   IsArray,
+  IsEnum,
+  IsNotEmpty,
   IsOptional,
   IsString,
   Length,
@@ -12,6 +14,8 @@ import { IsUrlEmpty } from 'src/utils/customDecorator/isUrl.decorator';
 import { Transform } from 'class-transformer';
 import validator from 'validator';
 import { SanitizeUrlValidator } from 'src/utils/sanitizeUrl.validator';
+// import { services } from 'src/supported-service/dto/create-supported-service.dto';
+
 export class CreateAppDto {
   @ApiProperty({
     description: 'Application Name',
@@ -53,4 +57,15 @@ export class CreateAppDto {
   @IsString()
   @IsUrlEmpty()
   logoUrl: string;
+  @ApiProperty({
+    description: 'services',
+    example: ['cavach'],
+    required: true,
+    isArray: true,
+  })
+  @IsArray()
+  // @IsEnum(services, {
+  //   message: "services must be one of the following values: 'cavach', 'entityApi'",
+  // })
+  serviceIds: [string];
 }

@@ -19,6 +19,7 @@ import { AppOauthModule } from './app-oauth/app-oauth.module';
 import * as cors from 'cors';
 import { UserModule } from './user/user.module';
 import { randomUUID } from 'crypto';
+import { SupportedServiceModule } from './supported-service/supported-service.module';
 
 // eslint-disable-next-line
 const HypersignAuth = require('hypersign-auth-node-sdk');
@@ -67,20 +68,28 @@ async function bootstrap() {
   const kmsVaultWallet = await VaultWalletManager.getWallet(
     mnemonic_EnglishMnemonic,
   );
-  if (!existDir(process.env.EDV_CONFIG_DIR)) {
-    createDir(process.env.EDV_CONFIG_DIR);
-  }
-  const EDV_DID_FILE_PATH = `${process.env.EDV_CONFIG_DIR}/edv-did.json`;
-  if (!existDir(EDV_DID_FILE_PATH)) {
-    store(kmsVaultWallet.didDocument, EDV_DID_FILE_PATH);
-  }
-
-  const EDV_KEY_FILE_PATH = `${process.env.EDV_CONFIG_DIR}/edv-keys.json`;
-  if (!existDir(EDV_KEY_FILE_PATH)) {
-    store(kmsVaultWallet.keys, EDV_KEY_FILE_PATH);
-  }
 
   const config = new ConfigService();
+  const edv_config_dir = config.get('EDV_CONFIG_DIR')
+    ? config.get('EDV_CONFIG_DIR')
+    : '.edv-config';
+  const edv_did_file_path = config.get('EDV_DID_FILE_PATH')
+    ? config.get('EDV_DID_FILE_PATH')
+    : edv_config_dir + '/edv-did.json';
+  const edv_key_file_path = config.get('EDV_KEY_FILE_PATH')
+    ? config.get('EDV_KEY_FILE_PATH')
+    : edv_config_dir + '/edv-keys.json';
+
+  if (!existDir(edv_config_dir)) {
+    createDir(edv_config_dir);
+  }
+  if (!existDir(edv_did_file_path)) {
+    store(kmsVaultWallet.didDocument, edv_did_file_path);
+  }
+  if (!existDir(edv_key_file_path)) {
+    store(kmsVaultWallet.keys, edv_key_file_path);
+  }
+
   try {
     // Super admin keymanager setup
     Logger.log('Before keymanager initialization', 'main');
@@ -89,7 +98,7 @@ async function bootstrap() {
     const vaultPrefix =
       vaultPrefixInEnv && vaultPrefixInEnv != 'undefined'
         ? vaultPrefixInEnv
-        : 'hs:studio-api:';
+        : 'hs:developer-dashboard:';
     const edvId = vaultPrefix + 'kms:' + kmsVaultWallet.didDocument.id;
     const kmsVault = await kmsVaultManager.createVault(kmsVaultWallet, edvId);
 
@@ -110,7 +119,12 @@ async function bootstrap() {
       .build();
 
     const orgDocuments = SwaggerModule.createDocument(app, orgDocConfig, {
-      include: [AppAuthModule, AppOauthModule, UserModule], // don't include, say, BearsModule
+      include: [
+        AppAuthModule,
+        AppOauthModule,
+        UserModule,
+        SupportedServiceModule,
+      ], // don't include, say, BearsModule
     });
     const tenantOptions = {
       swaggerOptions: {
