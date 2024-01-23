@@ -89,7 +89,7 @@ async function bootstrap() {
   if (!existDir(edv_key_file_path)) {
     store(kmsVaultWallet.keys, edv_key_file_path);
   }
-  
+
   try {
     // Super admin keymanager setup
     Logger.log('Before keymanager initialization', 'main');
