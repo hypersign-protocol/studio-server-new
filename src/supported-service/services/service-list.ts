@@ -5,6 +5,7 @@ export const serviceList = [
     name: 'SSI API Service',
     domain: 'https://api.entity.hypersign.id',
     description: 'A SSI API service built on multi tenant architeacture',
+    swaggerAPIDocPath: '/ssi',
   },
   {
     id: 'CAVACH_API',
@@ -12,5 +13,6 @@ export const serviceList = [
     name: 'Cavach API Service',
     domain: 'https://api.cavach.hypersign.id',
     description: 'A generic service interface for kyc verification',
+    swaggerAPIDocPath: '/api',
   },
 ];
