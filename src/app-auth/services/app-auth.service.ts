@@ -172,7 +172,7 @@ export class AppAuthService {
       return (
         (tenantSubDomainPrefixEnv && tenantSubDomainPrefixEnv != 'undefined'
           ? tenantSubDomainPrefixEnv
-          : 'ent_') + subdomain
+          : 'ent-') + subdomain
       );
     }
 
