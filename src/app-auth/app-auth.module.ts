@@ -21,6 +21,7 @@ import { TrimMiddleware } from 'src/utils/middleware/trim.middleware';
 import { HypersignAuthorizeMiddleware } from 'src/utils/middleware/hypersign-authorize.middleware';
 import { HypersignAuthDataTransformerMiddleware } from '../user/middleware/tranform-hypersign-user-data';
 import { SupportedServiceService } from 'src/supported-service/services/supported-service.service';
+import { SupportedServiceList } from 'src/supported-service/services/service-list';
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: App.name, schema: AppSchema }]),
@@ -35,6 +36,7 @@ import { SupportedServiceService } from 'src/supported-service/services/supporte
     HidWalletService,
     AppAuthSecretService,
     AppAuthApiKeyService,
+    SupportedServiceList,
     SupportedServiceService,
   ],
   controllers: [AppAuthController],

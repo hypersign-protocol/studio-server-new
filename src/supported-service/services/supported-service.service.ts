@@ -1,12 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { serviceList } from './service-list';
+import { SupportedServiceList } from './service-list';
+import { ConfigService } from '@nestjs/config';
 @Injectable()
 export class SupportedServiceService {
+  constructor(private readonly serviceList: SupportedServiceList){}
   fetchServiceList() {
-    return serviceList;
+    return this.serviceList.getServices()
   }
 
   fetchServiceById(id: string) {
-    return serviceList.find((service) => service.id === id);
+    return this.serviceList.getServices().find((service) => service['id'] === id);
   }
 }
