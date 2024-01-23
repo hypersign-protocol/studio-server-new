@@ -5,8 +5,8 @@ import { NextFunction, Request, Response } from 'express';
 export class HypersignAuthorizeMiddleware implements NestMiddleware {
   async use(req: Request, res: Response, next: NextFunction) {
     Logger.log(
-      'Inside HypersignAuthenticateMiddleware; before calling hs auth authenticate()',
-      'HypersignAuthenticateMiddleware',
+      'Inside HypersignAuthorizeMiddleware; before calling hs auth authenticate()',
+      'HypersignAuthorizeMiddleware',
     );
     return globalThis.hypersignAuth.authorize(req, res, next);
   }

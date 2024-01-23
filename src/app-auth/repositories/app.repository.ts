@@ -3,17 +3,18 @@ import { FilterQuery, Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { SupportedServiceService } from 'src/supported-service/services/supported-service.service';
+import * as url from 'url';
 
 @Injectable()
 export class AppRepository {
   constructor(
     @InjectModel(App.name) private readonly appModel: Model<AppDocument>,
     private readonly config: ConfigService,
+    private readonly supportedServices: SupportedServiceService,
   ) {}
 
   private appDataProjectPipelineToReturn() {
-    const url = new URL(this.config.get('ENTITY_API_SERVICE_BASE_URL'));
-
     return {
       appName: 1,
       appId: 1,
@@ -23,28 +24,92 @@ export class AppRepository {
       logoUrl: 1,
       whitelistedCors: 1,
       subdomain: 1,
+      services: 1,
       _id: 0,
       tenantUrl: {
-        $concat: [url.protocol, '//', '$subdomain', '.', url.hostname], // TODO url Parse `${http(s)}://${$subdomain}.${host}`
+        $concat: [
+          {
+            $arrayElemAt: [
+              {
+                $split: [{ $arrayElemAt: ['$services.domain', 0] }, '://'],
+              },
+              0,
+            ],
+          },
+          '://',
+          '$subdomain',
+          '.',
+          {
+            $arrayElemAt: [
+              {
+                $split: [{ $arrayElemAt: ['$services.domain', 0] }, '://'],
+              },
+              1,
+            ],
+          },
+        ],
       },
     };
   }
-  async findOne(appFilterQuery: FilterQuery<App>): Promise<App> {
-    const url = new URL(this.config.get('ENTITY_API_SERVICE_BASE_URL'));
 
+  private getTenantUrlAggeration() {
+    return [
+      {
+        $addFields: {
+          serviceDomain: {
+            $arrayElemAt: ['$services.domain', 0],
+          },
+        },
+      },
+      {
+        $match: {
+          serviceDomain: { $exists: true },
+        },
+      },
+      {
+        $set: {
+          serviceDomainProtocol: {
+            $arrayElemAt: [
+              {
+                $split: ['$serviceDomain', '://'],
+              },
+              0,
+            ],
+          },
+          serviceDomainHostname: {
+            $arrayElemAt: [
+              {
+                $split: ['$serviceDomain', '://'],
+              },
+              1,
+            ],
+          },
+        },
+      },
+      {
+        $set: {
+          tenantUrl: {
+            $concat: [
+              '$serviceDomainProtocol',
+              '//:',
+              '$subdomain',
+              '.',
+              '$serviceDomainHostname',
+            ],
+          },
+        },
+      },
+    ];
+  }
+
+  async findOne(appFilterQuery: FilterQuery<App>): Promise<App> {
     Logger.log(
       'findOne() method: starts, finding particular app from db',
       'AppRepository',
     );
     const aggrerationPipeline = [
       { $match: appFilterQuery },
-      {
-        $set: {
-          tenantUrl: {
-            $concat: [url.protocol, '//', '$subdomain', '.', url.hostname], // TODO url Parse `${http(s)}://${$subdomain}.${host}`
-          },
-        },
-      },
+      ...this.getTenantUrlAggeration(),
     ];
     const apps = await this.appModel.aggregate(aggrerationPipeline);
     return apps[0];
@@ -55,7 +120,7 @@ export class AppRepository {
       'AppRepository',
     );
 
-    return this.appModel.aggregate([
+    const pipeline = [
       { $match: { userId: appsFilterQuery.userId } },
       {
         $facet: {
@@ -69,7 +134,8 @@ export class AppRepository {
           ],
         },
       },
-    ]);
+    ];
+    return this.appModel.aggregate(pipeline);
   }
 
   async create(app: App): Promise<App> {

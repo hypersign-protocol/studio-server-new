@@ -18,6 +18,7 @@ import { AppAuthApiKeyService } from './app-auth-apikey.service';
 import { EdvClientManagerFactoryService } from '../../edv/services/edv.clientFactory';
 import { VaultWalletManager } from '../../edv/services/vaultWalletManager';
 import * as url from 'url';
+import { SupportedServiceService } from 'src/supported-service/services/supported-service.service';
 @Injectable()
 export class AppAuthService {
   constructor(
@@ -27,6 +28,7 @@ export class AppAuthService {
     private readonly appAuthSecretService: AppAuthSecretService,
     private readonly jwt: JwtService,
     private readonly appAuthApiKeyService: AppAuthApiKeyService,
+    private readonly supportedServices: SupportedServiceService,
   ) {}
 
   async createAnApp(
@@ -34,6 +36,17 @@ export class AppAuthService {
     userId: string,
   ): Promise<createAppResponse> {
     Logger.log('createAnApp() method: starts....', 'AppAuthService');
+
+    const { serviceIds } = createAppDto;
+    if (!serviceIds) {
+      throw new Error('No serviceIds provided while creating an app');
+    }
+
+    const service = this.supportedServices.fetchServiceById(serviceIds[0]);
+    if (!service) {
+      throw new Error('Invalid service id ' + serviceIds[0]);
+    }
+
     const { mnemonic, address } = await this.hidWalletService.generateWallet();
     const appId = await this.appAuthApiKeyService.generateAppId();
     const vaultPrefixInEnv = this.config.get('VAULT_PREFIX');
@@ -88,9 +101,11 @@ export class AppAuthService {
       'AppAuthService',
     );
     const subdomain = await this.getRandomSubdomain();
+
     // Finally stroring application in db
     const appData: App = await this.appRepository.create({
       ...createAppDto,
+      services: [service],
       userId,
       appId: appId, // generate app id
       apiKeySecret: apiSecret, // TODO: generate app secret and should be handled like password by hashing and all...
@@ -100,8 +115,8 @@ export class AppAuthService {
       apiKeyPrefix: apiSecretKey.split('.')[0],
       subdomain,
     });
-
     Logger.log('App created successfully', 'app-auth-service');
+    Logger.log(JSON.stringify(appData));
     return this.getAppResponse(appData, apiSecretKey);
   }
 
@@ -112,7 +127,7 @@ export class AppAuthService {
     const appResponse: createAppResponse = {
       ...appData['_doc'],
       apiSecretKey,
-      tenantUrl: this.getTenantUrl(appData.subdomain),
+      tenantUrl: this.getTenantUrl(appData.subdomain, appData.services[0]), // only one service per app
     };
 
     delete appResponse.userId;
@@ -123,12 +138,15 @@ export class AppAuthService {
     return appResponse;
   }
 
-  private getTenantUrl(subdomain: string) {
-    const baseURl = this.config.get('ENTITY_API_SERVICE_BASE_URL')
-      ? this.config.get('ENTITY_API_SERVICE_BASE_URL')
-      : 'https://api.entity.hypersign.id';
+  // fix the type for service
+  private getTenantUrl(subdomain: string, service: object) {
+    Logger.log('Inside getTenantUrl()', 'app-auth.service');
+    const domain = this.supportedServices.fetchServiceById(
+      service['id'],
+    )?.domain;
+    Logger.log(domain, 'app-auth.service');
 
-    const SERVICE_BASE_URL = url.parse(baseURl);
+    const SERVICE_BASE_URL = url.parse(domain);
 
     const tenantUrl =
       SERVICE_BASE_URL.protocol +
@@ -154,7 +172,7 @@ export class AppAuthService {
       return (
         (tenantSubDomainPrefixEnv && tenantSubDomainPrefixEnv != 'undefined'
           ? tenantSubDomainPrefixEnv
-          : 'ent_') + subdomain
+          : 'ent-') + subdomain
       );
     }
 
