@@ -140,11 +140,6 @@ export class AppAuthService {
 
   // fix the type for service
   private getTenantUrl(subdomain: string, service: object) {
-    //// Service domain can be taken from services itself.
-    // const baseURl = this.config.get('ENTITY_API_SERVICE_BASE_URL')
-    //   ? this.config.get('ENTITY_API_SERVICE_BASE_URL')
-    //   : 'https://api.entity.hypersign.id';
-
     Logger.log('Inside getTenantUrl()', 'app-auth.service');
     const domain = this.supportedServices.fetchServiceById(
       service['id'],
