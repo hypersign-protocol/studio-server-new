@@ -37,7 +37,7 @@ import { PaginationDto } from 'src/utils/pagination.dto';
 import { TransformResponseInterceptor } from '../interceptors/transformResponse.interseptor';
 @UseFilters(AllExceptionsFilter)
 @ApiTags('Application')
-  @ApiBearerAuth('Authorization')
+@ApiBearerAuth('Authorization')
 @Controller('/api/v1/app')
 export class AppAuthController {
   constructor(private readonly appAuthService: AppAuthService) {}

@@ -10,7 +10,7 @@ export class GoolgeLoginService {
     private readonly userRepository: UserRepository,
     private readonly config: ConfigService,
     private readonly jwt: JwtService,
-  ) { }
+  ) {}
 
   async googleLogin(req) {
     Logger.log('googleLogin() starts', 'GoolgeLoginService');
