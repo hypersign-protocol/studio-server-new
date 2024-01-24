@@ -20,7 +20,7 @@ import * as cors from 'cors';
 import { UserModule } from './user/user.module';
 import { randomUUID } from 'crypto';
 import { SupportedServiceModule } from './supported-service/supported-service.module';
-import { GoolgeLoginModule } from './goolge-login/goolge-login.module';
+import { SocialLoginModule } from './social-login/social-login.module';
 
 // eslint-disable-next-line
 const HypersignAuth = require('hypersign-auth-node-sdk');
@@ -133,7 +133,7 @@ async function bootstrap() {
         AppOauthModule,
         UserModule,
         SupportedServiceModule,
-        GoolgeLoginModule,
+        SocialLoginModule,
       ], // don't include, say, BearsModule
     });
     const tenantOptions = {

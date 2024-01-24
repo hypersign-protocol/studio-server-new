@@ -5,7 +5,7 @@ import { JwtService } from '@nestjs/jwt';
 import { v4 as uuidv4 } from 'uuid';
 
 @Injectable()
-export class GoolgeLoginService {
+export class SocialLoginService {
   constructor(
     private readonly userRepository: UserRepository,
     private readonly config: ConfigService,
@@ -13,7 +13,7 @@ export class GoolgeLoginService {
   ) {}
 
   async googleLogin(req) {
-    Logger.log('googleLogin() starts', 'GoolgeLoginService');
+    Logger.log('googleLogin() starts', 'SocialLoginService');
     const { email, name } = req.user;
     let userInfo = await this.userRepository.findOne({
       email,
