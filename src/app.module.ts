@@ -10,6 +10,7 @@ import { AppAuthSecretService } from './app-auth/services/app-auth-passord.servi
 import { AppOauthModule } from './app-oauth/app-oauth.module';
 import { UserModule } from './user/user.module';
 import { SupportedServiceModule } from './supported-service/supported-service.module';
+import { GoolgeLoginModule } from './goolge-login/goolge-login.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { SupportedServiceModule } from './supported-service/supported-service.mo
     AppOauthModule,
     UserModule,
     SupportedServiceModule,
+    GoolgeLoginModule,
   ],
   controllers: [],
   providers: [

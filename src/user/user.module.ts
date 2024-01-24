@@ -13,6 +13,7 @@ import { HypersignAuthorizeMiddleware } from 'src/utils/middleware/hypersign-aut
 import { UserRepository } from './repository/user.repository';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UserSchema, User } from './schema/user.schema';
+import { JWTAuthorizeMiddleware } from 'src/utils/middleware/jwt-authorization.middleware';
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
@@ -24,22 +25,32 @@ import { UserSchema, User } from './schema/user.schema';
 })
 export class UserModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
+    const isHypersignAuth = JSON.parse(process.env.IMPLEMENT_HYPERSIGN_AUTH);
     consumer.apply(WhitelistAppCorsMiddleware).forRoutes(UserController);
+    if (isHypersignAuth) {
+      consumer
+        .apply(HypersignAuthenticateMiddleware)
+        .exclude({
+          path: '/api/v2/protected',
+          method: RequestMethod.POST,
+        })
+        .forRoutes(UserController);
 
-    consumer
-      .apply(HypersignAuthenticateMiddleware)
-      .exclude({
-        path: '/api/v2/protected',
-        method: RequestMethod.POST,
-      })
-      .forRoutes(UserController);
-
-    consumer
-      .apply(HypersignAuthorizeMiddleware)
-      .exclude({
-        path: '/hs/api/v2/auth',
-        method: RequestMethod.POST,
-      })
-      .forRoutes(UserController);
+      consumer
+        .apply(HypersignAuthorizeMiddleware)
+        .exclude({
+          path: '/hs/api/v2/auth',
+          method: RequestMethod.POST,
+        })
+        .forRoutes(UserController);
+    } else {
+      consumer
+        .apply(JWTAuthorizeMiddleware)
+        .exclude({
+          path: '/hs/api/v2/auth',
+          method: RequestMethod.POST,
+        })
+        .forRoutes(UserController);
+    }
   }
 }
