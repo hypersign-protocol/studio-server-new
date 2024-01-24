@@ -61,6 +61,14 @@ spec:
               value: __ENTITY_API_SERVICE_BASE_URL__
             - name: DEVELOPER_DASHBOARD_SERVICE_PUBLIC_EP
               value: __DEVELOPER_DASHBOARD_SERVICE_PUBLIC_EP__
+            - name: TENANT_SUBDOMAIN_PREFIX
+              value: __TENANT_SUBDOMAIN_PREFIX__
+            - name: SSI_API_DOMAIN
+              value: __SSI_API_DOMAIN__
+            - name: CAVACH_API_DOMAIN
+              value: __CAVACH_API_DOMAIN__
+            - name: VAULT_PREFIX
+              value: __VAULT_PREFIX__
           volumeMounts:
             - name: mongo
               mountPath: "/data"
