@@ -20,6 +20,7 @@ import * as cors from 'cors';
 import { UserModule } from './user/user.module';
 import { randomUUID } from 'crypto';
 import { SupportedServiceModule } from './supported-service/supported-service.module';
+import { SocialLoginModule } from './social-login/social-login.module';
 
 // eslint-disable-next-line
 const HypersignAuth = require('hypersign-auth-node-sdk');
@@ -115,6 +116,14 @@ async function bootstrap() {
     const orgDocConfig = new DocumentBuilder()
       .setTitle('Entity Developer Dashboard Service API')
       .setDescription('Open API Documentation for Entity Developer Dashboard')
+      .addBearerAuth(
+        {
+          type: 'http',
+          name: 'Authorization',
+          in: 'header',
+        },
+        'Authorization',
+      )
       .setVersion('1.0')
       .build();
 
@@ -124,6 +133,7 @@ async function bootstrap() {
         AppOauthModule,
         UserModule,
         SupportedServiceModule,
+        SocialLoginModule,
       ], // don't include, say, BearsModule
     });
     const tenantOptions = {

@@ -20,6 +20,7 @@ import { RegenrateAppApiSecretResponse } from '../dtos/generate-token.dto';
 import { AppAuthService } from 'src/app-auth/services/app-auth.service';
 import {
   ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiCreatedResponse,
   ApiNotFoundResponse,
   ApiQuery,
@@ -36,6 +37,7 @@ import { PaginationDto } from 'src/utils/pagination.dto';
 import { TransformResponseInterceptor } from '../interceptors/transformResponse.interseptor';
 @UseFilters(AllExceptionsFilter)
 @ApiTags('Application')
+@ApiBearerAuth('Authorization')
 @Controller('/api/v1/app')
 export class AppAuthController {
   constructor(private readonly appAuthService: AppAuthService) {}

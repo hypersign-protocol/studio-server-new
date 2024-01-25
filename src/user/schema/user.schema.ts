@@ -7,8 +7,8 @@ export class User {
   userId: string;
   @Prop({ required: true, unique: true })
   email: string;
-  @Prop({ required: true, unique: true })
-  did: string;
+  @Prop({ required: false, unique: true }) // as we won't get did in google login
+  did?: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
