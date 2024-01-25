@@ -23,17 +23,18 @@ export class SocialLoginController {
   ) {}
   @Get('/api/v1/login')
   @UseGuards(AuthGuard('google'))
-  socialAuth() {
-    Logger.log('socialAuth() method starts', 'SocialLoginController');
+  socialAuthRedirect() {
+    Logger.log('socialAuthRedirect() method starts', 'SocialLoginController');
   }
 
   @Get('/api/v1/login/callback')
   @UseGuards(AuthGuard('google'))
-  async socialAuthRedirect(@Req() req, @Res() res) {
-    Logger.log('socialAuthRedirect() method starts', 'SocialLoginController');
+  async socialAuthCallback(@Req() req, @Res() res) {
+    Logger.log('socialAuthCallback() method starts', 'SocialLoginController');
     const token = await this.socialLoginService.socialLogin(req);
     res.redirect(`${this.config.get('REDIRECT_URL')}?token=${token}`);
   }
+
   @Post('/api/v1/auth') // add gaurd here later
   dispatchUserDetail(@Req() req) {
     Logger.log('dispatchUserDetail() method starts', 'SocialLoginController');

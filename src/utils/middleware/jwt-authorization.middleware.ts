@@ -9,7 +9,7 @@ import { NextFunction, Request, Response } from 'express';
 @Injectable()
 export class JWTAuthorizeMiddleware implements NestMiddleware {
   async use(req: Request, res: Response, next: NextFunction) {
-    Logger.log('Inside JWTAuthorizeMiddleware', 'HypersignAuthorizeMiddleware');
+    Logger.log('Inside JWTAuthorizeMiddleware', 'JWTAuthorizeMiddleware');
     if (!req.header('authorization') || req.headers['authorization'] === '') {
       throw new UnauthorizedException([
         'Please pass authorization token in the header',
@@ -24,16 +24,24 @@ export class JWTAuthorizeMiddleware implements NestMiddleware {
     let decoded;
     try {
       decoded = jwt.verify(tokenParts[1], process.env.JWT_SECRET);
-    } catch (e) {
-      Logger.error(`JWTAuthorizeMiddleware: Error ${e}`, 'Middleware');
+      Logger.log(decoded, 'JWTAuthorizeMiddleware');
+      if (decoded) {
+        req['user'] = {
+          userId: decoded.appUserID,
+          email: decoded.email,
+          name: decoded.name,
+          id: decoded['id'],
+        };
 
+        Logger.log(JSON.stringify(req.user), 'JWTAuthorizeMiddleware');
+      }
+    } catch (e) {
+      Logger.error(
+        `JWTAuthorizeMiddleware: Error ${e}`,
+        'JWTAuthorizeMiddleware',
+      );
       throw new UnauthorizedException([e]);
     }
-    req['user'] = {
-      userId: decoded.appUserID,
-      email: decoded.email,
-      name: decoded.name,
-    };
     next();
   }
 }
