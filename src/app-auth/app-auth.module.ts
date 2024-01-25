@@ -19,7 +19,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { AppAuthApiKeyService } from './services/app-auth-apikey.service';
 import { TrimMiddleware } from 'src/utils/middleware/trim.middleware';
 import { HypersignAuthorizeMiddleware } from 'src/utils/middleware/hypersign-authorize.middleware';
-import { HypersignAuthDataTransformerMiddleware } from '../user/middleware/tranform-hypersign-user-data';
+import { HypersignAuthDataTransformerMiddleware } from '../hypersignauth-login/middleware/tranform-hypersign-user-data';
 import { SupportedServiceService } from 'src/supported-service/services/supported-service.service';
 import { SupportedServiceList } from 'src/supported-service/services/service-list';
 import { JWTAuthorizeMiddleware } from 'src/utils/middleware/jwt-authorization.middleware';
@@ -55,11 +55,8 @@ export class AppAuthModule implements NestModule {
         { path: 'app/:appId', method: RequestMethod.GET },
       )
       .forRoutes(AppAuthController);
-    if (isHypersignAuth) {
-      consumer.apply(HypersignAuthorizeMiddleware).forRoutes(AppAuthController);
-    } else {
-      consumer.apply(JWTAuthorizeMiddleware).forRoutes(AppAuthController);
-    }
+
+    consumer.apply(HypersignAuthorizeMiddleware).forRoutes(AppAuthController);
     consumer
       .apply(HypersignAuthDataTransformerMiddleware)
       .forRoutes(AppAuthController);

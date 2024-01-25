@@ -11,6 +11,7 @@ import { AppOauthModule } from './app-oauth/app-oauth.module';
 import { UserModule } from './user/user.module';
 import { SupportedServiceModule } from './supported-service/supported-service.module';
 import { SocialLoginModule } from './social-login/social-login.module';
+import { HypersignauthLoginModule } from './hypersignauth-login/hypersignauth-login.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { SocialLoginModule } from './social-login/social-login.module';
     UserModule,
     SupportedServiceModule,
     SocialLoginModule,
+    HypersignauthLoginModule,
   ],
   controllers: [],
   providers: [

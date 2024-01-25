@@ -31,7 +31,7 @@ export class UserModule implements NestModule {
       consumer
         .apply(HypersignAuthenticateMiddleware)
         .exclude({
-          path: '/api/v2/protected',
+          path: '/api/v1/auth/hypersign',
           method: RequestMethod.POST,
         })
         .forRoutes(UserController);
