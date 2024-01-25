@@ -1,4 +1,9 @@
-import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
+import {
+  MiddlewareConsumer,
+  Module,
+  NestModule,
+  RequestMethod,
+} from '@nestjs/common';
 import { SocialLoginService } from './services/social-login.service';
 import { SocialLoginController } from './controller/social-login.controller';
 import { GoogleStrategy } from './strategy/social.strategy';
@@ -20,14 +25,15 @@ export class SocialLoginModule implements NestModule {
       .apply(WhitelistAppCorsMiddleware)
       .exclude({
         path: '/api/v1/login',
-        method: RequestMethod.GET
-      })
-      .forRoutes(SocialLoginController)
-    consumer.apply(JWTAuthorizeMiddleware)
-      .exclude({
-        path: "/api/v1/login",
         method: RequestMethod.GET,
       })
-      .forRoutes(SocialLoginController)
+      .forRoutes(SocialLoginController);
+    consumer
+      .apply(JWTAuthorizeMiddleware)
+      .exclude({
+        path: '/api/v1/login',
+        method: RequestMethod.GET,
+      })
+      .forRoutes(SocialLoginController);
   }
 }

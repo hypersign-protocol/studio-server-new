@@ -25,8 +25,7 @@ export class SocialLoginController {
   }
   @Post('/api/v1/auth') // add gaurd here later
   dispatchUserDetail(@Req() req) {
-    Logger.log('dispatchUserDetail() method starts', 'SocialLoginController')
-    return { status: 200, message: req.user, error: null }
-
+    Logger.log('dispatchUserDetail() method starts', 'SocialLoginController');
+    return { status: 200, message: req.user, error: null };
   }
 }

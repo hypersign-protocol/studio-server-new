@@ -54,8 +54,6 @@ export class AppAuthModule implements NestModule {
       )
       .forRoutes(AppAuthController);
     consumer.apply(HypersignAuthorizeMiddleware).forRoutes(AppAuthController);
-    consumer
-      .apply(AuthDataTransformerMiddleware)
-      .forRoutes(AppAuthController);
+    consumer.apply(AuthDataTransformerMiddleware).forRoutes(AppAuthController);
   }
 }
