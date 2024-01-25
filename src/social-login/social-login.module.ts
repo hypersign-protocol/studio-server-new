@@ -24,16 +24,22 @@ export class SocialLoginModule implements NestModule {
     consumer
       .apply(WhitelistAppCorsMiddleware)
       .exclude({
-        path: '/api/v1/login',
+        path: '/api/v1/login/callback',
         method: RequestMethod.GET,
       })
       .forRoutes(SocialLoginController);
     consumer
       .apply(JWTAuthorizeMiddleware)
-      .exclude({
-        path: '/api/v1/login',
-        method: RequestMethod.GET,
-      })
+      .exclude(
+        {
+          path: '/api/v1/login',
+          method: RequestMethod.GET,
+        },
+        {
+          path: '/api/v1/login/callback',
+          method: RequestMethod.GET,
+        },
+      )
       .forRoutes(SocialLoginController);
   }
 }

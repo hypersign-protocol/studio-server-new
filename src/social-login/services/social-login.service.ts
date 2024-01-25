@@ -12,7 +12,7 @@ export class SocialLoginService {
     private readonly jwt: JwtService,
   ) {}
 
-  async googleLogin(req) {
+  async socialLogin(req) {
     Logger.log('googleLogin() starts', 'SocialLoginService');
     const { email, name } = req.user;
     let userInfo = await this.userRepository.findOne({
@@ -36,9 +36,6 @@ export class SocialLoginService {
       expiresIn: '24h',
       secret,
     });
-    return {
-      status: 200,
-      token: token,
-    };
+    return token;
   }
 }
