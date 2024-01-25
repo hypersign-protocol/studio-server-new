@@ -38,4 +38,3 @@ export class HypersignauthLoginModule implements NestModule {
       .forRoutes(HypersignauthLoginController);
   }
 }
-

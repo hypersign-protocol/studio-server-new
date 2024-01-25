@@ -18,7 +18,7 @@ import { UserRepository } from 'src/user/repository/user.repository';
 @ApiTags('Authentication')
 @Controller()
 export class HypersignauthLoginController {
-  constructor(private readonly userRepository: UserRepository) { }
+  constructor(private readonly userRepository: UserRepository) {}
 
   @Post('/hs/api/v2/auth')
   @UsePipes(new ValidationPipe({ transform: true }))
