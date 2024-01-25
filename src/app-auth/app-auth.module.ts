@@ -19,10 +19,9 @@ import { JwtModule } from '@nestjs/jwt';
 import { AppAuthApiKeyService } from './services/app-auth-apikey.service';
 import { TrimMiddleware } from 'src/utils/middleware/trim.middleware';
 import { HypersignAuthorizeMiddleware } from 'src/utils/middleware/hypersign-authorize.middleware';
-import { HypersignAuthDataTransformerMiddleware } from '../hypersignauth-login/middleware/tranform-hypersign-user-data';
 import { SupportedServiceService } from 'src/supported-service/services/supported-service.service';
 import { SupportedServiceList } from 'src/supported-service/services/service-list';
-import { JWTAuthorizeMiddleware } from 'src/utils/middleware/jwt-authorization.middleware';
+import { AuthDataTransformerMiddleware } from 'src/utils/middleware/tranform-user-data';
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: App.name, schema: AppSchema }]),
@@ -46,7 +45,6 @@ import { JWTAuthorizeMiddleware } from 'src/utils/middleware/jwt-authorization.m
 })
 export class AppAuthModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
-    const isHypersignAuth = JSON.parse(process.env.IMPLEMENT_HYPERSIGN_AUTH);
     consumer
       .apply(TrimMiddleware)
       .exclude(
@@ -55,10 +53,9 @@ export class AppAuthModule implements NestModule {
         { path: 'app/:appId', method: RequestMethod.GET },
       )
       .forRoutes(AppAuthController);
-
     consumer.apply(HypersignAuthorizeMiddleware).forRoutes(AppAuthController);
     consumer
-      .apply(HypersignAuthDataTransformerMiddleware)
+      .apply(AuthDataTransformerMiddleware)
       .forRoutes(AppAuthController);
   }
 }

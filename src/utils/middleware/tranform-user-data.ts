@@ -1,8 +1,7 @@
 import { NestMiddleware } from '@nestjs/common';
 import { NextFunction } from 'express';
-import { AuthProvider } from 'src/user/schema/user.schema';
 
-export class HypersignAuthDataTransformerMiddleware implements NestMiddleware {
+export class AuthDataTransformerMiddleware implements NestMiddleware {
   async use(req: Request, res: Response, next: NextFunction) {
     const { data } = req.body['hypersign'];
     req['user'] = {
@@ -10,7 +9,6 @@ export class HypersignAuthDataTransformerMiddleware implements NestMiddleware {
       email: data.email,
       did: data['id'],
       name: data['name'],
-      // provider: AuthProvider.hypersign
     };
 
     return next();

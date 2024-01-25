@@ -29,9 +29,11 @@ export class JWTAuthorizeMiddleware implements NestMiddleware {
 
       throw new UnauthorizedException([e]);
     }
-    req['body']['hypersign'] = {};
-    req['body']['hypersign'].data = {};
-    req['body']['hypersign'].data = { ...decoded };
+    req['user'] = {
+      userId: decoded.appUserID,
+      email: decoded.email,
+      name: decoded.name,
+    };
     next();
   }
 }
