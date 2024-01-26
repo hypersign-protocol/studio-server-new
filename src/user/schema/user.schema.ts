@@ -7,7 +7,7 @@ export class User {
   userId: string;
   @Prop({ required: true, unique: true })
   email: string;
-  @Prop({ required: false, unique: true }) // as we won't get did in google login
+  @Prop({ required: false }) // as we won't get did in google login
   did?: string;
 }
 
