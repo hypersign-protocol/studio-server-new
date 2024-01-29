@@ -11,7 +11,7 @@ import {
 import { SocialLoginService } from '../services/social-login.service';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiTags } from '@nestjs/swagger';
-import { AllExceptionsFilter } from 'src/utils/utils';
+import { AllExceptionsFilter, sanitizeUrl } from 'src/utils/utils';
 import { ConfigService } from '@nestjs/config';
 @UseFilters(AllExceptionsFilter)
 @ApiTags('Authentication')
@@ -22,9 +22,17 @@ export class SocialLoginController {
     private readonly config: ConfigService,
   ) {}
   @Get('/api/v1/login')
-  @UseGuards(AuthGuard('google'))
-  socialAuthRedirect() {
+  socialAuthRedirect(@Res() res) {
     Logger.log('socialAuthRedirect() method starts', 'SocialLoginController');
+    const authUrl = `${
+      this.config.get('GOOGLE_AUTH_BASE_URL') ||
+      'https://accounts.google.com/o/oauth2/v2/auth'
+    }?response_type=code&redirect_uri=${
+      this.config.get('GOOGLE_CALLBACK_URL') ||
+      sanitizeUrl(this.config.get('DEVELOPER_DASHBOARD_SERVICE_PUBLIC_EP')) +
+        '/api/v1/login/callback'
+    }&scope=email%20profile&client_id=${this.config.get('GOOGLE_CLIENT_ID')}`;
+    res.json({ authUrl });
   }
 
   @Get('/api/v1/login/callback')

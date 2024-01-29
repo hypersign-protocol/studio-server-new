@@ -14,6 +14,7 @@ export class GoogleStrategy extends PassportStrategy(Strategy, 'google') {
         sanitizeUrl(process.env.DEVELOPER_DASHBOARD_SERVICE_PUBLIC_EP) +
           '/api/v1/login/callback',
       scope: ['email', 'profile'],
+      session: false,
     });
   }
   async validate(
