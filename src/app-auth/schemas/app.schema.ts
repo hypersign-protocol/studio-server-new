@@ -1,7 +1,6 @@
 import { ApiProperty, ApiHideProperty } from '@nestjs/swagger';
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
-import { Exclude } from 'class-transformer';
 import {
   IsArray,
   IsNotEmpty,
@@ -9,6 +8,7 @@ import {
   IsString,
   IsUrl,
 } from 'class-validator';
+import { supportedServiceResponseDto } from 'src/supported-service/dto/create-supported-service.dto';
 
 export type AppDocument = App & Document;
 
@@ -46,9 +46,7 @@ export class App {
   @Prop()
   edvId: string;
 
-  //@ApiHideProperty()
   @Prop()
-  //@Exclude()
   @ApiProperty({
     description: 'Key Manager Service Id',
     example: 'KMS Id for this application',
@@ -102,35 +100,24 @@ export class App {
   @Prop({ required: true })
   @ApiProperty({
     description: 'services',
-    example: ['cavach'],
+    type: supportedServiceResponseDto,
     required: true,
     isArray: true,
   })
-  services: Array<object>;
+  services: Array<supportedServiceResponseDto>;
 }
-
 export class createAppResponse extends App {
   @ApiProperty({
     description: 'Application Secret',
     example: 'app-secret-1',
   })
-  @Prop()
   apiKeySecret: string;
 
   @ApiProperty({
     description: 'Your base API url',
     example: 'yoursubdomain.api.entity.hypersign.id',
   })
-  @Prop()
   tenantUrl: string;
-  @ApiProperty({
-    description: 'services',
-    example: ['cavach'],
-    required: true,
-    isArray: true,
-  })
-  @IsArray()
-  services: [object];
 }
 
 export const AppSchema = SchemaFactory.createForClass(App);
