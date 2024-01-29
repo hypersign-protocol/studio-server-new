@@ -12,7 +12,6 @@ import { JwtModule } from '@nestjs/jwt';
 import { WhitelistAppCorsMiddleware } from 'src/app-auth/middlewares/cors.middleware';
 import { AppAuthModule } from 'src/app-auth/app-auth.module';
 import { JWTAuthorizeMiddleware } from 'src/utils/middleware/jwt-authorization.middleware';
-// import { DynamicAuthGuard } from './strategy/dynamic-auth-gaurd';
 
 @Module({
   imports: [UserModule, AppAuthModule, JwtModule.register({})],
