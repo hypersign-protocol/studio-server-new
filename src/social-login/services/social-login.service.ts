@@ -17,7 +17,6 @@ export class SocialLoginService {
     let authUrl;
     switch (provider) {
       case Providers.google: {
-        console.log('case1');
         authUrl = `${
           this.config.get('GOOGLE_AUTH_BASE_URL') ||
           'https://accounts.google.com/o/oauth2/v2/auth'

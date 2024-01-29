@@ -40,16 +40,4 @@ export class HypersignauthLoginController {
       error: null,
     });
   }
-
-  // @Post('/api/v1/auth/hypersign')
-  // @UsePipes(new ValidationPipe({ transform: true }))
-  // authorize(@Res() res: any, @Req() req: any, @Body() body: any) {
-  //   Logger.log('authorize() method: starts', 'userController');
-  //   const { hypersign } = body;
-  //   res.status(200).json({
-  //     status: 200,
-  //     message: hypersign.data,
-  //     error: null,
-  //   });
-  // }
 }

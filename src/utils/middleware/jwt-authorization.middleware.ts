@@ -24,7 +24,6 @@ export class JWTAuthorizeMiddleware implements NestMiddleware {
     let decoded;
     try {
       decoded = jwt.verify(tokenParts[1], process.env.JWT_SECRET);
-      Logger.log(decoded, 'JWTAuthorizeMiddleware');
       if (decoded) {
         req['user'] = {
           userId: decoded.appUserID,
