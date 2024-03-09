@@ -14,7 +14,7 @@ import { IsUrlEmpty } from 'src/utils/customDecorator/isUrl.decorator';
 import { Transform } from 'class-transformer';
 import validator from 'validator';
 import { SanitizeUrlValidator } from 'src/utils/sanitizeUrl.validator';
-import { services } from 'src/supported-service/dto/create-supported-service.dto';
+import { SERVICE_TYPES } from 'src/supported-service/services/service-list';
 
 export class CreateAppDto {
   @ApiProperty({
@@ -59,7 +59,7 @@ export class CreateAppDto {
   logoUrl: string;
   @ApiProperty({
     description: 'services',
-    example: [services.SSI_API],
+    example: [SERVICE_TYPES.SSI_API],
     required: true,
     isArray: true,
   })
@@ -69,10 +69,10 @@ export class CreateAppDto {
     each: true,
     message: 'Each value in serviceIds must be a string',
   })
-  @IsEnum(services, {
+  @IsEnum(SERVICE_TYPES, {
     each: true,
     message:
       "services must be one of the following values: 'CAVACH_API', 'SSI_API'",
   })
-  serviceIds: [string];
+  serviceIds: [SERVICE_TYPES];
 }

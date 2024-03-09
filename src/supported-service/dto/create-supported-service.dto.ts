@@ -1,9 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum } from 'class-validator';
-export enum services {
-  CAVACH_API = 'CAVACH_API',
-  SSI_API = 'SSI_API',
-}
+import { SERVICE_TYPES } from '../services/service-list';
+
 export class supportedServiceResponseDto {
   @ApiProperty({
     description: 'id',
@@ -19,7 +17,7 @@ export class supportedServiceResponseDto {
     description: 'name',
     example: 'cavach',
   })
-  @IsEnum(services, {
+  @IsEnum(SERVICE_TYPES, {
     each: true,
     message:
       "services must be one of the following values: 'CAVACH_API', 'SSI_API'",

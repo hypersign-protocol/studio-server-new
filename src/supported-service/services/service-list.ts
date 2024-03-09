@@ -10,14 +10,19 @@ type Serivce = {
   swaggerAPIDocPath: string;
 };
 
+export enum SERVICE_TYPES {
+  SSI_API = 'SSI_API',
+  CAVACH_API = 'CAVACH_API',
+}
+
 @Injectable()
 export class SupportedServiceList {
   constructor(private readonly config: ConfigService) {}
   getServices(): Array<Serivce> {
     return [
       {
-        id: 'SSI_API',
-        dBSuffix: 'SSI_API',
+        id: SERVICE_TYPES.SSI_API,
+        dBSuffix: SERVICE_TYPES.SSI_API,
         name: 'SSI API Service',
         domain:
           this.config.get('SSI_API_DOMAIN') ||
@@ -26,8 +31,8 @@ export class SupportedServiceList {
         swaggerAPIDocPath: '/ssi',
       },
       {
-        id: 'CAVACH_API',
-        dBSuffix: 'CAVACH_API',
+        id: SERVICE_TYPES.CAVACH_API,
+        dBSuffix: SERVICE_TYPES.CAVACH_API,
         name: 'Cavach API Service',
         domain:
           this.config.get('CAVACH_API_DOMAIN') ||
