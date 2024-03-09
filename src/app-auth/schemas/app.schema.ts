@@ -106,7 +106,6 @@ export class App {
   })
   services: Array<supportedServiceResponseDto>;
 
-
   @ApiProperty({
     description: 'dependentServices',
     example: ['1212312123mmmaweeem'],

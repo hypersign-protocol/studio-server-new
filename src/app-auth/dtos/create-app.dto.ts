@@ -77,7 +77,6 @@ export class CreateAppDto {
   })
   serviceIds: [SERVICE_TYPES];
 
-
   @ApiProperty({
     description: 'dependentServices',
     example: ['asdasda123123123123'],
