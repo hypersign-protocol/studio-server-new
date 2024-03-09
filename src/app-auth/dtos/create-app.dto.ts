@@ -39,6 +39,7 @@ export class CreateAppDto {
   })
   @Validate(SanitizeUrlValidator)
   whitelistedCors: Array<string>;
+
   @ApiProperty({
     description: 'description',
     example: 'Example description',
@@ -75,4 +76,15 @@ export class CreateAppDto {
       "services must be one of the following values: 'CAVACH_API', 'SSI_API'",
   })
   serviceIds: [SERVICE_TYPES];
+
+
+  @ApiProperty({
+    description: 'dependentServices',
+    example: ['asdasda123123123123'],
+    isArray: true,
+    required: false,
+  })
+  @IsOptional()
+  @IsArray()
+  dependentServices: Array<string>; // ids of dependent services / apps
 }
