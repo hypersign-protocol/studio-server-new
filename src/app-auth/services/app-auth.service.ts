@@ -4,6 +4,7 @@ import {
   NotFoundException,
   Logger,
   InternalServerErrorException,
+  BadRequestException,
 } from '@nestjs/common';
 import { CreateAppDto } from '../dtos/create-app.dto';
 import { App, createAppResponse } from 'src/app-auth/schemas/app.schema';
@@ -19,6 +20,13 @@ import { EdvClientManagerFactoryService } from '../../edv/services/edv.clientFac
 import { VaultWalletManager } from '../../edv/services/vaultWalletManager';
 import * as url from 'url';
 import { SupportedServiceService } from 'src/supported-service/services/supported-service.service';
+import { SERVICE_TYPES } from 'src/supported-service/services/service-list';
+
+enum GRANT_TYPES {
+  access_service_kyc = 'access_service_kyc',
+  access_service_ssi = 'access_service_ssi',
+}
+
 @Injectable()
 export class AppAuthService {
   constructor(
@@ -265,7 +273,6 @@ export class AppAuthService {
 
     const apikeyIndex = appSecreatKey.split('.')[0];
 
-    const grantType = 'client_credentials'; //TODO: Remove hardcoding
     const appDetail = await this.appRepository.findOne({
       apiKeyPrefix: apikeyIndex,
     });
@@ -292,6 +299,26 @@ export class AppAuthService {
       throw new UnauthorizedException('access_denied');
     }
 
+    const serviceType = appDetail.services[0]?.id; // TODO: remove this later
+    let grant_type = '';
+    switch (serviceType) {
+      case SERVICE_TYPES.SSI_API: {
+        grant_type = GRANT_TYPES.access_service_ssi;
+        break;
+      }
+      case SERVICE_TYPES.CAVACH_API: {
+        grant_type = GRANT_TYPES.access_service_kyc;
+        break;
+      }
+      default: {
+        throw new BadRequestException('Invalid service ' + appDetail.appId);
+      }
+    }
+
+    return this.getAccessToken(grant_type, appDetail);
+  }
+
+  private async getAccessToken(grantType, appDetail) {
     const payload = {
       appId: appDetail.appId,
       userId: appDetail.userId,
@@ -311,5 +338,55 @@ export class AppAuthService {
     Logger.log('generateAccessToken() method: ends....', 'AppAuthService');
 
     return { access_token: token, expiresIn, tokenType: 'Bearer' };
+  }
+
+  //access_service_ssi
+  //access_service_kyc
+
+  async grantPermission(
+    grantType: string,
+    userId: string,
+    appId: string,
+  ): Promise<{ access_token; expiresIn; tokenType }> {
+    switch (grantType) {
+      case GRANT_TYPES.access_service_ssi:
+        break;
+      case GRANT_TYPES.access_service_kyc:
+        break;
+      default: {
+        throw new BadRequestException('Grant type not supported');
+      }
+    }
+
+    const app = await this.getAppById(appId, userId);
+    if (!app) {
+      throw new BadRequestException(
+        'Invalid service id or you do not have access of this service',
+      );
+    }
+
+    const serviceType = app.services[0]?.id; // TODO: remove this later
+    switch (serviceType) {
+      case SERVICE_TYPES.SSI_API: {
+        if (grantType != 'access_service_ssi') {
+          throw new BadRequestException(
+            'Invalid grant type for this service ' + appId,
+          );
+        }
+        break;
+      }
+      case SERVICE_TYPES.CAVACH_API: {
+        if (grantType != 'access_service_kyc') {
+          throw new BadRequestException(
+            'Invalid grant type for this service ' + appId,
+          );
+        }
+        break;
+      }
+      default: {
+        throw new BadRequestException('Invalid service ' + appId);
+      }
+    }
+    return this.getAccessToken(grantType, app);
   }
 }
