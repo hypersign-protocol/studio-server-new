@@ -69,6 +69,12 @@ spec:
               value: __CAVACH_API_DOMAIN__
             - name: VAULT_PREFIX
               value: __VAULT_PREFIX__
+            - name: GOOGLE_CLIENT_ID
+              value: __GOOGLE_CLIENT_ID__
+            - name: GOOGLE_CLIENT_SECRET
+              value: __GOOGLE_CLIENT_SECRET__
+            - name: REDIRECT_URL
+              value: __REDIRECT_URL__
           volumeMounts:
             - name: mongo
               mountPath: "/data"

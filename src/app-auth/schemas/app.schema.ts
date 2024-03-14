@@ -105,6 +105,15 @@ export class App {
     isArray: true,
   })
   services: Array<supportedServiceResponseDto>;
+
+  @ApiProperty({
+    description: 'dependentServices',
+    example: ['1212312123mmmaweeem'],
+    isArray: true,
+  })
+  @IsArray()
+  @Prop({ required: false })
+  dependentServices: Array<string>;
 }
 export class createAppResponse extends App {
   @ApiProperty({

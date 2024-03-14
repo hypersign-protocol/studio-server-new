@@ -112,5 +112,11 @@ jobs:
         run: find .deploy/deployment.yaml -type f -exec sed  -i ''s/__GOOGLE_ARTIFACT_REPO__/${{ secrets.GOOGLE_ARTIFACT_REPO }}/g'' {} \;
       - name: "Replace secrets"
         run: find .deploy/deployment.yaml -type f -exec sed  -i ''s/__GOOGLE_PROJECT_ID__/${{ secrets.GOOGLE_PROJECT_ID }}/g'' {} \;
+      - name: "Replace secrets"
+        run: find .deploy/deployment.yaml -type f -exec sed  -i ''s/__GOOGLE_CLIENT_ID__/${{ secrets.GOOGLE_CLIENT_ID }}/g'' {} \;
+      - name: "Replace secrets"
+        run: find .deploy/deployment.yaml -type f -exec sed  -i ''s/__GOOGLE_CLIENT_SECRET__/${{ secrets.GOOGLE_CLIENT_SECRET }}/g'' {} \;
+      - name: "Replace secrets"
+        run: find .deploy/deployment.yaml -type f -exec sed  -i -e "s#__REDIRECT_URL__#${{ secrets.REDIRECT_URL }}#" {} \;
       - name: "Deploy to GKE"
         run: kubectl apply -f .deploy/deployment.yaml
