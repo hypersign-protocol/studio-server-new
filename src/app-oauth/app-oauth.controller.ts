@@ -23,7 +23,10 @@ import {
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
 import { AllExceptionsFilter } from 'src/utils/utils';
-import { AppSecretHeader } from './dtos/app-sercret.decorator';
+import {
+  AppSecretHeader,
+  OauthTokenExpiryHeader,
+} from './dtos/app-sercret.decorator';
 import {
   GenerateTokenError,
   GenerateTokenResponse,
@@ -47,6 +50,11 @@ export class AppOauthController {
     description: 'Origin as you set in application cors',
     required: false,
   })
+  @ApiHeader({
+    name: 'ExpiresIn',
+    description: 'Specifie when this token should expire, default 4h',
+    required: false,
+  })
   @ApiBadRequestResponse({
     status: 400,
     description: 'Error occured at the time of generating access token',
@@ -67,9 +75,11 @@ export class AppOauthController {
   generateAccessToken(
     @Headers('X-Api-Secret-Key') apiSectretKey: string,
     @AppSecretHeader() appSecreatKey,
+    @Headers('ExpiresIn') oauthexpiresin: string,
+    @OauthTokenExpiryHeader() expiresin,
   ): Promise<{ access_token; expiresIn; tokenType }> {
     Logger.log('reGenerateAppSecretKey() method: starts', 'AppOAuthController');
-    return this.appAuthService.generateAccessToken(appSecreatKey);
+    return this.appAuthService.generateAccessToken(appSecreatKey, expiresin);
   }
 
   // grant type: [access_service], ?grant_type=access_service&serviceId=

@@ -17,6 +17,19 @@ export const AppSecretHeader = createParamDecorator(
   },
 );
 
+export const OauthTokenExpiryHeader = createParamDecorator(
+  (_data: unknown, ctx: ExecutionContext) => {
+    const request = ctx.switchToHttp().getRequest();
+    if (
+      !request.headers['expiresin'] ||
+      request.headers['expiresin'] == undefined
+    ) {
+      return 4;
+    }
+    return parseInt(request.headers['expiresin']);
+  },
+);
+
 export const AppSubdomainHeader = createParamDecorator(
   (_data: unknown, ctx: ExecutionContext) => {
     const request = ctx.switchToHttp().getRequest();

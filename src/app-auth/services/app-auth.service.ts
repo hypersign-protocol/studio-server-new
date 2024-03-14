@@ -268,6 +268,7 @@ export class AppAuthService {
 
   async generateAccessToken(
     appSecreatKey: string,
+    expiresin = 4,
   ): Promise<{ access_token; expiresIn; tokenType }> {
     Logger.log('generateAccessToken() method: starts....', 'AppAuthService');
 
@@ -315,10 +316,10 @@ export class AppAuthService {
       }
     }
 
-    return this.getAccessToken(grant_type, appDetail);
+    return this.getAccessToken(grant_type, appDetail, expiresin);
   }
 
-  private async getAccessToken(grantType, appDetail) {
+  private async getAccessToken(grantType, appDetail, expiresin = 4) {
     const payload = {
       appId: appDetail.appId,
       userId: appDetail.userId,
@@ -331,7 +332,7 @@ export class AppAuthService {
 
     const secret = this.config.get('JWT_SECRET');
     const token = await this.jwt.signAsync(payload, {
-      expiresIn: '4h',
+      expiresIn: expiresin.toString() + 'h',
       secret,
     });
     const expiresIn = (4 * 1 * 60 * 60 * 1000) / 1000;
