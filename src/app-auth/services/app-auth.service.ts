@@ -20,7 +20,7 @@ import { EdvClientManagerFactoryService } from '../../edv/services/edv.clientFac
 import { VaultWalletManager } from '../../edv/services/vaultWalletManager';
 import * as url from 'url';
 import { SupportedServiceService } from 'src/supported-service/services/supported-service.service';
-import { SERVICE_TYPES } from 'src/supported-service/services/service-list';
+import { SERVICE_TYPES } from 'src/supported-service/services/iServiceList';
 
 enum GRANT_TYPES {
   access_service_kyc = 'access_service_kyc',

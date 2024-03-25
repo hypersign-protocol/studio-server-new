@@ -5,6 +5,8 @@ import { JwtService } from '@nestjs/jwt';
 import { v4 as uuidv4 } from 'uuid';
 import { Providers } from '../strategy/social.strategy';
 import { sanitizeUrl } from 'src/utils/utils';
+import { SupportedServiceList } from 'src/supported-service/services/service-list';
+import { SERVICE_TYPES } from 'src/supported-service/services/iServiceList';
 
 @Injectable()
 export class SocialLoginService {
@@ -12,6 +14,7 @@ export class SocialLoginService {
     private readonly userRepository: UserRepository,
     private readonly config: ConfigService,
     private readonly jwt: JwtService,
+    private readonly supportedServiceList: SupportedServiceList,
   ) {}
   async generateAuthUrlByProvider(provider: string) {
     let authUrl;
@@ -46,9 +49,17 @@ export class SocialLoginService {
     let appUserID;
     if (!userInfo) {
       appUserID = uuidv4();
+      // Giving default access of services...
+      const ssiAccessList = this.supportedServiceList.getDefaultServicesAccess(
+        SERVICE_TYPES.SSI_API,
+      );
+      const kycAccessList = this.supportedServiceList.getDefaultServicesAccess(
+        SERVICE_TYPES.CAVACH_API,
+      );
       userInfo = await this.userRepository.create({
         email,
         userId: appUserID,
+        accessList: [...ssiAccessList, ...kycAccessList],
       });
     }
     const payload = {

@@ -32,6 +32,7 @@ export class HypersignauthLoginController {
         email: user.email,
         did: user.id,
         userId: user.appUserID,
+        accessList: [],
       });
     }
     res.status(200).json({

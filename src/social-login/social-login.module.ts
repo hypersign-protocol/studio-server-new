@@ -12,11 +12,18 @@ import { JwtModule } from '@nestjs/jwt';
 import { WhitelistAppCorsMiddleware } from 'src/app-auth/middlewares/cors.middleware';
 import { AppAuthModule } from 'src/app-auth/app-auth.module';
 import { JWTAuthorizeMiddleware } from 'src/utils/middleware/jwt-authorization.middleware';
+import { SupportedServiceModule } from 'src/supported-service/supported-service.module';
+import { SupportedServiceList } from 'src/supported-service/services/service-list';
 
 @Module({
-  imports: [UserModule, AppAuthModule, JwtModule.register({})],
+  imports: [
+    UserModule,
+    AppAuthModule,
+    JwtModule.register({}),
+    SupportedServiceModule,
+  ],
   controllers: [SocialLoginController],
-  providers: [SocialLoginService, GoogleStrategy],
+  providers: [SocialLoginService, GoogleStrategy, SupportedServiceList],
 })
 export class SocialLoginModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
