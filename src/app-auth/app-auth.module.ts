@@ -3,6 +3,7 @@ import {
   Module,
   NestModule,
   RequestMethod,
+  forwardRef,
 } from '@nestjs/common';
 
 import { AppAuthService } from './services/app-auth.service';
@@ -21,12 +22,14 @@ import { TrimMiddleware } from 'src/utils/middleware/trim.middleware';
 import { SupportedServiceService } from 'src/supported-service/services/supported-service.service';
 import { SupportedServiceList } from 'src/supported-service/services/service-list';
 import { JWTAuthorizeMiddleware } from 'src/utils/middleware/jwt-authorization.middleware';
+import { UserModule } from 'src/user/user.module';
+
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: App.name, schema: AppSchema }]),
     HidWalletModule,
     EdvModule,
-
+    UserModule,
     JwtModule.register({}),
   ],
   providers: [

@@ -55,8 +55,6 @@ export class SupportedServiceList {
       Object.keys(SERVICES[serviceType].ACCESS_TYPES).forEach((access) => {
         if (access == SERVICES[serviceType].ACCESS_TYPES.READ_SESSION) {
           return;
-        } else if (access == SERVICES[serviceType].ACCESS_TYPES.WRITE_SESSION) {
-          return;
         } else if (access == SERVICES[serviceType].ACCESS_TYPES.ALL) {
           return;
         } else {

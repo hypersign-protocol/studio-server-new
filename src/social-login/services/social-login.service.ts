@@ -66,6 +66,7 @@ export class SocialLoginService {
       name,
       email,
       appUserID: userInfo.userId,
+      userAccessList: userInfo.accessList,
     };
     const secret = this.config.get('JWT_SECRET');
     const token = await this.jwt.signAsync(payload, {
