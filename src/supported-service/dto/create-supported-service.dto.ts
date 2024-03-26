@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsEnum } from 'class-validator';
-import { SERVICE_TYPES } from '../services/service-list';
+import { SERVICE_TYPES } from '../services/iServiceList';
 
 export class supportedServiceResponseDto {
   @ApiProperty({

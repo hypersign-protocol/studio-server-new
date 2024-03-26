@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-
+import { SERVICE_TYPES, SERVICES } from './iServiceList';
 type Serivce = {
   id: string;
   dBSuffix: string;
@@ -9,11 +9,6 @@ type Serivce = {
   description: string;
   swaggerAPIDocPath: string;
 };
-
-export enum SERVICE_TYPES {
-  SSI_API = 'SSI_API',
-  CAVACH_API = 'CAVACH_API',
-}
 
 @Injectable()
 export class SupportedServiceList {
@@ -41,5 +36,39 @@ export class SupportedServiceList {
         swaggerAPIDocPath: '/api',
       },
     ];
+  }
+
+  getDefaultServicesAccess(serviceType: SERVICE_TYPES) {
+    const defaultServicesAccess = [];
+
+    if (serviceType == SERVICE_TYPES.SSI_API) {
+      // Giving access of SSI service by default
+      Object.keys(SERVICES[serviceType].ACCESS_TYPES).forEach((access) => {
+        const serviceAccess = {
+          serviceType: serviceType,
+          access: access,
+          expiryDate: null, // never expires
+        };
+        defaultServicesAccess.push(serviceAccess);
+      });
+    } else if (serviceType == SERVICE_TYPES.CAVACH_API) {
+      Object.keys(SERVICES[serviceType].ACCESS_TYPES).forEach((access) => {
+        if (access == SERVICES[serviceType].ACCESS_TYPES.READ_SESSION) {
+          return;
+        } else if (access == SERVICES[serviceType].ACCESS_TYPES.ALL) {
+          return;
+        } else {
+          const serviceAccess = {
+            serviceType: serviceType,
+            access: access,
+            expiryDate: null, // never expires
+          };
+          defaultServicesAccess.push(serviceAccess);
+        }
+      });
+    } else {
+      throw new Error('Invalid service type: ' + serviceType);
+    }
+    return defaultServicesAccess;
   }
 }

@@ -29,6 +29,7 @@ export class JWTAuthorizeMiddleware implements NestMiddleware {
           userId: decoded.appUserID,
           email: decoded.email,
           name: decoded.name,
+          userAccessList: decoded.userAccessList,
           id: decoded['id'],
         };
 

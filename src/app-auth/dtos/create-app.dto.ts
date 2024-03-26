@@ -14,7 +14,7 @@ import { IsUrlEmpty } from 'src/utils/customDecorator/isUrl.decorator';
 import { Transform } from 'class-transformer';
 import validator from 'validator';
 import { SanitizeUrlValidator } from 'src/utils/sanitizeUrl.validator';
-import { SERVICE_TYPES } from 'src/supported-service/services/service-list';
+import { SERVICE_TYPES } from 'src/supported-service/services/iServiceList';
 
 export class CreateAppDto {
   @ApiProperty({

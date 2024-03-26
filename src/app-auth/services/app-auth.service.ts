@@ -20,7 +20,8 @@ import { EdvClientManagerFactoryService } from '../../edv/services/edv.clientFac
 import { VaultWalletManager } from '../../edv/services/vaultWalletManager';
 import * as url from 'url';
 import { SupportedServiceService } from 'src/supported-service/services/supported-service.service';
-import { SERVICE_TYPES } from 'src/supported-service/services/service-list';
+import { SERVICE_TYPES } from 'src/supported-service/services/iServiceList';
+import { UserRepository } from 'src/user/repository/user.repository';
 
 enum GRANT_TYPES {
   access_service_kyc = 'access_service_kyc',
@@ -37,6 +38,7 @@ export class AppAuthService {
     private readonly jwt: JwtService,
     private readonly appAuthApiKeyService: AppAuthApiKeyService,
     private readonly supportedServices: SupportedServiceService,
+    private readonly userRepository: UserRepository,
   ) {}
 
   async createAnApp(
@@ -266,6 +268,21 @@ export class AppAuthService {
     return appDetail;
   }
 
+  private checkIfDateExpired(expiryDate: Date | null) {
+    if (!expiryDate) {
+      // if expiryDate null, then its never expired
+      return false;
+    }
+    const now = Date.now();
+    const expiryDateTime = new Date(expiryDate);
+    const expiryEpoch = expiryDateTime.getTime();
+    if (now > expiryEpoch) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
   async generateAccessToken(
     appSecreatKey: string,
     expiresin = 4,
@@ -285,6 +302,14 @@ export class AppAuthService {
 
       throw new UnauthorizedException(['access_denied']);
     }
+    const userDetails = await this.userRepository.findOne({
+      userId: appDetail.userId,
+    });
+    if (!userDetails) {
+      throw new UnauthorizedException([
+        'Admin user not found. He/She might have delete the account or never created one',
+      ]);
+    }
 
     const compareHash = await this.appAuthSecretService.comapareSecret(
       appSecreatKey,
@@ -302,13 +327,32 @@ export class AppAuthService {
 
     const serviceType = appDetail.services[0]?.id; // TODO: remove this later
     let grant_type = '';
+    let accessList = [];
     switch (serviceType) {
       case SERVICE_TYPES.SSI_API: {
         grant_type = GRANT_TYPES.access_service_ssi;
+        accessList = userDetails.accessList
+          .map((x) => {
+            if (x.serviceType === SERVICE_TYPES.SSI_API) {
+              if (!this.checkIfDateExpired(x.expiryDate)) {
+                return x.access;
+              }
+            }
+          })
+          .filter((x) => x != undefined);
         break;
       }
       case SERVICE_TYPES.CAVACH_API: {
         grant_type = GRANT_TYPES.access_service_kyc;
+        accessList = userDetails.accessList
+          .map((x) => {
+            if (x.serviceType === SERVICE_TYPES.CAVACH_API) {
+              if (!this.checkIfDateExpired(x.expiryDate)) {
+                return x.access;
+              }
+            }
+          })
+          .filter((x) => x != undefined);
         break;
       }
       default: {
@@ -316,10 +360,22 @@ export class AppAuthService {
       }
     }
 
-    return this.getAccessToken(grant_type, appDetail, expiresin);
+    if (accessList.length <= 0) {
+      throw new UnauthorizedException(
+        'You are not authorized to access service of type ',
+        serviceType,
+      );
+    }
+
+    return this.getAccessToken(grant_type, appDetail, expiresin, accessList);
   }
 
-  private async getAccessToken(grantType, appDetail, expiresin = 4) {
+  private async getAccessToken(
+    grantType,
+    appDetail,
+    expiresin = 4,
+    accessList = [],
+  ) {
     const payload = {
       appId: appDetail.appId,
       userId: appDetail.userId,
@@ -328,6 +384,7 @@ export class AppAuthService {
       whitelistedCors: appDetail.whitelistedCors,
       subdomain: appDetail.subdomain,
       edvId: appDetail.edvId,
+      accessList,
     };
 
     const secret = this.config.get('JWT_SECRET');
@@ -366,7 +423,17 @@ export class AppAuthService {
       );
     }
 
+    const userDetails = await this.userRepository.findOne({
+      userId: app.userId,
+    });
+    if (!userDetails) {
+      throw new UnauthorizedException([
+        'You do not have access to this service',
+      ]);
+    }
+
     const serviceType = app.services[0]?.id; // TODO: remove this later
+    let accessList = [];
     switch (serviceType) {
       case SERVICE_TYPES.SSI_API: {
         if (grantType != 'access_service_ssi') {
@@ -374,6 +441,15 @@ export class AppAuthService {
             'Invalid grant type for this service ' + appId,
           );
         }
+        accessList = userDetails.accessList
+          .map((x) => {
+            if (x.serviceType === SERVICE_TYPES.SSI_API) {
+              if (!this.checkIfDateExpired(x.expiryDate)) {
+                return x.access;
+              }
+            }
+          })
+          .filter((x) => x != undefined);
         break;
       }
       case SERVICE_TYPES.CAVACH_API: {
@@ -382,12 +458,29 @@ export class AppAuthService {
             'Invalid grant type for this service ' + appId,
           );
         }
+        accessList = userDetails.accessList
+          .map((x) => {
+            if (x.serviceType === SERVICE_TYPES.CAVACH_API) {
+              if (!this.checkIfDateExpired(x.expiryDate)) {
+                return x.access;
+              }
+            }
+          })
+          .filter((x) => x != undefined);
         break;
       }
       default: {
         throw new BadRequestException('Invalid service ' + appId);
       }
     }
-    return this.getAccessToken(grantType, app);
+
+    if (accessList.length <= 0) {
+      throw new UnauthorizedException(
+        'You are not authorized to access service of type ',
+        serviceType,
+      );
+    }
+
+    return this.getAccessToken(grantType, app, 12, accessList);
   }
 }
