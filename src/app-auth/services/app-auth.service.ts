@@ -412,7 +412,12 @@ export class AppAuthService {
       case GRANT_TYPES.access_service_kyc:
         break;
       default: {
-        throw new BadRequestException('Grant type not supported');
+        throw new BadRequestException(
+          'Grant type not supported, supported grant types are: ' +
+            GRANT_TYPES.access_service_kyc +
+            ',' +
+            GRANT_TYPES.access_service_ssi,
+        );
       }
     }
 
