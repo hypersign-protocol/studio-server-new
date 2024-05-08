@@ -25,6 +25,7 @@ export class AppRepository {
       whitelistedCors: 1,
       subdomain: 1,
       services: 1,
+      dependentServices: 1,
       _id: 0,
       tenantUrl: {
         $concat: [
