@@ -26,6 +26,11 @@ export class AppRepository {
       subdomain: 1,
       services: 1,
       dependentServices: 1,
+      domain: 1,
+      issuerDid: 1,
+      env: 1,
+      hasDomainVerified: 1,
+      domainLinkageCredentialString: 1,
       _id: 0,
       tenantUrl: {
         $concat: [

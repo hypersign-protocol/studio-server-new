@@ -3,6 +3,11 @@ export enum SERVICE_TYPES {
   CAVACH_API = 'CAVACH_API',
 }
 
+export enum APP_ENVIRONMENT {
+  prod = 'prod',
+  dev = 'dev',
+}
+
 export const SSI_API_SERVICE_INFO = Object.freeze({
   type: SERVICE_TYPES.SSI_API,
   description: 'A SSI API service built on multi tenant architeacture',

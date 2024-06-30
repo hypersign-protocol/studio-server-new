@@ -20,7 +20,10 @@ import { EdvClientManagerFactoryService } from '../../edv/services/edv.clientFac
 import { VaultWalletManager } from '../../edv/services/vaultWalletManager';
 import * as url from 'url';
 import { SupportedServiceService } from 'src/supported-service/services/supported-service.service';
-import { SERVICE_TYPES } from 'src/supported-service/services/iServiceList';
+import {
+  APP_ENVIRONMENT,
+  SERVICE_TYPES,
+} from 'src/supported-service/services/iServiceList';
 import { UserRepository } from 'src/user/repository/user.repository';
 
 enum GRANT_TYPES {
@@ -51,6 +54,10 @@ export class AppAuthService {
     if (!serviceIds) {
       throw new Error('No serviceIds provided while creating an app');
     }
+
+    // Env restrictions
+    createAppDto.hasDomainVerified = false;
+    createAppDto.env = APP_ENVIRONMENT.dev;
 
     const service = this.supportedServices.fetchServiceById(serviceIds[0]);
     if (!service) {
@@ -124,6 +131,10 @@ export class AppAuthService {
       walletAddress: address,
       apiKeyPrefix: apiSecretKey.split('.')[0],
       subdomain,
+      env: createAppDto.env ? createAppDto.env : APP_ENVIRONMENT.dev,
+      issuerDid: createAppDto.issuerDid,
+      domain: createAppDto.domain,
+      hasDomainVerified: createAppDto.hasDomainVerified,
     });
     Logger.log('App created successfully', 'app-auth-service');
     Logger.log(JSON.stringify(appData));
@@ -237,12 +248,150 @@ export class AppAuthService {
     return app;
   }
 
+  private async verifyDNS01(domain: URL, txt: string) {
+    const resolveDNSURL = `https://dns.google/resolve?name=${
+      new URL(domain).host
+    }&type=TXT`;
+    const actuaTxt = txt;
+    const res = await fetch(resolveDNSURL, {
+      headers: {
+        'Content-Type': 'Application/json',
+      },
+    });
+
+    const json = await res.json();
+    const txtRecords = json.Answer.filter((record: any) => record.type === 16);
+    const txtRecord = txtRecords.find((record: any) =>
+      record.data.includes(txt),
+    );
+    if (!txtRecord) {
+      return {
+        verified: false,
+        error: new Error('DNS TXT record not found'),
+      };
+    }
+    if (txtRecord.data !== actuaTxt) {
+      return {
+        verified: false,
+        error: new Error('DNS TXT record not found'),
+      };
+    }
+
+    return {
+      TXT: txtRecord,
+      verified: true,
+    };
+  }
+
+  private async verifyDNS01Validation(domain, txtRecord) {
+    // verify DNS-01 domain
+    // const domainLinkage = new DomainLinkage(domain);
+    const d = new URL(domain.includes('http') ? domain : 'https://' + domain);
+    const fetchedTxtRecord = await this.verifyDNS01(d, txtRecord);
+    if (fetchedTxtRecord && fetchedTxtRecord.error) {
+      throw new BadRequestException(
+        fetchedTxtRecord.error?.message +
+          '. If you have already added then it may take a while to complete. Please try again in sometime.',
+      );
+    }
+    if (fetchedTxtRecord.verified) {
+      return {
+        verified: true,
+      };
+    } else {
+      return {
+        verified: false,
+      };
+    }
+  }
+
+  private getDomainLinkageCredential(subject, issuer, origin) {
+    // TODO: this should be properly signed and issued using SSI API.
+    const now = new Date();
+    return {
+      '@context': [
+        'https://www.w3.org/2018/credentials/v1',
+        'https://identity.foundation/.well-known/did-configuration/v1',
+      ],
+      type: ['VerifiableCredential', 'DomainLinkageCredential'],
+      credentialSubject: {
+        id: subject,
+        origin: origin,
+      },
+      issuer: issuer,
+      issuanceDate: now.toISOString(),
+      expirationDate: new Date(
+        now.setFullYear(now.getFullYear() + 1),
+      ).toISOString(),
+      proof: {
+        type: 'Ed25519Signature2020',
+        verificationMethod: subject + '#key-1',
+        signatureValue: '',
+      },
+    };
+  }
+
   async updateAnApp(
     appId: string,
     updataAppDto: UpdateAppDto,
     userId: string,
   ): Promise<createAppResponse> {
     Logger.log('updateAnApp() method: starts....', 'AppAuthService');
+
+    const { env, hasDomainVerified, domain, logoUrl, issuerDid } = updataAppDto;
+    const oldApp = await this.getAppById(appId, userId);
+    if (!oldApp) {
+      throw new BadRequestException(
+        'Service with given id do not exists for this user',
+      );
+    }
+    Logger.debug(oldApp);
+    // check if hasDomainVerified is verifed by DNS-01
+    // only if credential was not issued
+    // this should not happen everytime we update a record, only once.
+    // so better to issue verifiable credential
+    if (
+      hasDomainVerified &&
+      domain &&
+      domain != '' &&
+      issuerDid &&
+      issuerDid != '' &&
+      !oldApp.domainLinkageCredentialString
+    ) {
+      const txtRecord = 'hypersign-domain-verification.did=' + issuerDid;
+      const fetchedTxtRecord = await this.verifyDNS01Validation(
+        domain,
+        txtRecord,
+      );
+      if (fetchedTxtRecord.verified) {
+        // issue credential
+        Logger.debug('Issueing credential .... ');
+        updataAppDto['domainLinkageCredentialString'] = JSON.stringify(
+          this.getDomainLinkageCredential(issuerDid, issuerDid, domain),
+        );
+      }
+    }
+
+    // we do not allow to update the domain once domain is verified
+    if (hasDomainVerified && oldApp.domainLinkageCredentialString) {
+      updataAppDto.domain = oldApp.domain;
+    }
+
+    // Env restrictions
+    if (env === APP_ENVIRONMENT.prod) {
+      if (!(domain && hasDomainVerified)) {
+        throw new BadRequestException(
+          'You must verify your domain before going to production',
+        );
+      }
+
+      if (!logoUrl || logoUrl == '') {
+        throw new BadRequestException(
+          'Logo must be set before going to production',
+        );
+      }
+    }
+
     const app: App = await this.appRepository.findOneAndUpdate(
       { appId, userId },
       updataAppDto,
@@ -385,6 +534,7 @@ export class AppAuthService {
       subdomain: appDetail.subdomain,
       edvId: appDetail.edvId,
       accessList,
+      env: appDetail.env ? appDetail.env : APP_ENVIRONMENT.dev,
     };
 
     const secret = this.config.get('JWT_SECRET');
