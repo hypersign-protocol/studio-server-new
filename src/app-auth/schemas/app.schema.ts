@@ -3,13 +3,14 @@ import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import {
   IsArray,
+  IsBoolean,
   IsNotEmpty,
   IsOptional,
   IsString,
   IsUrl,
 } from 'class-validator';
 import { supportedServiceResponseDto } from 'src/supported-service/dto/create-supported-service.dto';
-
+import { APP_ENVIRONMENT } from 'src/supported-service/services/iServiceList';
 export type AppDocument = App & Document;
 
 @Schema()
@@ -114,6 +115,47 @@ export class App {
   @IsArray()
   @Prop({ required: false })
   dependentServices: Array<string>;
+
+  @IsOptional()
+  @IsString()
+  @ApiProperty({
+    description: 'environment',
+    type: APP_ENVIRONMENT,
+    required: false,
+  })
+  @Prop({ required: false })
+  env: string;
+
+  @IsOptional()
+  @IsString()
+  @ApiProperty({
+    description: 'issuerDid',
+    required: false,
+  })
+  @Prop({ required: false })
+  issuerDid: string;
+
+  @IsOptional()
+  @IsString()
+  @ApiProperty({
+    description: 'domain',
+    required: false,
+  })
+  @Prop({ required: false })
+  domain: string;
+
+  @IsOptional()
+  @IsBoolean()
+  @ApiProperty({
+    description: 'domain',
+    required: false,
+  })
+  @Prop({ required: false })
+  hasDomainVerified?: boolean;
+
+  @IsOptional()
+  @Prop({ required: false })
+  domainLinkageCredentialString?: string;
 }
 export class createAppResponse extends App {
   @ApiProperty({

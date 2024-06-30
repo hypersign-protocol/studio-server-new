@@ -1,5 +1,7 @@
 import {
   IsArray,
+  IsBoolean,
+  IsEnum,
   IsNotEmpty,
   IsOptional,
   IsString,
@@ -13,6 +15,7 @@ import { IsUrlEmpty } from 'src/utils/customDecorator/isUrl.decorator';
 import { Transform } from 'class-transformer';
 import validator from 'validator';
 import { SanitizeUrlValidator } from 'src/utils/sanitizeUrl.validator';
+import { APP_ENVIRONMENT } from 'src/supported-service/services/iServiceList';
 
 export class UpdateAppDto {
   @ApiProperty({
@@ -56,4 +59,45 @@ export class UpdateAppDto {
   @IsString()
   @IsUrlEmpty()
   logoUrl: string;
+
+  @ApiProperty({
+    description: 'environment',
+    example: APP_ENVIRONMENT.dev,
+    required: true,
+  })
+  @IsString({ message: 'environment must be a string' })
+  @IsEnum(APP_ENVIRONMENT, {
+    each: true,
+    message: "environment must be one of the following values: 'prod', 'dev'",
+  })
+  @IsOptional()
+  env: APP_ENVIRONMENT;
+
+  @ApiProperty({
+    description: 'issuerDid',
+    example: 'did:hid:123123123123',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  issuerDid: string;
+
+  @ApiProperty({
+    description: 'domain',
+    example: 'hypersign.id',
+    required: false,
+  })
+  @IsOptional()
+  @IsUrlEmpty()
+  @IsString()
+  domain: string;
+
+  @ApiProperty({
+    description: 'hasDomainVerified',
+    example: 'true',
+    required: false,
+  })
+  @IsOptional()
+  @IsBoolean()
+  hasDomainVerified: boolean;
 }

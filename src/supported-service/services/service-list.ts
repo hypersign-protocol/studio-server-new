@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { SERVICE_TYPES, SERVICES } from './iServiceList';
+import { SERVICE_TYPES, SERVICES, SERVICE_INFO } from './iServiceList';
 type Serivce = {
   id: string;
   dBSuffix: string;
@@ -16,24 +16,23 @@ export class SupportedServiceList {
   getServices(): Array<Serivce> {
     return [
       {
-        id: SERVICE_TYPES.SSI_API,
-        dBSuffix: SERVICE_TYPES.SSI_API,
-        name: 'SSI API Service',
+        id: SERVICE_INFO.SSI_API.type,
+        dBSuffix: SERVICE_INFO.SSI_API.type,
+        name: SERVICE_INFO.SSI_API.name,
         domain:
-          this.config.get('SSI_API_DOMAIN') ||
-          'https://api.entity.hypersign.id',
-        description: 'A SSI API service built on multi tenant architeacture',
-        swaggerAPIDocPath: '/ssi',
+          this.config.get('SSI_API_DOMAIN') || SERVICE_INFO.SSI_API.baseDomain,
+        description: SERVICE_INFO.SSI_API.description,
+        swaggerAPIDocPath: SERVICE_INFO.SSI_API.swaggerAPIDocPath,
       },
       {
-        id: SERVICE_TYPES.CAVACH_API,
-        dBSuffix: SERVICE_TYPES.CAVACH_API,
-        name: 'Cavach API Service',
+        id: SERVICE_INFO.CAVACH_API.type,
+        dBSuffix: SERVICE_INFO.CAVACH_API.type,
+        name: SERVICE_INFO.CAVACH_API.name,
         domain:
           this.config.get('CAVACH_API_DOMAIN') ||
-          'https://api.cavach.hypersign.id',
-        description: 'A generic service interface for kyc verification',
-        swaggerAPIDocPath: '/api',
+          SERVICE_INFO.CAVACH_API.baseDomain,
+        description: SERVICE_INFO.CAVACH_API.description,
+        swaggerAPIDocPath: SERVICE_INFO.CAVACH_API.swaggerAPIDocPath,
       },
     ];
   }
