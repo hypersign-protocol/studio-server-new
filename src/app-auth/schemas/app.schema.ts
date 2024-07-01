@@ -118,12 +118,7 @@ export class App {
 
   @IsOptional()
   @IsString()
-  @ApiProperty({
-    description: 'environment',
-    type: APP_ENVIRONMENT,
-    required: false,
-  })
-  @Prop({ required: false })
+  @Prop({ required: false, type: String, enum: APP_ENVIRONMENT })
   env: string;
 
   @IsOptional()
