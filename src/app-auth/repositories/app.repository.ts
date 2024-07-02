@@ -144,6 +144,10 @@ export class AppRepository {
     return this.appModel.aggregate(pipeline);
   }
 
+  async findAppsByPipeline(pipeline): Promise<any[]> {
+    return await this.appModel.aggregate(pipeline);
+  }
+
   async create(app: App): Promise<App> {
     Logger.log(
       'create() method: starts, adding app data to db',

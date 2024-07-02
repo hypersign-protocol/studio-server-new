@@ -55,6 +55,10 @@ export class AppAuthModule implements NestModule {
         { path: 'app/:appId', method: RequestMethod.GET },
       )
       .forRoutes(AppAuthController);
-    consumer.apply(JWTAuthorizeMiddleware).forRoutes(AppAuthController);
+
+    consumer
+      .apply(JWTAuthorizeMiddleware)
+      .exclude({ path: '/api/v1/app/marketplace', method: RequestMethod.GET })
+      .forRoutes(AppAuthController);
   }
 }

@@ -242,6 +242,31 @@ export class AppAuthService {
     });
   }
 
+  getAppsForMarketplace() {
+    Logger.log('getAppsForMarketplace() method: starts....', 'AppAuthService');
+    const pipeline = [
+      {
+        $match: {
+          hasDomainVerified: true,
+          env: APP_ENVIRONMENT.prod,
+        },
+      },
+      {
+        $project: {
+          domain: 1,
+          logoUrl: 1,
+          domainLinkageCredentialString: 1,
+          issuerDid: 1,
+          appName: 1,
+          appId: 1,
+          description: 1,
+          env: 1,
+        },
+      },
+    ];
+    return this.appRepository.findAppsByPipeline(pipeline);
+  }
+
   async getAppById(appId: string, userId: string): Promise<any> {
     Logger.log('getAppById() method: starts....', 'AppAuthService');
     const app: App = await this.appRepository.findOne({ appId, userId });
