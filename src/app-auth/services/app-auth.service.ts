@@ -560,6 +560,7 @@ export class AppAuthService {
       edvId: appDetail.edvId,
       accessList,
       env: appDetail.env ? appDetail.env : APP_ENVIRONMENT.dev,
+      issuerDid: appDetail.issuerDid,
     };
 
     const secret = this.config.get('JWT_SECRET');
