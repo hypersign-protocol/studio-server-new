@@ -61,6 +61,16 @@ export class UpdateAppDto {
   logoUrl: string;
 
   @ApiProperty({
+    description: 'dependentServices',
+    example: ['asdasda123123123123'],
+    isArray: true,
+    required: false,
+  })
+  @IsOptional()
+  @IsArray()
+  dependentServices: Array<string>; // ids of dependent services / apps
+
+  @ApiProperty({
     description: 'environment',
     example: APP_ENVIRONMENT.dev,
     required: true,
