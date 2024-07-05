@@ -1,4 +1,3 @@
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -15,73 +14,73 @@ spec:
         app: developer-dashboard-backend-app
     spec:
       containers:
-        - name: developer-dashboard-backend-app
-          image: __GOOGLE_ARTIFACT_URL__/__GOOGLE_PROJECT_ID__/__GOOGLE_ARTIFACT_REPO__/entity-developer-dashbord-service:__LATEST_RELEASE_TAG__
-          imagePullPolicy: Always
-          resources:
-            limits:
-              memory: "1Gi"
-              cpu: "500m"
-          ports:
-            - containerPort: __PORT__
-          # livenessProbe:
-          #   httpGet:
-          #     path: /api
-          #     port: __PORT__
-          #   initialDelaySeconds: 15
-          #   periodSeconds: 10
-          env:
-            - name: PORT
-              value: "__PORT__"
-            - name: DATABASE_CONNECTION_PATH
-              value: "__DATABASE_CONNECTION_PATH__"
-            - name: HID_NETWORK_RPC
-              value: __HID_NETWORK_RPC__
-            - name: HID_NETWORK_API
-              value: __HID_NETWORK_API__
-            - name: HID_NETWORK_NAMESPACE
-              value: __HID_NETWORK_NAMESPACE__
-            - name: EDV_BASE_URL
-              value: __EDV_BASE_URL__
-            - name: EDV_CONFIG_DIR
-              value: __EDV_CONFIG_DIR__
-            - name: EDV_DID_FILE_PATH
-              value: __EDV_DID_FILE_PATH__
-            - name: EDV_KEY_FILE_PATH
-              value: __EDV_KEY_FILE_PATH__
-            - name: MNEMONIC
-              value: __MNEMONIC__
-            - name: JWT_SECRET
-              value: __JWT_SECRET__
-            - name: EMAIL_CREDENTITAL_SCHEMA_ID
-              value: __EMAIL_CREDENTITAL_SCHEMA_ID__
-            - name: WHITELISTED_CORS
-              value: '["https://entity.hypersign.id","http://localhost:9001", "https://wallet-prajna.hypersign.id", "http://localhost:4999","https://entity.dashboard.hypersign.id"]'
-            - name: ENTITY_API_SERVICE_BASE_URL
-              value: __ENTITY_API_SERVICE_BASE_URL__
-            - name: DEVELOPER_DASHBOARD_SERVICE_PUBLIC_EP
-              value: __DEVELOPER_DASHBOARD_SERVICE_PUBLIC_EP__
-            - name: TENANT_SUBDOMAIN_PREFIX
-              value: __TENANT_SUBDOMAIN_PREFIX__
-            - name: SSI_API_DOMAIN
-              value: __SSI_API_DOMAIN__
-            - name: CAVACH_API_DOMAIN
-              value: __CAVACH_API_DOMAIN__
-            - name: VAULT_PREFIX
-              value: __VAULT_PREFIX__
-            - name: GOOGLE_CLIENT_ID
-              value: __GOOGLE_CLIENT_ID__
-            - name: GOOGLE_CLIENT_SECRET
-              value: __GOOGLE_CLIENT_SECRET__
-            - name: REDIRECT_URL
-              value: __REDIRECT_URL__
-          volumeMounts:
-            - name: mongo
-              mountPath: "/data"
-      volumes:
+      - name: developer-dashboard-backend-app
+        image: __GOOGLE_ARTIFACT_URL__/__GOOGLE_PROJECT_ID__/__GOOGLE_ARTIFACT_REPO__/entity-developer-dashbord-service:__LATEST_RELEASE_TAG__
+        imagePullPolicy: Always
+        resources:
+          limits:
+            memory: "1.5Gi"
+            cpu: "500m"
+        ports:
+        - containerPort: __PORT__
+        # livenessProbe:
+        #   httpGet:
+        #     path: /api
+        #     port: __PORT__
+        #   initialDelaySeconds: 15
+        #   periodSeconds: 10
+        env:
+        - name: PORT
+          value: "__PORT__"
+        - name: DATABASE_CONNECTION_PATH
+          value: "__DATABASE_CONNECTION_PATH__"
+        - name: HID_NETWORK_RPC
+          value: __HID_NETWORK_RPC__
+        - name: HID_NETWORK_API
+          value: __HID_NETWORK_API__
+        - name: HID_NETWORK_NAMESPACE
+          value: __HID_NETWORK_NAMESPACE__
+        - name: EDV_BASE_URL
+          value: __EDV_BASE_URL__
+        - name: EDV_CONFIG_DIR
+          value: __EDV_CONFIG_DIR__
+        - name: EDV_DID_FILE_PATH
+          value: __EDV_DID_FILE_PATH__
+        - name: EDV_KEY_FILE_PATH
+          value: __EDV_KEY_FILE_PATH__
+        - name: MNEMONIC
+          value: __MNEMONIC__
+        - name: JWT_SECRET
+          value: __JWT_SECRET__
+        - name: EMAIL_CREDENTITAL_SCHEMA_ID
+          value: __EMAIL_CREDENTITAL_SCHEMA_ID__
+        - name: WHITELISTED_CORS
+          value: '["https://entity.hypersign.id","http://localhost:9001", "https://wallet-prajna.hypersign.id", "http://localhost:4999","https://entity.dashboard.hypersign.id"]'
+        - name: ENTITY_API_SERVICE_BASE_URL
+          value: __ENTITY_API_SERVICE_BASE_URL__
+        - name: DEVELOPER_DASHBOARD_SERVICE_PUBLIC_EP
+          value: __DEVELOPER_DASHBOARD_SERVICE_PUBLIC_EP__
+        - name: TENANT_SUBDOMAIN_PREFIX
+          value: __TENANT_SUBDOMAIN_PREFIX__
+        - name: SSI_API_DOMAIN
+          value: __SSI_API_DOMAIN__
+        - name: CAVACH_API_DOMAIN
+          value: __CAVACH_API_DOMAIN__
+        - name: VAULT_PREFIX
+          value: __VAULT_PREFIX__
+        - name: GOOGLE_CLIENT_ID
+          value: __GOOGLE_CLIENT_ID__
+        - name: GOOGLE_CLIENT_SECRET
+          value: __GOOGLE_CLIENT_SECRET__
+        - name: REDIRECT_URL
+          value: __REDIRECT_URL__
+        volumeMounts:
         - name: mongo
-          secret:
-            secretName: mongo
+          mountPath: "/data"
+      volumes:
+      - name: mongo
+        secret:
+          secretName: mongo
 
 ---
 apiVersion: v1
@@ -96,8 +95,8 @@ spec:
   selector:
     app: developer-dashboard-backend-app
   ports:
-    - port: __PORT__
-      targetPort: __PORT__
-      protocol: TCP
----
+  - port: __PORT__
+    targetPort: __PORT__
+    protocol: TCP
 
+---
