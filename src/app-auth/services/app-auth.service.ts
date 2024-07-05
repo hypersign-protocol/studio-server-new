@@ -566,7 +566,11 @@ export class AppAuthService {
       payload['issuerDid'] = appDetail.issuerDid;
     }
 
-    if (appDetail.dependentServices && appDetail.dependentServices.length > 0) {
+    if (
+      appDetail.dependentServices &&
+      appDetail.dependentServices.length > 0 &&
+      appDetail.dependentServices[0]
+    ) {
       payload['dependentServices'] = appDetail.dependentServices;
     }
 
