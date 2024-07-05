@@ -560,8 +560,15 @@ export class AppAuthService {
       edvId: appDetail.edvId,
       accessList,
       env: appDetail.env ? appDetail.env : APP_ENVIRONMENT.dev,
-      issuerDid: appDetail.issuerDid,
     };
+
+    if (appDetail.issuerDid) {
+      payload['issuerDid'] = appDetail.issuerDid;
+    }
+
+    if (appDetail.dependentServices && appDetail.dependentServices.length > 0) {
+      payload['dependentServices'] = appDetail.dependentServices;
+    }
 
     const secret = this.config.get('JWT_SECRET');
     const token = await this.jwt.signAsync(payload, {
