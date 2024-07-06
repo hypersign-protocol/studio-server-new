@@ -560,6 +560,7 @@ export class AppAuthService {
       edvId: appDetail.edvId,
       accessList,
       env: appDetail.env ? appDetail.env : APP_ENVIRONMENT.dev,
+      appName: appDetail.appName,
     };
 
     if (appDetail.issuerDid) {
