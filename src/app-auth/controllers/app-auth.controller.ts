@@ -37,10 +37,10 @@ import { PaginationDto } from 'src/utils/pagination.dto';
 import { TransformResponseInterceptor } from '../interceptors/transformResponse.interseptor';
 @UseFilters(AllExceptionsFilter)
 @ApiTags('Application')
-@ApiBearerAuth('Authorization')
 @Controller('/api/v1/app')
 export class AppAuthController {
   constructor(private readonly appAuthService: AppAuthService) {}
+  @ApiBearerAuth('Authorization')
   @UseInterceptors(
     MongooseClassSerializerInterceptor(App, {
       excludePrefixes: ['apiKeySecret', 'apiKeyPrefix', '_', '__'],
@@ -85,6 +85,24 @@ export class AppAuthController {
     if (appList) return appList;
   }
 
+  @Get('marketplace')
+  @ApiResponse({
+    status: 200,
+    description: 'App List',
+    type: GetAppList,
+  })
+  @ApiNotFoundResponse({
+    status: 404,
+    description: 'App not found',
+    type: AppError,
+  })
+  async getAppsForMarketPlace(): Promise<object[]> {
+    Logger.log('getAppsForMarketPlace() method: starts', 'AppAuthController');
+    const appList: any = await this.appAuthService.getAppsForMarketplace();
+    if (appList) return appList;
+  }
+
+  @ApiBearerAuth('Authorization')
   @UseInterceptors(
     MongooseClassSerializerInterceptor(App, {
       excludePrefixes: ['apiKeySecret', 'apiKeyPrefix', '_', '__'],
@@ -115,6 +133,7 @@ export class AppAuthController {
     else throw new AppNotFoundException(); // Custom Exception handling
   }
 
+  @ApiBearerAuth('Authorization')
   @Post()
   @UseInterceptors(
     MongooseClassSerializerInterceptor(createAppResponse, {
@@ -140,6 +159,7 @@ export class AppAuthController {
     return this.appAuthService.createAnApp(createAppDto, userId);
   }
 
+  @ApiBearerAuth('Authorization')
   @UseInterceptors(
     MongooseClassSerializerInterceptor(App, {
       excludePrefixes: ['apiKeySecret', 'apiKeyPrefix', '_', '__'],
@@ -179,6 +199,7 @@ export class AppAuthController {
     } else throw new AppNotFoundException();
   }
 
+  @ApiBearerAuth('Authorization')
   @Delete(':appId')
   @ApiResponse({
     status: 200,
@@ -205,6 +226,7 @@ export class AppAuthController {
     return app;
   }
 
+  @ApiBearerAuth('Authorization')
   @Post(':appId/secret/new')
   @HttpCode(200)
   @ApiResponse({

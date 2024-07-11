@@ -242,6 +242,31 @@ export class AppAuthService {
     });
   }
 
+  getAppsForMarketplace() {
+    Logger.log('getAppsForMarketplace() method: starts....', 'AppAuthService');
+    const pipeline = [
+      {
+        $match: {
+          hasDomainVerified: true,
+          env: APP_ENVIRONMENT.prod,
+        },
+      },
+      {
+        $project: {
+          domain: 1,
+          logoUrl: 1,
+          domainLinkageCredentialString: 1,
+          issuerDid: 1,
+          appName: 1,
+          appId: 1,
+          description: 1,
+          env: 1,
+        },
+      },
+    ];
+    return this.appRepository.findAppsByPipeline(pipeline);
+  }
+
   async getAppById(appId: string, userId: string): Promise<any> {
     Logger.log('getAppById() method: starts....', 'AppAuthService');
     const app: App = await this.appRepository.findOne({ appId, userId });
@@ -535,7 +560,20 @@ export class AppAuthService {
       edvId: appDetail.edvId,
       accessList,
       env: appDetail.env ? appDetail.env : APP_ENVIRONMENT.dev,
+      appName: appDetail.appName,
     };
+
+    if (appDetail.issuerDid) {
+      payload['issuerDid'] = appDetail.issuerDid;
+    }
+
+    if (
+      appDetail.dependentServices &&
+      appDetail.dependentServices.length > 0 &&
+      appDetail.dependentServices[0]
+    ) {
+      payload['dependentServices'] = appDetail.dependentServices;
+    }
 
     const secret = this.config.get('JWT_SECRET');
     const token = await this.jwt.signAsync(payload, {
