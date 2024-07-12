@@ -1,4 +1,9 @@
-import { BadRequestException, Injectable, Logger } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  Logger,
+  NotFoundException,
+} from '@nestjs/common';
 import { UserRepository } from 'src/user/repository/user.repository';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
@@ -90,28 +95,26 @@ export class SocialLoginService {
       'SocialLoginService',
     );
     const { authenticatorType } = genrate2FADto;
-    let secret;
-    if (authenticatorType == AuthneticatorType.google) {
-      if (user && !user.twoFAGoogleSecret) {
-        secret = authenticator.generateSecret(20);
-        this.userRepository.findOneUpdate(
-          { userId: user.userId },
-          { twoFAGoogleSecret: secret, isGoogleTwoFAEnabled: true },
-        );
-      } else {
-        secret = user.twoFAGoogleSecret;
-      }
-    } else if (authenticatorType == AuthneticatorType.okta) {
-      if (user && !user.twoFAOktaSecret) {
-        secret = authenticator.generateSecret(20);
-        this.userRepository.findOneUpdate(
-          { userId: user.userId },
-          { twoFAOktaSecret: secret, isOktaTwoFAEnabled: true },
-        );
-      } else {
-        secret = user.twoFAOktaSecret;
-      }
+    let secret: string;
+    const existingAuthenticator = user.authenticators?.find(
+      (auth) => auth.type === authenticatorType,
+    );
+    if (existingAuthenticator) {
+      secret = existingAuthenticator.secret;
+    } else {
+      secret = authenticator.generateSecret(20);
     }
+    if (!user.authenticators) {
+      user.authenticators = [];
+    }
+    user.authenticators.push({
+      type: authenticatorType,
+      secret,
+    });
+    this.userRepository.findOneUpdate(
+      { userId: user.userId },
+      { authenticators: user.authenticators },
+    );
     const issuer = this.config.get('MFA_ISSUER');
     const otpAuthUrl = authenticator.keyuri(user.email, issuer, secret);
     return toDataURL(otpAuthUrl);
@@ -123,20 +126,18 @@ export class SocialLoginService {
     );
     const { authenticatorType, twoFactorAuthenticationCode } =
       mfaVerificationDto;
-    const secret =
-      authenticatorType === AuthneticatorType.google
-        ? user.twoFAGoogleSecret
-        : user.twoFAOktaSecret;
+    const authenticatorDetail = user.authenticators.find(
+      (auth) => auth.type === authenticatorType,
+    );
     const isVerified = authenticator.verify({
       token: twoFactorAuthenticationCode,
-      secret,
+      secret: authenticatorDetail.secret,
     });
     const payload = {
       email: user.email,
       appUserID: user.userId,
       userAccessList: user.accessList,
-      isTwoFactorEnabled:
-        !!user.isGoogleTwoFAEnabled || !!user.isOktaTwoFAEnabled,
+      isTwoFactorEnabled: user.authenticators && user.authenticators.length > 0,
       isTwoFactorAuthenticated: isVerified,
     };
     const accessToken = await this.jwt.signAsync(payload, {
@@ -155,24 +156,31 @@ export class SocialLoginService {
       authenticatorToDelete,
       authenticatorType,
     } = deleteMfaDto;
-    const secret =
-      authenticatorType === AuthneticatorType.google
-        ? user.twoFAGoogleSecret
-        : user.twoFAOktaSecret;
+    const authDetail = user.authenticators.find(
+      (auth) => auth.type === authenticatorType,
+    );
     const isVerified = authenticator.verify({
       token: twoFactorAuthenticationCode,
-      secret,
+      secret: authDetail.secret,
     });
     if (!isVerified) {
       throw new BadRequestException([
         "Your passcode doesn't match. Please try again",
       ]);
     }
-    const dataToUpdate =
-      authenticatorToDelete === AuthneticatorType.google
-        ? { $unset: { twoFAGoogleSecret: '' }, isGoogleTwoFAEnabled: false }
-        : { $unset: { twoFAOktaSecret: '' }, isOktaTwoFAEnabled: false };
-    this.userRepository.findOneUpdate({ userId: user.userId }, dataToUpdate);
+    const authenticatorIndex = user.authenticators.findIndex(
+      (auth) => auth.type === authenticatorToDelete,
+    );
+    if (authenticatorIndex === -1) {
+      throw new NotFoundException(
+        `${authenticatorToDelete} Authenticator not found`,
+      );
+    }
+    user.authenticators.splice(authenticatorIndex, 1);
+    this.userRepository.findOneUpdate(
+      { userId: user.userId },
+      { authenticators: user.authenticators },
+    );
     return { message: 'Removed authenticator successfully' };
   }
 }

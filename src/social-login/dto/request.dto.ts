@@ -53,7 +53,7 @@ export class DeleteMFADto {
   @ApiProperty({
     name: 'authenticatorToDelete',
     description: 'Type of authenticator that user want to remove',
-    example: AuthneticatorType.google,
+    example: AuthneticatorType.okta,
     enum: AuthneticatorType,
   })
   @IsEnum(AuthneticatorType)
