@@ -91,6 +91,15 @@ export class Verify2FARespDto {
   @IsString()
   accessToken: string;
 }
+export class DeleteMFARespDto {
+  @ApiProperty({
+    name: 'message',
+    description: 'A success message',
+    example: 'Removed authenticator successfully',
+  })
+  @IsString()
+  message: string;
+}
 export enum AuthneticatorType {
   google = 'google',
   okta = 'okta',

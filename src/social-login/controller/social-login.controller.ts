@@ -9,10 +9,12 @@ import {
   Res,
   Query,
   Body,
+  Delete,
 } from '@nestjs/common';
 import { SocialLoginService } from '../services/social-login.service';
 import { AuthGuard } from '@nestjs/passport';
 import {
+  ApiBadRequestResponse,
   ApiBearerAuth,
   ApiExcludeEndpoint,
   ApiOkResponse,
@@ -25,12 +27,18 @@ import { AllExceptionsFilter } from 'src/utils/utils';
 import { ConfigService } from '@nestjs/config';
 import {
   AuthResponse,
+  DeleteMFARespDto,
   Generate2FARespDto,
   LoginResponse,
   UnauthorizedError,
   Verify2FARespDto,
 } from '../dto/response.dto';
-import { Generate2FA, MFACodeVerificationDto } from '../dto/request.dto';
+import {
+  DeleteMFADto,
+  Generate2FA,
+  MFACodeVerificationDto,
+} from '../dto/request.dto';
+import { AppError } from 'src/app-auth/dtos/fetch-app.dto';
 @UseFilters(AllExceptionsFilter)
 @ApiTags('Authentication')
 @Controller()
@@ -120,5 +128,22 @@ export class SocialLoginController {
     @Body() mfaVerificationDto: MFACodeVerificationDto,
   ) {
     return this.socialLoginService.verifyMFACode(req.user, mfaVerificationDto);
+  }
+  @ApiOkResponse({
+    description: 'Removed MFA successfully',
+    type: DeleteMFARespDto,
+  })
+  @ApiBadRequestResponse({
+    status: 400,
+    type: AppError,
+  })
+  @ApiUnauthorizedResponse({
+    status: 401,
+    type: UnauthorizedError,
+  })
+  @ApiBearerAuth('Authorization')
+  @Delete('/api/auth/mfa')
+  async removeMFA(@Req() req, @Body() mfaremoveDto: DeleteMFADto) {
+    return this.socialLoginService.removeMFA(req.user, mfaremoveDto);
   }
 }

@@ -10,7 +10,11 @@ import { SERVICE_TYPES } from 'src/supported-service/services/iServiceList';
 import { AuthneticatorType } from '../dto/response.dto';
 import { authenticator } from 'otplib';
 import { toDataURL } from 'qrcode';
-import { Generate2FA, MFACodeVerificationDto } from '../dto/request.dto';
+import {
+  DeleteMFADto,
+  Generate2FA,
+  MFACodeVerificationDto,
+} from '../dto/request.dto';
 
 @Injectable()
 export class SocialLoginService {
@@ -143,5 +147,32 @@ export class SocialLoginService {
       isVerified,
       accessToken,
     };
+  }
+
+  async removeMFA(user, deleteMfaDto: DeleteMFADto) {
+    const {
+      twoFactorAuthenticationCode,
+      authenticatorToDelete,
+      authenticatorType,
+    } = deleteMfaDto;
+    const secret =
+      authenticatorType === AuthneticatorType.google
+        ? user.twoFAGoogleSecret
+        : user.twoFAOktaSecret;
+    const isVerified = authenticator.verify({
+      token: twoFactorAuthenticationCode,
+      secret,
+    });
+    if (!isVerified) {
+      throw new BadRequestException([
+        "Your passcode doesn't match. Please try again",
+      ]);
+    }
+    const dataToUpdate =
+      authenticatorToDelete === AuthneticatorType.google
+        ? { $unset: { twoFAGoogleSecret: '' }, isGoogleTwoFAEnabled: false }
+        : { $unset: { twoFAOktaSecret: '' }, isOktaTwoFAEnabled: false };
+    this.userRepository.findOneUpdate({ userId: user.userId }, dataToUpdate);
+    return { message: 'Removed authenticator successfully' };
   }
 }
