@@ -6,8 +6,10 @@ import {
 } from '@nestjs/common';
 import * as jwt from 'jsonwebtoken';
 import { NextFunction, Request, Response } from 'express';
+import { UserRepository } from 'src/user/repository/user.repository';
 @Injectable()
 export class JWTAuthorizeMiddleware implements NestMiddleware {
+  constructor(private readonly userRepository: UserRepository) {}
   async use(req: Request, res: Response, next: NextFunction) {
     Logger.log('Inside JWTAuthorizeMiddleware', 'JWTAuthorizeMiddleware');
     if (!req.header('authorization') || req.headers['authorization'] === '') {
@@ -25,14 +27,18 @@ export class JWTAuthorizeMiddleware implements NestMiddleware {
     try {
       decoded = jwt.verify(tokenParts[1], process.env.JWT_SECRET);
       if (decoded) {
-        req['user'] = {
+        const user = await this.userRepository.findOne({
           userId: decoded.appUserID,
-          email: decoded.email,
-          name: decoded.name,
-          userAccessList: decoded.userAccessList,
-          id: decoded['id'],
-        };
+        });
+        req['user'] = user;
+        if (decoded.isTwoFactorEnabled !== undefined) {
+          req['user']['isTwoFactorEnabled'] = decoded.isTwoFactorEnabled;
+        }
 
+        if (decoded.isTwoFactorAuthenticated !== undefined) {
+          req['user']['isTwoFactorAuthenticated'] =
+            decoded.isTwoFactorAuthenticated;
+        }
         Logger.log(JSON.stringify(req.user), 'JWTAuthorizeMiddleware');
       }
     } catch (e) {

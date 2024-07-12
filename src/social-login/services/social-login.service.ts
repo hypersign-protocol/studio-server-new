@@ -7,6 +7,10 @@ import { Providers } from '../strategy/social.strategy';
 import { sanitizeUrl } from 'src/utils/utils';
 import { SupportedServiceList } from 'src/supported-service/services/service-list';
 import { SERVICE_TYPES } from 'src/supported-service/services/iServiceList';
+import { AuthneticatorType } from '../dto/response.dto';
+import { authenticator } from 'otplib';
+import { toDataURL } from 'qrcode';
+import { Generate2FA, MFACodeVerificationDto } from '../dto/request.dto';
 
 @Injectable()
 export class SocialLoginService {
@@ -74,5 +78,73 @@ export class SocialLoginService {
       secret,
     });
     return token;
+  }
+
+  async generate2FA(genrate2FADto: Generate2FA, user) {
+    Logger.log(
+      'Inside generate2FA() method to generate 2FA QRCode',
+      'SocialLoginService',
+    );
+    const { authenticatorType } = genrate2FADto;
+    let secret;
+    if (authenticatorType == AuthneticatorType.google) {
+      if (user && !user.twoFAGoogleSecret) {
+        secret = authenticator.generateSecret(20);
+        this.userRepository.findOneUpdate(
+          { userId: user.userId },
+          { twoFAGoogleSecret: secret, isGoogleTwoFAEnabled: true },
+        );
+      } else {
+        secret = user.twoFAGoogleSecret;
+      }
+    } else if (authenticatorType == AuthneticatorType.okta) {
+      if (user && !user.twoFAOktaSecret) {
+        secret = authenticator.generateSecret(20);
+        this.userRepository.findOneUpdate(
+          { userId: user.userId },
+          { twoFAOktaSecret: secret, isOktaTwoFAEnabled: true },
+        );
+      } else {
+        secret = user.twoFAOktaSecret;
+      }
+    }
+    const otpAuthUrl = authenticator.keyuri(
+      user.email,
+      'DeveloperDashboard',
+      secret,
+    );
+    return toDataURL(otpAuthUrl);
+  }
+  async verifyMFACode(user, mfaVerificationDto: MFACodeVerificationDto) {
+    Logger.log(
+      'Inside verifyMFACode() method to verify MFA code',
+      'SocialLoginService',
+    );
+    const { authenticatorType, twoFactorAuthenticationCode } =
+      mfaVerificationDto;
+    const secret =
+      authenticatorType === AuthneticatorType.google
+        ? user.twoFAGoogleSecret
+        : user.twoFAOktaSecret;
+    const isVerified = authenticator.verify({
+      token: twoFactorAuthenticationCode,
+      secret,
+    });
+    const payload = {
+      email: user.email,
+      appUserID: user.userId,
+      userAccessList: user.accessList,
+      isTwoFactorEnabled:
+        !!user.isGoogleTwoFAEnabled || !!user.isOktaTwoFAEnabled,
+      isTwoFactorAuthenticated: isVerified,
+    };
+    const accessToken = await this.jwt.signAsync(payload, {
+      expiresIn: '24h',
+      secret: this.config.get('JWT_SECRET'),
+    });
+    return {
+      isVerified,
+      accessToken,
+    };
   }
 }

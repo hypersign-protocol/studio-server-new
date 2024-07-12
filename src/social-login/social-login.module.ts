@@ -14,6 +14,7 @@ import { AppAuthModule } from 'src/app-auth/app-auth.module';
 import { JWTAuthorizeMiddleware } from 'src/utils/middleware/jwt-authorization.middleware';
 import { SupportedServiceModule } from 'src/supported-service/supported-service.module';
 import { SupportedServiceList } from 'src/supported-service/services/service-list';
+import { TwoFAAuthorizationMiddleware } from 'src/utils/middleware/2FA-jwt-authorization.middleware';
 
 @Module({
   imports: [
@@ -44,6 +45,27 @@ export class SocialLoginModule implements NestModule {
         {
           path: '/api/v1/login/callback',
           method: RequestMethod.GET,
+        },
+      )
+      .forRoutes(SocialLoginController);
+    consumer
+      .apply(TwoFAAuthorizationMiddleware)
+      .exclude(
+        {
+          path: '/api/v1/login',
+          method: RequestMethod.GET,
+        },
+        {
+          path: '/api/v1/login/callback',
+          method: RequestMethod.GET,
+        },
+        {
+          path: '/api/auth/mfa/generate',
+          method: RequestMethod.POST,
+        },
+        {
+          path: '/api/auth/mfa/verify',
+          method: RequestMethod.POST,
         },
       )
       .forRoutes(SocialLoginController);

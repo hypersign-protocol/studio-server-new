@@ -8,10 +8,12 @@ import {
   Post,
   Res,
   Query,
+  Body,
 } from '@nestjs/common';
 import { SocialLoginService } from '../services/social-login.service';
 import { AuthGuard } from '@nestjs/passport';
 import {
+  ApiBearerAuth,
   ApiExcludeEndpoint,
   ApiOkResponse,
   ApiQuery,
@@ -23,9 +25,12 @@ import { AllExceptionsFilter } from 'src/utils/utils';
 import { ConfigService } from '@nestjs/config';
 import {
   AuthResponse,
+  Generate2FARespDto,
   LoginResponse,
   UnauthorizedError,
+  Verify2FARespDto,
 } from '../dto/response.dto';
+import { Generate2FA, MFACodeVerificationDto } from '../dto/request.dto';
 @UseFilters(AllExceptionsFilter)
 @ApiTags('Authentication')
 @Controller()
@@ -66,6 +71,7 @@ export class SocialLoginController {
     const token = await this.socialLoginService.socialLogin(req);
     res.redirect(`${this.config.get('REDIRECT_URL')}?token=${token}`);
   }
+  @ApiBearerAuth('Authorization')
   @ApiOkResponse({
     description: 'User Info',
     type: AuthResponse,
@@ -82,5 +88,37 @@ export class SocialLoginController {
       message: req.user,
       error: null,
     };
+  }
+
+  @ApiOkResponse({
+    description: 'Generated QR successfully',
+    type: Generate2FARespDto,
+  })
+  @ApiUnauthorizedResponse({
+    status: 401,
+    type: UnauthorizedError,
+  })
+  @ApiBearerAuth('Authorization')
+  @Post('/api/auth/mfa/generate')
+  async generateMfa(@Req() req, @Body() body: Generate2FA) {
+    const result = await this.socialLoginService.generate2FA(body, req.user);
+    return { twoFADataUrl: result };
+  }
+
+  @ApiOkResponse({
+    description: 'Verified MFA code and generated new token',
+    type: Verify2FARespDto,
+  })
+  @ApiUnauthorizedResponse({
+    status: 401,
+    type: UnauthorizedError,
+  })
+  @ApiBearerAuth('Authorization')
+  @Post('/api/auth/mfa/verify')
+  async verifyMFA(
+    @Req() req,
+    @Body() mfaVerificationDto: MFACodeVerificationDto,
+  ) {
+    return this.socialLoginService.verifyMFACode(req.user, mfaVerificationDto);
   }
 }

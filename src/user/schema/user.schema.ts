@@ -20,10 +20,17 @@ export class User {
   email: string;
   @Prop({ required: false }) // as we won't get did in google login
   did?: string;
-
   @Prop({ required: false })
   @Optional()
   accessList: Array<UserAccess>;
+  @Prop({ required: false })
+  twoFAOktaSecret?: string;
+  @Prop({ required: false })
+  twoFAGoogleSecret?: string;
+  @Prop({ type: Boolean, required: false, default: false })
+  isGoogleTwoFAEnabled?: boolean;
+  @Prop({ type: Boolean, required: false, default: false })
+  isOktaTwoFAEnabled?: boolean;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

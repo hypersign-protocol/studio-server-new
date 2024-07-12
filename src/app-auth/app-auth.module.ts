@@ -23,6 +23,7 @@ import { SupportedServiceService } from 'src/supported-service/services/supporte
 import { SupportedServiceList } from 'src/supported-service/services/service-list';
 import { JWTAuthorizeMiddleware } from 'src/utils/middleware/jwt-authorization.middleware';
 import { UserModule } from 'src/user/user.module';
+import { TwoFAAuthorizationMiddleware } from 'src/utils/middleware/2FA-jwt-authorization.middleware';
 
 @Module({
   imports: [
@@ -58,6 +59,10 @@ export class AppAuthModule implements NestModule {
 
     consumer
       .apply(JWTAuthorizeMiddleware)
+      .exclude({ path: '/api/v1/app/marketplace', method: RequestMethod.GET })
+      .forRoutes(AppAuthController);
+    consumer
+      .apply(TwoFAAuthorizationMiddleware)
       .exclude({ path: '/api/v1/app/marketplace', method: RequestMethod.GET })
       .forRoutes(AppAuthController);
   }
