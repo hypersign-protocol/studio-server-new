@@ -108,11 +108,8 @@ export class SocialLoginService {
         secret = user.twoFAOktaSecret;
       }
     }
-    const otpAuthUrl = authenticator.keyuri(
-      user.email,
-      'DeveloperDashboard',
-      secret,
-    );
+    const issuer = this.config.get('MFA_ISSUER');
+    const otpAuthUrl = authenticator.keyuri(user.email, issuer, secret);
     return toDataURL(otpAuthUrl);
   }
   async verifyMFACode(user, mfaVerificationDto: MFACodeVerificationDto) {
