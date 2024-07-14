@@ -107,7 +107,7 @@ export class SocialLoginController {
     type: UnauthorizedError,
   })
   @ApiBearerAuth('Authorization')
-  @Post('/api/auth/mfa/generate')
+  @Post('/api/v1/auth/mfa/generate')
   async generateMfa(@Req() req, @Body() body: Generate2FA) {
     const result = await this.socialLoginService.generate2FA(body, req.user);
     return { twoFADataUrl: result };
@@ -122,7 +122,7 @@ export class SocialLoginController {
     type: UnauthorizedError,
   })
   @ApiBearerAuth('Authorization')
-  @Post('/api/auth/mfa/verify')
+  @Post('/api/v1/auth/mfa/verify')
   async verifyMFA(
     @Req() req,
     @Body() mfaVerificationDto: MFACodeVerificationDto,
@@ -142,7 +142,7 @@ export class SocialLoginController {
     type: UnauthorizedError,
   })
   @ApiBearerAuth('Authorization')
-  @Delete('/api/auth/mfa')
+  @Delete('/api/v1/auth/mfa')
   async removeMFA(@Req() req, @Body() mfaremoveDto: DeleteMFADto) {
     return this.socialLoginService.removeMFA(req.user, mfaremoveDto);
   }

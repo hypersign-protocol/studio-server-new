@@ -60,11 +60,11 @@ export class SocialLoginModule implements NestModule {
           method: RequestMethod.GET,
         },
         {
-          path: '/api/auth/mfa/generate',
+          path: '/api/v1/auth/mfa/generate',
           method: RequestMethod.POST,
         },
         {
-          path: '/api/auth/mfa/verify',
+          path: '/api/v1/auth/mfa/verify',
           method: RequestMethod.POST,
         },
       )

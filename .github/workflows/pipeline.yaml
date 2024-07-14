@@ -101,6 +101,8 @@ jobs:
       - name: "Replace Secrets"
         run: find .deploy/deployment.yaml -type f -exec sed  -i "s#__SSI_API_DOMAIN__#${{ secrets.SSI_API_DOMAIN }}#" {} \;
       - name: "Replace Secrets"
+        run: find .deploy/deployment.yaml -type f -exec sed  -i "s#__MFA_ISSUER__#${{ secrets.MFA_ISSUER }}#" {} \;
+      - name: "Replace Secrets"
         run: find .deploy/deployment.yaml -type f -exec sed  -i "s#__CAVACH_API_DOMAIN__#${{ secrets.CAVACH_API_DOMAIN }}#" {} \;
       - name: "Replace Secrets"
         run: find .deploy/deployment.yaml -type f -exec sed  -i "s#__VAULT_PREFIX__#${{ secrets.VAULT_PREFIX }}#" {} \;

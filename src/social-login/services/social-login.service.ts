@@ -146,7 +146,7 @@ export class SocialLoginService {
     });
     return {
       isVerified,
-      accessToken,
+      authToken: accessToken,
     };
   }
 
