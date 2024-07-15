@@ -77,11 +77,14 @@ export class SocialLoginService {
     }
     Logger.log('socialLogin() starts', 'SocialLoginService');
 
-
     let isVerified = false;
-    let authenticator = null
-    if(userInfo.authenticators && userInfo.authenticators.length > 0){
-      authenticator = userInfo.authenticators?.find(x => { if(x && x.isTwoFactorAuthenticated) { return x} })
+    let authenticator = null;
+    if (userInfo.authenticators && userInfo.authenticators.length > 0) {
+      authenticator = userInfo.authenticators?.find((x) => {
+        if (x && x.isTwoFactorAuthenticated) {
+          return x;
+        }
+      });
       isVerified = authenticator.isTwoFactorAuthenticated;
     }
     const payload = {
@@ -89,9 +92,9 @@ export class SocialLoginService {
       email,
       appUserID: userInfo.userId,
       userAccessList: userInfo.accessList,
-      isTwoFactorEnabled: authenticator ? true: false,
+      isTwoFactorEnabled: authenticator ? true : false,
       isTwoFactorAuthenticated: isVerified,
-      authenticatorType: authenticator?.type
+      authenticatorType: authenticator?.type,
     };
     const secret = this.config.get('JWT_SECRET');
     const token = await this.jwt.signAsync(payload, {
@@ -114,7 +117,7 @@ export class SocialLoginService {
     let secret: string;
     const existingAuthenticator = user.authenticators?.find(
       (auth) => auth.type === authenticatorType,
-    )
+    );
 
     if (existingAuthenticator) {
       secret = existingAuthenticator.secret;
@@ -123,7 +126,7 @@ export class SocialLoginService {
       user.authenticators.push({
         type: authenticatorType,
         secret,
-        isTwoFactorAuthenticated: false
+        isTwoFactorAuthenticated: false,
       });
       this.userRepository.findOneUpdate(
         { userId: user.userId },
@@ -142,26 +145,26 @@ export class SocialLoginService {
     const { authenticatorType, twoFactorAuthenticationCode } =
       mfaVerificationDto;
     const authenticatorDetail = user.authenticators.find(
-      (auth) => (auth.type === authenticatorType),
+      (auth) => auth.type === authenticatorType,
     );
     const isVerified = authenticator.verify({
       token: twoFactorAuthenticationCode,
       secret: authenticatorDetail.secret,
     });
-    if(!authenticatorDetail.isTwoFactorAuthenticated && isVerified){
+    if (!authenticatorDetail.isTwoFactorAuthenticated && isVerified) {
       // update
-      user.authenticators.map(authn => {
-        if(authn.type === authenticatorType){
-          authn.isTwoFactorAuthenticated  = true;
+      user.authenticators.map((authn) => {
+        if (authn.type === authenticatorType) {
+          authn.isTwoFactorAuthenticated = true;
           return authn;
         }
         return authn;
-      })
+      });
       this.userRepository.findOneUpdate(
         { userId: user.userId },
         { authenticators: user.authenticators },
       );
-    } 
+    }
 
     const payload = {
       email: user.email,
@@ -169,7 +172,7 @@ export class SocialLoginService {
       userAccessList: user.accessList,
       isTwoFactorEnabled: user.authenticators && user.authenticators.length > 0,
       isTwoFactorAuthenticated: isVerified,
-      authenticatorType
+      authenticatorType,
     };
     const accessToken = await this.jwt.signAsync(payload, {
       expiresIn: '24h',

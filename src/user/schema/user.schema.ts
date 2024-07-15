@@ -19,7 +19,7 @@ class Authenticator {
   @Prop({ required: true })
   secret: string;
   @Prop({ required: false })
-  isTwoFactorAuthenticated?:string; 
+  isTwoFactorAuthenticated?: string;
 }
 @Schema({ timestamps: true })
 export class User {
