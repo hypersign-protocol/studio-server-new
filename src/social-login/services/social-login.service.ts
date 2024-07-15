@@ -85,7 +85,9 @@ export class SocialLoginService {
           return x;
         }
       });
-      isVerified = authenticator ? authenticator.isTwoFactorAuthenticated : false;
+      isVerified = authenticator
+        ? authenticator.isTwoFactorAuthenticated
+        : false;
     }
     const payload = {
       name,

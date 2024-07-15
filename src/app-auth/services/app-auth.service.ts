@@ -505,7 +505,8 @@ export class AppAuthService {
     switch (serviceType) {
       case SERVICE_TYPES.SSI_API: {
         grant_type = GRANT_TYPES.access_service_ssi;
-        accessList = userDetails.accessList
+        if(userDetails.accessList && userDetails.accessList.length> 0){
+          accessList = userDetails.accessList
           .map((x) => {
             if (x.serviceType === SERVICE_TYPES.SSI_API) {
               if (!this.checkIfDateExpired(x.expiryDate)) {
@@ -514,11 +515,13 @@ export class AppAuthService {
             }
           })
           .filter((x) => x != undefined);
+        } 
         break;
       }
       case SERVICE_TYPES.CAVACH_API: {
         grant_type = GRANT_TYPES.access_service_kyc;
-        accessList = userDetails.accessList
+        if(userDetails.accessList && userDetails.accessList.length> 0){
+          accessList = userDetails.accessList
           .map((x) => {
             if (x.serviceType === SERVICE_TYPES.CAVACH_API) {
               if (!this.checkIfDateExpired(x.expiryDate)) {
@@ -527,6 +530,7 @@ export class AppAuthService {
             }
           })
           .filter((x) => x != undefined);
+        }
         break;
       }
       default: {
