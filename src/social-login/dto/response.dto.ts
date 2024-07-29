@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNumber, IsString } from 'class-validator';
+import { IsBoolean, IsNumber, IsString } from 'class-validator';
 
 export class UnauthorizedError {
   @ApiProperty({
@@ -65,4 +65,42 @@ export class AuthResponse {
     example: null,
   })
   error: string;
+}
+export class Generate2FARespDto {
+  @ApiProperty({
+    name: 'twoFADataUrl',
+    description: 'QR Data',
+    example: 'data:image/png;base64,iV......',
+  })
+  @IsString()
+  twoFADataUrl: string;
+}
+export class Verify2FARespDto {
+  @ApiProperty({
+    name: 'isVerified',
+    description: 'COde verification result',
+    example: true,
+  })
+  @IsBoolean()
+  isVerified: boolean;
+  @ApiProperty({
+    name: 'accessToken',
+    description: '2FA based accessToken',
+    example: 'eyJh.....',
+  })
+  @IsString()
+  accessToken: string;
+}
+export class DeleteMFARespDto {
+  @ApiProperty({
+    name: 'message',
+    description: 'A success message',
+    example: 'Removed authenticator successfully',
+  })
+  @IsString()
+  message: string;
+}
+export enum AuthneticatorType {
+  google = 'google',
+  okta = 'okta',
 }

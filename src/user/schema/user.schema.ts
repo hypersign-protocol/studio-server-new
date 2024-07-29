@@ -1,5 +1,6 @@
 import { Optional } from '@nestjs/common';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { AuthneticatorType } from 'src/social-login/dto/response.dto';
 import {
   SERVICES,
   SERVICE_TYPES,
@@ -12,6 +13,14 @@ export interface UserAccess {
 }
 
 export type UserDocument = User & Document;
+class Authenticator {
+  @Prop({ required: true, enum: AuthneticatorType })
+  type: string;
+  @Prop({ required: true })
+  secret: string;
+  @Prop({ required: false })
+  isTwoFactorAuthenticated?: string;
+}
 @Schema({ timestamps: true })
 export class User {
   @Prop({ required: true })
@@ -20,10 +29,11 @@ export class User {
   email: string;
   @Prop({ required: false }) // as we won't get did in google login
   did?: string;
-
   @Prop({ required: false })
   @Optional()
   accessList: Array<UserAccess>;
+  @Prop({ default: [] })
+  authenticators?: Authenticator[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

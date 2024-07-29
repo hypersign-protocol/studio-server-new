@@ -12,7 +12,7 @@ export class UserRepository {
       'findOne() method: starts, finding particular user from db',
       'UserRepository',
     );
-    return this.userModel.findOne(userFilterQuery);
+    return this.userModel.findOne(userFilterQuery).lean();
   }
 
   async create(user: User): Promise<UserDocument> {

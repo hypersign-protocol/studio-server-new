@@ -64,6 +64,8 @@ spec:
           value: __TENANT_SUBDOMAIN_PREFIX__
         - name: SSI_API_DOMAIN
           value: __SSI_API_DOMAIN__
+        - name: MFA_ISSUER
+          value: __MFA_ISSUER__
         - name: CAVACH_API_DOMAIN
           value: __CAVACH_API_DOMAIN__
         - name: VAULT_PREFIX

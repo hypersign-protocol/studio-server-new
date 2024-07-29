@@ -8,10 +8,14 @@ import {
   Post,
   Res,
   Query,
+  Body,
+  Delete,
 } from '@nestjs/common';
 import { SocialLoginService } from '../services/social-login.service';
 import { AuthGuard } from '@nestjs/passport';
 import {
+  ApiBadRequestResponse,
+  ApiBearerAuth,
   ApiExcludeEndpoint,
   ApiOkResponse,
   ApiQuery,
@@ -23,9 +27,18 @@ import { AllExceptionsFilter } from 'src/utils/utils';
 import { ConfigService } from '@nestjs/config';
 import {
   AuthResponse,
+  DeleteMFARespDto,
+  Generate2FARespDto,
   LoginResponse,
   UnauthorizedError,
+  Verify2FARespDto,
 } from '../dto/response.dto';
+import {
+  DeleteMFADto,
+  Generate2FA,
+  MFACodeVerificationDto,
+} from '../dto/request.dto';
+import { AppError } from 'src/app-auth/dtos/fetch-app.dto';
 @UseFilters(AllExceptionsFilter)
 @ApiTags('Authentication')
 @Controller()
@@ -66,6 +79,7 @@ export class SocialLoginController {
     const token = await this.socialLoginService.socialLogin(req);
     res.redirect(`${this.config.get('REDIRECT_URL')}?token=${token}`);
   }
+  @ApiBearerAuth('Authorization')
   @ApiOkResponse({
     description: 'User Info',
     type: AuthResponse,
@@ -82,5 +96,54 @@ export class SocialLoginController {
       message: req.user,
       error: null,
     };
+  }
+
+  @ApiOkResponse({
+    description: 'Generated QR successfully',
+    type: Generate2FARespDto,
+  })
+  @ApiUnauthorizedResponse({
+    status: 401,
+    type: UnauthorizedError,
+  })
+  @ApiBearerAuth('Authorization')
+  @Post('/api/v1/auth/mfa/generate')
+  async generateMfa(@Req() req, @Body() body: Generate2FA) {
+    const result = await this.socialLoginService.generate2FA(body, req.user);
+    return { twoFADataUrl: result };
+  }
+
+  @ApiOkResponse({
+    description: 'Verified MFA code and generated new token',
+    type: Verify2FARespDto,
+  })
+  @ApiUnauthorizedResponse({
+    status: 401,
+    type: UnauthorizedError,
+  })
+  @ApiBearerAuth('Authorization')
+  @Post('/api/v1/auth/mfa/verify')
+  async verifyMFA(
+    @Req() req,
+    @Body() mfaVerificationDto: MFACodeVerificationDto,
+  ) {
+    return this.socialLoginService.verifyMFACode(req.user, mfaVerificationDto);
+  }
+  @ApiOkResponse({
+    description: 'Removed MFA successfully',
+    type: DeleteMFARespDto,
+  })
+  @ApiBadRequestResponse({
+    status: 400,
+    type: AppError,
+  })
+  @ApiUnauthorizedResponse({
+    status: 401,
+    type: UnauthorizedError,
+  })
+  @ApiBearerAuth('Authorization')
+  @Delete('/api/v1/auth/mfa')
+  async removeMFA(@Req() req, @Body() mfaremoveDto: DeleteMFADto) {
+    return this.socialLoginService.removeMFA(req.user, mfaremoveDto);
   }
 }

@@ -7,8 +7,9 @@ import {
 import { AppOauthController } from './app-oauth.controller';
 import { AppAuthModule } from 'src/app-auth/app-auth.module';
 import { JWTAuthorizeMiddleware } from 'src/utils/middleware/jwt-authorization.middleware';
+import { UserModule } from 'src/user/user.module';
 @Module({
-  imports: [AppAuthModule],
+  imports: [AppAuthModule, UserModule],
   controllers: [AppOauthController],
   providers: [],
 })
