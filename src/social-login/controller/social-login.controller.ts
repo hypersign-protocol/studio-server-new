@@ -92,7 +92,7 @@ export class SocialLoginController {
   dispatchUserDetail(@Req() req) {
     Logger.log('dispatchUserDetail() method starts', 'SocialLoginController');
     const userDetail = req.user;
-    if (userDetail && userDetail.authenticators.length > 0) {
+    if (userDetail && userDetail.authenticators && userDetail.authenticators.length > 0) {
       const authenticator = userDetail.authenticators.map(
         ({ secret, ...rest }) => rest,
       );
