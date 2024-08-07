@@ -67,6 +67,10 @@ export class SocialLoginModule implements NestModule {
           path: '/api/v1/auth/mfa/verify',
           method: RequestMethod.POST,
         },
+        {
+          path: '/api/v1/auth',
+          method: RequestMethod.POST,
+        }, // either do this or send the user data in auth api with a message 2FA is required
       )
       .forRoutes(SocialLoginController);
   }

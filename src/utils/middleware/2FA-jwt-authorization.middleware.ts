@@ -18,7 +18,10 @@ export class TwoFAAuthorizationMiddleware implements NestMiddleware {
     }
     const user = req['user'];
     if (user['authenticators'] && user['authenticators'].length > 0) {
-      if (!user['isTwoFactorAuthenticated']) {
+      const isAnyAuthenticator2FA = user['authenticators'].some(
+        (authenticator) => authenticator.isTwoFactorAuthenticated,
+      );
+      if (isAnyAuthenticator2FA && !user['isTwoFactorAuthenticated']) {
         throw new UnauthorizedException(['2FA authentication is required']);
       }
     }
