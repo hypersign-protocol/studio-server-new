@@ -151,6 +151,10 @@ export class App {
   @IsOptional()
   @Prop({ required: false })
   domainLinkageCredentialString?: string;
+
+  @IsOptional()
+  @Prop({ required: false })
+  authzTxnHash?: string;
 }
 export class createAppResponse extends App {
   @ApiProperty({

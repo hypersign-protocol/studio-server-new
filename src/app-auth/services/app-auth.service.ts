@@ -6,13 +6,13 @@ import {
   InternalServerErrorException,
   BadRequestException,
 } from '@nestjs/common';
+import { SigningStargateClient } from '@cosmjs/stargate';
 import { CreateAppDto } from '../dtos/create-app.dto';
 import { App, createAppResponse } from 'src/app-auth/schemas/app.schema';
 import { AppRepository } from '../repositories/app.repository';
 import { UpdateAppDto } from '../dtos/update-app.dto';
 import { HidWalletService } from '../../hid-wallet/services/hid-wallet.service';
 import { ConfigService } from '@nestjs/config';
-import { EdvDocsDto } from 'src/edv/dtos/create-edv.dto';
 import { AppAuthSecretService } from './app-auth-passord.service';
 import { JwtService } from '@nestjs/jwt';
 import { AppAuthApiKeyService } from './app-auth-apikey.service';
@@ -25,6 +25,14 @@ import {
   SERVICE_TYPES,
 } from 'src/supported-service/services/iServiceList';
 import { UserRepository } from 'src/user/repository/user.repository';
+import {
+  generateAuthzGrantTxnMessage,
+  generatePerformFeegrantAllowanceTxn,
+  MSG_CREATE_DID_TYPEURL,
+  MSG_REGISTER_CREDENTIAL_SCHEMA,
+  MSG_REGISTER_CREDENTIAL_STATUS,
+  MSG_UPDATE_CREDENTIAL_STATUS,
+} from 'src/utils/authz';
 
 enum GRANT_TYPES {
   access_service_kyc = 'access_service_kyc',
@@ -33,6 +41,8 @@ enum GRANT_TYPES {
 
 @Injectable()
 export class AppAuthService {
+  private authzWalletInstance;
+  private granterClient: SigningStargateClient;
   constructor(
     private readonly config: ConfigService,
     private readonly appRepository: AppRepository,
@@ -64,11 +74,31 @@ export class AppAuthService {
       throw new Error('Invalid service id ' + serviceIds[0]);
     }
 
+    if (!this.authzWalletInstance) {
+      this.authzWalletInstance = await this.hidWalletService.generateWallet(
+        this.config.get('MNEMONIC'),
+      );
+    }
+
+    if (!this.granterClient) {
+      console.log(
+        this.config.get('HID_NETWORK_RPC'),
+        this.authzWalletInstance.wallet,
+      );
+
+      this.granterClient = await SigningStargateClient.connectWithSigner(
+        this.config.get('HID_NETWORK_RPC'),
+        this.authzWalletInstance.wallet,
+      );
+    }
+
     const { mnemonic, address } = await this.hidWalletService.generateWallet();
     const appId = await this.appAuthApiKeyService.generateAppId();
+
     const vaultPrefixInEnv = this.config.get('VAULT_PREFIX');
     const vaultPrefix = vaultPrefixInEnv ? vaultPrefixInEnv : 'hs:studio-api:';
     const edvId = vaultPrefix + 'app:' + appId;
+
     Logger.log(
       'createAnApp() method: initialising edv service',
       'AppAuthService',
@@ -119,10 +149,54 @@ export class AppAuthService {
     );
     const subdomain = await this.getRandomSubdomain();
 
+    // AUTHZ
+
+    // Perform AuthZ Grant
+    const authGrantTxnMsgAndFeeDID = await generateAuthzGrantTxnMessage(
+      address,
+      this.authzWalletInstance.address,
+      MSG_CREATE_DID_TYPEURL,
+    );
+    const authGrantTxnMsgAndFeeUpdateCredStatus =
+      await generateAuthzGrantTxnMessage(
+        address,
+        this.authzWalletInstance.address,
+        MSG_UPDATE_CREDENTIAL_STATUS,
+      );
+    const authGrantTxnMsgAndFeeSchema = await generateAuthzGrantTxnMessage(
+      address,
+      this.authzWalletInstance.address,
+      MSG_REGISTER_CREDENTIAL_SCHEMA,
+    );
+    const authGrantTxnMsgAndFeeCred = await generateAuthzGrantTxnMessage(
+      address,
+      this.authzWalletInstance.address,
+      MSG_REGISTER_CREDENTIAL_STATUS,
+    );
+    // Perform FeeGrant Allowence
+    const performFeegrantAllowence = await generatePerformFeegrantAllowanceTxn(
+      address,
+      this.authzWalletInstance.address,
+      '5000000uhid',
+    );
+
+    const txns = await this.granterClient.signAndBroadcast(
+      this.authzWalletInstance.address,
+      [
+        authGrantTxnMsgAndFeeDID.txMsg,
+        authGrantTxnMsgAndFeeCred.txMsg,
+        authGrantTxnMsgAndFeeSchema.txMsg,
+        performFeegrantAllowence.txMsg,
+        authGrantTxnMsgAndFeeUpdateCredStatus.txMsg,
+      ],
+      authGrantTxnMsgAndFeeDID.fee,
+    );
+
     // Finally stroring application in db
     const appData: App = await this.appRepository.create({
       ...createAppDto,
       services: [service],
+      authzTxnHash: txns?.transactionHash,
       userId,
       appId: appId, // generate app id
       apiKeySecret: apiSecret, // TODO: generate app secret and should be handled like password by hashing and all...
