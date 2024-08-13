@@ -23,7 +23,7 @@ export const MSG_REGISTER_CREDENTIAL_STATUS =
   '/hypersign.ssi.v1.MsgRegisterCredentialStatus';
 export const MSG_REGISTER_CREDENTIAL_SCHEMA =
   '/hypersign.ssi.v1.MsgRegisterCredentialSchema';
-  export const MSG_UPDATE_CREDENTIAL_STATUS =
+export const MSG_UPDATE_CREDENTIAL_STATUS =
   '/hypersign.ssi.v1.MsgUpdateCredentialStatus';
 
 function getExpirationDateInSeconds(periodInYears: number): Long {

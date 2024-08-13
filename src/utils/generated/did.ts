@@ -1,10 +1,10 @@
 /* eslint-disable */
-import _m0 from "protobufjs/minimal";
+import _m0 from 'protobufjs/minimal';
 
-export const protobufPackage = "hypersign.ssi.v1";
+export const protobufPackage = 'hypersign.ssi.v1';
 
 export interface DidDocument {
-  "@context"?: string[] | undefined;
+  '@context'?: string[] | undefined;
   id?: string | undefined;
   controller?: string[] | undefined;
   alsoKnownAs?: string[] | undefined;
@@ -27,13 +27,9 @@ export interface DidDocumentMetadata {
 export interface VerificationMethod {
   id?: string | undefined;
   type?: string | undefined;
-  controller?:
-  | string
-  | undefined;
+  controller?: string | undefined;
   /** If value is provided, `blockchainAccountId` must be empty */
-  publicKeyMultibase?:
-  | string
-  | undefined;
+  publicKeyMultibase?: string | undefined;
   /** If value is provided, `publicKeyMultibase` must be empty */
   blockchainAccountId?: string | undefined;
 }
@@ -54,13 +50,16 @@ function createBaseDidDocument(): DidDocument {
 }
 
 export const DidDocument = {
-  encode(message: DidDocument, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message["@context"] !== undefined && message["@context"].length !== 0) {
-      for (const v of message["@context"]) {
+  encode(
+    message: DidDocument,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    if (message['@context'] !== undefined && message['@context'].length !== 0) {
+      for (const v of message['@context']) {
         writer.uint32(10).string(v!);
       }
     }
-    if (message.id !== undefined && message.id !== "") {
+    if (message.id !== undefined && message.id !== '') {
       writer.uint32(18).string(message.id);
     }
     if (message.controller !== undefined && message.controller.length !== 0) {
@@ -73,32 +72,50 @@ export const DidDocument = {
         writer.uint32(34).string(v!);
       }
     }
-    if (message.verificationMethod !== undefined && message.verificationMethod.length !== 0) {
+    if (
+      message.verificationMethod !== undefined &&
+      message.verificationMethod.length !== 0
+    ) {
       for (const v of message.verificationMethod) {
         VerificationMethod.encode(v!, writer.uint32(42).fork()).ldelim();
       }
     }
-    if (message.authentication !== undefined && message.authentication.length !== 0) {
+    if (
+      message.authentication !== undefined &&
+      message.authentication.length !== 0
+    ) {
       for (const v of message.authentication) {
         writer.uint32(50).string(v!);
       }
     }
-    if (message.assertionMethod !== undefined && message.assertionMethod.length !== 0) {
+    if (
+      message.assertionMethod !== undefined &&
+      message.assertionMethod.length !== 0
+    ) {
       for (const v of message.assertionMethod) {
         writer.uint32(58).string(v!);
       }
     }
-    if (message.keyAgreement !== undefined && message.keyAgreement.length !== 0) {
+    if (
+      message.keyAgreement !== undefined &&
+      message.keyAgreement.length !== 0
+    ) {
       for (const v of message.keyAgreement) {
         writer.uint32(66).string(v!);
       }
     }
-    if (message.capabilityInvocation !== undefined && message.capabilityInvocation.length !== 0) {
+    if (
+      message.capabilityInvocation !== undefined &&
+      message.capabilityInvocation.length !== 0
+    ) {
       for (const v of message.capabilityInvocation) {
         writer.uint32(74).string(v!);
       }
     }
-    if (message.capabilityDelegation !== undefined && message.capabilityDelegation.length !== 0) {
+    if (
+      message.capabilityDelegation !== undefined &&
+      message.capabilityDelegation.length !== 0
+    ) {
       for (const v of message.capabilityDelegation) {
         writer.uint32(82).string(v!);
       }
@@ -112,7 +129,8 @@ export const DidDocument = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): DidDocument {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseDidDocument();
     while (reader.pos < end) {
@@ -123,10 +141,10 @@ export const DidDocument = {
             break;
           }
 
-          if (message["@context"] === undefined) {
-            message["@context"] = [];
+          if (message['@context'] === undefined) {
+            message['@context'] = [];
           }
-          message["@context"]!.push(reader.string());
+          message['@context']!.push(reader.string());
           continue;
         case 2:
           if (tag !== 18) {
@@ -163,7 +181,9 @@ export const DidDocument = {
           if (message.verificationMethod === undefined) {
             message.verificationMethod = [];
           }
-          message.verificationMethod!.push(VerificationMethod.decode(reader, reader.uint32()));
+          message.verificationMethod!.push(
+            VerificationMethod.decode(reader, reader.uint32()),
+          );
           continue;
         case 6:
           if (tag !== 50) {
@@ -236,8 +256,8 @@ export const DidDocument = {
 
   fromJSON(object: any): DidDocument {
     return {
-      "@context": globalThis.Array.isArray(object?.["@context"])
-        ? object["@context"].map((e: any) => globalThis.String(e))
+      '@context': globalThis.Array.isArray(object?.['@context'])
+        ? object['@context'].map((e: any) => globalThis.String(e))
         : undefined,
       id: isSet(object.id) ? globalThis.String(object.id) : undefined,
       controller: globalThis.Array.isArray(object?.controller)
@@ -247,7 +267,9 @@ export const DidDocument = {
         ? object.alsoKnownAs.map((e: any) => globalThis.String(e))
         : undefined,
       verificationMethod: globalThis.Array.isArray(object?.verificationMethod)
-        ? object.verificationMethod.map((e: any) => VerificationMethod.fromJSON(e))
+        ? object.verificationMethod.map((e: any) =>
+            VerificationMethod.fromJSON(e),
+          )
         : undefined,
       authentication: globalThis.Array.isArray(object?.authentication)
         ? object.authentication.map((e: any) => globalThis.String(e))
@@ -258,10 +280,14 @@ export const DidDocument = {
       keyAgreement: globalThis.Array.isArray(object?.keyAgreement)
         ? object.keyAgreement.map((e: any) => globalThis.String(e))
         : undefined,
-      capabilityInvocation: globalThis.Array.isArray(object?.capabilityInvocation)
+      capabilityInvocation: globalThis.Array.isArray(
+        object?.capabilityInvocation,
+      )
         ? object.capabilityInvocation.map((e: any) => globalThis.String(e))
         : undefined,
-      capabilityDelegation: globalThis.Array.isArray(object?.capabilityDelegation)
+      capabilityDelegation: globalThis.Array.isArray(
+        object?.capabilityDelegation,
+      )
         ? object.capabilityDelegation.map((e: any) => globalThis.String(e))
         : undefined,
       service: globalThis.Array.isArray(object?.service)
@@ -272,10 +298,10 @@ export const DidDocument = {
 
   toJSON(message: DidDocument): unknown {
     const obj: any = {};
-    if (message["@context"]?.length) {
-      obj["@context"] = message["@context"];
+    if (message['@context']?.length) {
+      obj['@context'] = message['@context'];
     }
-    if (message.id !== undefined && message.id !== "") {
+    if (message.id !== undefined && message.id !== '') {
       obj.id = message.id;
     }
     if (message.controller?.length) {
@@ -285,7 +311,9 @@ export const DidDocument = {
       obj.alsoKnownAs = message.alsoKnownAs;
     }
     if (message.verificationMethod?.length) {
-      obj.verificationMethod = message.verificationMethod.map((e) => VerificationMethod.toJSON(e));
+      obj.verificationMethod = message.verificationMethod.map((e) =>
+        VerificationMethod.toJSON(e),
+      );
     }
     if (message.authentication?.length) {
       obj.authentication = message.authentication;
@@ -311,19 +339,28 @@ export const DidDocument = {
   create<I extends Exact<DeepPartial<DidDocument>, I>>(base?: I): DidDocument {
     return DidDocument.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<DidDocument>, I>>(object: I): DidDocument {
+  fromPartial<I extends Exact<DeepPartial<DidDocument>, I>>(
+    object: I,
+  ): DidDocument {
     const message = createBaseDidDocument();
-    message["@context"] = object["@context"]?.map((e) => e) || undefined;
+    message['@context'] = object['@context']?.map((e) => e) || undefined;
     message.id = object.id ?? undefined;
     message.controller = object.controller?.map((e) => e) || undefined;
     message.alsoKnownAs = object.alsoKnownAs?.map((e) => e) || undefined;
-    message.verificationMethod = object.verificationMethod?.map((e) => VerificationMethod.fromPartial(e)) || undefined;
+    message.verificationMethod =
+      object.verificationMethod?.map((e) =>
+        VerificationMethod.fromPartial(e),
+      ) || undefined;
     message.authentication = object.authentication?.map((e) => e) || undefined;
-    message.assertionMethod = object.assertionMethod?.map((e) => e) || undefined;
+    message.assertionMethod =
+      object.assertionMethod?.map((e) => e) || undefined;
     message.keyAgreement = object.keyAgreement?.map((e) => e) || undefined;
-    message.capabilityInvocation = object.capabilityInvocation?.map((e) => e) || undefined;
-    message.capabilityDelegation = object.capabilityDelegation?.map((e) => e) || undefined;
-    message.service = object.service?.map((e) => Service.fromPartial(e)) || undefined;
+    message.capabilityInvocation =
+      object.capabilityInvocation?.map((e) => e) || undefined;
+    message.capabilityDelegation =
+      object.capabilityDelegation?.map((e) => e) || undefined;
+    message.service =
+      object.service?.map((e) => Service.fromPartial(e)) || undefined;
     return message;
   },
 };
@@ -333,24 +370,28 @@ function createBaseDidDocumentMetadata(): DidDocumentMetadata {
 }
 
 export const DidDocumentMetadata = {
-  encode(message: DidDocumentMetadata, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.created !== undefined && message.created !== "") {
+  encode(
+    message: DidDocumentMetadata,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    if (message.created !== undefined && message.created !== '') {
       writer.uint32(10).string(message.created);
     }
-    if (message.updated !== undefined && message.updated !== "") {
+    if (message.updated !== undefined && message.updated !== '') {
       writer.uint32(18).string(message.updated);
     }
     if (message.deactivated === true) {
       writer.uint32(24).bool(message.deactivated);
     }
-    if (message.versionId !== undefined && message.versionId !== "") {
+    if (message.versionId !== undefined && message.versionId !== '') {
       writer.uint32(34).string(message.versionId);
     }
     return writer;
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): DidDocumentMetadata {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseDidDocumentMetadata();
     while (reader.pos < end) {
@@ -395,34 +436,46 @@ export const DidDocumentMetadata = {
 
   fromJSON(object: any): DidDocumentMetadata {
     return {
-      created: isSet(object.created) ? globalThis.String(object.created) : undefined,
-      updated: isSet(object.updated) ? globalThis.String(object.updated) : undefined,
-      deactivated: isSet(object.deactivated) ? globalThis.Boolean(object.deactivated) : undefined,
-      versionId: isSet(object.versionId) ? globalThis.String(object.versionId) : undefined,
+      created: isSet(object.created)
+        ? globalThis.String(object.created)
+        : undefined,
+      updated: isSet(object.updated)
+        ? globalThis.String(object.updated)
+        : undefined,
+      deactivated: isSet(object.deactivated)
+        ? globalThis.Boolean(object.deactivated)
+        : undefined,
+      versionId: isSet(object.versionId)
+        ? globalThis.String(object.versionId)
+        : undefined,
     };
   },
 
   toJSON(message: DidDocumentMetadata): unknown {
     const obj: any = {};
-    if (message.created !== undefined && message.created !== "") {
+    if (message.created !== undefined && message.created !== '') {
       obj.created = message.created;
     }
-    if (message.updated !== undefined && message.updated !== "") {
+    if (message.updated !== undefined && message.updated !== '') {
       obj.updated = message.updated;
     }
     if (message.deactivated === true) {
       obj.deactivated = message.deactivated;
     }
-    if (message.versionId !== undefined && message.versionId !== "") {
+    if (message.versionId !== undefined && message.versionId !== '') {
       obj.versionId = message.versionId;
     }
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<DidDocumentMetadata>, I>>(base?: I): DidDocumentMetadata {
+  create<I extends Exact<DeepPartial<DidDocumentMetadata>, I>>(
+    base?: I,
+  ): DidDocumentMetadata {
     return DidDocumentMetadata.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<DidDocumentMetadata>, I>>(object: I): DidDocumentMetadata {
+  fromPartial<I extends Exact<DeepPartial<DidDocumentMetadata>, I>>(
+    object: I,
+  ): DidDocumentMetadata {
     const message = createBaseDidDocumentMetadata();
     message.created = object.created ?? undefined;
     message.updated = object.updated ?? undefined;
@@ -437,27 +490,37 @@ function createBaseVerificationMethod(): VerificationMethod {
 }
 
 export const VerificationMethod = {
-  encode(message: VerificationMethod, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.id !== undefined && message.id !== "") {
+  encode(
+    message: VerificationMethod,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    if (message.id !== undefined && message.id !== '') {
       writer.uint32(10).string(message.id);
     }
-    if (message.type !== undefined && message.type !== "") {
+    if (message.type !== undefined && message.type !== '') {
       writer.uint32(18).string(message.type);
     }
-    if (message.controller !== undefined && message.controller !== "") {
+    if (message.controller !== undefined && message.controller !== '') {
       writer.uint32(26).string(message.controller);
     }
-    if (message.publicKeyMultibase !== undefined && message.publicKeyMultibase !== "") {
+    if (
+      message.publicKeyMultibase !== undefined &&
+      message.publicKeyMultibase !== ''
+    ) {
       writer.uint32(34).string(message.publicKeyMultibase);
     }
-    if (message.blockchainAccountId !== undefined && message.blockchainAccountId !== "") {
+    if (
+      message.blockchainAccountId !== undefined &&
+      message.blockchainAccountId !== ''
+    ) {
       writer.uint32(42).string(message.blockchainAccountId);
     }
     return writer;
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): VerificationMethod {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseVerificationMethod();
     while (reader.pos < end) {
@@ -511,8 +574,12 @@ export const VerificationMethod = {
     return {
       id: isSet(object.id) ? globalThis.String(object.id) : undefined,
       type: isSet(object.type) ? globalThis.String(object.type) : undefined,
-      controller: isSet(object.controller) ? globalThis.String(object.controller) : undefined,
-      publicKeyMultibase: isSet(object.publicKeyMultibase) ? globalThis.String(object.publicKeyMultibase) : undefined,
+      controller: isSet(object.controller)
+        ? globalThis.String(object.controller)
+        : undefined,
+      publicKeyMultibase: isSet(object.publicKeyMultibase)
+        ? globalThis.String(object.publicKeyMultibase)
+        : undefined,
       blockchainAccountId: isSet(object.blockchainAccountId)
         ? globalThis.String(object.blockchainAccountId)
         : undefined,
@@ -521,28 +588,38 @@ export const VerificationMethod = {
 
   toJSON(message: VerificationMethod): unknown {
     const obj: any = {};
-    if (message.id !== undefined && message.id !== "") {
+    if (message.id !== undefined && message.id !== '') {
       obj.id = message.id;
     }
-    if (message.type !== undefined && message.type !== "") {
+    if (message.type !== undefined && message.type !== '') {
       obj.type = message.type;
     }
-    if (message.controller !== undefined && message.controller !== "") {
+    if (message.controller !== undefined && message.controller !== '') {
       obj.controller = message.controller;
     }
-    if (message.publicKeyMultibase !== undefined && message.publicKeyMultibase !== "") {
+    if (
+      message.publicKeyMultibase !== undefined &&
+      message.publicKeyMultibase !== ''
+    ) {
       obj.publicKeyMultibase = message.publicKeyMultibase;
     }
-    if (message.blockchainAccountId !== undefined && message.blockchainAccountId !== "") {
+    if (
+      message.blockchainAccountId !== undefined &&
+      message.blockchainAccountId !== ''
+    ) {
       obj.blockchainAccountId = message.blockchainAccountId;
     }
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<VerificationMethod>, I>>(base?: I): VerificationMethod {
+  create<I extends Exact<DeepPartial<VerificationMethod>, I>>(
+    base?: I,
+  ): VerificationMethod {
     return VerificationMethod.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<VerificationMethod>, I>>(object: I): VerificationMethod {
+  fromPartial<I extends Exact<DeepPartial<VerificationMethod>, I>>(
+    object: I,
+  ): VerificationMethod {
     const message = createBaseVerificationMethod();
     message.id = object.id ?? undefined;
     message.type = object.type ?? undefined;
@@ -558,21 +635,28 @@ function createBaseService(): Service {
 }
 
 export const Service = {
-  encode(message: Service, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.id !== undefined && message.id !== "") {
+  encode(
+    message: Service,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
+    if (message.id !== undefined && message.id !== '') {
       writer.uint32(10).string(message.id);
     }
-    if (message.type !== undefined && message.type !== "") {
+    if (message.type !== undefined && message.type !== '') {
       writer.uint32(18).string(message.type);
     }
-    if (message.serviceEndpoint !== undefined && message.serviceEndpoint !== "") {
+    if (
+      message.serviceEndpoint !== undefined &&
+      message.serviceEndpoint !== ''
+    ) {
       writer.uint32(26).string(message.serviceEndpoint);
     }
     return writer;
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): Service {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseService();
     while (reader.pos < end) {
@@ -612,19 +696,24 @@ export const Service = {
     return {
       id: isSet(object.id) ? globalThis.String(object.id) : undefined,
       type: isSet(object.type) ? globalThis.String(object.type) : undefined,
-      serviceEndpoint: isSet(object.serviceEndpoint) ? globalThis.String(object.serviceEndpoint) : undefined,
+      serviceEndpoint: isSet(object.serviceEndpoint)
+        ? globalThis.String(object.serviceEndpoint)
+        : undefined,
     };
   },
 
   toJSON(message: Service): unknown {
     const obj: any = {};
-    if (message.id !== undefined && message.id !== "") {
+    if (message.id !== undefined && message.id !== '') {
       obj.id = message.id;
     }
-    if (message.type !== undefined && message.type !== "") {
+    if (message.type !== undefined && message.type !== '') {
       obj.type = message.type;
     }
-    if (message.serviceEndpoint !== undefined && message.serviceEndpoint !== "") {
+    if (
+      message.serviceEndpoint !== undefined &&
+      message.serviceEndpoint !== ''
+    ) {
       obj.serviceEndpoint = message.serviceEndpoint;
     }
     return obj;
@@ -647,18 +736,28 @@ function createBaseDidDocumentState(): DidDocumentState {
 }
 
 export const DidDocumentState = {
-  encode(message: DidDocumentState, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+  encode(
+    message: DidDocumentState,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
     if (message.didDocument !== undefined) {
-      DidDocument.encode(message.didDocument, writer.uint32(10).fork()).ldelim();
+      DidDocument.encode(
+        message.didDocument,
+        writer.uint32(10).fork(),
+      ).ldelim();
     }
     if (message.didDocumentMetadata !== undefined) {
-      DidDocumentMetadata.encode(message.didDocumentMetadata, writer.uint32(18).fork()).ldelim();
+      DidDocumentMetadata.encode(
+        message.didDocumentMetadata,
+        writer.uint32(18).fork(),
+      ).ldelim();
     }
     return writer;
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): DidDocumentState {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseDidDocumentState();
     while (reader.pos < end) {
@@ -676,7 +775,10 @@ export const DidDocumentState = {
             break;
           }
 
-          message.didDocumentMetadata = DidDocumentMetadata.decode(reader, reader.uint32());
+          message.didDocumentMetadata = DidDocumentMetadata.decode(
+            reader,
+            reader.uint32(),
+          );
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -689,7 +791,9 @@ export const DidDocumentState = {
 
   fromJSON(object: any): DidDocumentState {
     return {
-      didDocument: isSet(object.didDocument) ? DidDocument.fromJSON(object.didDocument) : undefined,
+      didDocument: isSet(object.didDocument)
+        ? DidDocument.fromJSON(object.didDocument)
+        : undefined,
       didDocumentMetadata: isSet(object.didDocumentMetadata)
         ? DidDocumentMetadata.fromJSON(object.didDocumentMetadata)
         : undefined,
@@ -702,37 +806,60 @@ export const DidDocumentState = {
       obj.didDocument = DidDocument.toJSON(message.didDocument);
     }
     if (message.didDocumentMetadata !== undefined) {
-      obj.didDocumentMetadata = DidDocumentMetadata.toJSON(message.didDocumentMetadata);
+      obj.didDocumentMetadata = DidDocumentMetadata.toJSON(
+        message.didDocumentMetadata,
+      );
     }
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<DidDocumentState>, I>>(base?: I): DidDocumentState {
+  create<I extends Exact<DeepPartial<DidDocumentState>, I>>(
+    base?: I,
+  ): DidDocumentState {
     return DidDocumentState.fromPartial(base ?? ({} as any));
   },
-  fromPartial<I extends Exact<DeepPartial<DidDocumentState>, I>>(object: I): DidDocumentState {
+  fromPartial<I extends Exact<DeepPartial<DidDocumentState>, I>>(
+    object: I,
+  ): DidDocumentState {
     const message = createBaseDidDocumentState();
-    message.didDocument = (object.didDocument !== undefined && object.didDocument !== null)
-      ? DidDocument.fromPartial(object.didDocument)
-      : undefined;
-    message.didDocumentMetadata = (object.didDocumentMetadata !== undefined && object.didDocumentMetadata !== null)
-      ? DidDocumentMetadata.fromPartial(object.didDocumentMetadata)
-      : undefined;
+    message.didDocument =
+      object.didDocument !== undefined && object.didDocument !== null
+        ? DidDocument.fromPartial(object.didDocument)
+        : undefined;
+    message.didDocumentMetadata =
+      object.didDocumentMetadata !== undefined &&
+      object.didDocumentMetadata !== null
+        ? DidDocumentMetadata.fromPartial(object.didDocumentMetadata)
+        : undefined;
     return message;
   },
 };
 
-type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
+type Builtin =
+  | Date
+  | Function
+  | Uint8Array
+  | string
+  | number
+  | boolean
+  | undefined;
 
-export type DeepPartial<T> = T extends Builtin ? T
-  : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>>
-  : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>>
-  : T extends {} ? { [K in keyof T]?: DeepPartial<T[K]> }
+export type DeepPartial<T> = T extends Builtin
+  ? T
+  : T extends globalThis.Array<infer U>
+  ? globalThis.Array<DeepPartial<U>>
+  : T extends ReadonlyArray<infer U>
+  ? ReadonlyArray<DeepPartial<U>>
+  : T extends {}
+  ? { [K in keyof T]?: DeepPartial<T[K]> }
   : Partial<T>;
 
 type KeysOfUnion<T> = T extends T ? keyof T : never;
-export type Exact<P, I extends P> = P extends Builtin ? P
-  : P & { [K in keyof P]: Exact<P[K], I[K]> } & { [K in Exclude<keyof I, KeysOfUnion<P>>]: never };
+export type Exact<P, I extends P> = P extends Builtin
+  ? P
+  : P & { [K in keyof P]: Exact<P[K], I[K]> } & {
+      [K in Exclude<keyof I, KeysOfUnion<P>>]: never;
+    };
 
 function isSet(value: any): boolean {
   return value !== null && value !== undefined;
