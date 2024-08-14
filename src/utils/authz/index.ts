@@ -19,7 +19,7 @@ import * as Long from 'long';
 import { Coin } from 'cosmjs-types/cosmos/base/v1beta1/coin';
 
 export const MSG_CREATE_DID_TYPEURL = '/hypersign.ssi.v1.MsgRegisterDID';
-export const MSG_UPDATE_DID_TYPEURL = '/hypersign.ssi.v1.MsgRegisterDID';
+export const MSG_UPDATE_DID_TYPEURL = '/hypersign.ssi.v1.MsgUpdateDID';
 export const MSG_REGISTER_CREDENTIAL_STATUS =
   '/hypersign.ssi.v1.MsgRegisterCredentialStatus';
 export const MSG_REGISTER_CREDENTIAL_SCHEMA =
@@ -61,8 +61,7 @@ export async function generateAuthzGrantTxnMessage(
     typeUrl: '/cosmos.authz.v1beta1.MsgGrant',
     value: authGrantMsg,
   };
-  console.log(authGrantMsg.grant.expiration);
-  console.log(authGrantMsg.grant.authorization.value.buffer);
+
 
   const fee: StdFee = {
     amount: [
