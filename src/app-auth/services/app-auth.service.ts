@@ -32,6 +32,7 @@ import {
   MSG_REGISTER_CREDENTIAL_SCHEMA,
   MSG_REGISTER_CREDENTIAL_STATUS,
   MSG_UPDATE_CREDENTIAL_STATUS,
+  MSG_UPDATE_DID_TYPEURL,
 } from 'src/utils/authz';
 
 enum GRANT_TYPES {
@@ -151,52 +152,64 @@ export class AppAuthService {
 
     // AUTHZ
 
-    // Perform AuthZ Grant
-    const authGrantTxnMsgAndFeeDID = await generateAuthzGrantTxnMessage(
-      address,
-      this.authzWalletInstance.address,
-      MSG_CREATE_DID_TYPEURL,
-    );
-    const authGrantTxnMsgAndFeeUpdateCredStatus =
-      await generateAuthzGrantTxnMessage(
+    if (service.id == SERVICE_TYPES.SSI_API) {
+      // Perform AuthZ Grant
+      const authGrantTxnMsgAndFeeDID = await generateAuthzGrantTxnMessage(
         address,
         this.authzWalletInstance.address,
-        MSG_UPDATE_CREDENTIAL_STATUS,
+        MSG_CREATE_DID_TYPEURL,
       );
-    const authGrantTxnMsgAndFeeSchema = await generateAuthzGrantTxnMessage(
-      address,
-      this.authzWalletInstance.address,
-      MSG_REGISTER_CREDENTIAL_SCHEMA,
-    );
-    const authGrantTxnMsgAndFeeCred = await generateAuthzGrantTxnMessage(
-      address,
-      this.authzWalletInstance.address,
-      MSG_REGISTER_CREDENTIAL_STATUS,
-    );
-    // Perform FeeGrant Allowence
-    const performFeegrantAllowence = await generatePerformFeegrantAllowanceTxn(
-      address,
-      this.authzWalletInstance.address,
-      '5000000uhid',
-    );
+      const authGrantTxnMsgAndFeeDIDUpdate = await generateAuthzGrantTxnMessage(
+        address,
+        this.authzWalletInstance.address,
+        MSG_UPDATE_DID_TYPEURL,
+      );
+      const authGrantTxnMsgAndFeeUpdateCredStatus =
+        await generateAuthzGrantTxnMessage(
+          address,
+          this.authzWalletInstance.address,
+          MSG_UPDATE_CREDENTIAL_STATUS,
+        );
 
-    const txns = await this.granterClient.signAndBroadcast(
-      this.authzWalletInstance.address,
-      [
-        authGrantTxnMsgAndFeeDID.txMsg,
-        authGrantTxnMsgAndFeeCred.txMsg,
-        authGrantTxnMsgAndFeeSchema.txMsg,
-        performFeegrantAllowence.txMsg,
-        authGrantTxnMsgAndFeeUpdateCredStatus.txMsg,
-      ],
-      authGrantTxnMsgAndFeeDID.fee,
-    );
+      const authGrantTxnMsgAndFeeSchema = await generateAuthzGrantTxnMessage(
+        address,
+        this.authzWalletInstance.address,
+        MSG_REGISTER_CREDENTIAL_SCHEMA,
+      );
+      const authGrantTxnMsgAndFeeCred = await generateAuthzGrantTxnMessage(
+        address,
+        this.authzWalletInstance.address,
+        MSG_REGISTER_CREDENTIAL_STATUS,
+      );
+      // Perform FeeGrant Allowence
+      const performFeegrantAllowence =
+        await generatePerformFeegrantAllowanceTxn(
+          address,
+          this.authzWalletInstance.address,
+          this.config.get('BASIC_ALLOWANCE') || '5000000uhid',
+        );
 
+      await this.granterClient.signAndBroadcast(
+        this.authzWalletInstance.address,
+        [
+          authGrantTxnMsgAndFeeDIDUpdate.txMsg,
+          authGrantTxnMsgAndFeeDID.txMsg,
+          authGrantTxnMsgAndFeeCred.txMsg,
+          authGrantTxnMsgAndFeeSchema.txMsg,
+          performFeegrantAllowence.txMsg,
+          authGrantTxnMsgAndFeeUpdateCredStatus.txMsg,
+        ],
+        authGrantTxnMsgAndFeeDID.fee,
+      );
+    }
     // Finally stroring application in db
+    // const txns = {
+    //   transactionHash: '',
+    // };
     const appData: App = await this.appRepository.create({
       ...createAppDto,
       services: [service],
-      authzTxnHash: txns?.transactionHash,
+      authzTxnHash: '',
       userId,
       appId: appId, // generate app id
       apiKeySecret: apiSecret, // TODO: generate app secret and should be handled like password by hashing and all...

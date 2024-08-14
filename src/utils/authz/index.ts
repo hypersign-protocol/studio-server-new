@@ -19,6 +19,7 @@ import * as Long from 'long';
 import { Coin } from 'cosmjs-types/cosmos/base/v1beta1/coin';
 
 export const MSG_CREATE_DID_TYPEURL = '/hypersign.ssi.v1.MsgRegisterDID';
+export const MSG_UPDATE_DID_TYPEURL = '/hypersign.ssi.v1.MsgRegisterDID';
 export const MSG_REGISTER_CREDENTIAL_STATUS =
   '/hypersign.ssi.v1.MsgRegisterCredentialStatus';
 export const MSG_REGISTER_CREDENTIAL_SCHEMA =
@@ -106,6 +107,9 @@ export async function generatePerformFeegrantAllowanceTxn(
               amount: feeAllowanceAmount,
             }),
           ],
+          expiration: Timestamp.fromPartial({
+            seconds: getExpirationDateInSeconds(1),
+          }),
         }),
       ).finish(),
     },
