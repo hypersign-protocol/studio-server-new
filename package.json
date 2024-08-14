@@ -24,7 +24,7 @@
     "prepare": "husky install"
   },
   "dependencies": {
-    "@cosmjs/crypto": "^0.29.5",
+    "@cosmjs/stargate": "^0.31.0",
     "@digitalbazaar/ed25519-verification-key-2020": "^3.3.0",
     "@digitalbazaar/x25519-key-agreement-key-2020": "^2.1.0",
     "@nestjs/common": "^9.0.0",
@@ -44,7 +44,7 @@
     "hid-hd-wallet": "git+https://github.com/hypersign-protocol/hid-hd-wallet.git#main",
     "hs-ssi-sdk": "github:hypersign-protocol/hid-ssi-js-sdk#testcase/bjj",
     "hypersign-auth-node-sdk": "github:hypersign-protocol/hypersign-auth-node-sdk#update-prajna",
-    "hypersign-edv-client": "github:hypersign-protocol/hypersign-edv-client#develop",
+    "hypersign-edv-client": "github:hypersign-protocol/hypersign-edv-client#deleteByDocumentId",
     "idb-keyval": "^6.2.1",
     "mongoose": "^6.8.3",
     "otplib": "^12.0.1",
@@ -70,6 +70,7 @@
     "@types/supertest": "^2.0.11",
     "@typescript-eslint/eslint-plugin": "^5.0.0",
     "@typescript-eslint/parser": "^5.0.0",
+    "cosmjs-types": "^0.5.0",
     "eslint": "^8.0.1",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^4.0.0",
