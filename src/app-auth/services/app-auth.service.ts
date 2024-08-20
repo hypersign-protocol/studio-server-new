@@ -34,8 +34,7 @@ import {
   MSG_UPDATE_CREDENTIAL_STATUS,
   MSG_UPDATE_DID_TYPEURL,
 } from 'src/utils/authz';
-import { AuthZCreditsRepository } from '../repositories/authz.repository';
-import { scope } from '../schemas/authz.schema';
+import { AuthzCreditService } from 'src/credits/services/credits.service';
 
 enum GRANT_TYPES {
   access_service_kyc = 'access_service_kyc',
@@ -55,7 +54,7 @@ export class AppAuthService {
     private readonly appAuthApiKeyService: AppAuthApiKeyService,
     private readonly supportedServices: SupportedServiceService,
     private readonly userRepository: UserRepository,
-    private readonly authzCreditsRepository: AuthZCreditsRepository,
+    private readonly authzCreditService: AuthzCreditService,
   ) {}
 
   async createAnApp(
@@ -153,7 +152,6 @@ export class AppAuthService {
     );
     const subdomain = await this.getRandomSubdomain();
     // AUTHZ
-    let expiry;
     if (service.id == SERVICE_TYPES.SSI_API) {
       // Perform AuthZ Grant
       const authGrantTxnMsgAndFeeDID = await generateAuthzGrantTxnMessage(
@@ -190,7 +188,6 @@ export class AppAuthService {
           this.authzWalletInstance.address,
           this.config.get('BASIC_ALLOWANCE') || '5000000uhid',
         );
-      expiry = performFeegrantAllowence.expiry;
       await this.granterClient.signAndBroadcast(
         this.authzWalletInstance.address,
         [
@@ -205,20 +202,9 @@ export class AppAuthService {
       );
     }
 
-    const authzCredits = await this.authzCreditsRepository.create({
+    await this.authzCreditService.createAuthzCredits({
       userId,
       appId,
-      expires: new Date(Number(expiry)).toISOString(),
-      created: new Date().toISOString(),
-      creditAmmountInUhid: this.config.get('BASIC_ALLOWANCE') || '5000000uhid',
-      creditScope: [
-        scope.MsgRegisterDID,
-        scope.MsgDeactivateDID,
-        scope.MsgRegisterCredentialSchema,
-        scope.MsgUpdateDID,
-        scope.MsgUpdateCredentialStatus,
-        scope.MsgRegisterCredentialStatus,
-      ],
     });
     // Finally stroring application in db
     // const txns = {

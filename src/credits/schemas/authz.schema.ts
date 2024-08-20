@@ -12,7 +12,7 @@ export enum scope {
 
 export type AuthZCreditsDocument = AuthZCredits & Document;
 
-@Schema()
+@Schema({ timestamps: true })
 export class AuthZCredits {
   @IsNotEmpty()
   @IsString()
@@ -27,11 +27,6 @@ export class AuthZCredits {
     required: true,
   })
   appId: string;
-
-  @Prop({
-    type: Date,
-  })
-  created: string;
 
   @Prop({
     type: Date,

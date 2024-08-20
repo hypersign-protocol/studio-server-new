@@ -14,7 +14,7 @@ export class AuthZCreditsRepository {
     return newAuthZCredits.save();
   }
 
-  async find(authZCreditsFilterQuery: FilterQuery<AuthZCredits[]>) {
+  async find(authZCreditsFilterQuery: FilterQuery<AuthZCredits>) {
     return this.authZCreditModel.find(authZCreditsFilterQuery);
   }
 }

@@ -23,24 +23,21 @@ import { SupportedServiceList } from 'src/supported-service/services/service-lis
 import { JWTAuthorizeMiddleware } from 'src/utils/middleware/jwt-authorization.middleware';
 import { UserModule } from 'src/user/user.module';
 import { TwoFAAuthorizationMiddleware } from 'src/utils/middleware/2FA-jwt-authorization.middleware';
-import { AuthZCredits, AuthZCreditsSchema } from './schemas/authz.schema';
-import { AuthZCreditsRepository } from './repositories/authz.repository';
+import { CreditModule } from 'src/credits/credits.module';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([
-      { name: App.name, schema: AppSchema },
-      { name: AuthZCredits.name, schema: AuthZCreditsSchema },
-    ]),
+    MongooseModule.forFeature([{ name: App.name, schema: AppSchema }]),
     HidWalletModule,
     EdvModule,
     UserModule,
     JwtModule.register({}),
+    CreditModule,
   ],
   providers: [
     AppAuthService,
     AppRepository,
-    AuthZCreditsRepository,
+
     HidWalletService,
     AppAuthSecretService,
     AppAuthApiKeyService,
