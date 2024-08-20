@@ -62,7 +62,6 @@ export async function generateAuthzGrantTxnMessage(
     value: authGrantMsg,
   };
 
-
   const fee: StdFee = {
     amount: [
       {
@@ -87,6 +86,7 @@ export async function generatePerformFeegrantAllowanceTxn(
   const feeAllowanceAmount = feeAllowanceInUhid.split('u')[0];
   const feeAllowanceDenom = 'u' + feeAllowanceInUhid.split('u')[1];
 
+  const expiry = getExpirationDateInSeconds(1);
   if (feeAllowanceDenom !== 'uhid') {
     throw new Error(
       "denom for feeAllowanceInUhid must be 'uhid', got " + feeAllowanceDenom,
@@ -107,7 +107,7 @@ export async function generatePerformFeegrantAllowanceTxn(
             }),
           ],
           expiration: Timestamp.fromPartial({
-            seconds: getExpirationDateInSeconds(1),
+            seconds: expiry,
           }),
         }),
       ).finish(),
@@ -132,5 +132,6 @@ export async function generatePerformFeegrantAllowanceTxn(
   return {
     txMsg,
     fee,
+    expiry,
   };
 }

@@ -3,7 +3,6 @@ import {
   Module,
   NestModule,
   RequestMethod,
-  forwardRef,
 } from '@nestjs/common';
 
 import { AppAuthService } from './services/app-auth.service';
@@ -24,10 +23,15 @@ import { SupportedServiceList } from 'src/supported-service/services/service-lis
 import { JWTAuthorizeMiddleware } from 'src/utils/middleware/jwt-authorization.middleware';
 import { UserModule } from 'src/user/user.module';
 import { TwoFAAuthorizationMiddleware } from 'src/utils/middleware/2FA-jwt-authorization.middleware';
+import { AuthZCredits, AuthZCreditsSchema } from './schemas/authz.schema';
+import { AuthZCreditsRepository } from './repositories/authz.repository';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: App.name, schema: AppSchema }]),
+    MongooseModule.forFeature([
+      { name: App.name, schema: AppSchema },
+      { name: AuthZCredits.name, schema: AuthZCreditsSchema },
+    ]),
     HidWalletModule,
     EdvModule,
     UserModule,
@@ -36,6 +40,7 @@ import { TwoFAAuthorizationMiddleware } from 'src/utils/middleware/2FA-jwt-autho
   providers: [
     AppAuthService,
     AppRepository,
+    AuthZCreditsRepository,
     HidWalletService,
     AppAuthSecretService,
     AppAuthApiKeyService,
