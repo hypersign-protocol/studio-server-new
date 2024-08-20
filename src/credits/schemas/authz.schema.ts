@@ -12,6 +12,19 @@ export enum scope {
 
 export type AuthZCreditsDocument = AuthZCredits & Document;
 
+@Schema()
+class Amount {
+  @Prop({
+    type: String,
+  })
+  denom: string;
+
+  @Prop({
+    type: String,
+  })
+  amount: string;
+}
+
 @Schema({ timestamps: true })
 export class AuthZCredits {
   @IsNotEmpty()
@@ -33,8 +46,10 @@ export class AuthZCredits {
   })
   expires: string;
 
-  @Prop()
-  creditAmmountInUhid: string;
+  @Prop({
+    type: Amount,
+  })
+  credit: Amount;
   @Prop({
     type: [String],
     enum: scope,

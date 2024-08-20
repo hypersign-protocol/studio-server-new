@@ -16,7 +16,10 @@ export class AuthzCreditService {
       appId: authz.appId,
       expires: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
       // created: new Date().toISOString(),
-      creditAmmountInUhid: this.config.get('BASIC_ALLOWANCE') || '5000000uhid',
+      credit: {
+        amount: this.config.get('BASIC_ALLOWANCE') || '5000000',
+        denom: 'uhid',
+      },
       creditScope: [
         scope.MsgRegisterDID,
         scope.MsgDeactivateDID,
