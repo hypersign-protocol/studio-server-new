@@ -3,7 +3,6 @@ import {
   Module,
   NestModule,
   RequestMethod,
-  forwardRef,
 } from '@nestjs/common';
 
 import { AppAuthService } from './services/app-auth.service';
@@ -24,6 +23,7 @@ import { SupportedServiceList } from 'src/supported-service/services/service-lis
 import { JWTAuthorizeMiddleware } from 'src/utils/middleware/jwt-authorization.middleware';
 import { UserModule } from 'src/user/user.module';
 import { TwoFAAuthorizationMiddleware } from 'src/utils/middleware/2FA-jwt-authorization.middleware';
+import { CreditModule } from 'src/credits/credits.module';
 
 @Module({
   imports: [
@@ -32,10 +32,12 @@ import { TwoFAAuthorizationMiddleware } from 'src/utils/middleware/2FA-jwt-autho
     EdvModule,
     UserModule,
     JwtModule.register({}),
+    CreditModule,
   ],
   providers: [
     AppAuthService,
     AppRepository,
+
     HidWalletService,
     AppAuthSecretService,
     AppAuthApiKeyService,

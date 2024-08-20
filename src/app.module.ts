@@ -12,10 +12,12 @@ import { UserModule } from './user/user.module';
 import { SupportedServiceModule } from './supported-service/supported-service.module';
 import { SocialLoginModule } from './social-login/social-login.module';
 import { HypersignauthLoginModule } from './hypersignauth-login/hypersignauth-login.module';
+import { CreditModule } from './credits/credits.module';
 
 @Module({
   imports: [
     AppAuthModule,
+    CreditModule,
     ConfigModule.forRoot({
       envFilePath: '',
       isGlobal: true,

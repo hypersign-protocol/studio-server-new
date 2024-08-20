@@ -34,6 +34,7 @@ import {
   MSG_UPDATE_CREDENTIAL_STATUS,
   MSG_UPDATE_DID_TYPEURL,
 } from 'src/utils/authz';
+import { AuthzCreditService } from 'src/credits/services/credits.service';
 
 enum GRANT_TYPES {
   access_service_kyc = 'access_service_kyc',
@@ -53,6 +54,7 @@ export class AppAuthService {
     private readonly appAuthApiKeyService: AppAuthApiKeyService,
     private readonly supportedServices: SupportedServiceService,
     private readonly userRepository: UserRepository,
+    private readonly authzCreditService: AuthzCreditService,
   ) {}
 
   async createAnApp(
@@ -149,9 +151,7 @@ export class AppAuthService {
       'AppAuthService',
     );
     const subdomain = await this.getRandomSubdomain();
-
     // AUTHZ
-
     if (service.id == SERVICE_TYPES.SSI_API) {
       // Perform AuthZ Grant
       const authGrantTxnMsgAndFeeDID = await generateAuthzGrantTxnMessage(
@@ -188,7 +188,6 @@ export class AppAuthService {
           this.authzWalletInstance.address,
           this.config.get('BASIC_ALLOWANCE') || '5000000uhid',
         );
-
       await this.granterClient.signAndBroadcast(
         this.authzWalletInstance.address,
         [
@@ -202,6 +201,11 @@ export class AppAuthService {
         authGrantTxnMsgAndFeeDID.fee,
       );
     }
+
+    await this.authzCreditService.createAuthzCredits({
+      userId,
+      appId,
+    });
     // Finally stroring application in db
     // const txns = {
     //   transactionHash: '',
