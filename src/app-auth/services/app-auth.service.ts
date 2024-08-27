@@ -224,7 +224,6 @@ export class AppAuthService {
       hasDomainVerified: createAppDto.hasDomainVerified,
     });
     Logger.log('App created successfully', 'app-auth-service');
-    Logger.log(JSON.stringify(appData));
     return this.getAppResponse(appData, apiSecretKey);
   }
 
