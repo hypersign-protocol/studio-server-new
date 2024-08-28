@@ -52,70 +52,71 @@ export class InviteResponseDTO {
   acceptedAt: string;
 }
 
-export class PeopleListDTO {
+export class PeopleListResponseDTO {
+  @ApiProperty({
+    name: 'adminId',
+    type: String,
+    example: '61e4196c-0ebf-4481-bbde-2f008b1b24f2',
+  })
+  adminId: string;
+
   @ApiProperty({
     name: 'userId',
     type: String,
-    example: 'user-haajakgoa-axli',
+    example: '9ad664d0-9138-4df8-bbe1-95422b442fe9',
   })
   userId: string;
 
   @ApiProperty({
-    name: 'email',
+    name: 'inviteCode',
     type: String,
-    example: 'email@gmail.com',
+    example: 'f6932455-6ad1-477b-b0db-692ad52b3239',
   })
-  email: string;
+  inviteCode: string;
 
   @ApiProperty({
-    name: 'accessList',
-    type: Array,
-    example: [
-      {
-        serviceType: 'SSI_API',
-        access: 'ALL',
-        expiryDate: null,
-      },
-      {
-        serviceType: 'CAVACH_API',
-        access: 'READ_USER_CONSENT',
-        expiryDate: null,
-      },
-      {
-        serviceType: 'CAVACH_API',
-        access: 'WRITE_USER_CONSENT',
-        expiryDate: null,
-      },
-      {
-        serviceType: 'CAVACH_API',
-        access: 'WRITE_SESSION',
-        expiryDate: null,
-      },
-      {
-        serviceType: 'CAVACH_API',
-        access: 'WRITE_PASSIVE_LIVELINESS',
-        expiryDate: null,
-      },
-      {
-        serviceType: 'CAVACH_API',
-        access: 'WRITE_DOC_OCR',
-        expiryDate: null,
-      },
-    ],
+    name: 'accepted',
+    type: Boolean,
+    example: false,
   })
-  accessList: Array<object>;
+  accepted: string;
+  @ApiProperty({
+    name: 'invitationValidTill',
+    type: Date,
+    example: '2024-08-28T14:49:08.149Z',
+  })
+  invitationValidTill: string;
+  @ApiProperty({
+    name: 'acceptedAt',
+    type: Date,
+    example: '2024-08-28T14:49:08.149Z',
+  })
+  acceptedAt: string;
+
+  @ApiProperty({
+    name: 'createdAt',
+    type: Date,
+    example: '2024-08-28T14:49:08.149Z',
+  })
+  createdAt: string;
+
+  @ApiProperty({
+    name: 'updatedAt',
+    type: Date,
+    example: '2024-08-28T14:49:08.149Z',
+  })
+  updatedAt: string;
+
+  @ApiProperty({
+    name: 'userEmailId',
+    type: String,
+    example: 'dcat9816@gmail.com',
+  })
+  userEmailId: string;
   @ApiProperty({
     name: 'authenticators',
     type: Array,
+    example: [],
   })
   authenticators: Array<object>;
-}
-
-export class PeopleListResponseDTO {
-  @ApiProperty({
-    name: 'peoples',
-    type: PeopleListDTO,
-    isArray: true,
-  })
-  peoples: PeopleListDTO;
 }

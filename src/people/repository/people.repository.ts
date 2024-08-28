@@ -51,7 +51,6 @@ export class AdminPeopleRepository {
           adminId,
         },
       },
-
       {
         $lookup: {
           from: 'users',
@@ -59,6 +58,20 @@ export class AdminPeopleRepository {
           foreignField: 'userId',
           as: 'peoples',
         },
+      },
+      {
+        $unwind: {
+          path: '$peoples',
+        },
+      },
+      {
+        $addFields: {
+          userEmailId: '$peoples.email',
+          authenticators: '$peoples.authenticators',
+        },
+      },
+      {
+        $unset: 'peoples',
       },
     ]);
   }
