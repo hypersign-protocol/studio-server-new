@@ -30,7 +30,11 @@ export class JWTAuthorizeMiddleware implements NestMiddleware {
         const user = await this.userRepository.findOne({
           userId: decoded.appUserID,
         });
+        if (!user) {
+          throw new Error('User not found');
+        }
         req['user'] = user;
+
         if (decoded.isTwoFactorEnabled !== undefined) {
           req['user']['isTwoFactorEnabled'] = decoded.isTwoFactorEnabled;
         }
