@@ -9,6 +9,7 @@ type Serivce = {
   description: string;
   swaggerAPIDocPath: string;
   accessList: any;
+
 };
 
 @Injectable()
@@ -25,6 +26,7 @@ export class SupportedServiceList {
         description: SERVICE_INFO.SSI_API.description,
         swaggerAPIDocPath: SERVICE_INFO.SSI_API.swaggerAPIDocPath,
         accessList: SERVICES.SSI_API.ACCESS_TYPES,
+
       },
       {
         id: SERVICE_INFO.CAVACH_API.type,
@@ -35,6 +37,7 @@ export class SupportedServiceList {
           SERVICE_INFO.CAVACH_API.baseDomain,
         description: SERVICE_INFO.CAVACH_API.description,
         swaggerAPIDocPath: SERVICE_INFO.CAVACH_API.swaggerAPIDocPath,
+
         accessList: SERVICES.CAVACH_API.ACCESS_TYPES,
       },
       {
@@ -45,6 +48,7 @@ export class SupportedServiceList {
         description: SERVICE_INFO.DASHBOARD.description,
         swaggerAPIDocPath: SERVICE_INFO.DASHBOARD.swaggerAPIDocPath,
         accessList: SERVICES.DASHBOARD.ACCESS_TYPES,
+        accessList: SERVICES.CAVACH_API.ACCESS_TYPES
       },
     ];
   }
