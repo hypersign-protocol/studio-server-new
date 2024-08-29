@@ -51,6 +51,7 @@ export class TeamController {
     status: 200,
   })
   @Get()
+  @UsePipes(ValidationPipe)
   findAll(@Req() req) {
     const { user } = req;
 
@@ -63,6 +64,7 @@ export class TeamController {
     status: 200,
   })
   @Get(':id')
+  @UsePipes(ValidationPipe)
   findOne(@Param('id') id: string, @Req() req): Promise<CreateRoleResponseDTO> {
     const { user } = req;
     return this.roleSerive.findOne(id, user);
@@ -73,6 +75,7 @@ export class TeamController {
     status: 200,
   })
   @Patch(':id')
+  @UsePipes(ValidationPipe)
   update(
     @Param('id') id: string,
     @Body() updateRole: UpdateRoleDTO,
@@ -88,6 +91,7 @@ export class TeamController {
     status: 200,
   })
   @Delete(':id')
+  @UsePipes(ValidationPipe)
   remove(@Param('id') id: string, @Req() req) {
     const { user } = req;
 
