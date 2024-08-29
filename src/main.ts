@@ -22,7 +22,7 @@ import { randomUUID } from 'crypto';
 import { SupportedServiceModule } from './supported-service/supported-service.module';
 import { SocialLoginModule } from './social-login/social-login.module';
 import { CreditModule } from './credits/credits.module';
-import { TeamModule } from './team/team.module';
+import { TeamModule } from './roles/role.module';
 import { PeopleModule } from './people/people.module';
 
 // eslint-disable-next-line

@@ -26,8 +26,9 @@ export class supportedServiceResponseDto {
   @ApiProperty({
     description: 'domain',
     example: 'api.cavach.hypersign.id',
+    required: false,
   })
-  domain: string;
+  domain?: string;
 
   @ApiProperty({
     description: 'description',

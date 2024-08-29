@@ -22,7 +22,7 @@ import { DeletePersonDto } from '../dto/update-person.dto';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AllExceptionsFilter } from 'src/utils/utils';
 @UseFilters(AllExceptionsFilter)
-@ApiTags('people')
+@ApiTags('People')
 @ApiBearerAuth('Authorization')
 @Controller('/api/v1/people')
 export class PeopleController {
@@ -68,7 +68,6 @@ export class PeopleController {
   @UsePipes(ValidationPipe)
   async getAllPeople(@Req() req) {
     const { user } = req;
-
     return this.peopleService.getAllPeople(user);
   }
 
@@ -81,7 +80,6 @@ export class PeopleController {
   @UsePipes(ValidationPipe)
   async getAllInvites(@Req() req) {
     const { user } = req;
-
     return this.peopleService.getAllInvites(user);
   }
 
@@ -89,7 +87,6 @@ export class PeopleController {
   @UsePipes(ValidationPipe)
   async deletePeople(@Req() req, @Body() body: DeletePersonDto) {
     const { user } = req;
-
     return this.peopleService.deletePerson(user, body);
   }
 }

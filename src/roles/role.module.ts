@@ -1,28 +1,23 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
-import { TeamService } from './team.service';
-import { TeamController } from './team.controller';
+import { RoleService } from './role.service';
+import { TeamController } from './controllers/role.controller';
 import { JWTAuthorizeMiddleware } from 'src/utils/middleware/jwt-authorization.middleware';
 import { UserModule } from 'src/user/user.module';
 import { UserRepository } from 'src/user/repository/user.repository';
 import { MongooseModule } from '@nestjs/mongoose';
-import { Team, TeamSchema } from './schemas/team.schema';
+import { Role, RoleSchema } from './schemas/role.schema';
 import { User, UserSchema } from 'src/user/schema/user.schema';
-import { TeamMember, TeamMemberSchema } from './schemas/teamMember.schema';
+import { RoleRepository } from './repository/role.repository';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: Team.name, schema: TeamSchema }]),
+    MongooseModule.forFeature([{ name: Role.name, schema: RoleSchema }]),
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
-    MongooseModule.forFeature([
-      {
-        name: TeamMember.name,
-        schema: TeamMemberSchema,
-      },
-    ]),
+
     UserModule,
   ],
   controllers: [TeamController],
-  providers: [TeamService, UserRepository],
+  providers: [RoleService, UserRepository, RoleRepository],
 })
 export class TeamModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
