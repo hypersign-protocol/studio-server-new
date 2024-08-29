@@ -14,10 +14,11 @@ import {
 import { PeopleService } from '../services/people.service';
 import {
   CreateInviteDto,
+  InviteListResponseDTO,
   InviteResponseDTO,
   PeopleListResponseDTO,
 } from '../dto/create-person.dto';
-import { DeletePersonDto, UpdatePersonDto } from '../dto/update-person.dto';
+import { DeletePersonDto } from '../dto/update-person.dto';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AllExceptionsFilter } from 'src/utils/utils';
 @UseFilters(AllExceptionsFilter)
@@ -73,7 +74,7 @@ export class PeopleController {
 
   @ApiResponse({
     status: 200,
-    type: PeopleListResponseDTO,
+    type: InviteListResponseDTO,
     isArray: true,
   })
   @Get('/invites')

@@ -120,3 +120,66 @@ export class PeopleListResponseDTO {
   })
   authenticators: boolean;
 }
+
+export class InviteListResponseDTO {
+  @ApiProperty({
+    name: 'adminId',
+    type: String,
+    example: '61e4196c-0ebf-4481-bbde-2f008b1b24f2',
+  })
+  adminId: string;
+
+  @ApiProperty({
+    name: 'userId',
+    type: String,
+    example: '9ad664d0-9138-4df8-bbe1-95422b442fe9',
+  })
+  userId: string;
+
+  @ApiProperty({
+    name: 'inviteCode',
+    type: String,
+    example: 'f6932455-6ad1-477b-b0db-692ad52b3239',
+  })
+  inviteCode: string;
+
+  @ApiProperty({
+    name: 'accepted',
+    type: Boolean,
+    example: false,
+  })
+  accepted: string;
+  @ApiProperty({
+    name: 'invitationValidTill',
+    type: Date,
+    example: '2024-08-28T14:49:08.149Z',
+  })
+  invitationValidTill: string;
+  @ApiProperty({
+    name: 'acceptedAt',
+    type: Date,
+    example: '2024-08-28T14:49:08.149Z',
+  })
+  acceptedAt: string;
+
+  @ApiProperty({
+    name: 'createdAt',
+    type: Date,
+    example: '2024-08-28T14:49:08.149Z',
+  })
+  createdAt: string;
+
+  @ApiProperty({
+    name: 'updatedAt',
+    type: Date,
+    example: '2024-08-28T14:49:08.149Z',
+  })
+  updatedAt: string;
+
+  @ApiProperty({
+    name: 'adminEmailId',
+    type: String,
+    example: 'dcat9816@gmail.com',
+  })
+  adminEmailId: string;
+}
