@@ -5,10 +5,11 @@ type Serivce = {
   id: string;
   dBSuffix: string;
   name: string;
-  domain: string;
+  domain?: string;
   description: string;
   swaggerAPIDocPath: string;
-  accessList: any
+  accessList: any;
+
 };
 
 @Injectable()
@@ -24,7 +25,8 @@ export class SupportedServiceList {
           this.config.get('SSI_API_DOMAIN') || SERVICE_INFO.SSI_API.baseDomain,
         description: SERVICE_INFO.SSI_API.description,
         swaggerAPIDocPath: SERVICE_INFO.SSI_API.swaggerAPIDocPath,
-        accessList: SERVICES.SSI_API.ACCESS_TYPES
+        accessList: SERVICES.SSI_API.ACCESS_TYPES,
+
       },
       {
         id: SERVICE_INFO.CAVACH_API.type,
@@ -35,6 +37,17 @@ export class SupportedServiceList {
           SERVICE_INFO.CAVACH_API.baseDomain,
         description: SERVICE_INFO.CAVACH_API.description,
         swaggerAPIDocPath: SERVICE_INFO.CAVACH_API.swaggerAPIDocPath,
+
+        accessList: SERVICES.CAVACH_API.ACCESS_TYPES,
+      },
+      {
+        id: SERVICE_INFO.DASHBOARD.type,
+        dBSuffix: SERVICE_INFO.DASHBOARD.type,
+        name: SERVICE_INFO.DASHBOARD.name,
+
+        description: SERVICE_INFO.DASHBOARD.description,
+        swaggerAPIDocPath: SERVICE_INFO.DASHBOARD.swaggerAPIDocPath,
+        accessList: SERVICES.DASHBOARD.ACCESS_TYPES,
         accessList: SERVICES.CAVACH_API.ACCESS_TYPES
       },
     ];
@@ -46,12 +59,16 @@ export class SupportedServiceList {
     if (serviceType == SERVICE_TYPES.SSI_API) {
       // Giving access of SSI service by default
       Object.keys(SERVICES[serviceType].ACCESS_TYPES).forEach((access) => {
-        const serviceAccess = {
-          serviceType: serviceType,
-          access: access,
-          expiryDate: null, // never expires
-        };
-        defaultServicesAccess.push(serviceAccess);
+        if (access == SERVICES[serviceType].ACCESS_TYPES.ALL) {
+          return;
+        } else {
+          const serviceAccess = {
+            serviceType: serviceType,
+            access: access,
+            expiryDate: null, // never expires
+          };
+          defaultServicesAccess.push(serviceAccess);
+        }
       });
     } else if (serviceType == SERVICE_TYPES.CAVACH_API) {
       Object.keys(SERVICES[serviceType].ACCESS_TYPES).forEach((access) => {
