@@ -114,9 +114,9 @@ export class PeopleListResponseDTO {
   })
   userEmailId: string;
   @ApiProperty({
-    name: 'authenticators',
-    type: Array,
-    example: [],
+    name: 'authenticatorEnabled',
+    type: Boolean,
+    example: false,
   })
   authenticators: Array<object>;
 }

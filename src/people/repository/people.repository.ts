@@ -73,6 +73,57 @@ export class AdminPeopleRepository {
       {
         $unset: 'peoples',
       },
+      {
+        $addFields: {
+          authenticatorEnabled: {
+            $cond: {
+              if: {
+                $eq: [
+                  {
+                    $size: '$authenticators',
+                  },
+                  0,
+                ],
+              },
+              then: false,
+              else: true,
+            },
+          },
+        },
+      },
+      {
+        $unset: 'authenticators',
+      },
+    ]);
+  }
+  async findAllAdminByUser(userId) {
+    return this.adminPeopleModel.aggregate([
+      {
+        $match: {
+          userId,
+        },
+      },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'adminId',
+          foreignField: 'userId',
+          as: 'peoples',
+        },
+      },
+      {
+        $unwind: {
+          path: '$peoples',
+        },
+      },
+      {
+        $addFields: {
+          adminEmailId: '$peoples.email',
+        },
+      },
+      {
+        $unset: 'peoples',
+      },
     ]);
   }
 }

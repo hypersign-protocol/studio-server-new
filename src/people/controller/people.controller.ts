@@ -41,7 +41,7 @@ export class PeopleController {
 
   @ApiResponse({
     status: 200,
-    description: 'Accpct invite',
+    description: 'Accept invite',
     type: InviteResponseDTO,
   })
   @Post('/invite/accept/:inviteCode')
@@ -69,6 +69,19 @@ export class PeopleController {
     const { user } = req;
 
     return this.peopleService.getAllPeople(user);
+  }
+
+  @ApiResponse({
+    status: 200,
+    type: PeopleListResponseDTO,
+    isArray: true,
+  })
+  @Get('/invites')
+  @UsePipes(ValidationPipe)
+  async getAllInvites(@Req() req) {
+    const { user } = req;
+
+    return this.peopleService.getAllInvites(user);
   }
 
   @Delete('/')

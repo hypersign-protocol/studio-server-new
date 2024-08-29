@@ -28,7 +28,7 @@ export class PeopleService {
     });
     if (userDetails == null) {
       throw new NotFoundException(
-        `Canont invite an non existing user with email: ${emailId}`,
+        `Cannot invite an non existing user with email: ${emailId}`,
         `User not found`,
       );
     }
@@ -69,6 +69,9 @@ export class PeopleService {
       userId: userDetails?.userId,
       inviteCode,
     });
+    if (adminPeople == null) {
+      throw new BadRequestException('Wrong invitation code');
+    }
     const expiry = new Date(adminPeople.invitationValidTill);
     const now = new Date();
 
@@ -83,7 +86,7 @@ export class PeopleService {
     }
 
     if (adminPeople?.accepted) {
-      throw new BadRequestException('Invite has been accpcted already');
+      throw new BadRequestException('Invite has been accepted already');
     }
     const acceptedInvite = await this.adminPeopleService.findOneAndUpdate(
       {
@@ -129,6 +132,9 @@ export class PeopleService {
     return await this.adminPeopleService.findAllPeopleByAdmin(user.userId);
   }
 
+  async getAllInvites(user) {
+    return await this.adminPeopleService.findAllAdminByUser(user.userId);
+  }
   async deletePerson(adminUserData, body: DeletePersonDto) {
     const { emailId } = body;
     const userDetails = await this.userService.findOne({
@@ -136,7 +142,7 @@ export class PeopleService {
     });
     if (userDetails == null) {
       throw new NotFoundException(
-        `Canont invite an non existing user with email: ${emailId}`,
+        `Cannot invite an non existing user with email: ${emailId}`,
         `User not found`,
       );
     }
