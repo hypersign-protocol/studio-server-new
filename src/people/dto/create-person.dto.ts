@@ -118,5 +118,5 @@ export class PeopleListResponseDTO {
     type: Boolean,
     example: false,
   })
-  authenticators: Array<object>;
+  authenticators: boolean;
 }
