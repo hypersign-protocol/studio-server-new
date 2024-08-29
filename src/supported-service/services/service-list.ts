@@ -8,6 +8,7 @@ type Serivce = {
   domain: string;
   description: string;
   swaggerAPIDocPath: string;
+  accessList: any
 };
 
 @Injectable()
@@ -23,6 +24,7 @@ export class SupportedServiceList {
           this.config.get('SSI_API_DOMAIN') || SERVICE_INFO.SSI_API.baseDomain,
         description: SERVICE_INFO.SSI_API.description,
         swaggerAPIDocPath: SERVICE_INFO.SSI_API.swaggerAPIDocPath,
+        accessList: SERVICES.SSI_API.ACCESS_TYPES
       },
       {
         id: SERVICE_INFO.CAVACH_API.type,
@@ -33,6 +35,7 @@ export class SupportedServiceList {
           SERVICE_INFO.CAVACH_API.baseDomain,
         description: SERVICE_INFO.CAVACH_API.description,
         swaggerAPIDocPath: SERVICE_INFO.CAVACH_API.swaggerAPIDocPath,
+        accessList: SERVICES.CAVACH_API.ACCESS_TYPES
       },
     ];
   }
