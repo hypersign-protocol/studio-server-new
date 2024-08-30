@@ -20,7 +20,6 @@ export class JWTAccessAccountMiddleware implements NestMiddleware {
         // @ts-ignore
 
         const adminId = req.user.accessAccount.userId;
-        console.log(userId, adminId);
 
         const member = await this.adminPeople.findOne({ adminId, userId });
         if (member == null) {
