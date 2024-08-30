@@ -95,7 +95,7 @@ export class SocialLoginService {
       appUserID: userInfo.userId,
       userAccessList: userInfo.accessList,
       isTwoFactorEnabled: authenticator ? true : false,
-      isTwoFactorAuthenticated: false,
+      isTwoFactorAuthenticated: req.user.isTwoFactorAuthenticated? req.user.isTwoFactorAuthenticated: false,
       authenticatorType: authenticator?.type,
     };
     const secret = this.config.get('JWT_SECRET');
