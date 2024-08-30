@@ -31,6 +31,18 @@ export class AdminPeople {
     type: Date,
   })
   invitationValidTill: string;
+
+  @Prop({
+    name: 'roleId',
+    required: false,
+  })
+  roleId?: string;
+
+  @Prop({
+    name: 'roleName',
+    required: false,
+  })
+  roleName?: string;
 }
 
 export const AdminPeopleSchema = SchemaFactory.createForClass(AdminPeople);

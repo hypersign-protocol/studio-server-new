@@ -13,6 +13,7 @@ import {
 } from '@nestjs/common';
 import { PeopleService } from '../services/people.service';
 import {
+  AttachRoleDTO,
   CreateInviteDto,
   InviteListResponseDTO,
   InviteResponseDTO,
@@ -88,5 +89,17 @@ export class PeopleController {
   async deletePeople(@Req() req, @Body() body: DeletePersonDto) {
     const { user } = req;
     return this.peopleService.deletePerson(user, body);
+  }
+
+  @Post('/roles/attach')
+  @UsePipes(ValidationPipe)
+  async attachRoles(@Body() body: AttachRoleDTO, @Req() req) {
+    const { user } = req;
+    return this.peopleService.attachRole(body, user);
+  }
+
+  @Post('/admin/login')
+  @UsePipes(ValidationPipe)
+  async adminLogin(@Body() body: AttachRoleDTO) {
   }
 }

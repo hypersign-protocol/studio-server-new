@@ -1,18 +1,21 @@
 import { ApiProperty, PartialType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
+  ArrayUnique,
   IsDate,
   IsDateString,
   IsEmpty,
   IsEnum,
   IsOptional,
   IsString,
+  Validate,
   ValidateNested,
 } from 'class-validator';
 import {
   SERVICE_TYPES,
   SERVICES,
 } from 'src/supported-service/services/iServiceList';
+import { AreAllPropertiesUnique } from 'src/utils/customDecorator/arrayUnique.decorator';
 
 export class AccessList {
   @ApiProperty({
@@ -74,6 +77,7 @@ export class CreateRoleDTO {
   })
   @ValidateNested()
   @Type(() => AccessList)
+  @AreAllPropertiesUnique()
   permissions: Array<AccessList>;
 }
 

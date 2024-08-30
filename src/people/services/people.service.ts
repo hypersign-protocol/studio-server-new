@@ -6,17 +6,22 @@ import {
 } from '@nestjs/common';
 import { v4 as uuidv4 } from 'uuid';
 
-import { CreateInviteDto } from '../dto/create-person.dto';
+import {
+  AdminLoginDTO,
+  AttachRoleDTO,
+  CreateInviteDto,
+} from '../dto/create-person.dto';
 import { DeletePersonDto, UpdatePersonDto } from '../dto/update-person.dto';
 import { UserRepository } from 'src/user/repository/user.repository';
 import { AdminPeopleRepository } from '../repository/people.repository';
-import { use } from 'passport';
+import { RoleRepository } from 'src/roles/repository/role.repository';
 
 @Injectable()
 export class PeopleService {
   constructor(
     private readonly userService: UserRepository,
     private readonly adminPeopleService: AdminPeopleRepository,
+    private readonly roleRepository: RoleRepository,
   ) {}
   async createInvitation(createPersonDto: CreateInviteDto, adminUserData) {
     const { emailId } = createPersonDto;
@@ -158,5 +163,77 @@ export class PeopleService {
       userId: userDetails.userId,
       adminId: adminUserData.userId,
     });
+  }
+
+  async attachRole(body: AttachRoleDTO, user) {
+    const { userId: adminId } = user;
+    const { userId, roleId } = body;
+    const adminPeople = await this.adminPeopleService.findOne({
+      adminId,
+      userId,
+    });
+
+    if (adminPeople == null) {
+      throw new NotFoundException('Member not found');
+    }
+    if (adminPeople.accepted == false) {
+      throw new BadRequestException('Invitation is pending');
+    }
+
+    const role = await this.roleRepository.findOne({
+      _id: roleId,
+      userId: adminId,
+    });
+
+    if (role == null) {
+      throw new NotFoundException('Role not found');
+    }
+
+    return await this.adminPeopleService.findOneAndUpdate(
+      {
+        adminId,
+        userId,
+      },
+      {
+        roleId: role._id.toString(),
+        roleName: role.roleName,
+      },
+    );
+  }
+  async adminLogin(body: AdminLoginDTO, user: any) {
+    const { adminId } = body;
+    const adminData = await this.userService.findOne({
+      userId: adminId,
+    });
+    if (adminData == null) {
+      throw new BadRequestException('Admin user not found');
+    }
+    const userId = user.userId;
+
+    const adminPeople = await this.adminPeopleService.findOne({
+      adminId,
+      userId,
+    });
+
+    if (adminPeople == null) {
+      throw new NotFoundException(
+        'You are not the member of ' + adminData.email,
+      );
+    }
+
+    if (adminPeople.roleId == null) {
+      throw new BadRequestException(
+        'You do not have any role to access admin account',
+      );
+    }
+
+    const role = await this.roleRepository.findOne({
+      _id: adminPeople.roleId,
+    });
+
+    const access_account = {
+      ...adminData
+    };
+    // access_account.accessList
   }
 }

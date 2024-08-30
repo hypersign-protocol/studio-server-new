@@ -8,6 +8,8 @@ import { UserModule } from 'src/user/user.module';
 import { UserService } from 'src/user/services/user.service';
 // import { Invite, InviteSchema } from './schema/invite.schema';
 import { AdminPeopleRepository } from './repository/people.repository';
+import { RoleRepository } from 'src/roles/repository/role.repository';
+import { Role, RoleSchema } from 'src/roles/schemas/role.schema';
 // import { InviteRepository } from './repository/invite.respository';
 
 @Module({
@@ -15,11 +17,17 @@ import { AdminPeopleRepository } from './repository/people.repository';
     MongooseModule.forFeature([
       { name: AdminPeople.name, schema: AdminPeopleSchema },
     ]),
+    MongooseModule.forFeature([{ name: Role.name, schema: RoleSchema }]),
 
     UserModule,
   ],
   controllers: [PeopleController],
-  providers: [PeopleService, UserService, AdminPeopleRepository],
+  providers: [
+    PeopleService,
+    UserService,
+    AdminPeopleRepository,
+    RoleRepository,
+  ],
 })
 export class PeopleModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

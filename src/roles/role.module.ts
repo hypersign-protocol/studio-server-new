@@ -18,6 +18,7 @@ import { RoleRepository } from './repository/role.repository';
   ],
   controllers: [TeamController],
   providers: [RoleService, UserRepository, RoleRepository],
+  exports: [RoleRepository],
 })
 export class TeamModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

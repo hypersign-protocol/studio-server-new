@@ -37,6 +37,7 @@ export class TeamController {
   @UsePipes(ValidationPipe)
   async create(@Body() createRole: CreateRoleDTO, @Req() req) {
     const { user } = req;
+    console.log(createRole);
 
     return this.roleSerive.create(createRole, user);
   }
