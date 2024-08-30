@@ -175,6 +175,7 @@ export class SocialLoginService {
       isTwoFactorEnabled: user.authenticators && user.authenticators.length > 0,
       isTwoFactorAuthenticated: isVerified,
       authenticatorType,
+      accessAccount: user.accessAccount,
     };
     const accessToken = await this.jwt.signAsync(payload, {
       expiresIn: '24h',
