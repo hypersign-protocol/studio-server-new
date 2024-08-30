@@ -232,7 +232,7 @@ export class PeopleService {
     });
 
     const access_account = {
-      ...adminData
+      ...adminData,
     };
     // access_account.accessList
   }

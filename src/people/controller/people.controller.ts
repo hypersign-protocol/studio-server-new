@@ -13,6 +13,7 @@ import {
 } from '@nestjs/common';
 import { PeopleService } from '../services/people.service';
 import {
+  AdminLoginDTO,
   AttachRoleDTO,
   CreateInviteDto,
   InviteListResponseDTO,
@@ -100,6 +101,8 @@ export class PeopleController {
 
   @Post('/admin/login')
   @UsePipes(ValidationPipe)
-  async adminLogin(@Body() body: AttachRoleDTO) {
+  async adminLogin(@Body() body: AdminLoginDTO, @Req() req) {
+    const { user } = req;
+    return this.peopleService.adminLogin(body, user);
   }
 }
