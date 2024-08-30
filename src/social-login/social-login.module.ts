@@ -25,6 +25,7 @@ import { TwoFAAuthorizationMiddleware } from 'src/utils/middleware/2FA-jwt-autho
   ],
   controllers: [SocialLoginController],
   providers: [SocialLoginService, GoogleStrategy, SupportedServiceList],
+  exports: [SocialLoginService],
 })
 export class SocialLoginModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

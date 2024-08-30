@@ -8,15 +8,32 @@ import { AppOauthController } from './app-oauth.controller';
 import { AppAuthModule } from 'src/app-auth/app-auth.module';
 import { JWTAuthorizeMiddleware } from 'src/utils/middleware/jwt-authorization.middleware';
 import { UserModule } from 'src/user/user.module';
+import { JWTAccessAccountMiddleware } from 'src/utils/middleware/jwt-accessAccount.middlerwere';
+import { MongooseModule } from '@nestjs/mongoose';
+import { AdminPeopleRepository } from 'src/people/repository/people.repository';
+import {
+  AdminPeople,
+  AdminPeopleSchema,
+} from 'src/people/schema/people.schema';
 @Module({
-  imports: [AppAuthModule, UserModule],
+  imports: [
+    AppAuthModule,
+    UserModule,
+    MongooseModule.forFeature([
+      { name: AdminPeople.name, schema: AdminPeopleSchema },
+    ]),
+  ],
   controllers: [AppOauthController],
-  providers: [],
+  providers: [AdminPeopleRepository],
 })
 export class AppOauthModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(JWTAuthorizeMiddleware)
+      .exclude({ path: 'api/v1/app/oauth', method: RequestMethod.POST })
+      .forRoutes(AppOauthController);
+    consumer
+      .apply(JWTAccessAccountMiddleware)
       .exclude({ path: 'api/v1/app/oauth', method: RequestMethod.POST })
       .forRoutes(AppOauthController);
   }

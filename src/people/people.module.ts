@@ -10,6 +10,8 @@ import { UserService } from 'src/user/services/user.service';
 import { AdminPeopleRepository } from './repository/people.repository';
 import { RoleRepository } from 'src/roles/repository/role.repository';
 import { Role, RoleSchema } from 'src/roles/schemas/role.schema';
+import { SocialLoginModule } from 'src/social-login/social-login.module';
+import { JwtModule } from '@nestjs/jwt';
 // import { InviteRepository } from './repository/invite.respository';
 
 @Module({
@@ -18,8 +20,9 @@ import { Role, RoleSchema } from 'src/roles/schemas/role.schema';
       { name: AdminPeople.name, schema: AdminPeopleSchema },
     ]),
     MongooseModule.forFeature([{ name: Role.name, schema: RoleSchema }]),
-
+    SocialLoginModule,
     UserModule,
+    JwtModule,
   ],
   controllers: [PeopleController],
   providers: [
@@ -28,6 +31,7 @@ import { Role, RoleSchema } from 'src/roles/schemas/role.schema';
     AdminPeopleRepository,
     RoleRepository,
   ],
+  exports: [AdminPeopleRepository],
 })
 export class PeopleModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

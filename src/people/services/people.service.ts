@@ -11,10 +11,13 @@ import {
   AttachRoleDTO,
   CreateInviteDto,
 } from '../dto/create-person.dto';
-import { DeletePersonDto, UpdatePersonDto } from '../dto/update-person.dto';
+import { DeletePersonDto } from '../dto/update-person.dto';
 import { UserRepository } from 'src/user/repository/user.repository';
 import { AdminPeopleRepository } from '../repository/people.repository';
 import { RoleRepository } from 'src/roles/repository/role.repository';
+import { SocialLoginService } from 'src/social-login/services/social-login.service';
+import { JwtService } from '@nestjs/jwt';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class PeopleService {
@@ -22,6 +25,9 @@ export class PeopleService {
     private readonly userService: UserRepository,
     private readonly adminPeopleService: AdminPeopleRepository,
     private readonly roleRepository: RoleRepository,
+    private readonly socialLoginService: SocialLoginService,
+    private readonly jwt: JwtService,
+    private readonly configService: ConfigService,
   ) {}
   async createInvitation(createPersonDto: CreateInviteDto, adminUserData) {
     const { emailId } = createPersonDto;
@@ -231,9 +237,38 @@ export class PeopleService {
       _id: adminPeople.roleId,
     });
 
-    const access_account = {
+    // const jwt = await this.socialLoginService.socialLogin({
+    //   user: {
+    //     email: adminData.email,
+    //   },
+    // });
+
+    delete adminData.accessList;
+    delete adminData['_id'];
+    delete adminData.authenticators;
+
+    const accessAccount = {
       ...adminData,
+      accessList: role.permissions,
     };
-    // access_account.accessList
+    const payload = {
+      appUserID: user.userId,
+      ...user,
+    };
+    delete payload._id;
+
+    delete payload.userId;
+
+    payload.accessAccount = accessAccount;
+
+    const secret = this.configService.get('JWT_SECRET');
+    const token = await this.jwt.signAsync(payload, {
+      expiresIn: '24h',
+      secret,
+    });
+
+    return {
+      authToken: token,
+    };
   }
 }
