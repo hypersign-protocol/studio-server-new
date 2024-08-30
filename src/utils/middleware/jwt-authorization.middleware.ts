@@ -30,7 +30,11 @@ export class JWTAuthorizeMiddleware implements NestMiddleware {
         const user = await this.userRepository.findOne({
           userId: decoded.appUserID,
         });
+        if (!user) {
+          throw new Error('User not found');
+        }
         req['user'] = user;
+
         if (decoded.isTwoFactorEnabled !== undefined) {
           req['user']['isTwoFactorEnabled'] = decoded.isTwoFactorEnabled;
         }
@@ -39,6 +43,11 @@ export class JWTAuthorizeMiddleware implements NestMiddleware {
           req['user']['isTwoFactorAuthenticated'] =
             decoded.isTwoFactorAuthenticated;
         }
+
+        if (decoded.accessAccount !== undefined) {
+          req['user']['accessAccount'] = decoded.accessAccount;
+        }
+
         Logger.log(JSON.stringify(req.user), 'JWTAuthorizeMiddleware');
       }
     } catch (e) {

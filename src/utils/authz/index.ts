@@ -62,7 +62,6 @@ export async function generateAuthzGrantTxnMessage(
     value: authGrantMsg,
   };
 
-
   const fee: StdFee = {
     amount: [
       {

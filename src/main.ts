@@ -21,6 +21,9 @@ import { UserModule } from './user/user.module';
 import { randomUUID } from 'crypto';
 import { SupportedServiceModule } from './supported-service/supported-service.module';
 import { SocialLoginModule } from './social-login/social-login.module';
+import { CreditModule } from './credits/credits.module';
+import { TeamModule } from './roles/role.module';
+import { PeopleModule } from './people/people.module';
 
 // eslint-disable-next-line
 const HypersignAuth = require('hypersign-auth-node-sdk');
@@ -130,10 +133,13 @@ async function bootstrap() {
     const orgDocuments = SwaggerModule.createDocument(app, orgDocConfig, {
       include: [
         AppAuthModule,
+        CreditModule,
         AppOauthModule,
         UserModule,
         SupportedServiceModule,
         SocialLoginModule,
+        TeamModule,
+        PeopleModule,
       ], // don't include, say, BearsModule
     });
     const tenantOptions = {

@@ -3,7 +3,6 @@ import {
   Module,
   NestModule,
   RequestMethod,
-  forwardRef,
 } from '@nestjs/common';
 
 import { AppAuthService } from './services/app-auth.service';
@@ -24,23 +23,36 @@ import { SupportedServiceList } from 'src/supported-service/services/service-lis
 import { JWTAuthorizeMiddleware } from 'src/utils/middleware/jwt-authorization.middleware';
 import { UserModule } from 'src/user/user.module';
 import { TwoFAAuthorizationMiddleware } from 'src/utils/middleware/2FA-jwt-authorization.middleware';
+import { CreditModule } from 'src/credits/credits.module';
+import { JWTAccessAccountMiddleware } from 'src/utils/middleware/jwt-accessAccount.middlerwere';
+import { AdminPeopleRepository } from 'src/people/repository/people.repository';
+import {
+  AdminPeople,
+  AdminPeopleSchema,
+} from 'src/people/schema/people.schema';
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: App.name, schema: AppSchema }]),
+    MongooseModule.forFeature([
+      { name: AdminPeople.name, schema: AdminPeopleSchema },
+    ]),
     HidWalletModule,
     EdvModule,
     UserModule,
     JwtModule.register({}),
+    CreditModule,
   ],
   providers: [
     AppAuthService,
     AppRepository,
+
     HidWalletService,
     AppAuthSecretService,
     AppAuthApiKeyService,
     SupportedServiceList,
     SupportedServiceService,
+    AdminPeopleRepository,
   ],
   controllers: [AppAuthController],
 
@@ -59,6 +71,10 @@ export class AppAuthModule implements NestModule {
 
     consumer
       .apply(JWTAuthorizeMiddleware)
+      .exclude({ path: '/api/v1/app/marketplace', method: RequestMethod.GET })
+      .forRoutes(AppAuthController);
+    consumer
+      .apply(JWTAccessAccountMiddleware)
       .exclude({ path: '/api/v1/app/marketplace', method: RequestMethod.GET })
       .forRoutes(AppAuthController);
     consumer

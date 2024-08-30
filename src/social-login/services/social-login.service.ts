@@ -95,7 +95,7 @@ export class SocialLoginService {
       appUserID: userInfo.userId,
       userAccessList: userInfo.accessList,
       isTwoFactorEnabled: authenticator ? true : false,
-      isTwoFactorAuthenticated: isVerified,
+      isTwoFactorAuthenticated: false,
       authenticatorType: authenticator?.type,
     };
     const secret = this.config.get('JWT_SECRET');
@@ -175,6 +175,7 @@ export class SocialLoginService {
       isTwoFactorEnabled: user.authenticators && user.authenticators.length > 0,
       isTwoFactorAuthenticated: isVerified,
       authenticatorType,
+      accessAccount: user.accessAccount,
     };
     const accessToken = await this.jwt.signAsync(payload, {
       expiresIn: '24h',

@@ -91,10 +91,29 @@ export class SocialLoginController {
   @Post('/api/v1/auth')
   dispatchUserDetail(@Req() req) {
     Logger.log('dispatchUserDetail() method starts', 'SocialLoginController');
+    const userDetail = req.user;
+    if (
+      userDetail &&
+      userDetail.authenticators &&
+      userDetail.authenticators.length > 0
+    ) {
+      const authenticator = userDetail.authenticators.map(
+        ({ secret, ...rest }) => rest,
+      );
+      userDetail.authenticators = authenticator;
+    }
     return {
       status: 200,
-      message: req.user,
+      message: userDetail,
       error: null,
+    };
+  }
+
+  @ApiBearerAuth('Authorization')
+  @Post('/api/v1/auth/login/refresh')
+  async generateRefreshToken(@Req() req) {
+    return {
+      authToken: await this.socialLoginService.socialLogin(req),
     };
   }
 

@@ -1,6 +1,7 @@
 export enum SERVICE_TYPES {
   SSI_API = 'SSI_API',
   CAVACH_API = 'CAVACH_API',
+  DASHBOARD = 'DASHBOARD',
 }
 
 export enum APP_ENVIRONMENT {
@@ -24,9 +25,18 @@ export const CAVACH_API_SERVICE_INFO = Object.freeze({
   baseDomain: 'https://api.cavach.hypersign.id',
 });
 
+export const DASHBOARD_INFO = Object.freeze({
+  type: SERVICE_TYPES.DASHBOARD,
+  description: 'Entity Dashboard Service',
+  name: 'Dashboard',
+  swaggerAPIDocPath: '/api',
+  baseDomain: 'https://api.entity.dashoboard.hypersign.id',
+});
+
 export const SERVICE_INFO = Object.freeze({
   SSI_API: SSI_API_SERVICE_INFO,
   CAVACH_API: CAVACH_API_SERVICE_INFO,
+  DASHBOARD: DASHBOARD_INFO,
 });
 
 // eslint-disable-next-line
@@ -35,6 +45,15 @@ export namespace SERVICES {
   export namespace SSI_API {
     export enum ACCESS_TYPES {
       ALL = 'ALL',
+      'CREATE_DID' = 'CREATE_DID',
+      'REGISTER_DID' = 'REGISTER_DID',
+      'RESOLVE_DID' = 'RESOLVE_DID',
+      'ISSUE_CREDENTIAL' = 'ISSUE_CREDENTIAL',
+      'VERIFY_CREDENTIAL' = 'VERIFY_CREDENTIAL',
+      'REGISTER_CREDENTIAL_STATUS' = 'REGISTER_CREDENTIAL_STATUS',
+      'RESOLVE_CREDENTIAL_STATUS' = 'RESOLVE_CREDENTIAL_STATUS',
+      'RESOLVE_SCHEMA' = 'RESOLVE_SCHEMA',
+      'REGISTER_SCHEMA' = 'REGISTER_SCHEMA',
     }
   }
 
@@ -51,6 +70,15 @@ export namespace SERVICES {
       READ_WIDGET_CONFIG = 'READ_WIDGET_CONFIG',
       WRITE_WIDGET_CONFIG = 'WRITE_WIDGET_CONFIG',
       UPDATE_WIDGET_CONFIG = 'UPDATE_WIDGET_CONFIG',
+    }
+  }
+  // eslint-disable-next-line
+  export namespace DASHBOARD {
+    export enum ACCESS_TYPES {
+      ALL = 'ALL',
+      READ_SERVICE = 'READ_SERVICE',
+      WRITE_SERVICE = 'WRITE_SERVICE',
+      UPDATE_SERVICE = 'UPDATE_SERVICE',
     }
   }
 }
