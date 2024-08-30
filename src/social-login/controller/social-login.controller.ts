@@ -109,6 +109,14 @@ export class SocialLoginController {
     };
   }
 
+  @ApiBearerAuth('Authorization')
+  @Post('/api/v1/auth/login/refresh')
+  async generateRefreshToken(@Req() req) {
+    return {
+      authToken: await this.socialLoginService.socialLogin(req),
+    };
+  }
+
   @ApiOkResponse({
     description: 'Generated QR successfully',
     type: Generate2FARespDto,

@@ -685,8 +685,8 @@ export class AppAuthService {
 
   async grantPermission(
     grantType: string,
-    userId: string,
     appId: string,
+    user,
   ): Promise<{ access_token; expiresIn; tokenType }> {
     switch (grantType) {
       case GRANT_TYPES.access_service_ssi:
@@ -703,16 +703,14 @@ export class AppAuthService {
       }
     }
 
-    const app = await this.getAppById(appId, userId);
+    const app = await this.getAppById(appId, user.userId);
     if (!app) {
       throw new BadRequestException(
         'Invalid service id or you do not have access of this service',
       );
     }
 
-    const userDetails = await this.userRepository.findOne({
-      userId: app.userId,
-    });
+    const userDetails = user;
     if (!userDetails) {
       throw new UnauthorizedException([
         'You do not have access to this service',

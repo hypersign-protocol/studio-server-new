@@ -13,6 +13,8 @@ import { SupportedServiceModule } from './supported-service/supported-service.mo
 import { SocialLoginModule } from './social-login/social-login.module';
 import { HypersignauthLoginModule } from './hypersignauth-login/hypersignauth-login.module';
 import { CreditModule } from './credits/credits.module';
+import { TeamModule } from './roles/role.module';
+import { PeopleModule } from './people/people.module';
 
 @Module({
   imports: [
@@ -29,6 +31,8 @@ import { CreditModule } from './credits/credits.module';
     SupportedServiceModule,
     SocialLoginModule,
     HypersignauthLoginModule,
+    TeamModule,
+    PeopleModule,
   ],
   controllers: [],
   providers: [

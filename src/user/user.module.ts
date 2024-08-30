@@ -12,6 +12,6 @@ import { SupportedServiceModule } from 'src/supported-service/supported-service.
   ],
   controllers: [UserController],
   providers: [UserService, UserRepository],
-  exports: [UserRepository, UserModule],
+  exports: [UserRepository],
 })
 export class UserModule {}
