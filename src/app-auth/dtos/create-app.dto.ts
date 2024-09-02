@@ -37,10 +37,10 @@ export class CreateAppDto {
   })
   @IsOptional()
   @IsArray()
-  @Matches(/^(https?:\/\/[^ ]+|\*)$/, {
-    each: true,
-    message: 'Whitelisted cors must be a valid url or *',
-  })
+  // @Matches(/^(https?:\/\/[^ ]+|\*)$/, {
+  //   each: true,
+  //   message: 'Whitelisted cors must be a valid url or *',
+  // })
   @Validate(SanitizeUrlValidator)
   whitelistedCors: Array<string>;
 
