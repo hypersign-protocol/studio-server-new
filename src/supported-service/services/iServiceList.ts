@@ -71,7 +71,8 @@ export namespace SERVICES {
       WRITE_WIDGET_CONFIG = 'WRITE_WIDGET_CONFIG',
       UPDATE_WIDGET_CONFIG = 'UPDATE_WIDGET_CONFIG',
     }
- 
+  }
+
   // eslint-disable-next-line
   export namespace DASHBOARD {
     export enum ACCESS_TYPES {
