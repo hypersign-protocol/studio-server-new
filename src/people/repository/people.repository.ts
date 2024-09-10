@@ -80,7 +80,7 @@ export class AdminPeopleRepository {
               if: {
                 $eq: [
                   {
-                    $size: '$authenticators',
+                    $size: { $ifNull: ['$authenticators', []] },
                   },
                   0,
                 ],
