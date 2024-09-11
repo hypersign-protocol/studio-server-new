@@ -200,12 +200,12 @@ export class AppAuthService {
         ],
         authGrantTxnMsgAndFeeDID.fee,
       );
+      await this.authzCreditService.createAuthzCredits({
+        userId,
+        appId,
+      });
     }
 
-    await this.authzCreditService.createAuthzCredits({
-      userId,
-      appId,
-    });
     // Finally stroring application in db
     // const txns = {
     //   transactionHash: '',
