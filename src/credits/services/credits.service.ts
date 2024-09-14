@@ -53,7 +53,7 @@ export class AuthzCreditService {
     );
     const payload = {
       purpose: 'CreditRecharge',
-      amount: 2100, // will take this as function parameter later
+      amount: 1501, // will take this as function parameter later
       amountDenom: 'uHID',
       validityPeriod: 6,
       serviceId: appId,
