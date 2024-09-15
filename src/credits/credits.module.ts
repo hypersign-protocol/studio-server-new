@@ -12,6 +12,7 @@ import {
   AdminPeople,
   AdminPeopleSchema,
 } from 'src/people/schema/people.schema';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import {
     MongooseModule.forFeature([
       { name: AdminPeople.name, schema: AdminPeopleSchema },
     ]),
+    JwtModule.register({}),
   ],
   controllers: [CreditsController],
   providers: [

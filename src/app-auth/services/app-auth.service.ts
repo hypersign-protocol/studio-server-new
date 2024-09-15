@@ -200,12 +200,12 @@ export class AppAuthService {
         ],
         authGrantTxnMsgAndFeeDID.fee,
       );
+      await this.authzCreditService.createAuthzCredits({
+        userId,
+        appId,
+      });
     }
 
-    await this.authzCreditService.createAuthzCredits({
-      userId,
-      appId,
-    });
     // Finally stroring application in db
     // const txns = {
     //   transactionHash: '',
@@ -228,7 +228,16 @@ export class AppAuthService {
       hasDomainVerified: createAppDto.hasDomainVerified,
     });
     Logger.log('App created successfully', 'app-auth-service');
-    return this.getAppResponse(appData, apiSecretKey);
+    const appResponse = this.getAppResponse(appData, apiSecretKey);
+    if (service.id == SERVICE_TYPES.CAVACH_API) {
+      this.authzCreditService.grantCavachCredit(
+        subdomain,
+        appId,
+        createAppDto.env ? createAppDto.env : APP_ENVIRONMENT.dev,
+        appResponse.tenantUrl,
+      );
+    }
+    return appResponse;
   }
 
   private getAppResponse(
