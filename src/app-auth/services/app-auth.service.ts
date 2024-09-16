@@ -35,6 +35,8 @@ import {
   MSG_UPDATE_DID_TYPEURL,
 } from 'src/utils/authz';
 import { AuthzCreditService } from 'src/credits/services/credits.service';
+import { AuthZCreditsRepository } from 'src/credits/repositories/authz.repository';
+import { EdvClientKeysManager } from 'src/edv/services/edv.singleton';
 
 enum GRANT_TYPES {
   access_service_kyc = 'access_service_kyc',
@@ -55,6 +57,7 @@ export class AppAuthService {
     private readonly supportedServices: SupportedServiceService,
     private readonly userRepository: UserRepository,
     private readonly authzCreditService: AuthzCreditService,
+    private readonly authzCreditRepository: AuthZCreditsRepository,
   ) {}
 
   async createAnApp(
@@ -532,11 +535,32 @@ export class AppAuthService {
 
       throw new NotFoundException([`No App found for appId ${appId}`]);
     }
-    //commenting this code as delete operation is not implemented in edvClient
-
-    // const { edvId, edvDocId } = appDetail;
-    // await this.edvService.init(edvId);
-    // await this.edvService.deleteDoc(edvDocId);
+    const { edvId, kmsId } = appDetail;
+    const appDataFromVault = await globalThis.kmsVault.getDecryptedDocument(
+      kmsId,
+    );
+    if (!appDataFromVault) {
+      throw new BadRequestException('App detail does not exists in datavault');
+    }
+    const appKmsVaultWallet = await VaultWalletManager.getWallet(
+      appDataFromVault.mnemonic,
+    );
+    const kmsVaultManager = new EdvClientKeysManager();
+    const appKmsVault = await kmsVaultManager.createVault(
+      appKmsVaultWallet,
+      edvId,
+    );
+    try {
+      await appKmsVault.deleteVault(edvId);
+      await globalThis.kmsVault.deleteDocument(kmsId);
+    } catch (vaultError) {
+      Logger.error(
+        `Error deleting KMS or EDV vault: ${vaultError}`,
+        'AppAuthService',
+      );
+      throw new BadRequestException(['Failed to delete vault']);
+    }
+    this.authzCreditRepository.deleteAuthzDetail({ appId });
     appDetail = await this.appRepository.findOneAndDelete({ appId, userId });
     return appDetail;
   }
