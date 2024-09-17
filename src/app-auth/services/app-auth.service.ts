@@ -7,7 +7,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { SigningStargateClient } from '@cosmjs/stargate';
-import { CreateAppDto } from '../dtos/create-app.dto';
+import { CreateAppDto, DeleteAppResponse } from '../dtos/create-app.dto';
 import { App, createAppResponse } from 'src/app-auth/schemas/app.schema';
 import { AppRepository } from '../repositories/app.repository';
 import { UpdateAppDto } from '../dtos/update-app.dto';
@@ -526,7 +526,7 @@ export class AppAuthService {
     return this.getAppResponse(app);
   }
 
-  async deleteApp(appId: string, userId: string): Promise<App> {
+  async deleteApp(appId: string, userId: string): Promise<DeleteAppResponse> {
     Logger.log('deleteApp() method: starts....', 'AppAuthService');
 
     let appDetail = await this.appRepository.findOne({ appId, userId });
@@ -560,9 +560,15 @@ export class AppAuthService {
       );
       throw new BadRequestException(['Failed to delete vault']);
     }
+    // delete app db also
+    if (!appDetail.services || appDetail.services.length === 0) {
+      throw new BadRequestException(['Invalid app']);
+    }
+    const appDbConnectionSuffix = `service:${appDetail.services[0].dBSuffix}:${appDetail.subdomain}`;
+    await this.appRepository.findAndDeleteServiceDB(appDbConnectionSuffix);
     this.authzCreditRepository.deleteAuthzDetail({ appId });
     appDetail = await this.appRepository.findOneAndDelete({ appId, userId });
-    return appDetail;
+    return { appId: appDetail.appId };
   }
 
   private checkIfDateExpired(expiryDate: Date | null) {
