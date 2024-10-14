@@ -66,6 +66,7 @@ export class CreateAppDto {
     description: 'services',
     example: [SERVICE_TYPES.SSI_API],
     required: true,
+    enum: SERVICE_TYPES,
     isArray: true,
   })
   @IsArray({ message: 'serviceId must be an array' })
@@ -77,7 +78,7 @@ export class CreateAppDto {
   @IsEnum(SERVICE_TYPES, {
     each: true,
     message:
-      "services must be one of the following values: 'CAVACH_API', 'SSI_API'",
+      "services must be one of the following values: 'CAVACH_API', 'SSI_API', 'QUEST'",
   })
   serviceIds: [SERVICE_TYPES];
 

@@ -69,10 +69,12 @@ export class SocialLoginService {
       const kycAccessList = this.supportedServiceList.getDefaultServicesAccess(
         SERVICE_TYPES.CAVACH_API,
       );
+      const questAccessList =
+        this.supportedServiceList.getDefaultServicesAccess(SERVICE_TYPES.QUEST);
       userInfo = await this.userRepository.create({
         email,
         userId: appUserID,
-        accessList: [...ssiAccessList, ...kycAccessList],
+        accessList: [...ssiAccessList, ...kycAccessList, ...questAccessList],
       });
     }
     Logger.log('socialLogin() starts', 'SocialLoginService');

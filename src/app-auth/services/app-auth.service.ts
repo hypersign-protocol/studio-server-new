@@ -39,6 +39,7 @@ import { AuthzCreditService } from 'src/credits/services/credits.service';
 enum GRANT_TYPES {
   access_service_kyc = 'access_service_kyc',
   access_service_ssi = 'access_service_ssi',
+  access_service_quest = 'access_service_quest',
 }
 
 @Injectable()
@@ -150,7 +151,10 @@ export class AppAuthService {
       'createAnApp() method: before creating new app doc in db',
       'AppAuthService',
     );
-    const subdomain = await this.getRandomSubdomain();
+    let subdomain;
+    if (service.id !== SERVICE_TYPES.QUEST) {
+      subdomain = await this.getRandomSubdomain();
+    }
     // AUTHZ
     if (service.id == SERVICE_TYPES.SSI_API) {
       // Perform AuthZ Grant
@@ -244,10 +248,14 @@ export class AppAuthService {
     appData: App,
     apiSecretKey?: string,
   ): createAppResponse {
+    console.log(appData);
     const appResponse: createAppResponse = {
       ...appData['_doc'],
       apiSecretKey,
-      tenantUrl: this.getTenantUrl(appData.subdomain, appData.services[0]), // only one service per app
+      tenantUrl:
+        appData.services[0].id === 'QUEST'
+          ? appData.services[0].domain
+          : this.getTenantUrl(appData.subdomain, appData.services[0]),
     };
 
     delete appResponse.userId;
@@ -632,6 +640,21 @@ export class AppAuthService {
         }
         break;
       }
+      case SERVICE_TYPES.QUEST: {
+        grant_type = GRANT_TYPES.access_service_quest;
+        if (userDetails.accessList && userDetails.accessList.length > 0) {
+          accessList = userDetails.accessList
+            .map((x) => {
+              if (x.serviceType === SERVICE_TYPES.QUEST) {
+                if (!this.checkIfDateExpired(x.expiryDate)) {
+                  return x.access;
+                }
+              }
+            })
+            .filter((x) => x != undefined);
+        }
+        break;
+      }
       default: {
         throw new BadRequestException('Invalid service ' + appDetail.appId);
       }
@@ -702,6 +725,8 @@ export class AppAuthService {
         break;
       case GRANT_TYPES.access_service_kyc:
         break;
+      case GRANT_TYPES.access_service_quest:
+        break;
       default: {
         throw new BadRequestException(
           'Grant type not supported, supported grant types are: ' +
@@ -755,6 +780,23 @@ export class AppAuthService {
         accessList = userDetails.accessList
           .map((x) => {
             if (x.serviceType === SERVICE_TYPES.CAVACH_API) {
+              if (!this.checkIfDateExpired(x.expiryDate)) {
+                return x.access;
+              }
+            }
+          })
+          .filter((x) => x != undefined);
+        break;
+      }
+      case SERVICE_TYPES.QUEST: {
+        if (grantType != 'access_service_quest') {
+          throw new BadRequestException(
+            'Invalid grant type for this service ' + appId,
+          );
+        }
+        accessList = userDetails.accessList
+          .map((x) => {
+            if (x.serviceType === SERVICE_TYPES.QUEST) {
               if (!this.checkIfDateExpired(x.expiryDate)) {
                 return x.access;
               }
