@@ -35,7 +35,7 @@ export const DASHBOARD_INFO = Object.freeze({
 });
 export const QUEST_SERVICE_INFO = Object.freeze({
   type: SERVICE_TYPES.QUEST,
-  description: 'EIKO Service',
+  description: 'Verify on-chain and off-chain tasks of your users',
   name: 'QUEST',
   swaggerAPIDocPath: '/api',
   baseDomain: 'https://api.eiko.zone',
