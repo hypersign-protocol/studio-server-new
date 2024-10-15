@@ -42,8 +42,13 @@ export class AppRepository {
             ],
           },
           '://',
-          '$subdomain',
-          '.',
+          {
+            $cond: {
+              if: { $ifNull: ['$subdomain', false] },
+              then: { $concat: ['$subdomain', '.'] },
+              else: '',
+            },
+          },
           {
             $arrayElemAt: [
               {
@@ -94,13 +99,25 @@ export class AppRepository {
       {
         $set: {
           tenantUrl: {
-            $concat: [
-              '$serviceDomainProtocol',
-              '//:',
-              '$subdomain',
-              '.',
-              '$serviceDomainHostname',
-            ],
+            $cond: {
+              if: { $ifNull: ['$subdomain', false] },
+              then: {
+                $concat: [
+                  '$serviceDomainProtocol',
+                  '//:',
+                  '$subdomain',
+                  '.',
+                  '$serviceDomainHostname',
+                ],
+              },
+              else: {
+                $concat: [
+                  '$serviceDomainProtocol',
+                  '//:',
+                  '$serviceDomainHostname',
+                ],
+              },
+            },
           },
         },
       },
@@ -112,11 +129,11 @@ export class AppRepository {
       'findOne() method: starts, finding particular app from db',
       'AppRepository',
     );
-    const aggrerationPipeline = [
+    const aggregationPipeline = [
       { $match: appFilterQuery },
       ...this.getTenantUrlAggeration(),
     ];
-    const apps = await this.appModel.aggregate(aggrerationPipeline);
+    const apps = await this.appModel.aggregate(aggregationPipeline);
     return apps[0];
   }
   async find(appsFilterQuery: FilterQuery<App>): Promise<App[]> {

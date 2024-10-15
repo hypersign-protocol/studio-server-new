@@ -251,7 +251,6 @@ export class AppAuthService {
     appData: App,
     apiSecretKey?: string,
   ): createAppResponse {
-    console.log(appData);
     const appResponse: createAppResponse = {
       ...appData['_doc'],
       apiSecretKey,
