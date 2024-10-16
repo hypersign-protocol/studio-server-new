@@ -7,7 +7,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { SigningStargateClient } from '@cosmjs/stargate';
-import { CreateAppDto } from '../dtos/create-app.dto';
+import { CreateAppDto, DeleteAppResponse } from '../dtos/create-app.dto';
 import { App, createAppResponse } from 'src/app-auth/schemas/app.schema';
 import { AppRepository } from '../repositories/app.repository';
 import { UpdateAppDto } from '../dtos/update-app.dto';
@@ -35,10 +35,13 @@ import {
   MSG_UPDATE_DID_TYPEURL,
 } from 'src/utils/authz';
 import { AuthzCreditService } from 'src/credits/services/credits.service';
+import { AuthZCreditsRepository } from 'src/credits/repositories/authz.repository';
+import { EdvClientKeysManager } from 'src/edv/services/edv.singleton';
 
 enum GRANT_TYPES {
   access_service_kyc = 'access_service_kyc',
   access_service_ssi = 'access_service_ssi',
+  access_service_quest = 'access_service_quest',
 }
 
 @Injectable()
@@ -55,6 +58,7 @@ export class AppAuthService {
     private readonly supportedServices: SupportedServiceService,
     private readonly userRepository: UserRepository,
     private readonly authzCreditService: AuthzCreditService,
+    private readonly authzCreditRepository: AuthZCreditsRepository,
   ) {}
 
   async createAnApp(
@@ -150,7 +154,10 @@ export class AppAuthService {
       'createAnApp() method: before creating new app doc in db',
       'AppAuthService',
     );
-    const subdomain = await this.getRandomSubdomain();
+    let subdomain;
+    if (service.id !== SERVICE_TYPES.QUEST) {
+      subdomain = await this.getRandomSubdomain();
+    }
     // AUTHZ
     if (service.id == SERVICE_TYPES.SSI_API) {
       // Perform AuthZ Grant
@@ -247,7 +254,10 @@ export class AppAuthService {
     const appResponse: createAppResponse = {
       ...appData['_doc'],
       apiSecretKey,
-      tenantUrl: this.getTenantUrl(appData.subdomain, appData.services[0]), // only one service per app
+      tenantUrl:
+        appData.services[0].id === 'QUEST'
+          ? appData.services[0].domain
+          : this.getTenantUrl(appData.subdomain, appData.services[0]),
     };
 
     delete appResponse.userId;
@@ -523,7 +533,7 @@ export class AppAuthService {
     return this.getAppResponse(app);
   }
 
-  async deleteApp(appId: string, userId: string): Promise<App> {
+  async deleteApp(appId: string, userId: string): Promise<DeleteAppResponse> {
     Logger.log('deleteApp() method: starts....', 'AppAuthService');
 
     let appDetail = await this.appRepository.findOne({ appId, userId });
@@ -532,13 +542,40 @@ export class AppAuthService {
 
       throw new NotFoundException([`No App found for appId ${appId}`]);
     }
-    //commenting this code as delete operation is not implemented in edvClient
-
-    // const { edvId, edvDocId } = appDetail;
-    // await this.edvService.init(edvId);
-    // await this.edvService.deleteDoc(edvDocId);
+    const { edvId, kmsId } = appDetail;
+    const appDataFromVault = await globalThis.kmsVault.getDecryptedDocument(
+      kmsId,
+    );
+    if (!appDataFromVault) {
+      throw new BadRequestException('App detail does not exists in datavault');
+    }
+    const appKmsVaultWallet = await VaultWalletManager.getWallet(
+      appDataFromVault.mnemonic,
+    );
+    const kmsVaultManager = new EdvClientKeysManager();
+    const appKmsVault = await kmsVaultManager.createVault(
+      appKmsVaultWallet,
+      edvId,
+    );
+    try {
+      await appKmsVault.deleteVault(edvId);
+      await globalThis.kmsVault.deleteDocument(kmsId);
+    } catch (vaultError) {
+      Logger.error(
+        `Error deleting KMS or EDV vault: ${vaultError}`,
+        'AppAuthService',
+      );
+      throw new BadRequestException(['Failed to delete vault']);
+    }
+    // delete app db also
+    if (!appDetail.services || appDetail.services.length === 0) {
+      throw new BadRequestException(['Invalid app']);
+    }
+    const appDbConnectionSuffix = `service:${appDetail.services[0].dBSuffix}:${appDetail.subdomain}`;
+    await this.appRepository.findAndDeleteServiceDB(appDbConnectionSuffix);
+    this.authzCreditRepository.deleteAuthzDetail({ appId });
     appDetail = await this.appRepository.findOneAndDelete({ appId, userId });
-    return appDetail;
+    return { appId: appDetail.appId };
   }
 
   private checkIfDateExpired(expiryDate: Date | null) {
@@ -632,6 +669,21 @@ export class AppAuthService {
         }
         break;
       }
+      case SERVICE_TYPES.QUEST: {
+        grant_type = GRANT_TYPES.access_service_quest;
+        if (userDetails.accessList && userDetails.accessList.length > 0) {
+          accessList = userDetails.accessList
+            .map((x) => {
+              if (x.serviceType === SERVICE_TYPES.QUEST) {
+                if (!this.checkIfDateExpired(x.expiryDate)) {
+                  return x.access;
+                }
+              }
+            })
+            .filter((x) => x != undefined);
+        }
+        break;
+      }
       default: {
         throw new BadRequestException('Invalid service ' + appDetail.appId);
       }
@@ -702,6 +754,8 @@ export class AppAuthService {
         break;
       case GRANT_TYPES.access_service_kyc:
         break;
+      case GRANT_TYPES.access_service_quest:
+        break;
       default: {
         throw new BadRequestException(
           'Grant type not supported, supported grant types are: ' +
@@ -755,6 +809,23 @@ export class AppAuthService {
         accessList = userDetails.accessList
           .map((x) => {
             if (x.serviceType === SERVICE_TYPES.CAVACH_API) {
+              if (!this.checkIfDateExpired(x.expiryDate)) {
+                return x.access;
+              }
+            }
+          })
+          .filter((x) => x != undefined);
+        break;
+      }
+      case SERVICE_TYPES.QUEST: {
+        if (grantType != 'access_service_quest') {
+          throw new BadRequestException(
+            'Invalid grant type for this service ' + appId,
+          );
+        }
+        accessList = userDetails.accessList
+          .map((x) => {
+            if (x.serviceType === SERVICE_TYPES.QUEST) {
               if (!this.checkIfDateExpired(x.expiryDate)) {
                 return x.access;
               }

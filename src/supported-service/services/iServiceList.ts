@@ -2,6 +2,7 @@ export enum SERVICE_TYPES {
   SSI_API = 'SSI_API',
   CAVACH_API = 'CAVACH_API',
   DASHBOARD = 'DASHBOARD',
+  QUEST = 'QUEST',
 }
 
 export enum APP_ENVIRONMENT {
@@ -32,11 +33,19 @@ export const DASHBOARD_INFO = Object.freeze({
   swaggerAPIDocPath: '/api',
   baseDomain: 'https://api.entity.dashoboard.hypersign.id',
 });
+export const QUEST_SERVICE_INFO = Object.freeze({
+  type: SERVICE_TYPES.QUEST,
+  description: 'Verify on-chain and off-chain tasks of your users',
+  name: 'Quest API Service',
+  swaggerAPIDocPath: '/api',
+  baseDomain: 'https://api.eiko.zone',
+});
 
 export const SERVICE_INFO = Object.freeze({
   SSI_API: SSI_API_SERVICE_INFO,
   CAVACH_API: CAVACH_API_SERVICE_INFO,
   DASHBOARD: DASHBOARD_INFO,
+  QUEST: QUEST_SERVICE_INFO,
 });
 
 // eslint-disable-next-line
@@ -80,6 +89,13 @@ export namespace SERVICES {
       READ_SERVICE = 'READ_SERVICE',
       WRITE_SERVICE = 'WRITE_SERVICE',
       UPDATE_SERVICE = 'UPDATE_SERVICE',
+    }
+  }
+  // eslint-disable-next-line
+  export namespace QUEST {
+    export enum ACCESS_TYPES {
+      ALL = 'ALL',
+      VERIFY_USER = 'VERIFY_USER',
     }
   }
 }

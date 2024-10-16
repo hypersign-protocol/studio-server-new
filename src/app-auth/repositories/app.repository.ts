@@ -4,8 +4,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { SupportedServiceService } from 'src/supported-service/services/supported-service.service';
-import * as url from 'url';
-
+import * as mongoose from 'mongoose';
 @Injectable()
 export class AppRepository {
   constructor(
@@ -43,8 +42,13 @@ export class AppRepository {
             ],
           },
           '://',
-          '$subdomain',
-          '.',
+          {
+            $cond: {
+              if: { $ifNull: ['$subdomain', false] },
+              then: { $concat: ['$subdomain', '.'] },
+              else: '',
+            },
+          },
           {
             $arrayElemAt: [
               {
@@ -95,13 +99,25 @@ export class AppRepository {
       {
         $set: {
           tenantUrl: {
-            $concat: [
-              '$serviceDomainProtocol',
-              '//:',
-              '$subdomain',
-              '.',
-              '$serviceDomainHostname',
-            ],
+            $cond: {
+              if: { $ifNull: ['$subdomain', false] },
+              then: {
+                $concat: [
+                  '$serviceDomainProtocol',
+                  '//:',
+                  '$subdomain',
+                  '.',
+                  '$serviceDomainHostname',
+                ],
+              },
+              else: {
+                $concat: [
+                  '$serviceDomainProtocol',
+                  '//:',
+                  '$serviceDomainHostname',
+                ],
+              },
+            },
           },
         },
       },
@@ -113,11 +129,11 @@ export class AppRepository {
       'findOne() method: starts, finding particular app from db',
       'AppRepository',
     );
-    const aggrerationPipeline = [
+    const aggregationPipeline = [
       { $match: appFilterQuery },
       ...this.getTenantUrlAggeration(),
     ];
-    const apps = await this.appModel.aggregate(aggrerationPipeline);
+    const apps = await this.appModel.aggregate(aggregationPipeline);
     return apps[0];
   }
   async find(appsFilterQuery: FilterQuery<App>): Promise<App[]> {
@@ -177,5 +193,28 @@ export class AppRepository {
     );
 
     return this.appModel.findOneAndDelete(appFilterQuery);
+  }
+  async findAndDeleteServiceDB(connectionStringPrefix: string) {
+    try {
+      Logger.log('findAndDeleteServiceDB() method to delte service database');
+      // Establish a connection to the MongoDB server
+      const mainConnection = await mongoose.connect(process.env.DB_BASE_PATH);
+      // Switch to the target database
+      const dbConnection = mainConnection.connection.useDb(
+        connectionStringPrefix,
+      );
+      // Drop the selected database
+      await dbConnection.dropDatabase();
+      Logger.log(
+        `Database ${connectionStringPrefix} has been successfully dropped.`,
+        'AppRepository',
+      );
+    } catch (error) {
+      Logger.error(
+        'Error while deleting the database:',
+        error,
+        'AppRepository',
+      );
+    }
   }
 }
