@@ -41,10 +41,18 @@ export class SupportedServiceList {
         id: SERVICE_INFO.DASHBOARD.type,
         dBSuffix: SERVICE_INFO.DASHBOARD.type,
         name: SERVICE_INFO.DASHBOARD.name,
-
         description: SERVICE_INFO.DASHBOARD.description,
         swaggerAPIDocPath: SERVICE_INFO.DASHBOARD.swaggerAPIDocPath,
         accessList: SERVICES.DASHBOARD.ACCESS_TYPES,
+      },
+      {
+        id: SERVICE_INFO.QUEST.type,
+        dBSuffix: SERVICE_INFO.QUEST.type,
+        name: SERVICE_INFO.QUEST.name,
+        domain: SERVICE_INFO.QUEST.baseDomain,
+        description: SERVICE_INFO.QUEST.description,
+        swaggerAPIDocPath: SERVICE_INFO.QUEST.swaggerAPIDocPath,
+        accessList: SERVICES.QUEST.ACCESS_TYPES,
       },
     ];
   }
@@ -71,6 +79,19 @@ export class SupportedServiceList {
         if (access == SERVICES[serviceType].ACCESS_TYPES.READ_SESSION) {
           return;
         } else if (access == SERVICES[serviceType].ACCESS_TYPES.ALL) {
+          return;
+        } else {
+          const serviceAccess = {
+            serviceType: serviceType,
+            access: access,
+            expiryDate: null, // never expires
+          };
+          defaultServicesAccess.push(serviceAccess);
+        }
+      });
+    } else if (serviceType == SERVICE_TYPES.QUEST) {
+      Object.keys(SERVICES[serviceType].ACCESS_TYPES).forEach((access) => {
+        if (access == SERVICES[serviceType].ACCESS_TYPES.ALL) {
           return;
         } else {
           const serviceAccess = {

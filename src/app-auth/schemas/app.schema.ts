@@ -96,7 +96,7 @@ export class App {
 
   @IsOptional()
   @IsString()
-  @Prop({ required: false, unique: true })
+  @Prop({ required: false, unique: false })
   subdomain: string;
   @Prop({ required: true })
   @ApiProperty({
