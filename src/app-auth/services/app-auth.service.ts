@@ -691,8 +691,7 @@ export class AppAuthService {
 
     if (accessList.length <= 0) {
       throw new UnauthorizedException(
-        'You are not authorized to access service of type ',
-        serviceType,
+        `You are not authorized to access service of type ${serviceType}`
       );
     }
 
@@ -838,11 +837,9 @@ export class AppAuthService {
         throw new BadRequestException('Invalid service ' + appId);
       }
     }
-
     if (accessList.length <= 0) {
       throw new UnauthorizedException(
-        'You are not authorized to access service of type ',
-        serviceType,
+        `You are not authorized to access service of type ${serviceType}`
       );
     }
 
