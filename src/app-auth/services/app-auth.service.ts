@@ -88,11 +88,6 @@ export class AppAuthService {
     }
 
     if (!this.granterClient) {
-      console.log(
-        this.config.get('HID_NETWORK_RPC'),
-        this.authzWalletInstance.wallet,
-      );
-
       this.granterClient = await SigningStargateClient.connectWithSigner(
         this.config.get('HID_NETWORK_RPC'),
         this.authzWalletInstance.wallet,
@@ -719,6 +714,10 @@ export class AppAuthService {
     if (appDetail.issuerDid) {
       payload['issuerDid'] = appDetail.issuerDid;
     }
+    if (appDetail.issuerVerificationMethodId) {
+      payload['issuerVerificationMethodId'] =
+        appDetail.issuerVerificationMethodId;
+    }
 
     if (
       appDetail.dependentServices &&
@@ -729,6 +728,7 @@ export class AppAuthService {
     }
 
     const secret = this.config.get('JWT_SECRET');
+
     const token = await this.jwt.signAsync(payload, {
       expiresIn: expiresin.toString() + 'h',
       secret,
