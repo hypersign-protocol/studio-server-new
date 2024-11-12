@@ -19,11 +19,13 @@ spec:
         imagePullPolicy: Always
         resources:
           requests:
-            memory: "2Gi"
+            memory: "3Gi"
             cpu: "100m"
+            ephemeral-storage: "200Mi"
           limits:
-            memory: "2Gi"
+            memory: "3Gi"
             cpu: "100m"
+            ephemeral-storage: "200Mi"
         ports:
         - containerPort: __PORT__
         # livenessProbe:
@@ -105,4 +107,5 @@ spec:
     targetPort: __PORT__
     protocol: TCP
 ---
+
 
