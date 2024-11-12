@@ -19,12 +19,12 @@ spec:
         imagePullPolicy: Always
         resources:
           requests:
-            memory: "3Gi"
-            cpu: "100m"
+            memory: "2Gi"
+            cpu: "50m"
             ephemeral-storage: "200Mi"
           limits:
-            memory: "3Gi"
-            cpu: "100m"
+            memory: "2Gi"
+            cpu: "50m"
             ephemeral-storage: "200Mi"
         ports:
         - containerPort: __PORT__
