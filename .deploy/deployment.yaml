@@ -18,9 +18,12 @@ spec:
         image: __GOOGLE_ARTIFACT_URL__/__GOOGLE_PROJECT_ID__/__GOOGLE_ARTIFACT_REPO__/entity-developer-dashbord-service:__LATEST_RELEASE_TAG__
         imagePullPolicy: Always
         resources:
+          requests:
+            memory: "2Gi"
+            cpu: "100m"
           limits:
             memory: "2Gi"
-            cpu: "500m"
+            cpu: "100m"
         ports:
         - containerPort: __PORT__
         # livenessProbe:
@@ -55,7 +58,9 @@ spec:
         - name: EMAIL_CREDENTITAL_SCHEMA_ID
           value: __EMAIL_CREDENTITAL_SCHEMA_ID__
         - name: WHITELISTED_CORS
-          value: '["https://entity.hypersign.id","http://localhost:9001", "https://wallet-prajna.hypersign.id", "http://localhost:4999","https://entity.dashboard.hypersign.id"]'
+          value: '["https://entity.hypersign.id","http://localhost:9001",
+            "https://wallet-prajna.hypersign.id",
+            "http://localhost:4999","https://entity.dashboard.hypersign.id"]'
         - name: ENTITY_API_SERVICE_BASE_URL
           value: __ENTITY_API_SERVICE_BASE_URL__
         - name: DEVELOPER_DASHBOARD_SERVICE_PUBLIC_EP
@@ -83,7 +88,6 @@ spec:
       - name: mongo
         secret:
           secretName: mongo
-
 ---
 apiVersion: v1
 kind: Service
@@ -100,5 +104,5 @@ spec:
   - port: __PORT__
     targetPort: __PORT__
     protocol: TCP
-
 ---
+
