@@ -20,11 +20,11 @@ spec:
         resources:
           requests:
             memory: "2Gi"
-            cpu: "50m"
+            cpu: "100m"
             ephemeral-storage: "200Mi"
           limits:
-            memory: "2Gi"
-            cpu: "50m"
+            memory: "3Gi"
+            cpu: "200m"
             ephemeral-storage: "200Mi"
         ports:
         - containerPort: __PORT__
